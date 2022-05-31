@@ -3,6 +3,9 @@
     "homePage": "https://github.com/nf-core/tva",
     "repos": {
         "nf-core/modules": {
+            "bedtools/split": {
+                "git_sha": "6342f5b0996c1debb23037efdd1ad7029e801a7f"
+            },
             "custom/dumpsoftwareversions": {
                 "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
             }
