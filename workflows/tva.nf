@@ -49,7 +49,6 @@ include { GERMLINE_VARIANT_CALLING } from '../subworkflows/local/germline_varian
 //
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main'
 include { BEDTOOLS_SPLIT              } from '../modules/nf-core/modules/bedtools/split/main'
-include { BCFTOOLS_CONCAT             } from '../modules/nf-core/modules/bcftools/concat/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -74,38 +73,13 @@ workflow TVA {
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
 
     //
-    // Split the BED files into multiple subsets
+    // Perform the variant calling
     //
-
+    
     beds = INPUT_CHECK.out.crams.map(
     {meta, cram, crai, bed ->
         [meta, bed]
     })
-
-    if(params.scatter_count > 1){
-
-        BEDTOOLS_SPLIT(
-            beds,
-            params.scatter_count
-        )
-        ch_versions = ch_versions.mix(BEDTOOLS_SPLIT.out.versions)
-
-        interval_beds = BEDTOOLS_SPLIT.out.beds
-        .transpose()
-        .map({ meta, bed ->
-            [ meta, bed, params.scatter_count ]
-        })
-    }
-    else{
-        interval_beds = beds
-        .map({ meta, bed ->
-            [ meta, bed, params.scatter_count ]
-        })
-    }
-
-    //
-    // Perform the variant calling
-    //
 
     germline_variant_calling_input_cram = INPUT_CHECK.out.crams.map(
     {meta, cram, crai, bed ->
@@ -114,39 +88,12 @@ workflow TVA {
 
     GERMLINE_VARIANT_CALLING(
         germline_variant_calling_input_cram,
-        interval_beds,
+        beds,
     )
 
     ch_versions = ch_versions.mix(GERMLINE_VARIANT_CALLING.out.versions)
 
-    //
-    // Merge the VCFs if split BED files were used
-    //
-
-    if (params.scatter_count > 1){
-
-        concat_input = GERMLINE_VARIANT_CALLING.out.vcfs
-                    .map({meta, vcf, tbi -> 
-                        new_meta = meta.clone()
-                        new_meta.id = new_meta.sample
-                        [ new_meta, vcf, tbi ]
-                    })
-                    .groupTuple()
-
-        BCFTOOLS_CONCAT(concat_input)
-
-        dummy_variable = BCFTOOLS_CONCAT.out.vcf
-
-        ch_versions = ch_versions.mix(BCFTOOLS_CONCAT.out.versions)
-    }
-    else {
-        dummy_variable = GERMLINE_VARIANT_CALLING.out.vcfs
-                        .map({ meta, vcf, tbi ->
-                            [ meta, vcf ]
-                        })
-    }
-
-    dummy_variable.view()
+    GERMLINE_VARIANT_CALLING.out.vcfs.view()
 }
 
 
