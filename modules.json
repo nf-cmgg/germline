@@ -12,8 +12,17 @@
             "custom/dumpsoftwareversions": {
                 "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
             },
+            "gatk4/combinegvcfs": {
+                "git_sha": "169b2b96c1167f89ab07127b7057c1d90a6996c7"
+            },
+            "gatk4/genotypegvcfs": {
+                "git_sha": "169b2b96c1167f89ab07127b7057c1d90a6996c7"
+            },
             "gatk4/haplotypecaller": {
                 "git_sha": "169b2b96c1167f89ab07127b7057c1d90a6996c7"
+            },
+            "tabix/tabix": {
+                "git_sha": "b3e9b88e80880f450ad79a95b2b7aa05e1de5484"
             }
         }
     }

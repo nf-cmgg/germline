@@ -37,6 +37,7 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
 //
 include { INPUT_CHECK              } from '../subworkflows/local/input_check'
 include { GERMLINE_VARIANT_CALLING } from '../subworkflows/local/germline_variant_calling'
+include { GENOTYPE                 } from '../subworkflows/local/genotype'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -48,7 +49,6 @@ include { GERMLINE_VARIANT_CALLING } from '../subworkflows/local/germline_varian
 // MODULE: Installed directly from nf-core/modules
 //
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main'
-include { BEDTOOLS_SPLIT              } from '../modules/nf-core/modules/bedtools/split/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -93,7 +93,18 @@ workflow TVA {
 
     ch_versions = ch_versions.mix(GERMLINE_VARIANT_CALLING.out.versions)
 
-    GERMLINE_VARIANT_CALLING.out.vcfs.view()
+    //
+    // Joint-genotyping of the families
+    //
+
+    GENOTYPE(
+        GERMLINE_VARIANT_CALLING.out.vcfs
+    )
+
+    ch_versions = ch_versions.mix(GENOTYPE.out.versions)
+
+    GENOTYPE.out.genotyped_gvcfs.view()
+
 }
 
 
