@@ -25,6 +25,7 @@ def create_cram_channel(LinkedHashMap row) {
     // create meta map
     def meta = [:]
     meta.id = row.sample
+    meta.family = row.family_id
 
     // add path(s) of the fastq file(s) to the meta map
     def cram_meta = []

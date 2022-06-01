@@ -75,7 +75,7 @@ workflow TVA {
     //
     // Perform the variant calling
     //
-    
+
     beds = INPUT_CHECK.out.crams.map(
     {meta, cram, crai, bed ->
         [meta, bed]

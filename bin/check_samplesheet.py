@@ -35,6 +35,7 @@ class RowChecker:
     def __init__(
         self,
         sample_col="sample",
+        family_id="family_id",
         first_col="cram",
         second_col="crai",
         third_col="bed",
@@ -53,6 +54,7 @@ class RowChecker:
         """
         super().__init__(**kwargs)
         self._sample_col = sample_col
+        self._family_id = family_id
         self._first_col = first_col
         self._second_col = second_col
         self._third_col = third_col
@@ -80,6 +82,12 @@ class RowChecker:
         assert len(row[self._sample_col]) > 0, "Sample input is required."
         # Sanitize samples slightly.
         row[self._sample_col] = row[self._sample_col].replace(" ", "_")
+
+    def _validate_family_id(self, row):
+        """Assert that the family id exists and convert spaces to underscores."""
+        assert len(row[self._sample_col]) > 0, "Family ID is required."
+        # Sanitize ids slightly.
+        row[self._family_id] = row[self._family_id].replace(" ", "_")
 
     def _validate_first(self, row):
         """Assert that the CRAM entry is non-empty and has the right format."""
@@ -157,13 +165,13 @@ def check_samplesheet(file_in, file_out):
     Example:
         This function checks that the samplesheet follows the following structure:
 
-            sample,cram,crai,bed
-            SAMPLE_1,SAMPLE_1.cram,SAMPLE_1.crai,SAMPLE_1.bed
-            SAMPLE_2,SAMPLE_2.cram,SAMPLE_2.crai,SAMPLE_2.bed
-            SAMPLE_3,SAMPLE_3.cram,SAMPLE_3.crai,SAMPLE_3.bed
+            sample,family_id,cram,crai,bed
+            SAMPLE_1,FAMILY_ID1,SAMPLE_1.cram,SAMPLE_1.crai,SAMPLE_1.bed
+            SAMPLE_2,FAMILY_ID1,SAMPLE_2.cram,SAMPLE_2.crai,SAMPLE_2.bed
+            SAMPLE_3,FAMILY_ID2,SAMPLE_3.cram,SAMPLE_3.crai,SAMPLE_3.bed
 
     """
-    required_columns = {"sample", "cram", "crai", "bed"}
+    required_columns = {"sample", "family_id", "cram", "crai", "bed"}
     # See https://docs.python.org/3.9/library/csv.html#id3 to read up on `newline=""`.
     with file_in.open(newline="") as in_handle:
         reader = csv.DictReader(in_handle, dialect=sniff_format(in_handle))
