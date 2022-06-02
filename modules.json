@@ -18,6 +18,9 @@
             "gatk4/combinegvcfs": {
                 "git_sha": "169b2b96c1167f89ab07127b7057c1d90a6996c7"
             },
+            "gatk4/createsequencedictionary": {
+                "git_sha": "169b2b96c1167f89ab07127b7057c1d90a6996c7"
+            },
             "gatk4/genotypegvcfs": {
                 "git_sha": "169b2b96c1167f89ab07127b7057c1d90a6996c7"
             },
