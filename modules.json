@@ -12,6 +12,9 @@
             "custom/dumpsoftwareversions": {
                 "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
             },
+            "ensemblvep": {
+                "git_sha": "40dd662fd26c3eb3160b7c8cbbe9bff80bbe2c30"
+            },
             "gatk4/combinegvcfs": {
                 "git_sha": "169b2b96c1167f89ab07127b7057c1d90a6996c7"
             },

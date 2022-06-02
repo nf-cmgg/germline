@@ -87,7 +87,6 @@ workflow GENOTYPE {
     ch_versions = ch_versions.mix(GENOTYPE_GVCFS.out.versions)
 
     genotyped_gvcfs = GENOTYPE_GVCFS.out.vcf
-                        .combine(GENOTYPE_GVCFS.out.tbi)
 
     emit:
     genotyped_gvcfs    

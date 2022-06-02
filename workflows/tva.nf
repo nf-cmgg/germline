@@ -38,6 +38,7 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
 include { INPUT_CHECK              } from '../subworkflows/local/input_check'
 include { GERMLINE_VARIANT_CALLING } from '../subworkflows/local/germline_variant_calling'
 include { GENOTYPE                 } from '../subworkflows/local/genotype'
+include { ANNOTATION               } from '../subworkflows/local/annotation'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -103,7 +104,15 @@ workflow TVA {
 
     ch_versions = ch_versions.mix(GENOTYPE.out.versions)
 
-    GENOTYPE.out.genotyped_gvcfs.view()
+    //
+    // Annotation of the variants
+    //
+
+    ANNOTATION(
+        GENOTYPE.out.genotyped_gvcfs
+    )
+
+    ch_versions = ch_versions.mix(ANNOTATION.out.versions)    
 
 }
 
