@@ -1,22 +1,20 @@
-# nf-core/tva: Contributing Guidelines
+# TVA: Contributing Guidelines
 
 Hi there!
-Many thanks for taking an interest in improving nf-core/tva.
+Many thanks for taking an interest in improving TVA.
 
-We try to manage the required tasks for nf-core/tva using GitHub issues, you probably came to this page when creating one.
+We try to manage the required tasks for TVA using GitHub issues, you probably came to this page when creating one.
 Please use the pre-filled template to save time.
 
 However, don't be put off by this template - other more general issues and suggestions are welcome!
 Contributions to the code are even more welcome ;)
 
-> If you need help using or modifying nf-core/tva then the best place to ask is on the nf-core Slack [#tva](https://nfcore.slack.com/channels/tva) channel ([join our Slack here](https://nf-co.re/join/slack)).
-
 ## Contribution workflow
 
-If you'd like to write some code for nf-core/tva, the standard workflow is as follows:
+If you'd like to write some code for TVA, the standard workflow is as follows:
 
-1. Check that there isn't already an issue about your idea in the [nf-core/tva issues](https://github.com/nf-core/tva/issues) to avoid duplicating work. If there isn't one already, please create one so that others know you're working on this
-2. [Fork](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the [nf-core/tva repository](https://github.com/nf-core/tva) to your GitHub account
+1. Check that there isn't already an issue about your idea in the [TVA issues](https://github.ugent.be/cmgg/TVA/issues) to avoid duplicating work. If there isn't one already, please create one so that others know you're working on this
+2. [Fork](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the [TVA repository](https://github.ugent.be/cmgg/TVA) to your GitHub account
 3. Make the necessary changes / additions within your forked repository following [Pipeline conventions](#pipeline-contribution-conventions)
 4. Use `nf-core schema build` and add any new parameters to the pipeline JSON schema (requires [nf-core tools](https://github.com/nf-core/tools) >= 1.10).
 5. Submit a Pull Request against the `dev` branch and wait for the code to be reviewed and merged
@@ -39,7 +37,7 @@ If any failures or warnings are encountered, please follow the listed URL for mo
 
 ### Pipeline tests
 
-Each `nf-core` pipeline should be set up with a minimal set of test-data.
+Each pipeline should be set up with a minimal set of test-data.
 `GitHub Actions` then runs the pipeline on this data to ensure that it exits successfully.
 If there are any failures then the automated tests fail.
 These tests are run both with the latest available version of `Nextflow` and also the minimum required version that is stated in the pipeline code.
@@ -52,13 +50,9 @@ These tests are run both with the latest available version of `Nextflow` and als
 - Fix the bug, and bump version (X.Y.Z+1).
 - A PR should be made on `master` from patch to directly this particular bug.
 
-## Getting help
-
-For further information/help, please consult the [nf-core/tva documentation](https://nf-co.re/tva/usage) and don't hesitate to get in touch on the nf-core Slack [#tva](https://nfcore.slack.com/channels/tva) channel ([join our Slack here](https://nf-co.re/join/slack)).
-
 ## Pipeline contribution conventions
 
-To make the nf-core/tva code and processing logic more understandable for new contributors and to ensure quality, we semi-standardise the way the code and other contributions are written.
+To make the TVA code and processing logic more understandable for new contributors and to ensure quality, we semi-standardise the way the code and other contributions are written.
 
 ### Adding a new step
 
@@ -85,7 +79,7 @@ Once there, use `nf-core schema build` to add to `nextflow_schema.json`.
 
 Sensible defaults for process resource requirements (CPUs / memory / time) for a process should be defined in `conf/base.config`. These should generally be specified generic with `withLabel:` selectors so they can be shared across multiple processes/steps of the pipeline. A nf-core standard set of labels that should be followed where possible can be seen in the [nf-core pipeline template](https://github.com/nf-core/tools/blob/master/nf_core/pipeline-template/conf/base.config), which has the default process as a single core-process, and then different levels of multi-core configurations for increasingly large memory requirements defined with standardised labels.
 
-The process resources can be passed on to the tool dynamically within the process with the `${task.cpu}` and `${task.memory}` variables in the `script:` block.
+The process resources can be passed on to the tool dynamically within the process with the `${task.cpus}` and `${task.memory}` variables in the `script:` block.
 
 ### Naming schemes
 
