@@ -49,7 +49,8 @@ include { ANNOTATION               } from '../subworkflows/local/annotation'
 //
 // MODULE: Installed directly from nf-core/modules
 //
-include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main'
+include { GATK4_CREATESEQUENCEDICTIONARY as CREATESEQUENCEDICTIONARY } from '../modules/nf-core/modules/gatk4/createsequencedictionary/main'
+include { CUSTOM_DUMPSOFTWAREVERSIONS                                } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -74,6 +75,17 @@ workflow TVA {
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
 
     //
+    // Create the sequence dictionary from the FASTA file
+    //
+
+    CREATESEQUENCEDICTIONARY(
+        params.fasta
+    )
+
+    dict = CREATESEQUENCEDICTIONARY.out.dict
+    dict.view()
+
+    //
     // Perform the variant calling
     //
 
@@ -90,6 +102,7 @@ workflow TVA {
     GERMLINE_VARIANT_CALLING(
         germline_variant_calling_input_cram,
         beds,
+        dict,
     )
 
     ch_versions = ch_versions.mix(GERMLINE_VARIANT_CALLING.out.versions)
@@ -99,7 +112,8 @@ workflow TVA {
     //
 
     GENOTYPE(
-        GERMLINE_VARIANT_CALLING.out.vcfs
+        GERMLINE_VARIANT_CALLING.out.vcfs,
+        dict
     )
 
     ch_versions = ch_versions.mix(GENOTYPE.out.versions)

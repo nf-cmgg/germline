@@ -2,14 +2,15 @@
 // GERMLINE VARIANT CALLING
 //
 
-include { GATK4_HAPLOTYPECALLER as HAPLOTYPECALLER } from '../../modules/nf-core/modules/gatk4/haplotypecaller/main'
-include { BCFTOOLS_CONCAT                          } from '../../modules/nf-core/modules/bcftools/concat/main'
-include { BEDTOOLS_SPLIT                           } from '../../modules/nf-core/modules/bedtools/split/main'
+include { GATK4_HAPLOTYPECALLER as HAPLOTYPECALLER  } from '../../modules/nf-core/modules/gatk4/haplotypecaller/main'
+include { BCFTOOLS_CONCAT                           } from '../../modules/nf-core/modules/bcftools/concat/main'
+include { BEDTOOLS_SPLIT                            } from '../../modules/nf-core/modules/bedtools/split/main'
 
 workflow GERMLINE_VARIANT_CALLING {
     take:
         cram   // channel: [mandatory] cram
         beds   // channel: [mandatory] bed regions
+        dict   // channel: [mandatory] sequence dictionary
 
     main:
 
@@ -68,7 +69,7 @@ workflow GERMLINE_VARIANT_CALLING {
         cram_intervals,
         params.fasta,
         params.fasta_fai,
-        params.dict,
+        dict,
         [],
         []
     )
