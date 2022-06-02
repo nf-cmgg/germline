@@ -1,6 +1,6 @@
 {
-    "name": "nf-core/tva",
-    "homePage": "https://github.com/nf-core/tva",
+    "name": "TVA",
+    "homePage": "https://github.ugent.be/cmgg/TVA",
     "repos": {
         "nf-core/modules": {
             "bcftools/concat": {

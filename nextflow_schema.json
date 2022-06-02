@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$id": "https://raw.githubusercontent.com/nf-core/tva/master/nextflow_schema.json",
-    "title": "nf-core/tva pipeline parameters",
+    "$id": "https://github.ugent.be/cmgg/TVA/raw/master/nextflow_schema.json",
+    "title": "TVA pipeline parameters",
     "description": "A nextflow pipeline for calling and annotating variants",
     "type": "object",
     "definitions": {
@@ -62,13 +62,14 @@
                     "type": "string",
                     "format": "file-path",
                     "mimetype": "text/plain",
-                    "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
+                    "pattern": "^\\S+\\.fn?a(sta)?$",
                     "description": "Path to FASTA genome file.",
                     "help_text": "This parameter is *mandatory* if `--genome` is not specified. If you don't have a BWA index available this will be generated for you automatically. Combine with `--save_reference` to save BWA index for future runs.",
                     "fa_icon": "far fa-file-code"
                 },
                 "fasta_fai": {
                     "type": "string",
+                    "pattern": "^\\S+\\.fai$",
                     "description": "The index of the FASTA file",
                     "fa_icon": "far fa-file-code"
                 },

@@ -1,11 +1,9 @@
 #!/usr/bin/env nextflow
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    nf-core/tva
+    TVA
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Github : https://github.com/nf-core/tva
-    Website: https://nf-co.re/tva
-    Slack  : https://nfcore.slack.com/channels/tva
+    Github : https://github.ugent.be/cmgg/TVA
 ----------------------------------------------------------------------------------------
 */
 
@@ -36,7 +34,7 @@ WorkflowMain.initialise(workflow, params, log)
 include { TVA } from './workflows/tva'
 
 //
-// WORKFLOW: Run main nf-core/tva analysis pipeline
+// WORKFLOW: Run main TVA analysis pipeline
 //
 workflow NFCORE_TVA {
     TVA ()

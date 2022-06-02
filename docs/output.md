@@ -1,4 +1,4 @@
-# nf-core/tva: Output
+# TVA: Output
 
 ## Introduction
 

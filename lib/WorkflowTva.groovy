@@ -1,5 +1,5 @@
 //
-// This file holds several functions specific to the workflow/tva.nf in the nf-core/tva pipeline
+// This file holds several functions specific to the workflow/tva.nf in the TVA pipeline
 //
 
 class WorkflowTva {
