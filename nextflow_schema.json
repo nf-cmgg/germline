@@ -52,8 +52,7 @@
             "description": "Reference genome related files and options required for the workflow.",
             "required": [
                 "genome",
-                "fasta",
-                "fasta_fai"
+                "fasta"
             ],
             "properties": {
                 "genome": {
@@ -86,7 +85,7 @@
                 },
                 "strtablefile": {
                     "type": "string",
-                    "default": null
+                    "default": "None"
                 },
                 "igenomes_base": {
                     "type": "string",

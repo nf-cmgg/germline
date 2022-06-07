@@ -49,6 +49,7 @@ include { ANNOTATION               } from '../subworkflows/local/annotation'
 //
 // MODULE: Installed directly from nf-core/modules
 //
+include { SAMTOOLS_FAIDX as FAIDX                                    } from '../modules/nf-core/modules/samtools/faidx/main'
 include { GATK4_CREATESEQUENCEDICTIONARY as CREATESEQUENCEDICTIONARY } from '../modules/nf-core/modules/gatk4/createsequencedictionary/main'
 include { GATK4_COMPOSESTRTABLEFILE as COMPOSESTRTABLEFILE           } from '../modules/nf-core/modules/gatk4/composestrtablefile/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS                                } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main'
@@ -70,8 +71,7 @@ workflow TVA {
     // Importing the parameters
     //
 
-    fasta       = params.fasta
-    fasta_fai   = params.fasta_fai    
+    fasta = params.fasta
 
     //
     // Read in samplesheet, validate and stage input files
@@ -81,6 +81,19 @@ workflow TVA {
         ch_input
     )
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
+
+    //
+    // Create the FASTA index from the FASTA file
+    //
+
+    if (!params.fasta_fai){
+        FAIDX(
+            fasta
+        )
+        fasta_fai = FAIDX.out.fai
+    } else {
+        fasta_fai = params.fasta_fai
+    }
 
     //
     // Create the sequence dictionary from the FASTA file

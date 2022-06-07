@@ -33,6 +33,9 @@
             "gatk4/haplotypecaller": {
                 "git_sha": "e53d091a6de1ae9fd681351c085d8abe076ba1ec"
             },
+            "samtools/faidx": {
+                "git_sha": "897c33d5da084b61109500ee44c01da2d3e4e773"
+            },
             "tabix/tabix": {
                 "git_sha": "b3e9b88e80880f450ad79a95b2b7aa05e1de5484"
             }
