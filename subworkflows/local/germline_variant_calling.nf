@@ -72,18 +72,17 @@ workflow GERMLINE_VARIANT_CALLING {
     //
 
     cram_intervals = cram_models
-        .map{ meta, cram, crai, split_beds, dragstr_model=null ->
+        .map{ meta, cram, crai, split_beds, dragstr_model=[] ->
             new_meta = meta.clone()
             new_meta.sample = new_meta.id
-
-            // Check if there are dragstrmodels
-            dragstr_model = dragstr_model ?: []
 
             // If either no scatter/gather is done, i.e. no interval (0) or one interval (1), then don't rename samples
             new_meta.id = params.scatter_count <= 1 ? meta.id : split_beds.baseName
 
             [new_meta, cram, crai, split_beds, dragstr_model]
         }
+
+    cram_intervals.view()
 
     //
     // Call the variants using HaplotypeCaller
