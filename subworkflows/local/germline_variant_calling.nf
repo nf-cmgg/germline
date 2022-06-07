@@ -82,8 +82,6 @@ workflow GERMLINE_VARIANT_CALLING {
             [new_meta, cram, crai, split_beds, dragstr_model]
         }
 
-    cram_intervals.view()
-
     //
     // Call the variants using HaplotypeCaller
     //
