@@ -50,10 +50,10 @@
             "type": "object",
             "fa_icon": "fas fa-dna",
             "description": "Reference genome related files and options required for the workflow.",
-            "required":[
+            "required": [
+                "genome",
                 "fasta",
-                "fasta_fai",
-                "genome"
+                "fasta_fai"
             ],
             "properties": {
                 "genome": {
@@ -84,6 +84,10 @@
                     "description": "The sequence dictionary of the reference",
                     "fa_icon": "far fa-file-code"
                 },
+                "strtablefile": {
+                    "type": "string",
+                    "default": null
+                },
                 "igenomes_base": {
                     "type": "string",
                     "format": "directory-path",
@@ -112,10 +116,7 @@
                     "default": 2,
                     "fa_icon": "fas fa-compress"
                 }
-            },
-            "required": [
-                "scatter_count"
-            ]
+            }
         },
         "institutional_config_options": {
             "title": "Institutional config options",

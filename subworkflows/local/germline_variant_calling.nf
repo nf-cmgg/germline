@@ -35,13 +35,13 @@ workflow GERMLINE_VARIANT_CALLING {
         split_beds = BEDTOOLS_SPLIT.out.beds
         .transpose()
         .map({ meta, bed ->
-            [ meta, bed, params.scatter_count ]
+            [ meta, bed ]
         })
     }
     else{
         split_beds = beds
         .map({ meta, bed ->
-            [ meta, bed, params.scatter_count ]
+            [ meta, bed ]
         })
     }
 
@@ -50,18 +50,14 @@ workflow GERMLINE_VARIANT_CALLING {
     //
 
     cram_intervals = cram.combine(split_beds, by: 0)
-        .map{ meta, cram, crai, split_beds, num_intervals ->
+        .map{ meta, cram, crai, split_beds ->
             new_meta = meta.clone()
             new_meta.sample = new_meta.id
 
             // If either no scatter/gather is done, i.e. no interval (0) or one interval (1), then don't rename samples
-            new_meta.id = num_intervals <= 1 ? meta.id : split_beds.baseName
-            new_meta.num_intervals = num_intervals
+            new_meta.id = params.scatter_count <= 1 ? meta.id : split_beds.baseName
 
-            //If no interval file provided (0) then add empty list
-            split_beds_new = num_intervals == 0 ? [] : split_beds
-
-            [new_meta, cram, crai, split_beds_new]
+            [new_meta, cram, crai, split_beds, []]
         }
 
     //
