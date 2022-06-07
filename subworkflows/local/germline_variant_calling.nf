@@ -2,9 +2,10 @@
 // GERMLINE VARIANT CALLING
 //
 
-include { GATK4_HAPLOTYPECALLER as HAPLOTYPECALLER  } from '../../modules/nf-core/modules/gatk4/haplotypecaller/main'
-include { BCFTOOLS_CONCAT                           } from '../../modules/nf-core/modules/bcftools/concat/main'
-include { BEDTOOLS_SPLIT                            } from '../../modules/nf-core/modules/bedtools/split/main'
+include { GATK4_HAPLOTYPECALLER as HAPLOTYPECALLER              } from '../../modules/nf-core/modules/gatk4/haplotypecaller/main'
+include { GATK4_CALIBRATEDRAGSTRMODEL as CALIBRATEDRAGSTRMODEL  } from '../../modules/nf-core/modules/gatk4/calibratedragstrmodel/main'
+include { BCFTOOLS_CONCAT                                       } from '../../modules/nf-core/modules/bcftools/concat/main'
+include { BEDTOOLS_SPLIT                                        } from '../../modules/nf-core/modules/bedtools/split/main'
 
 workflow GERMLINE_VARIANT_CALLING {
     take:
@@ -34,30 +35,54 @@ workflow GERMLINE_VARIANT_CALLING {
 
         split_beds = BEDTOOLS_SPLIT.out.beds
         .transpose()
-        .map({ meta, bed ->
-            [ meta, bed ]
-        })
     }
     else{
         split_beds = beds
-        .map({ meta, bed ->
-            [ meta, bed ]
-        })
     }
 
     //
-    // Remap channel with split_beds
+    // Generate DRAGSTR models 
     //
 
-    cram_intervals = cram.combine(split_beds, by: 0)
-        .map{ meta, cram, crai, split_beds ->
+    if (params.use_dragstr_model){
+        calibratedragstrmodel_input = cram.map(
+            { meta, cram, crai ->
+                [meta, cram, crai, []]
+            }
+        )
+
+        CALIBRATEDRAGSTRMODEL(
+            calibratedragstrmodel_input,
+            fasta,
+            fasta_fai,
+            dict,
+            strtablefile
+        )
+
+        dragstr_models = CALIBRATEDRAGSTRMODEL.out.dragstr_model
+        ch_versions = ch_versions.mix(CALIBRATEDRAGSTRMODEL.out.versions)
+
+        cram_models = cram.combine(split_beds, by: 0).combine(dragstr_models, by: 0)
+    } else {
+        cram_models = cram.combine(split_beds, by: 0)
+    }
+
+    //
+    // Remap CRAM channel to fit the haplotypecaller input format
+    //
+
+    cram_intervals = cram_models
+        .map{ meta, cram, crai, split_beds, dragstr_model=null ->
             new_meta = meta.clone()
             new_meta.sample = new_meta.id
+
+            // Check if there are dragstrmodels
+            dragstr_model = dragstr_model ?: []
 
             // If either no scatter/gather is done, i.e. no interval (0) or one interval (1), then don't rename samples
             new_meta.id = params.scatter_count <= 1 ? meta.id : split_beds.baseName
 
-            [new_meta, cram, crai, split_beds, []]
+            [new_meta, cram, crai, split_beds, dragstr_model]
         }
 
     //

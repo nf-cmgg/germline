@@ -91,6 +91,8 @@ workflow TVA {
             fasta
         )
         fasta_fai = FAIDX.out.fai
+        ch_versions = ch_versions.mix(FAIDX.out.versions)
+
     } else {
         fasta_fai = params.fasta_fai
     }
@@ -104,6 +106,7 @@ workflow TVA {
             fasta
         )
         dict = CREATESEQUENCEDICTIONARY.out.dict
+        ch_versions = ch_versions.mix(CREATESEQUENCEDICTIONARY.out.versions)
     } else {
         dict = params.dict
     }
@@ -111,16 +114,20 @@ workflow TVA {
     //
     // Create the STR table file from the FASTA file
     //
-
-    if (!params.strtablefile){
-        COMPOSESTRTABLEFILE(
-            fasta,
-            fasta_fai,
-            dict
-        )
-        strtablefile = COMPOSESTRTABLEFILE.out.str_table
+    if (params.use_dragstr_model){
+        if (!params.strtablefile){
+            COMPOSESTRTABLEFILE(
+                fasta,
+                fasta_fai,
+                dict
+            )
+            strtablefile = COMPOSESTRTABLEFILE.out.str_table
+            ch_versions = ch_versions.mix(COMPOSESTRTABLEFILE.out.versions)
+        } else {
+            strtablefile = params.strtablefile
+        }
     } else {
-        strtablefile = params.strtablefile
+        strtablefile = []
     }
 
     //
