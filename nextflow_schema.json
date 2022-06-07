@@ -50,6 +50,11 @@
             "type": "object",
             "fa_icon": "fas fa-dna",
             "description": "Reference genome related files and options required for the workflow.",
+            "required":[
+                "fasta",
+                "fasta_fai",
+                "genome"
+            ],
             "properties": {
                 "genome": {
                     "type": "string",
@@ -71,6 +76,12 @@
                     "type": "string",
                     "pattern": "^\\S+\\.fai$",
                     "description": "The index of the FASTA file",
+                    "fa_icon": "far fa-file-code"
+                },
+                "dict": {
+                    "type": "string",
+                    "pattern": "^\\S+\\.dict$",
+                    "description": "The sequence dictionary of the reference",
                     "fa_icon": "far fa-file-code"
                 },
                 "igenomes_base": {

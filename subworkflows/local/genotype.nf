@@ -9,8 +9,10 @@ include { TABIX_TABIX as TABIX_COMBINED_GVCFS    } from '../../modules/nf-core/m
 
 workflow GENOTYPE {
     take:
-        gvcfs   // channel: [mandatory] gvcfs
-        dict    // channel: [mandatory] sequence dictionary
+        gvcfs        // channel: [mandatory] gvcfs
+        fasta        // channel: [mandatory] fasta reference
+        fasta_fai    // channel: [mandatory] fasta reference index
+        dict         // channel: [mandatory] sequence dictionary
 
     main:
 
@@ -45,8 +47,8 @@ workflow GENOTYPE {
 
     COMBINEGVCFS(
         combine_gvcfs_input,
-        params.fasta,
-        params.fasta_fai,
+        fasta,
+        fasta_fai,
         dict
     )
 
@@ -78,8 +80,8 @@ workflow GENOTYPE {
 
     GENOTYPE_GVCFS(
         genotype_gvcfs_input,
-        params.fasta,
-        params.fasta_fai,
+        fasta,
+        fasta_fai,
         dict,
         [],
         []

@@ -15,8 +15,14 @@
             "ensemblvep": {
                 "git_sha": "40dd662fd26c3eb3160b7c8cbbe9bff80bbe2c30"
             },
+            "gatk4/calibratedragstrmodel": {
+                "git_sha": "4c7ef30fb64f75ba4499d3b8fba24a068b1ce586"
+            },
             "gatk4/combinegvcfs": {
                 "git_sha": "169b2b96c1167f89ab07127b7057c1d90a6996c7"
+            },
+            "gatk4/composestrtablefile": {
+                "git_sha": "114a54c8d5a8e898a126c2804e3e221286eb2682"
             },
             "gatk4/createsequencedictionary": {
                 "git_sha": "169b2b96c1167f89ab07127b7057c1d90a6996c7"
@@ -25,7 +31,7 @@
                 "git_sha": "169b2b96c1167f89ab07127b7057c1d90a6996c7"
             },
             "gatk4/haplotypecaller": {
-                "git_sha": "169b2b96c1167f89ab07127b7057c1d90a6996c7"
+                "git_sha": "e53d091a6de1ae9fd681351c085d8abe076ba1ec"
             },
             "tabix/tabix": {
                 "git_sha": "b3e9b88e80880f450ad79a95b2b7aa05e1de5484"

@@ -8,9 +8,12 @@ include { BEDTOOLS_SPLIT                            } from '../../modules/nf-cor
 
 workflow GERMLINE_VARIANT_CALLING {
     take:
-        cram   // channel: [mandatory] cram
-        beds   // channel: [mandatory] bed regions
-        dict   // channel: [mandatory] sequence dictionary
+        cram         // channel: [mandatory] cram
+        beds         // channel: [mandatory] bed regions
+        fasta        // channel: [mandatory] fasta reference
+        fasta_fai    // channel: [mandatory] fasta reference index
+        dict         // channel: [mandatory] sequence dictionary
+        strtablefile // channel: [mandatory] STR table file
 
     main:
 
@@ -67,8 +70,8 @@ workflow GERMLINE_VARIANT_CALLING {
 
     HAPLOTYPECALLER(
         cram_intervals,
-        params.fasta,
-        params.fasta_fai,
+        fasta,
+        fasta_fai,
         dict,
         [],
         []

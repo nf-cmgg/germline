@@ -50,6 +50,7 @@ include { ANNOTATION               } from '../subworkflows/local/annotation'
 // MODULE: Installed directly from nf-core/modules
 //
 include { GATK4_CREATESEQUENCEDICTIONARY as CREATESEQUENCEDICTIONARY } from '../modules/nf-core/modules/gatk4/createsequencedictionary/main'
+include { GATK4_COMPOSESTRTABLEFILE as COMPOSESTRTABLEFILE           } from '../modules/nf-core/modules/gatk4/composestrtablefile/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS                                } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main'
 
 /*
@@ -66,6 +67,13 @@ workflow TVA {
     ch_versions = Channel.empty()
 
     //
+    // Importing the parameters
+    //
+
+    fasta       = params.fasta
+    fasta_fai   = params.fasta_fai    
+
+    //
     // Read in samplesheet, validate and stage input files
     //
 
@@ -78,12 +86,29 @@ workflow TVA {
     // Create the sequence dictionary from the FASTA file
     //
 
-    CREATESEQUENCEDICTIONARY(
-        params.fasta
-    )
+    if (!params.dict){
+        CREATESEQUENCEDICTIONARY(
+            fasta
+        )
+        dict = CREATESEQUENCEDICTIONARY.out.dict
+    } else {
+        dict = params.dict
+    }
 
-    dict = CREATESEQUENCEDICTIONARY.out.dict
-    dict.view()
+    //
+    // Create the STR table file from the FASTA file
+    //
+
+    if (!params.strtablefile){
+        COMPOSESTRTABLEFILE(
+            fasta,
+            fasta_fai,
+            dict
+        )
+        strtablefile = COMPOSESTRTABLEFILE.out.str_table
+    } else {
+        strtablefile = params.strtablefile
+    }
 
     //
     // Perform the variant calling
@@ -102,7 +127,10 @@ workflow TVA {
     GERMLINE_VARIANT_CALLING(
         germline_variant_calling_input_cram,
         beds,
+        fasta,
+        fasta_fai,
         dict,
+        strtablefile
     )
 
     ch_versions = ch_versions.mix(GERMLINE_VARIANT_CALLING.out.versions)
@@ -113,6 +141,8 @@ workflow TVA {
 
     GENOTYPE(
         GERMLINE_VARIANT_CALLING.out.vcfs,
+        fasta,
+        fasta_fai,
         dict
     )
 
