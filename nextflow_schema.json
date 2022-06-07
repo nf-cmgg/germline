@@ -113,7 +113,13 @@
                 "scatter_count": {
                     "type": "integer",
                     "default": 2,
-                    "fa_icon": "fas fa-compress"
+                    "fa_icon": "fas fa-compress",
+                    "description": "The amount of files the BED file should be split into (for parallelization of GATK Haplotypecaller)"
+                },
+                "use_dragstr_model": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Whether or not the DRAGSTR models should be used"
                 }
             }
         },
