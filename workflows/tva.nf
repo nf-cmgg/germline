@@ -213,7 +213,8 @@ workflow TVA {
     
     ch_multiqc_files = ch_multiqc_files.mix(
                                         ch_version_yaml,
-                                        ch_reports.collect()
+                                        ch_reports.collect(),
+                                        ch_multiqc_custom_config
                                         )
     MULTIQC(
         ch_multiqc_files.collect()
