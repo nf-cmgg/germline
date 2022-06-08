@@ -38,6 +38,7 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
 include { INPUT_CHECK              } from '../subworkflows/local/input_check'
 include { GERMLINE_VARIANT_CALLING } from '../subworkflows/local/germline_variant_calling'
 include { GENOTYPE                 } from '../subworkflows/local/genotype'
+include { VCF_QC                   } from '../subworkflows/local/vcf_qc'
 include { ANNOTATION               } from '../subworkflows/local/annotation'
 
 /*
@@ -66,6 +67,7 @@ def multiqc_report = []
 workflow TVA {
 
     ch_versions = Channel.empty()
+    ch_reports  = Channel.empty()
 
     //
     // Importing the parameters
@@ -169,14 +171,29 @@ workflow TVA {
     ch_versions = ch_versions.mix(GENOTYPE.out.versions)
 
     //
+    // Quality control of the called variants
+    //
+
+    VCF_QC(
+        GENOTYPE.out.genotyped_vcfs
+    )
+
+    ch_versions = ch_versions.mix(VCF_QC.out.versions)
+    ch_reports  = ch_reports.mix(VCF_QC.out.bcftools_stats.collect{it[1]}.ifEmpty([]))
+    ch_reports  = ch_reports.mix(VCF_QC.out.vcftools_tstv_count.collect{it[1]}.ifEmpty([]))
+    ch_reports  = ch_reports.mix(VCF_QC.out.vcftools_tstv_qual.collect{it[1]}.ifEmpty([]))
+    ch_reports  = ch_reports.mix(VCF_QC.out.vcftools_filter_summary.collect{it[1]}.ifEmpty([]))
+
+    //
     // Annotation of the variants
     //
 
     ANNOTATION(
-        GENOTYPE.out.genotyped_gvcfs
+        GENOTYPE.out.genotyped_vcfs
     )
 
-    ch_versions = ch_versions.mix(ANNOTATION.out.versions)    
+    ch_versions = ch_versions.mix(ANNOTATION.out.versions)
+    ch_reports  = ch_reports.mix(ANNOTATION.out.reports)  
 
     //
     // Dump the software versions
