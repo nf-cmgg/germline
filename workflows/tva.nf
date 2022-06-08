@@ -178,6 +178,14 @@ workflow TVA {
 
     ch_versions = ch_versions.mix(ANNOTATION.out.versions)    
 
+    //
+    // Dump the software versions
+    //
+
+    CUSTOM_DUMPSOFTWAREVERSIONS(
+        ch_versions.unique().collectFile(name: 'collated_versions.yml')
+    )
+
 }
 
 
