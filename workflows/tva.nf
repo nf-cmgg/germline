@@ -54,6 +54,7 @@ include { SAMTOOLS_FAIDX as FAIDX                                    } from '../
 include { GATK4_CREATESEQUENCEDICTIONARY as CREATESEQUENCEDICTIONARY } from '../modules/nf-core/modules/gatk4/createsequencedictionary/main'
 include { GATK4_COMPOSESTRTABLEFILE as COMPOSESTRTABLEFILE           } from '../modules/nf-core/modules/gatk4/composestrtablefile/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS                                } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main'
+include { MULTIQC                                                    } from '../modules/nf-core/modules/multiqc/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -202,6 +203,23 @@ workflow TVA {
     CUSTOM_DUMPSOFTWAREVERSIONS(
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
     )
+    ch_version_yaml = CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml.collect()
+
+    //
+    // Perform multiQC on all QC data
+    //
+
+    ch_multiqc_files = Channel.empty()
+    
+    ch_multiqc_files = ch_multiqc_files.mix(
+                                        ch_version_yaml,
+                                        ch_reports.collect()
+                                        )
+    MULTIQC(
+        ch_multiqc_files.collect()
+    )
+
+    multiqc_report = MULTIQC.out.report.toList().view()
 
 }
 
