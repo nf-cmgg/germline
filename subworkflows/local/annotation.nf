@@ -7,6 +7,7 @@ include { ENSEMBLVEP } from '../../modules/nf-core/modules/ensemblvep/main'
 workflow ANNOTATION {
     take:
         gvcfs   // channel: [mandatory] gvcfs
+        fasta   // channel: [mandatory] fasta
 
     main:
 
@@ -24,6 +25,7 @@ workflow ANNOTATION {
         "homo_sapiens",
         "105",
         [],
+        fasta,
         []
     )
 

@@ -190,7 +190,8 @@ workflow TVA {
     //
 
     ANNOTATION(
-        GENOTYPE.out.genotyped_vcfs
+        GENOTYPE.out.genotyped_vcfs,
+        fasta
     )
 
     ch_versions = ch_versions.mix(ANNOTATION.out.versions)

@@ -2,10 +2,10 @@ process ENSEMBLVEP {
     tag "$meta.id"
     label 'process_medium'
 
-    conda (params.enable_conda ? "bioconda::ensembl-vep=105.0" : null)
+    conda (params.enable_conda ? "bioconda::ensembl-vep=104.3" : null)
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/ensembl-vep:105.0--pl5262h4a94de4_0' :
-        'quay.io/biocontainers/ensembl-vep:105.0--pl5262h4a94de4_0' }"
+        'https://depot.galaxyproject.org/singularity/ensembl-vep:104.3--pl5262h4a94de4_0' :
+        'quay.io/biocontainers/ensembl-vep:104.3--pl5262h4a94de4_0' }"
 
     input:
     tuple val(meta), path(vcf)
@@ -13,6 +13,7 @@ process ENSEMBLVEP {
     val   species
     val   cache_version
     path  cache
+    path  fasta
     path  extra_files
 
     output:
@@ -27,6 +28,8 @@ process ENSEMBLVEP {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
     def dir_cache = cache ? "\${PWD}/${cache}" : "/.vep"
+    def reference = fasta ? "--fasta $fasta" : ""
+
     """
     mkdir $prefix
 
@@ -34,6 +37,7 @@ process ENSEMBLVEP {
         -i $vcf \\
         -o ${prefix}.ann.vcf \\
         $args \\
+        $reference \\
         --assembly $genome \\
         --species $species \\
         --cache \\
