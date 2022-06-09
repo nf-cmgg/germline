@@ -4,6 +4,7 @@
 
 include { GATK4_GENOTYPEGVCFS as GENOTYPE_GVCFS  } from '../../modules/nf-core/modules/gatk4/genotypegvcfs/main'
 include { GATK4_COMBINEGVCFS as COMBINEGVCFS     } from '../../modules/nf-core/modules/gatk4/combinegvcfs/main'
+include { GATK4_REBLOCKGVCF as REBLOCKGVCF       } from '../../modules/nf-core/modules/gatk4/reblockgvcf/main'
 include { TABIX_TABIX as TABIX_GVCFS             } from '../../modules/nf-core/modules/tabix/tabix/main'
 include { TABIX_TABIX as TABIX_COMBINED_GVCFS    } from '../../modules/nf-core/modules/tabix/tabix/main'
 
@@ -29,14 +30,30 @@ workflow GENOTYPE {
 
     indexed_gvcfs = gvcfs
                     .combine(TABIX_GVCFS.out.tbi, by: 0)
+                    .map({ meta, gvcf, tbi -> 
+                        [ meta, gvcf, tbi, []]
+                    })
 
     ch_versions = ch_versions.mix(TABIX_GVCFS.out.versions)
+
+    //
+    // Reblock the single sample GVCF files
+    //
+
+    REBLOCKGVCF(
+        indexed_gvcfs,
+        fasta,
+        fasta_fai,
+        dict,
+        [],
+        []
+    )
 
     //
     // Combine the GVCFs in each family
     //
 
-    combine_gvcfs_input = indexed_gvcfs.map(
+    combine_gvcfs_input = REBLOCKGVCF.out.vcf.map(
     { meta, gvcf, tbi ->
         def new_meta = [:]
         new_meta.id = meta.family

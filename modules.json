@@ -36,6 +36,9 @@
             "gatk4/haplotypecaller": {
                 "git_sha": "e53d091a6de1ae9fd681351c085d8abe076ba1ec"
             },
+            "gatk4/reblockgvcf": {
+                "git_sha": "873215c8ae3882e3ce1c8c62fbae16e74d631270"
+            },
             "multiqc": {
                 "git_sha": "49b18b1639f4f7104187058866a8fab33332bdfe"
             },
