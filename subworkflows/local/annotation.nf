@@ -6,8 +6,9 @@ include { ENSEMBLVEP } from '../../modules/nf-core/modules/ensemblvep/main'
 
 workflow ANNOTATION {
     take:
-        gvcfs   // channel: [mandatory] gvcfs
-        fasta   // channel: [mandatory] fasta
+        gvcfs             // channel: [mandatory] gvcfs
+        fasta             // channel: [mandatory] fasta
+        vep_extra_files   // channel: [optional] vep_extra files
 
     main:
 
@@ -26,7 +27,7 @@ workflow ANNOTATION {
         "105",
         [],
         fasta,
-        []
+        vep_extra_files
     )
 
     ch_annotated_gvcfs  = ENSEMBLVEP.out.vcf

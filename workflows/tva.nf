@@ -11,7 +11,18 @@ WorkflowTva.initialise(params, log)
 
 // TODO nf-core: Add all file path parameters for the pipeline to the list below
 // Check input path parameters to see if they exist
-def checkPathParamList = [ params.input, params.fasta ]
+def checkPathParamList = [ 
+    params.input, 
+    params.fasta, 
+    params.dbnsfp, 
+    params.dbsnfp_tbi,
+    params.spliceai_indel,
+    params.spliceai_indel_tbi,
+    params.spliceai_snv,
+    params.spliceai_snv_tbi,
+    params.mastermind,
+    params.mastermind_tbi
+]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
 // Check mandatory parameters
@@ -189,9 +200,35 @@ workflow TVA {
     // Annotation of the variants
     //
 
+    vep_extra_files = Channel.empty()
+
+    if (params.dbnsfp && params.dbnsfp_tbi) {
+        vep_extra_files = vep_extra_files.mix(
+            Channel.fromPath(params.dbnsfp),
+            Channel.fromPath(params.dbnsfp_tbi)
+        ).collect()
+    }
+
+    if (params.spliceai_snv && params.spliceai_snv_tbi && params.spliceai_indel && params.spliceai_indel_tbi) {
+        vep_extra_files = vep_extra_files.mix(
+            Channel.fromPath(params.spliceai_indel),
+            Channel.fromPath(params.spliceai_indel_tbi),
+            Channel.fromPath(params.spliceai_snv),
+            Channel.fromPath(params.spliceai_snv_tbi)
+        ).collect()
+    }
+
+    if (params.mastermind && params.mastermind_tbi) {
+        vep_extra_files = vep_extra_files.mix(
+            Channel.fromPath(params.mastermind),
+            Channel.fromPath(params.mastermind_tbi)
+        ).collect()
+    }
+
     ANNOTATION(
         GENOTYPE.out.genotyped_vcfs,
-        fasta
+        fasta,
+        vep_extra_files
     )
 
     ch_versions = ch_versions.mix(ANNOTATION.out.versions)
@@ -220,8 +257,6 @@ workflow TVA {
     MULTIQC(
         ch_multiqc_files.collect()
     )
-
-    multiqc_report = MULTIQC.out.report.toList().view()
 
 }
 
