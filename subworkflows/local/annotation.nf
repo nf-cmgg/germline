@@ -8,7 +8,10 @@ workflow ANNOTATION {
     take:
         gvcfs             // channel: [mandatory] gvcfs
         fasta             // channel: [mandatory] fasta
-        vep_extra_files   // channel: [optional] vep_extra files
+        species           // channel: [mandatory] species
+        vep_cache_version // channel: [mandatory] vep_version
+        vep_merged_cache  // channel: [optional] vep_merged_cache
+        vep_extra_files   // channel: [optional] vep_extra_files
 
     main:
 
@@ -23,9 +26,9 @@ workflow ANNOTATION {
     ENSEMBLVEP(
         gvcfs,
         params.genome,
-        "homo_sapiens",
-        "105",
-        [],
+        species,
+        vep_cache_version,
+        vep_merged_cache,
         fasta,
         vep_extra_files
     )

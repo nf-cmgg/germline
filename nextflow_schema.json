@@ -80,12 +80,13 @@
                 "dict": {
                     "type": "string",
                     "pattern": "^\\S+\\.dict$",
-                    "description": "The sequence dictionary of the reference",
+                    "description": "The sequence dictionary of the FASTA reference",
                     "fa_icon": "far fa-file-code"
                 },
                 "strtablefile": {
                     "type": "string",
-                    "default": "None"
+                    "default": "None",
+                    "description": "The STR table file generated from the FASTA reference"
                 },
                 "igenomes_base": {
                     "type": "string",
@@ -120,6 +121,11 @@
                     "type": "boolean",
                     "default": true,
                     "description": "Whether or not the DRAGSTR models should be used"
+                },
+                "species": {
+                    "type": "string",
+                    "default": "homo_sapiens",
+                    "description": "The species of the samples (must be lower case and have '_' as spaces)"
                 }
             }
         },
@@ -323,6 +329,21 @@
                 "vep_eog": {
                     "type": "boolean",
                     "description": "Use the custom EOG annotation with Ensembl VEP, The '--eog and '--eog_tbi' parameters need to be specified when using this plugin."
+                },
+                "vep_merged_cache": {
+                    "type": "string",
+                    "default": "None",
+                    "description": "The path to the folder containing the merged cache"
+                },
+                "vep_version": {
+                    "type": "string",
+                    "default": "105.0",
+                    "description": "The version of the VEP tool to be used"
+                },
+                "vep_cache_version": {
+                    "type": "string",
+                    "default": 105,
+                    "description": "The version of the cache to be used"
                 },
                 "dbsnfp": {
                     "type": "string",

@@ -22,7 +22,8 @@ def checkPathParamList = [
     params.mastermind,
     params.mastermind_tbi,
     params.eog,
-    params.eog_tbi
+    params.eog_tbi,
+    params.vep_merged_cache
 ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
@@ -86,7 +87,10 @@ workflow TVA {
     // Importing the parameters
     //
 
-    fasta = params.fasta
+    fasta             = params.fasta
+    species           = params.species
+    vep_cache_version = params.vep_cache_version
+    vep_merged_cache  = params.vep_merged_cache
 
     //
     // Read in samplesheet, validate and stage input files
@@ -236,6 +240,9 @@ workflow TVA {
     ANNOTATION(
         GENOTYPE.out.genotyped_vcfs,
         fasta,
+        species,
+        vep_cache_version,
+        vep_merged_cache,
         vep_extra_files
     )
 
