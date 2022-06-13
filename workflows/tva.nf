@@ -20,7 +20,9 @@ def checkPathParamList = [
     params.spliceai_snv,
     params.spliceai_snv_tbi,
     params.mastermind,
-    params.mastermind_tbi
+    params.mastermind_tbi,
+    params.eog,
+    params.eog_tbi
 ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
@@ -221,6 +223,13 @@ workflow TVA {
         vep_extra_files = vep_extra_files.mix(
             Channel.fromPath(params.mastermind),
             Channel.fromPath(params.mastermind_tbi)
+        ).collect()
+    }
+
+    if (params.eog && params.eog_tbi) {
+        vep_extra_files = vep_extra_files.mix(
+            Channel.fromPath(params.eog),
+            Channel.fromPath(params.eog_tbi)
         ).collect()
     }
 

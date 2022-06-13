@@ -320,37 +320,59 @@
                     "type": "boolean",
                     "description": "Use the Mastermind plugin with Ensembl VEP, The '--mastermind' and '--mastermind_tbi' parameters need to be specified when using this plugin."
                 },
+                "vep_eog": {
+                    "type": "boolean",
+                    "description": "Use the custom EOG annotation with Ensembl VEP, The '--eog and '--eog_tbi' parameters need to be specified when using this plugin."
+                },
                 "dbsnfp": {
                     "type": "string",
-                    "default": null
+                    "default": "None",
+                    "description": "The dbSNFP file"
                 },
                 "dbsnfp_tbi": {
                     "type": "string",
-                    "default": null
+                    "default": "None",
+                    "description": "The index of the dbSNFP file"
                 },
                 "spliceai_indel": {
                     "type": "string",
-                    "default": null
+                    "default": "None",
+                    "description": "The VCF containing indels for spliceAI"
                 },
                 "spliceai_indel_tbi": {
                     "type": "string",
-                    "default": null
+                    "default": "None",
+                    "description": "The index of the VCF containing indels for spliceAI"
                 },
                 "spliceai_snv": {
                     "type": "string",
-                    "default": null
+                    "default": "None",
+                    "description": "The VCF containing SNVs for spliceAI"
                 },
                 "spliceai_snv_tbi": {
                     "type": "string",
-                    "default": null
+                    "default": "None",
+                    "description": "The index of the VCF containing SNVs for spliceAI"
                 },
                 "mastermind": {
                     "type": "string",
-                    "default": null
+                    "default": "None",
+                    "description": "The VCF for Mastermind"
                 },
                 "mastermind_tbi": {
                     "type": "string",
-                    "default": null
+                    "default": "None",
+                    "description": "The index of the VCF for Mastermind"
+                },
+                "eog": {
+                    "type": "string",
+                    "default": "None",
+                    "description": "The VCF containing EOG annotations"
+                },
+                "eog_tbi": {
+                    "type": "string",
+                    "default": "None",
+                    "description": "The index of the VCF containing EOG annotations"
                 }
             }
         }
