@@ -342,15 +342,15 @@
                 },
                 "vep_cache_version": {
                     "type": "string",
-                    "default": 105,
+                    "default": "105",
                     "description": "The version of the cache to be used"
                 },
-                "dbsnfp": {
+                "dbnsfp": {
                     "type": "string",
                     "default": "None",
                     "description": "The dbSNFP file"
                 },
-                "dbsnfp_tbi": {
+                "dbnsfp_tbi": {
                     "type": "string",
                     "default": "None",
                     "description": "The index of the dbSNFP file"
