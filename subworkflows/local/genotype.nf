@@ -124,7 +124,6 @@ workflow GENOTYPE {
 
     merge_vcf_headers_input = BGZIP.out.output
                                 .combine(PEDFILTER.out.vcf, by:0)
-                                .view()
 
     MERGE_VCF_HEADERS(
         merge_vcf_headers_input
