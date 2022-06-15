@@ -122,12 +122,17 @@ workflow GENOTYPE {
         peds
     )
 
+    ch_versions = ch_versions.mix(PEDFILTER.out.versions)
+
+
     merge_vcf_headers_input = BGZIP.out.output
                                 .combine(PEDFILTER.out.vcf, by:0)
 
     MERGE_VCF_HEADERS(
         merge_vcf_headers_input
     )
+
+    ch_versions = ch_versions.mix(MERGE_VCF_HEADERS.out.versions)
 
     genotyped_vcfs = MERGE_VCF_HEADERS.out.vcf
 

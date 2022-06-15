@@ -10,8 +10,8 @@ process MERGE_VCF_HEADERS {
     tuple val(meta), path(vcf1), path(vcf2)
 
     output:
-    path "*.vcf"          , emit: vcf
-    path "versions.yml"   , emit: versions
+    tuple val(meta), path("*.vcf")  , emit: vcf
+    path "versions.yml"             , emit: versions
 
     script: // This script is bundled with the pipeline, in TVA/bin/
     def prefix = task.ext.prefix ?: "${meta.id}"

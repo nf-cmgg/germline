@@ -211,77 +211,77 @@ workflow TVA {
     ch_reports  = ch_reports.mix(VCF_QC.out.vcftools_tstv_qual.collect{it[1]}.ifEmpty([]))
     ch_reports  = ch_reports.mix(VCF_QC.out.vcftools_filter_summary.collect{it[1]}.ifEmpty([]))
 
-    //
-    // Annotation of the variants
-    //
+    // //
+    // // Annotation of the variants
+    // //
 
-    vep_extra_files = Channel.empty()
+    // vep_extra_files = Channel.empty()
 
-    if (params.dbnsfp && params.dbnsfp_tbi) {
-        vep_extra_files = vep_extra_files.mix(
-            Channel.fromPath(params.dbnsfp),
-            Channel.fromPath(params.dbnsfp_tbi)
-        ).collect()
-    }
+    // if (params.dbnsfp && params.dbnsfp_tbi) {
+    //     vep_extra_files = vep_extra_files.mix(
+    //         Channel.fromPath(params.dbnsfp),
+    //         Channel.fromPath(params.dbnsfp_tbi)
+    //     ).collect()
+    // }
 
-    if (params.spliceai_snv && params.spliceai_snv_tbi && params.spliceai_indel && params.spliceai_indel_tbi) {
-        vep_extra_files = vep_extra_files.mix(
-            Channel.fromPath(params.spliceai_indel),
-            Channel.fromPath(params.spliceai_indel_tbi),
-            Channel.fromPath(params.spliceai_snv),
-            Channel.fromPath(params.spliceai_snv_tbi)
-        ).collect()
-    }
+    // if (params.spliceai_snv && params.spliceai_snv_tbi && params.spliceai_indel && params.spliceai_indel_tbi) {
+    //     vep_extra_files = vep_extra_files.mix(
+    //         Channel.fromPath(params.spliceai_indel),
+    //         Channel.fromPath(params.spliceai_indel_tbi),
+    //         Channel.fromPath(params.spliceai_snv),
+    //         Channel.fromPath(params.spliceai_snv_tbi)
+    //     ).collect()
+    // }
 
-    if (params.mastermind && params.mastermind_tbi) {
-        vep_extra_files = vep_extra_files.mix(
-            Channel.fromPath(params.mastermind),
-            Channel.fromPath(params.mastermind_tbi)
-        ).collect()
-    }
+    // if (params.mastermind && params.mastermind_tbi) {
+    //     vep_extra_files = vep_extra_files.mix(
+    //         Channel.fromPath(params.mastermind),
+    //         Channel.fromPath(params.mastermind_tbi)
+    //     ).collect()
+    // }
 
-    if (params.eog && params.eog_tbi) {
-        vep_extra_files = vep_extra_files.mix(
-            Channel.fromPath(params.eog),
-            Channel.fromPath(params.eog_tbi)
-        ).collect()
-    }
+    // if (params.eog && params.eog_tbi) {
+    //     vep_extra_files = vep_extra_files.mix(
+    //         Channel.fromPath(params.eog),
+    //         Channel.fromPath(params.eog_tbi)
+    //     ).collect()
+    // }
 
-    ANNOTATION(
-        GENOTYPE.out.genotyped_vcfs,
-        fasta,
-        species,
-        vep_cache_version,
-        vep_merged_cache,
-        vep_extra_files
-    )
+    // ANNOTATION(
+    //     GENOTYPE.out.genotyped_vcfs,
+    //     fasta,
+    //     species,
+    //     vep_cache_version,
+    //     vep_merged_cache,
+    //     vep_extra_files
+    // )
 
-    ch_versions = ch_versions.mix(ANNOTATION.out.versions)
-    ch_reports  = ch_reports.mix(ANNOTATION.out.reports)  
+    // ch_versions = ch_versions.mix(ANNOTATION.out.versions)
+    // ch_reports  = ch_reports.mix(ANNOTATION.out.reports)  
 
-    //
-    // Dump the software versions
-    //
+    // //
+    // // Dump the software versions
+    // //
 
-    CUSTOM_DUMPSOFTWAREVERSIONS(
-        ch_versions.unique().collectFile(name: 'collated_versions.yml')
-    )
-    ch_version_yaml = CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml.collect()
+    // CUSTOM_DUMPSOFTWAREVERSIONS(
+    //     ch_versions.unique().collectFile(name: 'collated_versions.yml')
+    // )
+    // ch_version_yaml = CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml.collect()
 
-    //
-    // Perform multiQC on all QC data
-    //
+    // //
+    // // Perform multiQC on all QC data
+    // //
 
-    ch_multiqc_files = Channel.empty()
+    // ch_multiqc_files = Channel.empty()
     
-    ch_multiqc_files = ch_multiqc_files.mix(
-                                        ch_version_yaml,
-                                        ch_reports.collect(),
-                                        ch_multiqc_custom_config
-                                        )
-    MULTIQC(
-        ch_multiqc_files.collect()
-    )
+    // ch_multiqc_files = ch_multiqc_files.mix(
+    //                                     ch_version_yaml,
+    //                                     ch_reports.collect(),
+    //                                     ch_multiqc_custom_config
+    //                                     )
+    // MULTIQC(
+    //     ch_multiqc_files.collect()
+    // )
 
 }
 
