@@ -14,7 +14,7 @@ def checkPathParamList = [
     params.input, 
     params.fasta, 
     params.dbnsfp, 
-    params.dbsnfp_tbi,
+    params.dbnsfp_tbi,
     params.spliceai_indel,
     params.spliceai_indel_tbi,
     params.spliceai_snv,
@@ -154,12 +154,12 @@ workflow TVA {
     //
 
     beds = INPUT_CHECK.out.crams.map(
-    {meta, cram, crai, bed ->
+    {meta, cram, crai, bed, ped ->
         [meta, bed]
     })
 
     germline_variant_calling_input_cram = INPUT_CHECK.out.crams.map(
-    {meta, cram, crai, bed ->
+    {meta, cram, crai, bed, ped ->
         [meta, cram, crai]
     })
 
@@ -178,8 +178,18 @@ workflow TVA {
     // Joint-genotyping of the families
     //
 
+    peds = INPUT_CHECK.out.crams.map(
+            {meta, cram, crai, bed, ped ->
+                new_meta = [:]
+                new_meta.id = meta.family
+
+                [new_meta, ped]
+            }
+        ).distinct()
+
     GENOTYPE(
         GERMLINE_VARIANT_CALLING.out.vcfs,
+        peds,
         fasta,
         fasta_fai,
         dict

@@ -38,8 +38,11 @@ def create_cram_channel(LinkedHashMap row) {
     if (!file(row.bed).exists()) {
         exit 1, "ERROR: Please check input samplesheet -> BED file does not exist!\n${row.bed}"
     }
+    if (!file(row.ped).exists()) {
+        exit 1, "ERROR: Please check input samplesheet -> PED file does not exist!\n${row.ped}"
+    }
 
-    cram_meta = [ meta, file(row.cram), file(row.crai), file(row.bed)]
+    cram_meta = [ meta, file(row.cram), file(row.crai), file(row.bed), file(row.ped)]
 
     return cram_meta
 }

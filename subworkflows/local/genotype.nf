@@ -7,10 +7,14 @@ include { GATK4_COMBINEGVCFS as COMBINEGVCFS     } from '../../modules/nf-core/m
 include { GATK4_REBLOCKGVCF as REBLOCKGVCF       } from '../../modules/nf-core/modules/gatk4/reblockgvcf/main'
 include { TABIX_TABIX as TABIX_GVCFS             } from '../../modules/nf-core/modules/tabix/tabix/main'
 include { TABIX_TABIX as TABIX_COMBINED_GVCFS    } from '../../modules/nf-core/modules/tabix/tabix/main'
+include { TABIX_BGZIP as BGZIP                   } from '../../modules/nf-core/modules/tabix/bgzip/main'
+include { RTGTOOLS_PEDFILTER as PEDFILTER        } from '../../modules/nf-core/modules/rtgtools/pedfilter/main'
+include { MERGE_VCF_HEADERS                      } from '../../modules/local/merge_vcf_headers'
 
 workflow GENOTYPE {
     take:
         gvcfs        // channel: [mandatory] gvcfs
+        peds         // channel: [mandatory] peds
         fasta        // channel: [mandatory] fasta reference
         fasta_fai    // channel: [mandatory] fasta reference index
         dict         // channel: [mandatory] sequence dictionary
@@ -104,9 +108,29 @@ workflow GENOTYPE {
         []
     )
 
+    BGZIP(
+        GENOTYPE_GVCFS.out.vcf
+    )
+
     ch_versions = ch_versions.mix(GENOTYPE_GVCFS.out.versions)
 
-    genotyped_vcfs = GENOTYPE_GVCFS.out.vcf
+    //
+    // Add pedigree information
+    //
+
+    PEDFILTER(
+        peds
+    )
+
+    merge_vcf_headers_input = BGZIP.out.output
+                                .combine(PEDFILTER.out.vcf, by:0)
+                                .view()
+
+    MERGE_VCF_HEADERS(
+        merge_vcf_headers_input
+    )
+
+    genotyped_vcfs = MERGE_VCF_HEADERS.out.vcf
 
     emit:
     genotyped_vcfs    

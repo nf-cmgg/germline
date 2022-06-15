@@ -29,7 +29,8 @@ class RowChecker:
         ".cram",
         ".bai",
         ".crai",
-        ".bed"
+        ".bed",
+        ".ped"
     )
 
     def __init__(
@@ -39,6 +40,7 @@ class RowChecker:
         first_col="cram",
         second_col="crai",
         third_col="bed",
+        fourth_col="ped",
         **kwargs,
     ):
         """
@@ -58,6 +60,7 @@ class RowChecker:
         self._first_col = first_col
         self._second_col = second_col
         self._third_col = third_col
+        self._fourth_col = fourth_col
         self._seen = set()
         self.modified = []
 
@@ -74,6 +77,7 @@ class RowChecker:
         self._validate_first(row)
         self._validate_second(row)
         self._validate_third(row)
+        self._validate_fourth(row)
         self._seen.add((row[self._sample_col], row[self._first_col]))
         self.modified.append(row)
 
@@ -103,6 +107,11 @@ class RowChecker:
         """Assert that the BED entry has the right format if it exists."""
         assert len(row[self._third_col]) > 0, "A BED file is required"
         self._validate_format(row[self._third_col],[".bed"])
+
+    def _validate_fourth(self, row):
+        """Assert that the PED entry has the right format if it exists."""
+        assert len(row[self._fourth_col]) > 0, "A PED file is required"
+        self._validate_format(row[self._fourth_col],[".ped"])
 
     def _validate_format(self, filename, extensions):
         """Assert that a given filename has one of the expected extensions."""
@@ -165,13 +174,13 @@ def check_samplesheet(file_in, file_out):
     Example:
         This function checks that the samplesheet follows the following structure:
 
-            sample,family_id,cram,crai,bed
-            SAMPLE_1,FAMILY_ID1,SAMPLE_1.cram,SAMPLE_1.crai,SAMPLE_1.bed
-            SAMPLE_2,FAMILY_ID1,SAMPLE_2.cram,SAMPLE_2.crai,SAMPLE_2.bed
-            SAMPLE_3,FAMILY_ID2,SAMPLE_3.cram,SAMPLE_3.crai,SAMPLE_3.bed
+            sample,family_id,cram,crai,bed,ped
+            SAMPLE_1,FAMILY_ID1,SAMPLE_1.cram,SAMPLE_1.crai,SAMPLE_1.bed,FILE.ped
+            SAMPLE_2,FAMILY_ID1,SAMPLE_2.cram,SAMPLE_2.crai,SAMPLE_2.bed,FILE.ped
+            SAMPLE_3,FAMILY_ID2,SAMPLE_3.cram,SAMPLE_3.crai,SAMPLE_3.bed,FILE2.ped
 
     """
-    required_columns = {"sample", "family_id", "cram", "crai", "bed"}
+    required_columns = {"sample", "family_id", "cram", "crai", "bed", "ped"}
     # See https://docs.python.org/3.9/library/csv.html#id3 to read up on `newline=""`.
     with file_in.open(newline="") as in_handle:
         reader = csv.DictReader(in_handle, dialect=sniff_format(in_handle))
