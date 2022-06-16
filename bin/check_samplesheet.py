@@ -8,6 +8,7 @@ import argparse
 import csv
 import logging
 import sys
+import re
 from collections import Counter
 from pathlib import Path
 
@@ -36,7 +37,6 @@ class RowChecker:
     def __init__(
         self,
         sample_col="sample",
-        family_id="family_id",
         first_col="cram",
         second_col="crai",
         third_col="bed",
@@ -52,11 +52,11 @@ class RowChecker:
             first_col (str): The name of the column that contains the full path to the CRAM file (default "cram")
             second_col (str): The name of the column that contains the full path to the CRAI file (default "crai").
             third_col (str): The name of the column that contains the full path to the BED file (default "bed").
+            fourth_col (str): The name of the column that contains the full path to the PED file (default "ped").
 
         """
         super().__init__(**kwargs)
         self._sample_col = sample_col
-        self._family_id = family_id
         self._first_col = first_col
         self._second_col = second_col
         self._third_col = third_col
@@ -79,6 +79,10 @@ class RowChecker:
         self._validate_third(row)
         self._validate_fourth(row)
         self._seen.add((row[self._sample_col], row[self._first_col]))
+
+        family_id = self._get_family_id(row)
+        row['family_id'] = family_id
+
         self.modified.append(row)
 
     def _validate_sample(self, row):
@@ -86,12 +90,6 @@ class RowChecker:
         assert len(row[self._sample_col]) > 0, "Sample input is required."
         # Sanitize samples slightly.
         row[self._sample_col] = row[self._sample_col].replace(" ", "_")
-
-    def _validate_family_id(self, row):
-        """Assert that the family id exists and convert spaces to underscores."""
-        assert len(row[self._sample_col]) > 0, "Family ID is required."
-        # Sanitize ids slightly.
-        row[self._family_id] = row[self._family_id].replace(" ", "_")
 
     def _validate_first(self, row):
         """Assert that the CRAM entry is non-empty and has the right format."""
@@ -112,6 +110,13 @@ class RowChecker:
         """Assert that the PED entry has the right format if it exists."""
         assert len(row[self._fourth_col]) > 0, "A PED file is required"
         self._validate_format(row[self._fourth_col],[".ped"])
+
+    def _get_family_id(self, row):
+        """Extract the family ID from the PED file"""
+        ped = row[self._fourth_col]
+        read_ped = open(ped, "r").read()
+        family_id_pattern = '\n([^#]\w+)'
+        return re.search(family_id_pattern, read_ped).group(0).replace('\n','').replace(" ", "_")
 
     def _validate_format(self, filename, extensions):
         """Assert that a given filename has one of the expected extensions."""
@@ -174,13 +179,13 @@ def check_samplesheet(file_in, file_out):
     Example:
         This function checks that the samplesheet follows the following structure:
 
-            sample,family_id,cram,crai,bed,ped
-            SAMPLE_1,FAMILY_ID1,SAMPLE_1.cram,SAMPLE_1.crai,SAMPLE_1.bed,FILE.ped
-            SAMPLE_2,FAMILY_ID1,SAMPLE_2.cram,SAMPLE_2.crai,SAMPLE_2.bed,FILE.ped
-            SAMPLE_3,FAMILY_ID2,SAMPLE_3.cram,SAMPLE_3.crai,SAMPLE_3.bed,FILE2.ped
+            sample,cram,crai,bed,ped
+            SAMPLE_1,SAMPLE_1.cram,SAMPLE_1.crai,SAMPLE_1.bed,FILE.ped
+            SAMPLE_2,SAMPLE_2.cram,SAMPLE_2.crai,SAMPLE_2.bed,FILE.ped
+            SAMPLE_3,SAMPLE_3.cram,SAMPLE_3.crai,SAMPLE_3.bed,FILE2.ped
 
     """
-    required_columns = {"sample", "family_id", "cram", "crai", "bed", "ped"}
+    required_columns = {"sample", "cram", "crai", "bed", "ped"}
     # See https://docs.python.org/3.9/library/csv.html#id3 to read up on `newline=""`.
     with file_in.open(newline="") as in_handle:
         reader = csv.DictReader(in_handle, dialect=sniff_format(in_handle))
@@ -198,6 +203,7 @@ def check_samplesheet(file_in, file_out):
                 sys.exit(1)
         checker.validate_unique_samples()
     header = list(reader.fieldnames)
+    header.append('family_id')
     # See https://docs.python.org/3.9/library/csv.html#id3 to read up on `newline=""`.
     with file_out.open(mode="w", newline="") as out_handle:
         writer = csv.DictWriter(out_handle, header, delimiter=",")
