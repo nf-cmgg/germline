@@ -53,6 +53,8 @@ workflow GENOTYPE {
         []
     )
 
+    ch_versions = ch_versions.mix(REBLOCKGVCF.out.versions)
+
     //
     // Combine the GVCFs in each family
     //
@@ -108,11 +110,13 @@ workflow GENOTYPE {
         []
     )
 
+    ch_versions = ch_versions.mix(GENOTYPE_GVCFS.out.versions)
+
     BGZIP(
         GENOTYPE_GVCFS.out.vcf
     )
 
-    ch_versions = ch_versions.mix(GENOTYPE_GVCFS.out.versions)
+    ch_versions = ch_versions.mix(BGZIP.out.versions)
 
     //
     // Add pedigree information

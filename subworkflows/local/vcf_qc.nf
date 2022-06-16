@@ -40,6 +40,8 @@ workflow VCF_QC {
 
     ch_versions = ch_versions.mix(BCFTOOLS_STATS.out.versions)
     ch_versions = ch_versions.mix(VCFTOOLS_TSTV_COUNT.out.versions)
+    ch_versions = ch_versions.mix(VCFTOOLS_TSTV_QUAL.out.versions)
+    ch_versions = ch_versions.mix(VCFTOOLS_SUMMARY.out.versions)
 
     emit:
     bcftools_stats          = BCFTOOLS_STATS.out.stats
