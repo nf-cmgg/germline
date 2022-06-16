@@ -99,7 +99,7 @@ workflow TVA {
     INPUT_CHECK (
         ch_input
     )
-    
+
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
 
     //
@@ -110,6 +110,7 @@ workflow TVA {
         FAIDX(
             fasta
         )
+
         fasta_fai = FAIDX.out.fai
         ch_versions = ch_versions.mix(FAIDX.out.versions)
 
@@ -125,8 +126,10 @@ workflow TVA {
         CREATESEQUENCEDICTIONARY(
             fasta
         )
+
         dict = CREATESEQUENCEDICTIONARY.out.dict
         ch_versions = ch_versions.mix(CREATESEQUENCEDICTIONARY.out.versions)
+
     } else {
         dict = params.dict
     }
@@ -141,8 +144,10 @@ workflow TVA {
                 fasta_fai,
                 dict
             )
+
             strtablefile = COMPOSESTRTABLEFILE.out.str_table
             ch_versions = ch_versions.mix(COMPOSESTRTABLEFILE.out.versions)
+            
         } else {
             strtablefile = params.strtablefile
         }
