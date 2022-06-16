@@ -25,13 +25,13 @@ SAMPLE_3,FAMILY_ID2,SAMPLE_3.cram,SAMPLE_3.crai,SAMPLE_3.bed
 
 The samplesheet can have as many columns as you desire, however, there is a strict requirement for the first 5 columns to match those defined in the table below.
 
-| Column    | Description                                                                                                                                                                            |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sample`  | Custom sample name. This entry will be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`). |
-| `family_id` | Custom family ID. Spaces in family IDs are automatically converted to underscores (`_`).                                                             |
-| `cram` | Full path to CRAM file fetched from the preprocessing pipeline. File has to have the extension ".cram".                                                             |
-| `crai` | Full path to CRAM index file fetched from the preprocessing pipeline. File has to have the extension ".crai" or ".bai".                                                              |
-| `bed` | Full path to BED file fetched containing the regions to call on. File has to have the extension ".bed".                                                              |
+| Column      | Description                                                                                                                                                                            |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sample`    | Custom sample name. This entry will be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`). |
+| `family_id` | Custom family ID. Spaces in family IDs are automatically converted to underscores (`_`).                                                                                               |
+| `cram`      | Full path to CRAM file fetched from the preprocessing pipeline. File has to have the extension ".cram".                                                                                |
+| `crai`      | Full path to CRAM index file fetched from the preprocessing pipeline. File has to have the extension ".crai" or ".bai".                                                                |
+| `bed`       | Full path to BED file fetched containing the regions to call on. File has to have the extension ".bed".                                                                                |
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
