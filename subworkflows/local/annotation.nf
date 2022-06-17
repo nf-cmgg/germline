@@ -24,14 +24,6 @@ workflow ANNOTATION {
     // Annotate using Ensembl VEP
     //
 
-    vcfs.view()
-    println(fasta)
-    println(genome)
-    println(species)
-    println(vep_cache_version)
-    println(vep_merged_cache)
-    println(vep_extra_files)
-
     ENSEMBLVEP(
         vcfs,
         genome,
