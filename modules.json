@@ -54,9 +54,6 @@
             "tabix/bgzip": {
                 "git_sha": "37bf3936f3665483d070a5e0e0b314311032af7c"
             },
-            "tabix/bgziptabix": {
-                "git_sha": "9dbaffff88013bc21460a989cde7a5aa172c2e0b"
-            },
             "tabix/tabix": {
                 "git_sha": "b3e9b88e80880f450ad79a95b2b7aa05e1de5484"
             },

@@ -7,8 +7,8 @@ include { GATK4_COMBINEGVCFS as COMBINEGVCFS     } from '../../modules/nf-core/m
 include { GATK4_REBLOCKGVCF as REBLOCKGVCF       } from '../../modules/nf-core/modules/gatk4/reblockgvcf/main'
 include { TABIX_TABIX as TABIX_GVCFS             } from '../../modules/nf-core/modules/tabix/tabix/main'
 include { TABIX_TABIX as TABIX_COMBINED_GVCFS    } from '../../modules/nf-core/modules/tabix/tabix/main'
-include { TABIX_BGZIPTABIX as TABIX_PED_VCFS     } from '../../modules/nf-core/modules/tabix/bgziptabix/main'
-include { TABIX_BGZIP as BGZIP                   } from '../../modules/nf-core/modules/tabix/bgzip/main'
+include { TABIX_BGZIP as BGZIP_GENOTYPED_VCFS    } from '../../modules/nf-core/modules/tabix/bgzip/main'
+include { TABIX_BGZIP as BGZIP_PED_VCFS          } from '../../modules/nf-core/modules/tabix/bgzip/main'
 include { RTGTOOLS_PEDFILTER as PEDFILTER        } from '../../modules/nf-core/modules/rtgtools/pedfilter/main'
 include { MERGE_VCF_HEADERS                      } from '../../modules/local/merge_vcf_headers'
 include { BCFTOOLS_FILTER as FILTER_SNPS         } from '../../modules/nf-core/modules/bcftools/filter/main'
@@ -115,11 +115,11 @@ workflow POST_PROCESS {
 
     ch_versions = ch_versions.mix(GENOTYPE_GVCFS.out.versions)
 
-    BGZIP(
+    BGZIP_GENOTYPED_VCFS(
         GENOTYPE_GVCFS.out.vcf
     )
 
-    ch_versions = ch_versions.mix(BGZIP.out.versions)
+    ch_versions = ch_versions.mix(BGZIP_GENOTYPED_VCFS.out.versions)
 
     //
     // Add pedigree information
@@ -132,21 +132,26 @@ workflow POST_PROCESS {
     ch_versions = ch_versions.mix(PEDFILTER.out.versions)
 
 
-    merge_vcf_headers_input = BGZIP.out.output
+    merge_vcf_headers_input = BGZIP_GENOTYPED_VCFS.out.output
                                 .combine(PEDFILTER.out.vcf, by:0)
 
     MERGE_VCF_HEADERS(
         merge_vcf_headers_input
     )
 
+    BGZIP_PED_VCFS( 
+        MERGE_VCF_HEADERS.out.vcf
+    )
+
     ch_versions = ch_versions.mix(MERGE_VCF_HEADERS.out.versions)
+    ch_versions = ch_versions.mix(BGZIP_PED_VCFS.out.versions)
 
     //
     // Filter the variants 
     //
 
     FILTER_SNPS(
-        MERGE_VCF_HEADERS.out.vcf
+        BGZIP_PED_VCFS.out.output
     )
 
     FILTER_INDELS(
