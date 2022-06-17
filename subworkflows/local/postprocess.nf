@@ -7,9 +7,12 @@ include { GATK4_COMBINEGVCFS as COMBINEGVCFS     } from '../../modules/nf-core/m
 include { GATK4_REBLOCKGVCF as REBLOCKGVCF       } from '../../modules/nf-core/modules/gatk4/reblockgvcf/main'
 include { TABIX_TABIX as TABIX_GVCFS             } from '../../modules/nf-core/modules/tabix/tabix/main'
 include { TABIX_TABIX as TABIX_COMBINED_GVCFS    } from '../../modules/nf-core/modules/tabix/tabix/main'
+include { TABIX_BGZIPTABIX as TABIX_PED_VCFS     } from '../../modules/nf-core/modules/tabix/bgziptabix/main'
 include { TABIX_BGZIP as BGZIP                   } from '../../modules/nf-core/modules/tabix/bgzip/main'
 include { RTGTOOLS_PEDFILTER as PEDFILTER        } from '../../modules/nf-core/modules/rtgtools/pedfilter/main'
 include { MERGE_VCF_HEADERS                      } from '../../modules/local/merge_vcf_headers'
+include { BCFTOOLS_FILTER as FILTER_SNPS         } from '../../modules/nf-core/modules/bcftools/filter/main'
+include { BCFTOOLS_FILTER as FILTER_INDELS       } from '../../modules/nf-core/modules/bcftools/filter/main'
 
 workflow POST_PROCESS {
     take:
@@ -138,9 +141,24 @@ workflow POST_PROCESS {
 
     ch_versions = ch_versions.mix(MERGE_VCF_HEADERS.out.versions)
 
-    post_processed_vcfs = MERGE_VCF_HEADERS.out.vcf
+    //
+    // Filter the variants 
+    //
+
+    FILTER_SNPS(
+        MERGE_VCF_HEADERS.out.vcf
+    )
+
+    FILTER_INDELS(
+        FILTER_SNPS.out.vcf
+    )
+
+    ch_versions = ch_versions.mix(FILTER_SNPS.out.versions)
+    ch_versions = ch_versions.mix(FILTER_INDELS.out.versions)
+    
+    post_processed_vcfs = FILTER_INDELS.out.vcf
 
     emit:
-    post_processed_vcfs    
+    post_processed_vcfs  
     versions = ch_versions
 }

@@ -55,14 +55,18 @@ if __name__ == "__main__":
     status = "before_info"
     info_pattern = '^##INFO.*$'
 
-    for line in vcf.split("\n"):
+    lines = vcf.split("\n")
+    linecount = 0
+
+    for line in lines:
+        linecount += 1
         if status == "before_info" and re.search(info_pattern, line):
             status = "during_info"
         elif status == "during_info" and not re.search(info_pattern, line):
             output_file.writelines(sample)
             output_file.writelines(pedigree)
             status = "after_info"
-        output_file.write(f'{line}\n')
+        output_file.write(f'{line}\n') if linecount < len(lines) else output_file.write(f'{line}')
 
     # Close all files
     file_vcf1.close()

@@ -6,6 +6,9 @@
             "bcftools/concat": {
                 "git_sha": "51b0a6e4f3b048a1eebeb86896fa0374771ca554"
             },
+            "bcftools/filter": {
+                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            },
             "bcftools/stats": {
                 "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
             },
@@ -50,6 +53,9 @@
             },
             "tabix/bgzip": {
                 "git_sha": "37bf3936f3665483d070a5e0e0b314311032af7c"
+            },
+            "tabix/bgziptabix": {
+                "git_sha": "9dbaffff88013bc21460a989cde7a5aa172c2e0b"
             },
             "tabix/tabix": {
                 "git_sha": "b3e9b88e80880f450ad79a95b2b7aa05e1de5484"
