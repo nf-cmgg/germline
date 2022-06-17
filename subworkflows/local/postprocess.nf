@@ -11,7 +11,7 @@ include { TABIX_BGZIP as BGZIP                   } from '../../modules/nf-core/m
 include { RTGTOOLS_PEDFILTER as PEDFILTER        } from '../../modules/nf-core/modules/rtgtools/pedfilter/main'
 include { MERGE_VCF_HEADERS                      } from '../../modules/local/merge_vcf_headers'
 
-workflow GENOTYPE {
+workflow POST_PROCESS {
     take:
         gvcfs        // channel: [mandatory] gvcfs
         peds         // channel: [mandatory] peds
@@ -21,8 +21,8 @@ workflow GENOTYPE {
 
     main:
 
-    genotyped_gvcfs  = Channel.empty()
-    ch_versions      = Channel.empty()
+    post_processed_vcfs  = Channel.empty()
+    ch_versions          = Channel.empty()
 
     //
     // Create indexes for all the GVCF files
@@ -138,9 +138,9 @@ workflow GENOTYPE {
 
     ch_versions = ch_versions.mix(MERGE_VCF_HEADERS.out.versions)
 
-    genotyped_vcfs = MERGE_VCF_HEADERS.out.vcf
+    post_processed_vcfs = MERGE_VCF_HEADERS.out.vcf
 
     emit:
-    genotyped_vcfs    
+    post_processed_vcfs    
     versions = ch_versions
 }

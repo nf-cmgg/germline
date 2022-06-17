@@ -50,7 +50,7 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
 //
 include { INPUT_CHECK              } from '../subworkflows/local/input_check'
 include { GERMLINE_VARIANT_CALLING } from '../subworkflows/local/germline_variant_calling'
-include { GENOTYPE                 } from '../subworkflows/local/genotype'
+include { POST_PROCESS             } from '../subworkflows/local/postprocess'
 include { VCF_QC                   } from '../subworkflows/local/vcf_qc'
 include { ANNOTATION               } from '../subworkflows/local/annotation'
 
@@ -88,9 +88,10 @@ workflow TVA {
     //
 
     fasta             = params.fasta
+    genome            = params.genome
     species           = params.species
     vep_cache_version = params.vep_cache_version
-    vep_merged_cache  = params.vep_merged_cache
+    vep_merged_cache  = params.vep_merged_cache ? params.vep_merged_cache : []
 
     //
     // Read in samplesheet, validate and stage input files
@@ -187,7 +188,7 @@ workflow TVA {
     // Joint-genotyping of the families
     //
 
-    GENOTYPE(
+    POST_PROCESS(
         GERMLINE_VARIANT_CALLING.out.vcfs,
         peds,
         fasta,
@@ -195,14 +196,14 @@ workflow TVA {
         dict
     )
 
-    ch_versions = ch_versions.mix(GENOTYPE.out.versions)
+    ch_versions = ch_versions.mix(POST_PROCESS.out.versions)
 
     //
     // Quality control of the called variants
     //
 
     VCF_QC(
-        GENOTYPE.out.genotyped_vcfs
+        POST_PROCESS.out.post_processed_vcfs
     )
 
     ch_versions = ch_versions.mix(VCF_QC.out.versions)
@@ -215,7 +216,17 @@ workflow TVA {
     // Annotation of the variants
     //
 
-    vep_extra_files = Channel.empty()
+    if (params.vep_dbnsfp || 
+        params.vep_spliceai || 
+        params.vep_spliceregion || 
+        params.vep_mastermind || 
+        params.vep_eog
+    ){
+        vep_extra_files = Channel.empty()
+    }
+    else {
+        vep_extra_files = []
+    }
 
     if (params.dbnsfp && params.dbnsfp_tbi) {
         vep_extra_files = vep_extra_files.mix(
@@ -248,8 +259,9 @@ workflow TVA {
     }
 
     ANNOTATION(
-        GENOTYPE.out.genotyped_vcfs,
+        POST_PROCESS.out.post_processed_vcfs,
         fasta,
+        genome,
         species,
         vep_cache_version,
         vep_merged_cache,

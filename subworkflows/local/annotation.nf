@@ -6,8 +6,9 @@ include { ENSEMBLVEP } from '../../modules/nf-core/modules/ensemblvep/main'
 
 workflow ANNOTATION {
     take:
-        gvcfs             // channel: [mandatory] gvcfs
+        vcfs              // channel: [mandatory] [meta, vcfs]
         fasta             // channel: [mandatory] fasta
+        genome            // channel: [mandatory] genome
         species           // channel: [mandatory] species
         vep_cache_version // channel: [mandatory] vep_version
         vep_merged_cache  // channel: [optional] vep_merged_cache
@@ -15,7 +16,7 @@ workflow ANNOTATION {
 
     main:
 
-    ch_annotated_gvcfs  = Channel.empty()
+    ch_annotated_vcfs   = Channel.empty()
     ch_reports          = Channel.empty()
     ch_versions         = Channel.empty()
 
@@ -23,9 +24,17 @@ workflow ANNOTATION {
     // Annotate using Ensembl VEP
     //
 
+    vcfs.view()
+    println(fasta)
+    println(genome)
+    println(species)
+    println(vep_cache_version)
+    println(vep_merged_cache)
+    println(vep_extra_files)
+
     ENSEMBLVEP(
-        gvcfs,
-        params.genome,
+        vcfs,
+        genome,
         species,
         vep_cache_version,
         vep_merged_cache,
@@ -39,7 +48,7 @@ workflow ANNOTATION {
 
 
     emit:
-    annotated_gvcfs = ch_annotated_gvcfs
+    annotated_vcfs  = ch_annotated_vcfs
     reports         = ch_reports 
     versions        = ch_versions
 }
