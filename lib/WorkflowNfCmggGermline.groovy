@@ -1,8 +1,8 @@
 //
-// This file holds several functions specific to the workflow/tva.nf in the TVA pipeline
+// This file holds several functions specific to the workflow/nf-cmgg-germline.nf in the nf-cmgg-germline pipeline
 //
 
-class WorkflowTva {
+class WorkflowNfCmggGermline {
 
     //
     // Check and validate parameters

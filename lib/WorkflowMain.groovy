@@ -1,5 +1,5 @@
 //
-// This file holds several functions specific to the main.nf workflow in the TVA pipeline
+// This file holds several functions specific to the main.nf workflow in the nf-cmgg-germline pipeline
 //
 
 class WorkflowMain {

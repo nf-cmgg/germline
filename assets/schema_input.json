@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$id": "https://github.ugent.be/cmgg/TVA/raw/master/assets/schema_input.json",
-    "title": "TVA pipeline - params.input schema",
+    "$id": "https://github.ugent.be/cmgg/nf-cmgg-germline/raw/master/assets/schema_input.json",
+    "title": "nf-cmgg-germline pipeline - params.input schema",
     "description": "Schema for the file provided with params.input",
     "type": "array",
     "items": {

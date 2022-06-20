@@ -1,4 +1,4 @@
-# ![TVA](docs/images/nf-core-tva_logo_light.png#gh-light-mode-only) ![TVA](docs/images/nf-core-tva_logo_dark.png#gh-dark-mode-only)
+# ![nf-cmgg-germline](docs/images/nf-cmgg-germline_logo_light.png#gh-light-mode-only) ![nf-cmgg-germline](docs/images/nf-core-nf-cmgg-germline_logo_dark.png#gh-dark-mode-only)
 
 [![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-%E2%89%A521.10.3-23aa62.svg)](https://www.nextflow.io/)
 [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?logo=docker)](https://www.docker.com/)
@@ -6,7 +6,7 @@
 
 ## Introduction
 
-**TVA** is a bioinformatics best-practice analysis pipeline for A nextflow pipeline for calling and annotating variants. It uses HaplotypeCaller to call variants and EnsemblVEP to annotate the called variants.
+**nf-cmgg-germline** is a bioinformatics best-practice analysis pipeline for A nextflow pipeline for calling and annotating variants. It uses HaplotypeCaller to call variants and EnsemblVEP to annotate the called variants.
 
 The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It uses Docker/Singularity containers making installation trivial and results highly reproducible. The [Nextflow DSL2](https://www.nextflow.io/docs/latest/dsl2.html) implementation of this pipeline uses one container per process which makes it much easier to maintain and update software dependencies. Where possible, these processes have been submitted to and installed from [nf-core/modules](https://github.com/nf-core/modules) in order to make them available to all nf-core pipelines, and to everyone within the Nextflow community!
 
@@ -49,7 +49,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool
 
 ## Credits
 
-TVA was originally written by @nvnieuwk.
+nf-cmgg-germline was originally written by @nvnieuwk.
 
 We thank the following people for their extensive assistance in the development of this pipeline:
 

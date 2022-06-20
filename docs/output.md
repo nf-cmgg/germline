@@ -1,4 +1,4 @@
-# TVA: Output
+# nf-cmgg-germline: Output
 
 ## Introduction
 

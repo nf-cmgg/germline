@@ -1,4 +1,4 @@
-# nf-core/tva: Usage
+# nf-cmgg-germline: Usage
 
 ## Introduction
 

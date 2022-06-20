@@ -7,7 +7,7 @@
 def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
 
 // Validate input parameters
-WorkflowTva.initialise(params, log)
+WorkflowNfCmggGermline.initialise(params, log)
 
 // Check input path parameters to see if they exist
 def checkPathParamList = [ 
@@ -79,7 +79,7 @@ include { VCF2DB                                                     } from '../
 // Info required for completion email and summary
 def multiqc_report = []
 
-workflow TVA {
+workflow NF_CMGG_GERMLINE {
 
     ch_versions = Channel.empty()
     ch_reports  = Channel.empty()

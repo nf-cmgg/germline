@@ -1,6 +1,6 @@
 {
-    "name": "TVA",
-    "homePage": "https://github.ugent.be/cmgg/TVA",
+    "name": "nf-cmgg-germline",
+    "homePage": "https://github.ugent.be/cmgg/nf-cmgg-germline",
     "repos": {
         "nf-core/modules": {
             "bcftools/concat": {
