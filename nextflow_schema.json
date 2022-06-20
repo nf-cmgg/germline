@@ -315,7 +315,7 @@
         "vep_parameters": {
             "title": "VEP parameters",
             "type": "object",
-            "description": "Parameters to configure Ensembl VEP",
+            "description": "Parameters to configure Ensembl VEP (only used when \"--output_mode seqplorer\" is used)",
             "default": "",
             "properties": {
                 "vep_dbnsfp": {

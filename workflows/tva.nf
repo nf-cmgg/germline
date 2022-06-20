@@ -217,60 +217,62 @@ workflow TVA {
     // Annotation of the variants
     //
 
-    if (params.vep_dbnsfp || 
-        params.vep_spliceai || 
-        params.vep_spliceregion || 
-        params.vep_mastermind || 
-        params.vep_eog
-    ){
-        vep_extra_files = Channel.empty()
-    }
-    else {
-        vep_extra_files = []
-    }
+    if (params.output_mode == "seqplorer") {
+        if (params.vep_dbnsfp || 
+            params.vep_spliceai || 
+            params.vep_spliceregion || 
+            params.vep_mastermind || 
+            params.vep_eog
+        ){
+            vep_extra_files = Channel.empty()
+        }
+        else {
+            vep_extra_files = []
+        }
 
-    if (params.dbnsfp && params.dbnsfp_tbi) {
-        vep_extra_files = vep_extra_files.mix(
-            Channel.fromPath(params.dbnsfp),
-            Channel.fromPath(params.dbnsfp_tbi)
-        ).collect()
-    }
+        if (params.dbnsfp && params.dbnsfp_tbi) {
+            vep_extra_files = vep_extra_files.mix(
+                Channel.fromPath(params.dbnsfp),
+                Channel.fromPath(params.dbnsfp_tbi)
+            ).collect()
+        }
 
-    if (params.spliceai_snv && params.spliceai_snv_tbi && params.spliceai_indel && params.spliceai_indel_tbi) {
-        vep_extra_files = vep_extra_files.mix(
-            Channel.fromPath(params.spliceai_indel),
-            Channel.fromPath(params.spliceai_indel_tbi),
-            Channel.fromPath(params.spliceai_snv),
-            Channel.fromPath(params.spliceai_snv_tbi)
-        ).collect()
-    }
+        if (params.spliceai_snv && params.spliceai_snv_tbi && params.spliceai_indel && params.spliceai_indel_tbi) {
+            vep_extra_files = vep_extra_files.mix(
+                Channel.fromPath(params.spliceai_indel),
+                Channel.fromPath(params.spliceai_indel_tbi),
+                Channel.fromPath(params.spliceai_snv),
+                Channel.fromPath(params.spliceai_snv_tbi)
+            ).collect()
+        }
 
-    if (params.mastermind && params.mastermind_tbi) {
-        vep_extra_files = vep_extra_files.mix(
-            Channel.fromPath(params.mastermind),
-            Channel.fromPath(params.mastermind_tbi)
-        ).collect()
-    }
+        if (params.mastermind && params.mastermind_tbi) {
+            vep_extra_files = vep_extra_files.mix(
+                Channel.fromPath(params.mastermind),
+                Channel.fromPath(params.mastermind_tbi)
+            ).collect()
+        }
 
-    if (params.eog && params.eog_tbi) {
-        vep_extra_files = vep_extra_files.mix(
-            Channel.fromPath(params.eog),
-            Channel.fromPath(params.eog_tbi)
-        ).collect()
-    }
+        if (params.eog && params.eog_tbi) {
+            vep_extra_files = vep_extra_files.mix(
+                Channel.fromPath(params.eog),
+                Channel.fromPath(params.eog_tbi)
+            ).collect()
+        }
 
-    ANNOTATION(
-        POST_PROCESS.out.post_processed_vcfs,
-        fasta,
-        genome,
-        species,
-        vep_cache_version,
-        vep_merged_cache,
-        vep_extra_files
-    )
+        ANNOTATION(
+            POST_PROCESS.out.post_processed_vcfs,
+            fasta,
+            genome,
+            species,
+            vep_cache_version,
+            vep_merged_cache,
+            vep_extra_files
+        )
 
-    ch_versions = ch_versions.mix(ANNOTATION.out.versions)
-    ch_reports  = ch_reports.mix(ANNOTATION.out.reports)  
+        ch_versions = ch_versions.mix(ANNOTATION.out.versions)
+        ch_reports  = ch_reports.mix(ANNOTATION.out.reports)
+    }  
 
     //
     // Create Gemini-compatible database files
@@ -279,13 +281,11 @@ workflow TVA {
     if ( params.output_mode == "seqplorer" ){
         
         vcf2db_input = ANNOTATION.out.annotated_vcfs
-                        .combine(peds, by: 0).view()
+                        .combine(peds, by: 0)
         
         VCF2DB(
             vcf2db_input
         )
-
-        VCF2DB.out.db.view()
     }
 
     //

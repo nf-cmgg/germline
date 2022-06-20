@@ -150,18 +150,25 @@ workflow POST_PROCESS {
     // Filter the variants 
     //
 
-    FILTER_SNPS(
-        BGZIP_PED_VCFS.out.output
-    )
+    if (params.output_mode == "seqplorer"){
+        FILTER_SNPS(
+            BGZIP_PED_VCFS.out.output
+        )
 
-    FILTER_INDELS(
-        FILTER_SNPS.out.vcf
-    )
+        FILTER_INDELS(
+            FILTER_SNPS.out.vcf
+        )
 
-    ch_versions = ch_versions.mix(FILTER_SNPS.out.versions)
-    ch_versions = ch_versions.mix(FILTER_INDELS.out.versions)
+        ch_versions = ch_versions.mix(FILTER_SNPS.out.versions)
+        ch_versions = ch_versions.mix(FILTER_INDELS.out.versions)
+        
+        post_processed_vcfs = FILTER_INDELS.out.vcf
+    }
+    else {
+        post_processed_vcfs = BGZIP_PED_VCFS.out.output
+    }
+
     
-    post_processed_vcfs = FILTER_INDELS.out.vcf
 
     emit:
     post_processed_vcfs  
