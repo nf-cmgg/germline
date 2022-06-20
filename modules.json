@@ -57,6 +57,9 @@
             "tabix/tabix": {
                 "git_sha": "b3e9b88e80880f450ad79a95b2b7aa05e1de5484"
             },
+            "vcf2db": {
+                "git_sha": "6e7c0e945b490a7c1e9d2d01cc37e45d581e78bd"
+            },
             "vcftools": {
                 "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
             }

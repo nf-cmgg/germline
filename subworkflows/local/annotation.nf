@@ -2,7 +2,8 @@
 // ANNOTATION
 //
 
-include { ENSEMBLVEP } from '../../modules/nf-core/modules/ensemblvep/main'
+include { ENSEMBLVEP                          } from '../../modules/nf-core/modules/ensemblvep/main'
+include { TABIX_BGZIP as BGZIP_ANNOTATED_VCFS } from '../../modules/nf-core/modules/tabix/bgzip/main'
 
 workflow ANNOTATION {
     take:
@@ -34,10 +35,15 @@ workflow ANNOTATION {
         vep_extra_files
     )
 
-    ch_annotated_gvcfs  = ENSEMBLVEP.out.vcf
     ch_reports          = ch_reports.mix(ENSEMBLVEP.out.report)
     ch_versions         = ch_versions.mix(ENSEMBLVEP.out.versions)
 
+    BGZIP_ANNOTATED_VCFS(
+        ENSEMBLVEP.out.vcf
+    )
+
+    ch_annotated_vcfs   = BGZIP_ANNOTATED_VCFS.out.output
+    ch_versions         = ch_versions.mix(BGZIP_ANNOTATED_VCFS.out.versions)
 
     emit:
     annotated_vcfs  = ch_annotated_vcfs

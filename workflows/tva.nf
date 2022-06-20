@@ -68,6 +68,7 @@ include { GATK4_CREATESEQUENCEDICTIONARY as CREATESEQUENCEDICTIONARY } from '../
 include { GATK4_COMPOSESTRTABLEFILE as COMPOSESTRTABLEFILE           } from '../modules/nf-core/modules/gatk4/composestrtablefile/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS                                } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main'
 include { MULTIQC                                                    } from '../modules/nf-core/modules/multiqc/main'
+include { VCF2DB                                                     } from '../modules/nf-core/modules/vcf2db/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -270,6 +271,22 @@ workflow TVA {
 
     ch_versions = ch_versions.mix(ANNOTATION.out.versions)
     ch_reports  = ch_reports.mix(ANNOTATION.out.reports)  
+
+    //
+    // Create Gemini-compatible database files
+    //
+
+    if ( params.output_mode == "seqplorer" ){
+        
+        vcf2db_input = ANNOTATION.out.annotated_vcfs
+                        .combine(peds, by: 0).view()
+        
+        VCF2DB(
+            vcf2db_input
+        )
+
+        VCF2DB.out.db.view()
+    }
 
     //
     // Dump the software versions
