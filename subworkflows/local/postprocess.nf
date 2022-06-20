@@ -16,11 +16,12 @@ include { BCFTOOLS_FILTER as FILTER_INDELS       } from '../../modules/nf-core/m
 
 workflow POST_PROCESS {
     take:
-        gvcfs        // channel: [mandatory] gvcfs
-        peds         // channel: [mandatory] peds
-        fasta        // channel: [mandatory] fasta reference
-        fasta_fai    // channel: [mandatory] fasta reference index
-        dict         // channel: [mandatory] sequence dictionary
+        gvcfs        // channel: [mandatory] [ meta, gvcf ] => The fresh GVCFs called with HaplotypeCaller
+        peds         // channel: [mandatory] [ meta, peds ] => The pedigree files for the samples
+        fasta        // channel: [mandatory] [ fasta ] => fasta reference
+        fasta_fai    // channel: [mandatory] [ fasta_fai ] => fasta reference index
+        dict         // channel: [mandatory] [ dict ] => sequence dictionary
+        output_mode  // value:   [mandatory] whether or not to make the output seqplorer- or seqr-compatible
 
     main:
 
@@ -62,14 +63,14 @@ workflow POST_PROCESS {
     // Combine the GVCFs in each family
     //
 
-    combine_gvcfs_input = REBLOCKGVCF.out.vcf.map(
-    { meta, gvcf, tbi ->
-        def new_meta = [:]
-        new_meta.id = meta.family
+    combine_gvcfs_input = REBLOCKGVCF.out.vcf
+                          .map({ meta, gvcf, tbi ->
+                              def new_meta = [:]
+                              new_meta.id = meta.family
 
-        [ new_meta, gvcf, tbi ]
-    })
-    .groupTuple()
+                              [ new_meta, gvcf, tbi ]
+                          })
+                          .groupTuple()
 
     COMBINEGVCFS(
         combine_gvcfs_input,
@@ -100,9 +101,9 @@ workflow POST_PROCESS {
     //
 
     genotype_gvcfs_input = indexed_combined_gvcfs
-                            .map({ meta, gvcf, tbi ->
-                                [ meta, gvcf, tbi, [], [] ]
-                            })
+                           .map({ meta, gvcf, tbi ->
+                               [ meta, gvcf, tbi, [], [] ]
+                           })
 
     GENOTYPE_GVCFS(
         genotype_gvcfs_input,
@@ -131,7 +132,6 @@ workflow POST_PROCESS {
 
     ch_versions = ch_versions.mix(PEDFILTER.out.versions)
 
-
     merge_vcf_headers_input = BGZIP_GENOTYPED_VCFS.out.output
                                 .combine(PEDFILTER.out.vcf, by:0)
 
@@ -150,7 +150,7 @@ workflow POST_PROCESS {
     // Filter the variants 
     //
 
-    if (params.output_mode == "seqplorer"){
+    if (output_mode == "seqplorer") {
         FILTER_SNPS(
             BGZIP_PED_VCFS.out.output
         )
@@ -167,8 +167,6 @@ workflow POST_PROCESS {
     else {
         post_processed_vcfs = BGZIP_PED_VCFS.out.output
     }
-
-    
 
     emit:
     post_processed_vcfs  

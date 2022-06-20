@@ -7,13 +7,13 @@ include { TABIX_BGZIP as BGZIP_ANNOTATED_VCFS } from '../../modules/nf-core/modu
 
 workflow ANNOTATION {
     take:
-        vcfs              // channel: [mandatory] [meta, vcfs]
-        fasta             // channel: [mandatory] fasta
-        genome            // channel: [mandatory] genome
-        species           // channel: [mandatory] species
-        vep_cache_version // channel: [mandatory] vep_version
-        vep_merged_cache  // channel: [optional] vep_merged_cache
-        vep_extra_files   // channel: [optional] vep_extra_files
+        vcfs              // channel: [mandatory] [ meta, vcfs ] => The post-processed VCFs
+        fasta             // channel: [mandatory] [ fasta ] => fasta reference
+        genome            // value:   [mandatory] Which genome was used to align the samples to
+        species           // value:   [mandatory] Which species the samples are from
+        vep_cache_version // value:   [mandatory] which version of VEP to use
+        vep_merged_cache  // channel: [optional]  [ vep_merged_cache ] => The VEP cache to use
+        vep_extra_files   // channel: [optional]  [ file_1, file_2, file_3, ... ] => All files necessary for using the desired plugins
 
     main:
 

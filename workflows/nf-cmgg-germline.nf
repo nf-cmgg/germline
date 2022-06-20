@@ -48,6 +48,7 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
+
 include { INPUT_CHECK              } from '../subworkflows/local/input_check'
 include { GERMLINE_VARIANT_CALLING } from '../subworkflows/local/germline_variant_calling'
 include { POST_PROCESS             } from '../subworkflows/local/postprocess'
@@ -63,6 +64,7 @@ include { ANNOTATION               } from '../subworkflows/local/annotation'
 //
 // MODULE: Installed directly from nf-core/modules
 //
+
 include { SAMTOOLS_FAIDX as FAIDX                                    } from '../modules/nf-core/modules/samtools/faidx/main'
 include { GATK4_CREATESEQUENCEDICTIONARY as CREATESEQUENCEDICTIONARY } from '../modules/nf-core/modules/gatk4/createsequencedictionary/main'
 include { GATK4_COMPOSESTRTABLEFILE as COMPOSESTRTABLEFILE           } from '../modules/nf-core/modules/gatk4/composestrtablefile/main'
@@ -85,14 +87,42 @@ workflow NF_CMGG_GERMLINE {
     ch_reports  = Channel.empty()
 
     //
-    // Importing the parameters
+    // Importing the pipeline parameters
     //
 
-    fasta             = params.fasta
-    genome            = params.genome
-    species           = params.species
-    vep_cache_version = params.vep_cache_version
-    vep_merged_cache  = params.vep_merged_cache ? params.vep_merged_cache : []
+    fasta              = params.fasta
+    genome             = params.genome
+    output_mode        = params.output_mode
+    species            = params.species
+    scatter_count      = params.scatter_count
+    use_dragstr_model  = params.use_dragstr_model
+
+    //
+    // Importing the VEP parameters
+    //
+
+    vep_cache_version  = params.vep_cache_version
+    vep_merged_cache   = params.vep_merged_cache ? params.vep_merged_cache : []
+
+    vep_dbnsfp         = params.vep_dbnsfp
+    vep_spliceai       = params.vep_spliceai
+    vep_spliceregion   = params.vep_spliceregion
+    vep_mastermind     = params.vep_mastermind
+    vep_eog            = params.vep_eog
+
+    dbnsfp             = params.dbnsfp
+    dbnsfp_tbi         = params.dbnsfp_tbi
+
+    spliceai_snv       = params.spliceai_snv
+    spliceai_snv_tbi   = params.spliceai_snv_tbi
+    spliceai_indel     = params.spliceai_indel
+    spliceai_indel_tbi = params.spliceai_indel_tbi
+
+    mastermind         = params.mastermind
+    mastermind_tbi     = params.mastermind_tbi
+
+    eog                = params.eog
+    eog_tbi            = params.eog_tbi
 
     //
     // Read in samplesheet, validate and stage input files
@@ -104,16 +134,16 @@ workflow NF_CMGG_GERMLINE {
 
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
 
-    inputs = INPUT_CHECK.out.crams.multiMap(
-    {meta, cram, crai, bed, ped ->
-        new_meta = [:]
-        new_meta.id = meta.family
+    inputs = INPUT_CHECK.out.crams
+             .multiMap({meta, cram, crai, bed, ped ->
+                 new_meta = [:]
+                 new_meta.id = meta.family
 
-        beds:                                [meta, bed]
-        germline_variant_calling_input_cram: [meta, cram, crai]
-        peds:                                [new_meta, ped]
+                 beds:                                [meta, bed]
+                 germline_variant_calling_input_cram: [meta, cram, crai]
+                 peds:                                [new_meta, ped]
 
-    })
+             })
 
     peds = inputs.peds.distinct()
 
@@ -121,15 +151,15 @@ workflow NF_CMGG_GERMLINE {
     // Create the FASTA index from the FASTA file
     //
 
-    if (!params.fasta_fai){
+    if (!params.fasta_fai) {
         FAIDX(
             fasta
         )
 
         fasta_fai = FAIDX.out.fai
         ch_versions = ch_versions.mix(FAIDX.out.versions)
-
-    } else {
+    } 
+    else {
         fasta_fai = params.fasta_fai
     }
 
@@ -137,23 +167,23 @@ workflow NF_CMGG_GERMLINE {
     // Create the sequence dictionary from the FASTA file
     //
 
-    if (!params.dict){
+    if (!params.dict) {
         CREATESEQUENCEDICTIONARY(
             fasta
         )
 
         dict = CREATESEQUENCEDICTIONARY.out.dict
         ch_versions = ch_versions.mix(CREATESEQUENCEDICTIONARY.out.versions)
-
-    } else {
+    } 
+    else {
         dict = params.dict
     }
 
     //
     // Create the STR table file from the FASTA file
     //
-    if (params.use_dragstr_model){
-        if (!params.strtablefile){
+    if (params.use_dragstr_model) {
+        if (!params.strtablefile) {
             COMPOSESTRTABLEFILE(
                 fasta,
                 fasta_fai,
@@ -161,12 +191,13 @@ workflow NF_CMGG_GERMLINE {
             )
 
             strtablefile = COMPOSESTRTABLEFILE.out.str_table
-            ch_versions = ch_versions.mix(COMPOSESTRTABLEFILE.out.versions)
-            
-        } else {
+            ch_versions = ch_versions.mix(COMPOSESTRTABLEFILE.out.versions) 
+        } 
+        else {
             strtablefile = params.strtablefile
         }
-    } else {
+    } 
+    else {
         strtablefile = []
     }
 
@@ -180,7 +211,9 @@ workflow NF_CMGG_GERMLINE {
         fasta,
         fasta_fai,
         dict,
-        strtablefile
+        strtablefile,
+        scatter_count,
+        use_dragstr_model
     )
 
     ch_versions = ch_versions.mix(GERMLINE_VARIANT_CALLING.out.versions)
@@ -190,11 +223,12 @@ workflow NF_CMGG_GERMLINE {
     //
 
     POST_PROCESS(
-        GERMLINE_VARIANT_CALLING.out.vcfs,
+        GERMLINE_VARIANT_CALLING.out.gvcfs,
         peds,
         fasta,
         fasta_fai,
-        dict
+        dict,
+        output_mode
     )
 
     ch_versions = ch_versions.mix(POST_PROCESS.out.versions)
@@ -217,27 +251,28 @@ workflow NF_CMGG_GERMLINE {
     // Annotation of the variants
     //
 
-    if (params.output_mode == "seqplorer") {
-        if (params.vep_dbnsfp || 
-            params.vep_spliceai || 
-            params.vep_spliceregion || 
-            params.vep_mastermind || 
-            params.vep_eog
-        ){
+    if (output_mode == "seqplorer") {
+        // Check for the presence of plugins that use extra files
+        if (vep_dbnsfp || vep_spliceai || vep_mastermind || vep_eog) {
             vep_extra_files = Channel.empty()
         }
         else {
             vep_extra_files = []
         }
 
-        if (params.dbnsfp && params.dbnsfp_tbi) {
+        // Check if all dbnsfp files are given
+        if (dbnsfp && dbnsfp_tbi && vep_dbnsfp) {
             vep_extra_files = vep_extra_files.mix(
                 Channel.fromPath(params.dbnsfp),
                 Channel.fromPath(params.dbnsfp_tbi)
             ).collect()
         }
+        else if (dbnsfp || dbnsfp_tbi || vep_dbnsfp) {
+            exit 1, "Please specify '--vep_dbsnf true', '--dbnsfp PATH/TO/DBNSFP/FILE' and '--dbnspf_tbi PATH/TO/DBNSFP/INDEX/FILE' to use the dbnsfp VEP plugin."
+        }
 
-        if (params.spliceai_snv && params.spliceai_snv_tbi && params.spliceai_indel && params.spliceai_indel_tbi) {
+        // Check if all spliceai files are given
+        if (spliceai_snv && spliceai_snv_tbi && spliceai_indel && spliceai_indel_tbi && vep_spliceai) {
             vep_extra_files = vep_extra_files.mix(
                 Channel.fromPath(params.spliceai_indel),
                 Channel.fromPath(params.spliceai_indel_tbi),
@@ -245,21 +280,33 @@ workflow NF_CMGG_GERMLINE {
                 Channel.fromPath(params.spliceai_snv_tbi)
             ).collect()
         }
+        else if (spliceai_snv || spliceai_snv_tbi || spliceai_indel || spliceai_indel_tbi || vep_spliceai) {
+            exit 1, "Please specify '--vep_spliceai true', '--spliceai_snv PATH/TO/SPLICEAI/SNV/FILE', '--spliceai_snv_tbi PATH/TO/SPLICEAI/SNV/INDEX/FILE', '--spliceai_indel PATH/TO/SPLICEAI/INDEL/FILE' and '--spliceai_indel_tbi PATH/TO/SPLICEAI/INDEL/INDEX/FILE' to use the SpliceAI VEP plugin."
+        }
 
-        if (params.mastermind && params.mastermind_tbi) {
+        // Check if all mastermind files are given
+        if (mastermind && mastermind_tbi && vep_mastermind) {
             vep_extra_files = vep_extra_files.mix(
                 Channel.fromPath(params.mastermind),
                 Channel.fromPath(params.mastermind_tbi)
             ).collect()
         }
+        else if (mastermind || mastermind_tbi || vep_mastermind) {
+            exit 1, "Please specify '--vep_mastermind true', '--mastermind PATH/TO/MASTERMIND/FILE' and '--mastermind_tbi PATH/TO/MASTERMIND/INDEX/FILE' to use the mastermind VEP plugin."
+        }
 
-        if (params.eog && params.eog_tbi) {
+        // Check if all EOG files are given
+        if (eog && eog_tbi && vep_eog) {
             vep_extra_files = vep_extra_files.mix(
                 Channel.fromPath(params.eog),
                 Channel.fromPath(params.eog_tbi)
             ).collect()
         }
+        else if (eog || eog_tbi || vep_eog) {
+            exit 1, "Please specify '--vep_eog true', '--eog PATH/TO/EOG/FILE' and '--eog_tbi PATH/TO/EOG/INDEX/FILE' to use the EOG custom VEP plugin."
+        }
 
+        // Perform the annotation
         ANNOTATION(
             POST_PROCESS.out.post_processed_vcfs,
             fasta,
@@ -278,10 +325,9 @@ workflow NF_CMGG_GERMLINE {
     // Create Gemini-compatible database files
     //
 
-    if ( params.output_mode == "seqplorer" ){
-        
+    if (output_mode == "seqplorer") {
         vcf2db_input = ANNOTATION.out.annotated_vcfs
-                        .combine(peds, by: 0)
+                       .combine(peds, by: 0)
         
         VCF2DB(
             vcf2db_input
@@ -295,7 +341,8 @@ workflow NF_CMGG_GERMLINE {
     CUSTOM_DUMPSOFTWAREVERSIONS(
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
     )
-    ch_version_yaml = CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml.collect()
+
+    ch_versions_yaml = CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml.collect()
 
     //
     // Perform multiQC on all QC data
@@ -304,10 +351,11 @@ workflow NF_CMGG_GERMLINE {
     ch_multiqc_files = Channel.empty()
     
     ch_multiqc_files = ch_multiqc_files.mix(
-                                        ch_version_yaml,
+                                        ch_versions_yaml,
                                         ch_reports.collect(),
                                         ch_multiqc_custom_config
                                         )
+                                        
     MULTIQC(
         ch_multiqc_files.collect()
     )

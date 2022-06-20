@@ -9,7 +9,7 @@ include { VCFTOOLS as VCFTOOLS_TSTV_QUAL  } from '../../modules/nf-core/modules/
 
 workflow VCF_QC {
     take:
-        vcfs   // channel: [mandatory] vcfs
+        vcfs   // channel: [mandatory] [ meta, vcfs ] => The post-processed VCFs
 
     main:
 
