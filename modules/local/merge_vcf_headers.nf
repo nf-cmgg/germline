@@ -15,7 +15,7 @@ process MERGE_VCF_HEADERS {
 
     script: // This script is bundled with the pipeline, in nf-cmgg-germline/bin/
     def prefix = task.ext.prefix ?: "${meta.id}"
-    
+
     """
     merge_vcf_headers.py \\
         $vcf1 \\

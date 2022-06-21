@@ -7,3 +7,5 @@ results/
 testing/
 testing*
 *.pyc
+samplesheet*
+*.ped
