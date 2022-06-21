@@ -16,7 +16,7 @@ workflow INPUT_CHECK {
         .set { crams }
 
     emit:
-    crams                                     // channel: [ val(meta), cram, crai, bed ]
+    crams                                     // channel: [ val(meta), cram, crai, bed, ped ]
     versions = SAMPLESHEET_CHECK.out.versions // channel: [ versions.yml ]
 }
 
@@ -42,7 +42,7 @@ def create_cram_channel(LinkedHashMap row) {
         exit 1, "ERROR: Please check input samplesheet -> PED file does not exist!\n${row.ped}"
     }
 
-    cram_meta = [ meta, file(row.cram), file(row.crai), file(row.bed), file(row.ped)]
+    cram_meta = [ meta, file(row.cram), file(row.crai), file(row.bed), file(row.ped) ]
 
     return cram_meta
 }
