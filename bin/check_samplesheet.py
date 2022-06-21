@@ -79,10 +79,6 @@ class RowChecker:
         self._validate_third(row)
         self._validate_fourth(row)
         self._seen.add((row[self._sample_col], row[self._first_col]))
-
-        family_id = self._get_family_id(row)
-        row['family_id'] = family_id
-
         self.modified.append(row)
 
     def _validate_sample(self, row):
@@ -110,13 +106,6 @@ class RowChecker:
         """Assert that the PED entry has the right format if it exists."""
         assert len(row[self._fourth_col]) > 0, "A PED file is required"
         self._validate_format(row[self._fourth_col],[".ped"])
-
-    def _get_family_id(self, row):
-        """Extract the family ID from the PED file"""
-        ped = row[self._fourth_col]
-        read_ped = open(ped, "r").read()
-        family_id_pattern = '\n([^#]\w+)'
-        return re.search(family_id_pattern, read_ped).group(0).replace('\n','').replace(" ", "_")
 
     def _validate_format(self, filename, extensions):
         """Assert that a given filename has one of the expected extensions."""
@@ -203,7 +192,6 @@ def check_samplesheet(file_in, file_out):
                 sys.exit(1)
         checker.validate_unique_samples()
     header = list(reader.fieldnames)
-    header.append('family_id')
     # See https://docs.python.org/3.9/library/csv.html#id3 to read up on `newline=""`.
     with file_out.open(mode="w", newline="") as out_handle:
         writer = csv.DictWriter(out_handle, header, delimiter=",")

@@ -20,12 +20,16 @@ workflow INPUT_CHECK {
     versions = SAMPLESHEET_CHECK.out.versions // channel: [ versions.yml ]
 }
 
-// Function to get list of [ meta, cram, crai, bed ]
+// Function to get list of [ meta, cram, crai, bed, ped ]
 def create_cram_channel(LinkedHashMap row) {
+    // get family_id
+    def ped = file(row.ped).text
+    def family_id = (ped =~ /\n([^#]\w+)/)[0][1]
+
     // create meta map
     def meta = [:]
     meta.id = row.sample
-    meta.family = row.family_id
+    meta.family = family_id
 
     // add path(s) of the fastq file(s) to the meta map
     def cram_meta = []
