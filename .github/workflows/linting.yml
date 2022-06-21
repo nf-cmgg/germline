@@ -9,19 +9,6 @@ on:
     types: [published]
 
 jobs:
-  EditorConfig:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - uses: actions/setup-node@v2
-
-      - name: Install editorconfig-checker
-        run: npm install -g editorconfig-checker
-
-      - name: Run ECLint check
-        run: editorconfig-checker -exclude README.md -exclude .*\.ped -exclude .*\.csv $(find .* -type f | grep -v '.git\|.py\|.md\|json\|yml\|yaml\|html\|css\|work\|.nextflow\|build\|nf_core.egg-info\|log.txt\|Makefile')
-
   Prettier:
     runs-on: ubuntu-latest
     steps:
