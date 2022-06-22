@@ -17,7 +17,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool
 1. Check the input CSV file (This checks the CSV format, headers and files passed throught the CSV)
 2. (Only if `--fasta_fai FILE` is not used) Create a FASTA index file from the FASTA reference ([Samtools Faidx](http://www.htslib.org/doc/samtools-faidx.html))
 3. (Only if `--dict FILE` is not used) Create a sequence dictionary file from the FASTA reference ([GATK CreateSequenceDictionary](https://gatk.broadinstitute.org/hc/en-us/articles/360037422891-CreateSequenceDictionary-Picard-))
-4. (Only if `--strtablefile FILE` is not used and `--use_dragstr_model true` is given) Create an STR table file from the FASTA reference ([GATK ComposeSTRTableFile](https://gatk.broadinstitute.org/hc/en-us/articles/4405451249819-ComposeSTRTableFile)) 
+4. (Only if `--strtablefile FILE` is not used and `--use_dragstr_model true` is given) Create an STR table file from the FASTA reference ([GATK ComposeSTRTableFile](https://gatk.broadinstitute.org/hc/en-us/articles/4405451249819-ComposeSTRTableFile))
 5. (Only if `--scatter_count INT` is bigger than 1) Split the BED files for parallellization of HaplotypeCaller ([Bedtools Split](https://bedtools.readthedocs.io/en/latest/content/overview.html))
 6. (Only if `--use_dragstr_model true` is given) Create a DRAGstr model for each sample provided ([GATK CalibrateDragstrModel](https://gatk.broadinstitute.org/hc/en-us/articles/360057441571-CalibrateDragstrModel-BETA-))
 7. Call the variants for each sample. The BED files are used to parallellize this process if `--scatter_count INT` is bigger than 1 ([GATK HaplotypeCaller](https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller))
