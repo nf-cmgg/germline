@@ -22,6 +22,9 @@ workflow INPUT_CHECK {
 
 // Function to get list of [ meta, cram, crai, bed, ped ]
 def create_cram_channel(LinkedHashMap row) {
+
+    //TODO: perform a validity check on the PED file since vcf2db is not capable of giving good error messages
+
     // get family_id
     def ped = file(row.ped).text
     def family_id = (ped =~ /\n([^#]\w+)/)[0][1]

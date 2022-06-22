@@ -37,4 +37,4 @@ Pipeline Configuration:
 
 --
 nf-cmgg-germline
-https://github.ugent.be/cmgg/nf-cmgg-germline
+https://github.com/CenterForMedicalGeneticsGhent/nf-cmgg-germline

@@ -13,8 +13,8 @@ Contributions to the code are even more welcome ;)
 
 If you'd like to write some code for nf-cmgg-germline, the standard workflow is as follows:
 
-1. Check that there isn't already an issue about your idea in the [nf-cmgg-germline issues](https://github.ugent.be/cmgg/nf-cmgg-germline/issues) to avoid duplicating work. If there isn't one already, please create one so that others know you're working on this
-2. [Fork](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the [nf-cmgg-germline repository](https://github.ugent.be/cmgg/nf-cmgg-germline) to your GitHub account
+1. Check that there isn't already an issue about your idea in the [nf-cmgg-germline issues](https://github.com/CenterForMedicalGeneticsGhent/nf-cmgg-germline/issues) to avoid duplicating work. If there isn't one already, please create one so that others know you're working on this
+2. [Fork](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the [nf-cmgg-germline repository](https://github.com/CenterForMedicalGeneticsGhent/nf-cmgg-germline) to your GitHub account
 3. Make the necessary changes / additions within your forked repository following [Pipeline conventions](#pipeline-contribution-conventions)
 4. Use `nf-core schema build` and add any new parameters to the pipeline JSON schema (requires [nf-core tools](https://github.com/nf-core/tools) >= 1.10).
 5. Submit a Pull Request against the `dev` branch and wait for the code to be reviewed and merged
