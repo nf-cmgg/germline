@@ -26,20 +26,29 @@ def create_cram_channel(LinkedHashMap row) {
     // Read the PED file
     def ped = file(row.ped).text
 
-    // Perform a validity check on the PED file since vcf2db is not capable of giving good error messages
+    // Perform a validity check on the PED file since vcf2db is picky and not capable of giving good error messages
     comment_count = 0
     line_count = 0
+
     for( line : ped.readLines()) {
         line_count++
-        if (line =~ /^#.*$/) {
-            comment_count++
-            if(comment_count > 1){
-                exit 1, "$row.ped contains more than 1 commented line (line starting with a '#'). Only the header is allowed as a commented line."
-            }
+        if (line_count == 1 && line ==~ /^#.*$/) {
             continue
         }
-        if (line =~ /^.* .*$/) {
+        else if (line_count > 1 && line ==~ /^#.*$/) {
+            exit 1, "A commented line was found on line $line_count in $row.ped, the only commented line allowed is an optional header on line 1."
+        }
+        else if (line_count == 1 && line ==~ /^#.* $/) {
+            exit 1, "The header in $row.ped contains a trailing space, please remove this."
+        }
+        else if (line ==~ /^.+#.*$/) {
+            exit 1, "A '#' has been found as a non-starting character on line $line_count in $row.ped, this is an illegal character and should be removed."
+        }
+        else if (line ==~ /^[^#].* .*$/) {
             exit 1, "A space has been found on line $line_count in $row.ped, please only use tabs to seperate the values (and change spaces in names to '_')."
+        }
+        else if ((line ==~ /^(\w+\t){5}\w+$/) == false) {
+            exit 1, "$row.ped should contain exactly 6 tab-delimited columns (family_id    individual_id    paternal_id    maternal_id    sex    phenotype). This is not the case on line ${line_count}."
         }
     }
     if (ped =~ /\n$/) {
