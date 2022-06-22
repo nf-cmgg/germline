@@ -23,10 +23,31 @@ workflow INPUT_CHECK {
 // Function to get list of [ meta, cram, crai, bed, ped ]
 def create_cram_channel(LinkedHashMap row) {
 
-    //TODO: perform a validity check on the PED file since vcf2db is not capable of giving good error messages
+    // Read the PED file
+    def ped = file(row.ped).text
+
+    // Perform a validity check on the PED file since vcf2db is not capable of giving good error messages
+    comment_count = 0
+    line_count = 0
+    for( line : ped.readLines()) {
+        line_count++
+        if (line =~ /^#.*$/) {
+            comment_count++
+            if(comment_count > 1){
+                exit 1, "$row.ped contains more than 1 commented line (line starting with a '#'). Only the header is allowed as a commented line."
+            }
+            continue
+        }
+        if (line =~ /^.* .*$/) {
+            exit 1, "A space has been found on line $line_count in $row.ped, please only use tabs to seperate the values (and change spaces in names to '_')."
+        }
+    }
+    if (ped =~ /\n$/) {
+        exit 1, "An empty new line has been detected at the end of $row.ped, please remove this line."
+    }
+
 
     // get family_id
-    def ped = file(row.ped).text
     def family_id = (ped =~ /\n([^#]\w+)/)[0][1]
 
     // create meta map
