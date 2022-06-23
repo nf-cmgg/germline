@@ -25,7 +25,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool
 9. Reblock the GVCFs created with HaplotypeCaller ([GATK ReblockGVCF](https://gatk.broadinstitute.org/hc/en-us/articles/4405443600667-ReblockGVCF))
 10. Combine the reblocked GVCFs of the same family ([GATK CombineGVCF](https://gatk.broadinstitute.org/hc/en-us/articles/360037053272-CombineGVCFs))
 11. Genotype the combined GVCFs ([GATK GenotypeGVCFs](https://gatk.broadinstitute.org/hc/en-us/articles/360037057852-GenotypeGVCFs))
-12. Create a VCF header with pedigree information extracted from the PED file ([RTG pedfilter](https://www.animalgenome.org/bioinfo/resources/manuals/RTGOperationsManual.pdf => chapter 2.5.18))
+12. Create a VCF header with pedigree information extracted from the PED file ([RTG pedfilter](https://www.animalgenome.org/bioinfo/resources/manuals/RTGOperationsManual.pdf) => chapter 2.5.18)
 13. Merge the pedigree header with the header of the genotyped VCF (This is done using a custom-written python [script](bin/merge_vcf_headers.py))
 14. (Only if `--output_mode <seqr|seqplorer>` is set to `seqplorer`) Filter the VCF to be the correct format for Seqplorer ([bcftools filter](http://samtools.github.io/bcftools/bcftools.html#filter))
 15. Perform a quality control on the VCFs ([bcftools stats](http://samtools.github.io/bcftools/bcftools.html#stats) and [vcftools](http://vcftools.sourceforge.net/man_latest.html))

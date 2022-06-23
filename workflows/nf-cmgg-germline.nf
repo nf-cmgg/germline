@@ -98,7 +98,7 @@ workflow NF_CMGG_GERMLINE {
     use_dragstr_model  = params.use_dragstr_model
 
     //
-    // Importing the VEP parameters
+    // Importing the annotation parameters
     //
 
     vep_cache_version  = params.vep_cache_version
@@ -123,6 +123,10 @@ workflow NF_CMGG_GERMLINE {
 
     eog                = params.eog
     eog_tbi            = params.eog_tbi
+
+    vcfanno            = params.vcfanno
+    vcfanno_toml       = params.vcfanno_toml
+    vcfanno_resources  = params.vcfanno_resources
 
     //
     // Read in samplesheet, validate and stage input files
@@ -314,7 +318,10 @@ workflow NF_CMGG_GERMLINE {
             species,
             vep_cache_version,
             vep_merged_cache,
-            vep_extra_files
+            vep_extra_files,
+            vcfanno,
+            vcfanno_toml,
+            vcfanno_resources
         )
 
         ch_versions = ch_versions.mix(ANNOTATION.out.versions)
