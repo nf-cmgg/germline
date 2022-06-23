@@ -47,6 +47,9 @@ def create_cram_channel(LinkedHashMap row) {
         else if (line ==~ /^[^#].* .*$/) {
             exit 1, "A space has been found on line $line_count in $row.ped, please only use tabs to seperate the values (and change spaces in names to '_')."
         }
+        else if ((line ==~ /^(\w+\t)+\w+$/) == false) {
+            exit 1, "An illegal character has been found on line $line_count in $row.ped, only a-z; A-Z; 0-9 and '_' are allowed as column values."
+        }
         else if ((line ==~ /^(\w+\t){5}\w+$/) == false) {
             exit 1, "$row.ped should contain exactly 6 tab-delimited columns (family_id    individual_id    paternal_id    maternal_id    sex    phenotype). This is not the case on line ${line_count}."
         }
