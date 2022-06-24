@@ -55,8 +55,7 @@ workflow ANNOTATION {
         }
 
         VCFANNO(
-            [[],[],[]],
-            ENSEMBLVEP.out.vcf,
+            ENSEMBLVEP.out.vcf.map({ meta, vcf -> [ meta, vcf, [] ] }),
             vcfanno_toml,
             resource_dir
         )
