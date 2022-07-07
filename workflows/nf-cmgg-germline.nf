@@ -140,13 +140,16 @@ workflow NF_CMGG_GERMLINE {
 
     inputs = INPUT_CHECK.out.crams
              .multiMap({meta, cram, crai, bed, ped ->
-                 new_meta = [:]
-                 new_meta.id = meta.family
+                 new_meta_ped = [:]
+                 new_meta_ped.id = meta.family
+                 new_meta_ped.family = meta.family
 
-                 beds:                                [meta, bed]
-                 germline_variant_calling_input_cram: [meta, cram, crai]
-                 peds:                                [new_meta, ped]
+                 new_meta = meta.clone()
+                 new_meta.samplename = meta.id
 
+                 beds:                                [new_meta, bed]
+                 germline_variant_calling_input_cram: [new_meta, cram, crai]
+                 peds:                                [new_meta_ped, ped]
              })
 
     peds = inputs.peds.distinct()

@@ -76,7 +76,6 @@ workflow GERMLINE_VARIANT_CALLING {
     cram_intervals = cram_models
         .map{ meta, cram, crai, split_beds, dragstr_model=[] ->
             new_meta = meta.clone()
-            new_meta.sample = new_meta.id
 
             // If either no scatter is done, i.e. one interval (1), then don't rename samples
             new_meta.id = scatter_count <= 1 ? meta.id : split_beds.baseName
@@ -108,7 +107,7 @@ workflow GERMLINE_VARIANT_CALLING {
         concat_input = haplotypecaller_vcfs
                       .map({meta, vcf, tbi -> 
                           new_meta = meta.clone()
-                          new_meta.id = new_meta.sample
+                          new_meta.id = new_meta.samplename
                           [ new_meta, vcf, tbi ]
                       })
                       .groupTuple()

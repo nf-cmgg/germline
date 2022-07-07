@@ -67,6 +67,7 @@ workflow POST_PROCESS {
                           .map({ meta, gvcf, tbi ->
                               def new_meta = [:]
                               new_meta.id = meta.family
+                              new_meta.family = meta.family
 
                               [ new_meta, gvcf, tbi ]
                           })
