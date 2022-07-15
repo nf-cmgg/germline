@@ -33,6 +33,8 @@ The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool
 17. (Only if `--output_mode <seqr|seqplorer>` is set to `seqplorer`) Transform the VCF to a Gemini-compatible database file for Seqplorer compatibility ([vcf2db](https://github.com/quinlan-lab/vcf2db))
 18. Run [MultiQC](https://multiqc.info/) on all quality control files
 
+![metro graph](docs/images/nf-cmgg-germline_metro.png)
+
 ## Quick Start
 
 1. Install [`Nextflow`](https://www.nextflow.io/docs/latest/getstarted.html#installation) (`>=22.04.0`)
