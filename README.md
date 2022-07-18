@@ -12,26 +12,26 @@ The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool
 
 ## Pipeline summary
 
-<!-- TODO nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->
-
 1. Check the input CSV file (This checks the CSV format, headers and files passed throught the CSV)
 2. (Only if `--fasta_fai FILE` is not used) Create a FASTA index file from the FASTA reference ([Samtools Faidx](http://www.htslib.org/doc/samtools-faidx.html))
 3. (Only if `--dict FILE` is not used) Create a sequence dictionary file from the FASTA reference ([GATK CreateSequenceDictionary](https://gatk.broadinstitute.org/hc/en-us/articles/360037422891-CreateSequenceDictionary-Picard-))
 4. (Only if `--strtablefile FILE` is not used and `--use_dragstr_model true` is given) Create an STR table file from the FASTA reference ([GATK ComposeSTRTableFile](https://gatk.broadinstitute.org/hc/en-us/articles/4405451249819-ComposeSTRTableFile))
-5. (Only if `--scatter_count INT` is bigger than 1) Split the BED files for parallellization of HaplotypeCaller ([Bedtools Split](https://bedtools.readthedocs.io/en/latest/content/overview.html))
-6. (Only if `--use_dragstr_model true` is given) Create a DRAGstr model for each sample provided ([GATK CalibrateDragstrModel](https://gatk.broadinstitute.org/hc/en-us/articles/360057441571-CalibrateDragstrModel-BETA-))
-7. Call the variants for each sample. The BED files are used to parallellize this process if `--scatter_count INT` is bigger than 1 ([GATK HaplotypeCaller](https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller))
-8. (Only if `--scatter_count INT` is bigger than 1) Concatenate the GVCF files for each sample ([Bcftools Concat](https://samtools.github.io/bcftools/bcftools.html#concat))
-9. Reblock the GVCFs created with HaplotypeCaller ([GATK ReblockGVCF](https://gatk.broadinstitute.org/hc/en-us/articles/4405443600667-ReblockGVCF))
-10. Combine the reblocked GVCFs of the same family ([GATK CombineGVCF](https://gatk.broadinstitute.org/hc/en-us/articles/360037053272-CombineGVCFs))
-11. Genotype the combined GVCFs ([GATK GenotypeGVCFs](https://gatk.broadinstitute.org/hc/en-us/articles/360037057852-GenotypeGVCFs))
-12. Create a VCF header with pedigree information extracted from the PED file ([RTG pedfilter](https://www.animalgenome.org/bioinfo/resources/manuals/RTGOperationsManual.pdf) => chapter 2.5.18)
-13. Merge the pedigree header with the header of the genotyped VCF (This is done using a custom-written python [script](bin/merge_vcf_headers.py))
-14. (Only if `--output_mode <seqr|seqplorer>` is set to `seqplorer`) Filter the VCF to be the correct format for Seqplorer ([bcftools filter](http://samtools.github.io/bcftools/bcftools.html#filter))
-15. Perform a quality control on the VCFs ([bcftools stats](http://samtools.github.io/bcftools/bcftools.html#stats) and [vcftools](http://vcftools.sourceforge.net/man_latest.html))
-16. (Only if `--output_mode <seqr|seqplorer>` is set to `seqplorer`) Annotate the genotyped VCF files ([Ensembl VEP](https://www.ensembl.org/info/docs/tools/vep/index.html))
-17. (Only if `--output_mode <seqr|seqplorer>` is set to `seqplorer`) Transform the VCF to a Gemini-compatible database file for Seqplorer compatibility ([vcf2db](https://github.com/quinlan-lab/vcf2db))
-18. Run [MultiQC](https://multiqc.info/) on all quality control files
+5. (Only if multiple cram files per sample were given and only for those files) Merge the CRAM files and create an index for them ([Samtools merge](http://www.htslib.org/doc/samtools-merge.html) & [Samtools index](http://www.htslib.org/doc/samtools-index.html))
+6. (Only if multiple bed files per sample were given and only for those files) Merge the BED files (`awk`, `sort` & [bedtools merge](https://bedtools.readthedocs.io/en/latest/content/tools/merge.html)
+7. (Only if `--scatter_count INT` is bigger than 1) Split the BED files for parallellization of HaplotypeCaller ([Bedtools Split](https://bedtools.readthedocs.io/en/latest/content/overview.html))
+8. (Only if `--use_dragstr_model true` is given) Create a DRAGstr model for each sample provided ([GATK CalibrateDragstrModel](https://gatk.broadinstitute.org/hc/en-us/articles/360057441571-CalibrateDragstrModel-BETA-))
+9. Call the variants for each sample. The BED files are used to parallellize this process if `--scatter_count INT` is bigger than 1 ([GATK HaplotypeCaller](https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller))
+10. (Only if `--scatter_count INT` is bigger than 1) Concatenate the GVCF files for each sample ([Bcftools Concat](https://samtools.github.io/bcftools/bcftools.html#concat))
+11. Reblock the GVCFs created with HaplotypeCaller ([GATK ReblockGVCF](https://gatk.broadinstitute.org/hc/en-us/articles/4405443600667-ReblockGVCF))
+12. Combine the reblocked GVCFs of the same family ([GATK CombineGVCF](https://gatk.broadinstitute.org/hc/en-us/articles/360037053272-CombineGVCFs))
+13. Genotype the combined GVCFs ([GATK GenotypeGVCFs](https://gatk.broadinstitute.org/hc/en-us/articles/360037057852-GenotypeGVCFs))
+14. Create a VCF header with pedigree information extracted from the PED file ([RTG pedfilter](https://www.animalgenome.org/bioinfo/resources/manuals/RTGOperationsManual.pdf) => chapter 2.5.18)
+15. Merge the pedigree header with the header of the genotyped VCF (This is done using a custom-written python [script](bin/merge_vcf_headers.py))
+16. (Only if `--output_mode <seqr|seqplorer>` is set to `seqplorer`) Filter the VCF to be the correct format for Seqplorer ([bcftools filter](http://samtools.github.io/bcftools/bcftools.html#filter))
+17. Perform a quality control on the VCFs ([bcftools stats](http://samtools.github.io/bcftools/bcftools.html#stats) and [vcftools](http://vcftools.sourceforge.net/man_latest.html))
+18. (Only if `--output_mode <seqr|seqplorer>` is set to `seqplorer`) Annotate the genotyped VCF files ([Ensembl VEP](https://www.ensembl.org/info/docs/tools/vep/index.html))
+19. (Only if `--output_mode <seqr|seqplorer>` is set to `seqplorer`) Transform the VCF to a Gemini-compatible database file for Seqplorer compatibility ([vcf2db](https://github.com/quinlan-lab/vcf2db))
+20. Run [MultiQC](https://multiqc.info/) on all quality control files
 
 ![metro graph](docs/images/nf-cmgg-germline_metro.png)
 
