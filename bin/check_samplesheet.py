@@ -100,7 +100,7 @@ class RowChecker:
     def _validate_third(self, row):
         """Assert that the BED entry has the right format if it exists."""
         assert len(row[self._third_col]) > 0, "A BED file is required"
-        self._validate_format(row[self._third_col],[".bed"])
+        self._validate_format(row[self._third_col],[".bed", ".bed.gz"])
 
     def _validate_fourth(self, row):
         """Assert that the PED entry has the right format if it exists."""
@@ -113,25 +113,6 @@ class RowChecker:
             f'The {str(filename).split(".")[-1].upper()} file has an unrecognized extension: {filename}\n'
             f"It should be one of: {', '.join(extensions)}"
         )
-
-    def validate_unique_samples(self):
-        """
-        Assert that the combination of sample name and CRAM filename is unique.
-
-        In addition to the validation, also rename the sample if more than one sample,
-        CRAM file combination exists.
-
-        """
-        assert len(self._seen) == len(self.modified), "The pair of sample name and CRAM must be unique."
-        if len({pair[0] for pair in self._seen}) < len(self._seen):
-            counts = Counter(pair[0] for pair in self._seen)
-            seen = Counter()
-            for row in self.modified:
-                sample = row[self._sample_col]
-                seen[sample] += 1
-                if counts[sample] > 1:
-                    row[self._sample_col] = f"{sample}_T{seen[sample]}"
-
 
 def sniff_format(handle):
     """
@@ -190,7 +171,6 @@ def check_samplesheet(file_in, file_out):
             except AssertionError as error:
                 logger.critical(f"{str(error)} On line {i + 2}.")
                 sys.exit(1)
-        checker.validate_unique_samples()
     header = list(reader.fieldnames)
     # See https://docs.python.org/3.9/library/csv.html#id3 to read up on `newline=""`.
     with file_out.open(mode="w", newline="") as out_handle:

@@ -6,10 +6,13 @@ include { GATK4_HAPLOTYPECALLER as HAPLOTYPECALLER              } from '../../mo
 include { GATK4_CALIBRATEDRAGSTRMODEL as CALIBRATEDRAGSTRMODEL  } from '../../modules/nf-core/modules/gatk4/calibratedragstrmodel/main'
 include { BCFTOOLS_CONCAT                                       } from '../../modules/nf-core/modules/bcftools/concat/main'
 include { BEDTOOLS_SPLIT                                        } from '../../modules/nf-core/modules/bedtools/split/main'
+include { MERGE_BEDS                                            } from '../../modules/local/merge_beds'
+include { SAMTOOLS_MERGE                                        } from '../../modules/local/samtools_merge'
+include { SAMTOOLS_INDEX                                        } from '../../modules/nf-core/modules/samtools/index/main'
 
 workflow GERMLINE_VARIANT_CALLING {
     take:
-        cram              // channel: [mandatory] [ meta, cram, crai ] => sample CRAM files and their indexes
+        crams             // channel: [mandatory] [ meta, cram, crai ] => sample CRAM files and their indexes
         beds              // channel: [mandatory] [ meta, bed ] => bed files
         fasta             // channel: [mandatory] [ fasta ] => fasta reference
         fasta_fai         // channel: [mandatory] [ fasta_fai ] => fasta reference index
@@ -17,6 +20,7 @@ workflow GERMLINE_VARIANT_CALLING {
         strtablefile      // channel: [mandatory] [ strtablefile ] => STR table file
         scatter_count     // value:   [mandatory] how many times the BED files need to be split before the variant calling
         use_dragstr_model // boolean: [mandatory] whether or not to use the dragstr models for variant calling
+        cram_merge        // boolean: [mandatory] whether or not to retain the bam after merging or convert back to cram
 
     main:
 
@@ -24,12 +28,72 @@ workflow GERMLINE_VARIANT_CALLING {
     ch_versions  = Channel.empty()
 
     //
+    // Merge the CRAM files if there are multiple per sample
+    //
+
+    crams.groupTuple()
+    .branch({ meta, cram, crai ->
+        multiple: cram.size() > 1
+            return [meta, cram]
+        single:   cram.size() == 1
+            return [meta, cram, crai]
+    })
+    .set({cram_branch})
+
+    SAMTOOLS_MERGE(
+        cram_branch.multiple,
+        fasta,
+        fasta_fai,
+        cram_merge
+    )
+            
+    SAMTOOLS_INDEX(
+        cram_merge ? SAMTOOLS_MERGE.out.cram : SAMTOOLS_MERGE.out.bam
+    )
+
+    if (cram_merge) {
+        merged_crams = SAMTOOLS_MERGE.out.cram
+                        .combine(SAMTOOLS_INDEX.out.crai, by: 0)
+                        .mix(cram_branch.single.map({meta, cram, crai -> 
+                                [ meta, cram[0], crai[0]]
+                            }))
+    } else {
+        merged_crams = SAMTOOLS_MERGE.out.bam
+                        .combine(SAMTOOLS_INDEX.out.bai, by: 0)
+                        .mix(cram_branch.single.map({meta, cram, crai -> 
+                                [ meta, cram[0], crai[0]]
+                            }))
+    }
+
+    merged_crams.view()
+
+    //
+    // Merge the BED files if there are multiple per sample
+    //
+
+    beds.groupTuple()
+    .branch({ meta, bed ->
+        multiple: bed.size() > 1
+            return [meta, bed]
+        single:   bed.size() == 1
+            return [meta, bed]
+    })
+    .set({bed_branch})
+
+    MERGE_BEDS(
+        bed_branch.multiple
+    )
+
+    merged_beds = MERGE_BEDS.out.bed
+                    .mix(bed_branch.single)
+
+    //
     // Split the BED files into multiple subsets
     //
 
     if (scatter_count > 1) {
         BEDTOOLS_SPLIT(
-            beds,
+            merged_beds,
             scatter_count
         )
 
@@ -38,7 +102,7 @@ workflow GERMLINE_VARIANT_CALLING {
         split_beds = BEDTOOLS_SPLIT.out.beds.transpose()
     }
     else {
-        split_beds = beds
+        split_beds = merged_beds
     }
 
     //
@@ -46,7 +110,7 @@ workflow GERMLINE_VARIANT_CALLING {
     //
 
     if (use_dragstr_model) {
-        calibratedragstrmodel_input = cram.map(
+        calibratedragstrmodel_input = merged_crams.map(
             { meta, cram, crai ->
                 [meta, cram, crai, []]
             }
@@ -62,11 +126,11 @@ workflow GERMLINE_VARIANT_CALLING {
 
         ch_versions = ch_versions.mix(CALIBRATEDRAGSTRMODEL.out.versions)
 
-        cram_models = cram.combine(split_beds, by: 0)
+        cram_models = merged_crams.combine(split_beds, by: 0)
                           .combine(CALIBRATEDRAGSTRMODEL.out.dragstr_model, by: 0)
     } 
     else {
-        cram_models = cram.combine(split_beds, by: 0)
+        cram_models = merged_crams.combine(split_beds, by: 0)
     }
 
     //
@@ -74,13 +138,13 @@ workflow GERMLINE_VARIANT_CALLING {
     //
 
     cram_intervals = cram_models
-        .map{ meta, cram, crai, split_beds, dragstr_model=[] ->
+        .map{ meta, cram, crai, bed, dragstr_model=[] ->
             new_meta = meta.clone()
 
             // If either no scatter is done, i.e. one interval (1), then don't rename samples
-            new_meta.id = scatter_count <= 1 ? meta.id : split_beds.baseName
+            new_meta.id = scatter_count <= 1 ? meta.id : bed.baseName
 
-            [ new_meta, cram, crai, split_beds, dragstr_model ]
+            [ new_meta, cram, crai, bed, dragstr_model ]
         }
 
     //

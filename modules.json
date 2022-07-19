@@ -51,6 +51,12 @@
       "samtools/faidx": {
         "git_sha": "897c33d5da084b61109500ee44c01da2d3e4e773"
       },
+      "samtools/index": {
+        "git_sha": "897c33d5da084b61109500ee44c01da2d3e4e773"
+      },
+      "samtools/merge": {
+        "git_sha": "720027275ccdc1363bb2a19c6412da148e31d94b"
+      },
       "tabix/bgzip": {
         "git_sha": "37bf3936f3665483d070a5e0e0b314311032af7c"
       },
