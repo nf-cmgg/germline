@@ -6,8 +6,8 @@ include { GATK4_HAPLOTYPECALLER as HAPLOTYPECALLER              } from '../../mo
 include { GATK4_CALIBRATEDRAGSTRMODEL as CALIBRATEDRAGSTRMODEL  } from '../../modules/nf-core/modules/gatk4/calibratedragstrmodel/main'
 include { BCFTOOLS_CONCAT                                       } from '../../modules/nf-core/modules/bcftools/concat/main'
 include { BEDTOOLS_SPLIT                                        } from '../../modules/nf-core/modules/bedtools/split/main'
-include { MERGE_BEDS                                            } from '../../modules/local/merge_beds.nf'
-include { SAMTOOLS_MERGE                                        } from '../../modules/nf-core/modules/samtools/merge/main'
+include { MERGE_BEDS                                            } from '../../modules/local/merge_beds'
+include { SAMTOOLS_MERGE                                        } from '../../modules/local/samtools_merge'
 include { SAMTOOLS_INDEX                                        } from '../../modules/nf-core/modules/samtools/index/main'
 
 workflow GERMLINE_VARIANT_CALLING {
@@ -20,6 +20,7 @@ workflow GERMLINE_VARIANT_CALLING {
         strtablefile      // channel: [mandatory] [ strtablefile ] => STR table file
         scatter_count     // value:   [mandatory] how many times the BED files need to be split before the variant calling
         use_dragstr_model // boolean: [mandatory] whether or not to use the dragstr models for variant calling
+        cram_merge        // boolean: [mandatory] whether or not to retain the bam after merging or convert back to cram
 
     main:
 
@@ -42,18 +43,29 @@ workflow GERMLINE_VARIANT_CALLING {
     SAMTOOLS_MERGE(
         cram_branch.multiple,
         fasta,
-        fasta_fai
+        fasta_fai,
+        cram_merge
     )
             
     SAMTOOLS_INDEX(
-        SAMTOOLS_MERGE.out.cram
+        cram_merge ? SAMTOOLS_MERGE.out.cram : SAMTOOLS_MERGE.out.bam
     )
 
-    merged_crams = SAMTOOLS_MERGE.out.cram
-                    .combine(SAMTOOLS_INDEX.out.crai, by: 0)
-                    .mix(cram_branch.single.map({meta, cram, crai -> 
-                            [ meta, cram[0], crai[0]]
-                        }))
+    if (cram_merge) {
+        merged_crams = SAMTOOLS_MERGE.out.cram
+                        .combine(SAMTOOLS_INDEX.out.crai, by: 0)
+                        .mix(cram_branch.single.map({meta, cram, crai -> 
+                                [ meta, cram[0], crai[0]]
+                            }))
+    } else {
+        merged_crams = SAMTOOLS_MERGE.out.bam
+                        .combine(SAMTOOLS_INDEX.out.bai, by: 0)
+                        .mix(cram_branch.single.map({meta, cram, crai -> 
+                                [ meta, cram[0], crai[0]]
+                            }))
+    }
+
+    merged_crams.view()
 
     //
     // Merge the BED files if there are multiple per sample

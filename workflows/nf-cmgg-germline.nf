@@ -96,6 +96,7 @@ workflow NF_CMGG_GERMLINE {
     species            = params.species
     scatter_count      = params.scatter_count
     use_dragstr_model  = params.use_dragstr_model
+    cram_merge         = params.cram_merge
 
     //
     // Importing the annotation parameters
@@ -220,7 +221,8 @@ workflow NF_CMGG_GERMLINE {
         dict,
         strtablefile,
         scatter_count,
-        use_dragstr_model
+        use_dragstr_model,
+        cram_merge
     )
 
     ch_versions = ch_versions.mix(GERMLINE_VARIANT_CALLING.out.versions)

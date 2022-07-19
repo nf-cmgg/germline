@@ -11,28 +11,33 @@ process SAMTOOLS_MERGE {
     tuple val(meta), path(input_files, stageAs: "?/*")
     path fasta
     path fai
+    val cram_merge
 
     output:
-    tuple val(meta), path("${prefix}.bam") , optional:true, emit: bam
-    tuple val(meta), path("${prefix}.cram"), optional:true, emit: cram
-    path  "versions.yml"                                  , emit: versions
+    tuple val(meta), path("*.bam") , optional:true, emit: bam
+    tuple val(meta), path("*.cram"), optional:true, emit: cram
+    path  "versions.yml"           , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
 
     script:
-    def args = task.ext.args   ?: ''
-    prefix   = task.ext.prefix ?: "${meta.id}"
-    def file_type = input_files[0].getExtension()
-    def reference = fasta ? "--reference ${fasta}" : ""
+    def args            = task.ext.args   ?: ''
+    def args2           = task.ext.args2   ?: ''
+    def prefix          = task.ext.prefix ?: "${meta.id}"
+    def reference       = fasta ? "--reference ${fasta}" : ""
+    def convert_to_cram = cram_merge ? 
+        "samtools view --threads ${task.cpus} --reference ${fasta} $args2 ${prefix}.bam -C -o ${prefix}.cram" : ""
     """
     samtools \\
         merge \\
-        --threads ${task.cpus-1} \\
+        --threads ${task.cpus} \\
         $args \\
         ${reference} \\
-        ${prefix}.${file_type} \\
+        ${prefix}.bam \\
         $input_files
+
+    $convert_to_cram
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -42,9 +47,8 @@ process SAMTOOLS_MERGE {
 
     stub:
     prefix = task.ext.suffix ? "${meta.id}${task.ext.suffix}" : "${meta.id}"
-    def file_type = input_files[0].getExtension()
     """
-    touch ${prefix}.${file_type}
+    touch ${prefix}.bam
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

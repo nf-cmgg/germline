@@ -127,6 +127,11 @@
           "enum": ["seqplorer", "seqr"],
           "description": "The filter mode for the VCF outputs (has to be either 'seqr' or 'seqplorer')",
           "fa_icon": "fas fa-question-circle"
+        },
+        "cram_merge": {
+          "type": "boolean",
+          "fa_icon": "fas fa-question-circle",
+          "description": "Whether or not to convert the merged bam back to cram"
         }
       }
     },
