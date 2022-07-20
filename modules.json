@@ -1,83 +1,83 @@
 {
-    "name": "nf-cmgg-germline",
-    "homePage": "https://github.com/CenterForMedicalGeneticsGhent/nf-cmgg-germline",
-    "repos": {
-        "nf-core/modules": {
-            "bcftools/concat": {
-                "git_sha": "51b0a6e4f3b048a1eebeb86896fa0374771ca554"
-            },
-            "bcftools/convert": {
-                "git_sha": "8d4373b4e8a5d41fbcfd131388e9fea687858683"
-            },
-            "bcftools/filter": {
-                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
-            },
-            "bcftools/merge": {
-                "git_sha": "8656636f0d0a86aa3966052b5c2cd06141647c70"
-            },
-            "bcftools/stats": {
-                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
-            },
-            "bedtools/split": {
-                "git_sha": "6342f5b0996c1debb23037efdd1ad7029e801a7f"
-            },
-            "custom/dumpsoftwareversions": {
-                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
-            },
-            "ensemblvep": {
-                "git_sha": "757c20c8ebfab85e1de9f98773a2269f6d34025a"
-            },
-            "gatk4/calibratedragstrmodel": {
-                "git_sha": "4c7ef30fb64f75ba4499d3b8fba24a068b1ce586"
-            },
-            "gatk4/combinegvcfs": {
-                "git_sha": "169b2b96c1167f89ab07127b7057c1d90a6996c7"
-            },
-            "gatk4/composestrtablefile": {
-                "git_sha": "114a54c8d5a8e898a126c2804e3e221286eb2682"
-            },
-            "gatk4/createsequencedictionary": {
-                "git_sha": "169b2b96c1167f89ab07127b7057c1d90a6996c7"
-            },
-            "gatk4/genotypegvcfs": {
-                "git_sha": "169b2b96c1167f89ab07127b7057c1d90a6996c7"
-            },
-            "gatk4/haplotypecaller": {
-                "git_sha": "e53d091a6de1ae9fd681351c085d8abe076ba1ec"
-            },
-            "gatk4/reblockgvcf": {
-                "git_sha": "873215c8ae3882e3ce1c8c62fbae16e74d631270"
-            },
-            "multiqc": {
-                "git_sha": "49b18b1639f4f7104187058866a8fab33332bdfe"
-            },
-            "rtgtools/pedfilter": {
-                "git_sha": "1a4ab76618a2269ee653aefff8a5ee1f855e5f83"
-            },
-            "samtools/faidx": {
-                "git_sha": "897c33d5da084b61109500ee44c01da2d3e4e773"
-            },
-            "samtools/index": {
-                "git_sha": "897c33d5da084b61109500ee44c01da2d3e4e773"
-            },
-            "tabix/bgzip": {
-                "git_sha": "37bf3936f3665483d070a5e0e0b314311032af7c"
-            },
-            "tabix/tabix": {
-                "git_sha": "b3e9b88e80880f450ad79a95b2b7aa05e1de5484"
-            },
-            "untar": {
-                "git_sha": "51be617b1ca9bff973655eb899d591ed6ab253b5"
-            },
-            "vcf2db": {
-                "git_sha": "6e7c0e945b490a7c1e9d2d01cc37e45d581e78bd"
-            },
-            "vcfanno": {
-                "git_sha": "13631304102ca3d99def3578611b79332f6fd175"
-            },
-            "vcftools": {
-                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
-            }
-        }
+  "name": "nf-cmgg-germline",
+  "homePage": "https://github.com/CenterForMedicalGeneticsGhent/nf-cmgg-germline",
+  "repos": {
+    "nf-core/modules": {
+      "bcftools/concat": {
+        "git_sha": "51b0a6e4f3b048a1eebeb86896fa0374771ca554"
+      },
+      "bcftools/convert": {
+        "git_sha": "8d4373b4e8a5d41fbcfd131388e9fea687858683"
+      },
+      "bcftools/filter": {
+        "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+      },
+      "bcftools/merge": {
+        "git_sha": "8656636f0d0a86aa3966052b5c2cd06141647c70"
+      },
+      "bcftools/stats": {
+        "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+      },
+      "bedtools/split": {
+        "git_sha": "6342f5b0996c1debb23037efdd1ad7029e801a7f"
+      },
+      "custom/dumpsoftwareversions": {
+        "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+      },
+      "ensemblvep": {
+        "git_sha": "757c20c8ebfab85e1de9f98773a2269f6d34025a"
+      },
+      "gatk4/calibratedragstrmodel": {
+        "git_sha": "4c7ef30fb64f75ba4499d3b8fba24a068b1ce586"
+      },
+      "gatk4/combinegvcfs": {
+        "git_sha": "169b2b96c1167f89ab07127b7057c1d90a6996c7"
+      },
+      "gatk4/composestrtablefile": {
+        "git_sha": "114a54c8d5a8e898a126c2804e3e221286eb2682"
+      },
+      "gatk4/createsequencedictionary": {
+        "git_sha": "169b2b96c1167f89ab07127b7057c1d90a6996c7"
+      },
+      "gatk4/genotypegvcfs": {
+        "git_sha": "169b2b96c1167f89ab07127b7057c1d90a6996c7"
+      },
+      "gatk4/haplotypecaller": {
+        "git_sha": "e53d091a6de1ae9fd681351c085d8abe076ba1ec"
+      },
+      "gatk4/reblockgvcf": {
+        "git_sha": "873215c8ae3882e3ce1c8c62fbae16e74d631270"
+      },
+      "multiqc": {
+        "git_sha": "49b18b1639f4f7104187058866a8fab33332bdfe"
+      },
+      "rtgtools/pedfilter": {
+        "git_sha": "1a4ab76618a2269ee653aefff8a5ee1f855e5f83"
+      },
+      "samtools/faidx": {
+        "git_sha": "897c33d5da084b61109500ee44c01da2d3e4e773"
+      },
+      "samtools/index": {
+        "git_sha": "897c33d5da084b61109500ee44c01da2d3e4e773"
+      },
+      "tabix/bgzip": {
+        "git_sha": "37bf3936f3665483d070a5e0e0b314311032af7c"
+      },
+      "tabix/tabix": {
+        "git_sha": "b3e9b88e80880f450ad79a95b2b7aa05e1de5484"
+      },
+      "untar": {
+        "git_sha": "51be617b1ca9bff973655eb899d591ed6ab253b5"
+      },
+      "vcf2db": {
+        "git_sha": "6e7c0e945b490a7c1e9d2d01cc37e45d581e78bd"
+      },
+      "vcfanno": {
+        "git_sha": "13631304102ca3d99def3578611b79332f6fd175"
+      },
+      "vcftools": {
+        "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+      }
     }
+  }
 }
