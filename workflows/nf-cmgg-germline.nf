@@ -13,6 +13,9 @@ WorkflowNfCmggGermline.initialise(params, log)
 def checkPathParamList = [ 
     params.input, 
     params.fasta, 
+    params.fasta_fai,
+    params.dict,
+    params.strtablefile,
     params.dbnsfp, 
     params.dbnsfp_tbi,
     params.spliceai_indel,
@@ -97,6 +100,7 @@ workflow NF_CMGG_GERMLINE {
     scatter_count      = params.scatter_count
     use_dragstr_model  = params.use_dragstr_model
     cram_merge         = params.cram_merge
+    skip_genotyping    = params.skip_genotyping
 
     //
     // Importing the annotation parameters
@@ -237,7 +241,8 @@ workflow NF_CMGG_GERMLINE {
         fasta,
         fasta_fai,
         dict,
-        output_mode
+        output_mode,
+        skip_genotyping
     )
 
     ch_versions = ch_versions.mix(POST_PROCESS.out.versions)
