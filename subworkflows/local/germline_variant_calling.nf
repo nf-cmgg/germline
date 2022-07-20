@@ -65,8 +65,6 @@ workflow GERMLINE_VARIANT_CALLING {
                             }))
     }
 
-    merged_crams.view()
-
     //
     // Merge the BED files if there are multiple per sample
     //
