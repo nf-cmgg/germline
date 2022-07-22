@@ -67,8 +67,6 @@ workflow GERMLINE_VARIANT_CALLING {
                     .mix(merged_crams.not_indexed.combine(SAMTOOLS_INDEX.out.bai, by:0))
                     .mix(merged_crams.indexed)
 
-    ready_crams.view()
-
     //
     // Merge the BED files if there are multiple per sample
     //
