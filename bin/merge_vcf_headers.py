@@ -51,6 +51,6 @@ if __name__ == "__main__":
                     status = "Would you kindly do a header check?"
                 elif status == "Would you kindly do a header check?" and re.findall(header_pattern, line):
                     vcf_header = re.findall(header_pattern, line)
-                    assert vcf_header == ped_header, f'The #CHROM header line does not match in both files:\nPED header: {ped_header}\nVCF header: {vcf_header}'
+                    assert vcf_header == ped_header, f'The #CHROM header line does not match in both files:\nPED header: {ped_header[0]}\nVCF header: {vcf_header[0]}'
                     status = "Would you kindly print all the lines?"
                 open_output.write(line)
