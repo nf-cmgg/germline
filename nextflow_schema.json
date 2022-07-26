@@ -110,11 +110,6 @@
           "fa_icon": "fas fa-cut",
           "description": "The amount of files the BED file should be split into (for parallelization of GATK Haplotypecaller)"
         },
-        "use_dragstr_model": {
-          "type": "boolean",
-          "description": "Whether or not the DRAGSTR models should be used",
-          "fa_icon": "fas fa-question-circle"
-        },
         "species": {
           "type": "string",
           "default": "homo_sapiens",
@@ -128,10 +123,30 @@
           "description": "The filter mode for the VCF outputs (has to be either 'seqr' or 'seqplorer')",
           "fa_icon": "fas fa-question-circle"
         },
-        "cram_merge": {
+        "always_use_cram": {
           "type": "boolean",
-          "fa_icon": "fas fa-question-circle",
-          "description": "Whether or not to convert the merged bam back to cram"
+          "description": "Whether or not the modules should always return a CRAM file instead of a BAM file"
+        }
+      }
+    },
+    "module_specific_parameters": {
+      "title": "Module specific parameters",
+      "type": "object",
+      "description": "Parameter that define how specific modules work",
+      "default": "",
+      "properties": {
+        "use_dragstr_model": {
+          "type": "boolean",
+          "description": "Whether or not the DRAGSTR models should be used",
+          "fa_icon": "fas fa-question-circle"
+        },
+        "skip_genotyping": {
+          "type": "boolean",
+          "description": "Whether or not the genotyping should be skipped (does GVCF -> VCF conversion using bcftools view and convert instead)"
+        },
+        "use_bcftools_merge": {
+          "type": "boolean",
+          "description": "Whether or not to use bcftools merge instead of CombineGVCFs"
         }
       }
     },
@@ -429,6 +444,9 @@
     },
     {
       "$ref": "#/definitions/pipeline_specific_parameters"
+    },
+    {
+      "$ref": "#/definitions/module_specific_parameters"
     },
     {
       "$ref": "#/definitions/institutional_config_options"
