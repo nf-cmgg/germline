@@ -15,16 +15,18 @@ include { BCFTOOLS_FILTER as FILTER_SNPS         } from '../../modules/nf-core/m
 include { BCFTOOLS_FILTER as FILTER_INDELS       } from '../../modules/nf-core/modules/bcftools/filter/main'
 include { BCFTOOLS_MERGE                         } from '../../modules/nf-core/modules/bcftools/merge/main'
 include { BCFTOOLS_CONVERT                       } from '../../modules/nf-core/modules/bcftools/convert/main'
+include { BCFTOOLS_VIEW                          } from '../../modules/nf-core/modules/bcftools/view/main'
 
 workflow POST_PROCESS {
     take:
-        gvcfs           // channel: [mandatory] [ meta, gvcf ] => The fresh GVCFs called with HaplotypeCaller
-        peds            // channel: [mandatory] [ meta, peds ] => The pedigree files for the samples
-        fasta           // channel: [mandatory] [ fasta ] => fasta reference
-        fasta_fai       // channel: [mandatory] [ fasta_fai ] => fasta reference index
-        dict            // channel: [mandatory] [ dict ] => sequence dictionary
-        output_mode     // value:   [mandatory] whether or not to make the output seqplorer- or seqr-compatible
-        skip_genotyping // boolean  [mandatory] whether or not to skip the genotyping
+        gvcfs               // channel: [mandatory] [ meta, gvcf ] => The fresh GVCFs called with HaplotypeCaller
+        peds                // channel: [mandatory] [ meta, peds ] => The pedigree files for the samples
+        fasta               // channel: [mandatory] [ fasta ] => fasta reference
+        fasta_fai           // channel: [mandatory] [ fasta_fai ] => fasta reference index
+        dict                // channel: [mandatory] [ dict ] => sequence dictionary
+        output_mode         // value:   [mandatory] whether or not to make the output seqplorer- or seqr-compatible
+        skip_genotyping     // boolean: [mandatory] whether or not to skip the genotyping
+        use_bcftools_merge  // boolean: [mandatory] whether or not to use bcftools merge instead of CombineGVCFs
 
     main:
 
@@ -72,11 +74,23 @@ workflow POST_PROCESS {
                             })
                             .groupTuple()
 
-    if (!skip_genotyping){
+    //
+    // Merge/Combine all the GVCFs from each family
+    //
 
-        //
-        // Combine the GVCFs in each family
-        //
+    if (use_bcftools_merge){
+
+        BCFTOOLS_MERGE(
+            combine_gvcfs_input,
+            [],
+            fasta,
+            fasta_fai
+        )
+
+        combined_gvcfs = BCFTOOLS_MERGE.out.merged_variants
+        ch_versions = ch_versions.mix(BCFTOOLS_MERGE.out.versions)
+
+    } else {
 
         COMBINEGVCFS(
             combine_gvcfs_input,
@@ -85,13 +99,16 @@ workflow POST_PROCESS {
             dict
         )
 
+        combined_gvcfs = COMBINEGVCFS.out.combined_gvcf
         ch_versions = ch_versions.mix(COMBINEGVCFS.out.versions)
+
+    }
+
+    if (!skip_genotyping){
 
         //
         // Create indexes for the combined GVCFs
         //
-
-        combined_gvcfs = COMBINEGVCFS.out.combined_gvcf
 
         TABIX_COMBINED_GVCFS(
             combined_gvcfs
@@ -126,41 +143,47 @@ workflow POST_PROCESS {
             GENOTYPE_GVCFS.out.vcf
         )
 
-        merged_vcfs = BGZIP_GENOTYPED_VCFS.out.output
+        converted_vcfs = BGZIP_GENOTYPED_VCFS.out.output
         ch_versions = ch_versions.mix(BGZIP_GENOTYPED_VCFS.out.versions)
 
     } else {
 
         //
-        // Merge all the GVCFs from each family
+        // Create indexes for the combined GVCFs
         //
 
-        BCFTOOLS_MERGE(
-            combine_gvcfs_input,
-            [],
-            fasta,
-            fasta_fai
+        TABIX_COMBINED_GVCFS(
+            combined_gvcfs
         )
 
-        ch_versions = ch_versions.mix(BCFTOOLS_MERGE.out.versions)
+        ch_versions = ch_versions.mix(TABIX_COMBINED_GVCFS.out.versions)
+
+        indexed_combined_gvcfs = combined_gvcfs
+                                .combine(TABIX_COMBINED_GVCFS.out.tbi, by:0)
+
+        //
+        // Remove the ref blocks from the GVCF
+        //
+
+        BCFTOOLS_VIEW(
+            indexed_combined_gvcfs,
+            [],
+            [],
+            []
+        )
 
         //
         // Convert all the GVCFs to VCF files
         //
 
-        bcftools_convert_input = BCFTOOLS_MERGE.out.merged_variants.map({ meta, vcf ->
-                                        [ meta, vcf, [] ]
-                                    })
-
         BCFTOOLS_CONVERT(
-            bcftools_convert_input,
+            BCFTOOLS_VIEW.out.vcf.map({ meta, vcf -> [ meta, vcf, []]}),
             [],
             fasta
         )
 
-        merged_vcfs = BCFTOOLS_CONVERT.out.vcf
+        converted_vcfs = BCFTOOLS_CONVERT.out.vcf
         ch_versions = ch_versions.mix(BCFTOOLS_CONVERT.out.versions)
-
     }
 
     //
@@ -173,7 +196,7 @@ workflow POST_PROCESS {
 
     ch_versions = ch_versions.mix(PEDFILTER.out.versions)
 
-    merge_vcf_headers_input = merged_vcfs
+    merge_vcf_headers_input = converted_vcfs
                                 .combine(PEDFILTER.out.vcf, by:0)
 
     MERGE_VCF_HEADERS(

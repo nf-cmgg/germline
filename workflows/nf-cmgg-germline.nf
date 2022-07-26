@@ -94,13 +94,18 @@ workflow NF_CMGG_GERMLINE {
     //
 
     fasta              = params.fasta
+    fasta_fai          = params.fasta_fai
+    dict               = params.dict
+    strtablefile       = params.strtablefile
     genome             = params.genome
+    
     output_mode        = params.output_mode
-    species            = params.species
     scatter_count      = params.scatter_count
+    always_use_cram    = params.always_use_cram
+
     use_dragstr_model  = params.use_dragstr_model
-    cram_merge         = params.cram_merge
     skip_genotyping    = params.skip_genotyping
+    use_bcftools_merge = params.use_bcftools_merge
 
     //
     // Importing the annotation parameters
@@ -108,6 +113,7 @@ workflow NF_CMGG_GERMLINE {
 
     vep_cache_version  = params.vep_cache_version
     vep_merged_cache   = params.vep_merged_cache ? params.vep_merged_cache : []
+    species            = params.species
 
     vep_dbnsfp         = params.vep_dbnsfp
     vep_spliceai       = params.vep_spliceai
@@ -163,7 +169,7 @@ workflow NF_CMGG_GERMLINE {
     // Create the FASTA index from the FASTA file
     //
 
-    if (!params.fasta_fai) {
+    if (!fasta_fai) {
         FAIDX(
             fasta
         )
@@ -171,15 +177,12 @@ workflow NF_CMGG_GERMLINE {
         fasta_fai = FAIDX.out.fai
         ch_versions = ch_versions.mix(FAIDX.out.versions)
     } 
-    else {
-        fasta_fai = params.fasta_fai
-    }
 
     //
     // Create the sequence dictionary from the FASTA file
     //
 
-    if (!params.dict) {
+    if (!dict) {
         CREATESEQUENCEDICTIONARY(
             fasta
         )
@@ -187,31 +190,21 @@ workflow NF_CMGG_GERMLINE {
         dict = CREATESEQUENCEDICTIONARY.out.dict
         ch_versions = ch_versions.mix(CREATESEQUENCEDICTIONARY.out.versions)
     } 
-    else {
-        dict = params.dict
-    }
 
     //
     // Create the STR table file from the FASTA file
     //
-    if (params.use_dragstr_model) {
-        if (!params.strtablefile) {
-            COMPOSESTRTABLEFILE(
-                fasta,
-                fasta_fai,
-                dict
-            )
 
-            strtablefile = COMPOSESTRTABLEFILE.out.str_table
-            ch_versions = ch_versions.mix(COMPOSESTRTABLEFILE.out.versions) 
-        } 
-        else {
-            strtablefile = params.strtablefile
-        }
+    if (use_dragstr_model && !strtablefile) {
+        COMPOSESTRTABLEFILE(
+            fasta,
+            fasta_fai,
+            dict
+        )
+
+        strtablefile = COMPOSESTRTABLEFILE.out.str_table
+        ch_versions = ch_versions.mix(COMPOSESTRTABLEFILE.out.versions) 
     } 
-    else {
-        strtablefile = []
-    }
 
     //
     // Perform the variant calling
@@ -226,7 +219,7 @@ workflow NF_CMGG_GERMLINE {
         strtablefile,
         scatter_count,
         use_dragstr_model,
-        cram_merge
+        always_use_cram
     )
 
     ch_versions = ch_versions.mix(GERMLINE_VARIANT_CALLING.out.versions)
@@ -242,7 +235,8 @@ workflow NF_CMGG_GERMLINE {
         fasta_fai,
         dict,
         output_mode,
-        skip_genotyping
+        skip_genotyping,
+        use_bcftools_merge
     )
 
     ch_versions = ch_versions.mix(POST_PROCESS.out.versions)
