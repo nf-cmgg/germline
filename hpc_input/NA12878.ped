@@ -1,4 +1,3 @@
 #fam-id         ind-id              pat-id  mat-id  sex     phen
-Proband_12345	CFD2103405	CFD2102087	CFD2102089	2	0
-Proband_12345	CFD2102087	0	0	1	0
-Proband_12345	CFD2102089	0	0	2	0
+Proband_12345	NA12878K12_NVQ_034	NA24385D2_NVQ_034	0	2	0
+Proband_12345	NA24385D2_NVQ_034	0	0	1	0
