@@ -11,7 +11,7 @@ process SAMTOOLS_MERGE {
     tuple val(meta), path(input_files, stageAs: "?/*")
     path fasta
     path fai
-    val cram_merge
+    val always_use_cram
 
     output:
     tuple val(meta), path("*.bam") , optional:true, emit: bam
@@ -26,7 +26,7 @@ process SAMTOOLS_MERGE {
     def args2           = task.ext.args2   ?: ''
     def prefix          = task.ext.prefix ?: "${meta.id}"
     def reference       = fasta ? "--reference ${fasta}" : ""
-    def convert_to_cram = cram_merge ? 
+    def convert_to_cram = always_use_cram ? 
         "samtools view --threads ${task.cpus} --reference ${fasta} $args2 ${prefix}.bam -C -o ${prefix}.cram && rm ${prefix}.bam" : ""
     """
     samtools \\

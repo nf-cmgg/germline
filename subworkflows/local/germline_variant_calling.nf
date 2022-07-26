@@ -20,7 +20,7 @@ workflow GERMLINE_VARIANT_CALLING {
         strtablefile      // channel: [mandatory] [ strtablefile ] => STR table file
         scatter_count     // value:   [mandatory] how many times the BED files need to be split before the variant calling
         use_dragstr_model // boolean: [mandatory] whether or not to use the dragstr models for variant calling
-        cram_merge        // boolean: [mandatory] whether or not to retain the bam after merging or convert back to cram
+        always_use_cram   // boolean: [mandatory] whether or not to retain the bam after merging or convert back to cram
 
     main:
 
@@ -43,7 +43,7 @@ workflow GERMLINE_VARIANT_CALLING {
         cram_branch.multiple,
         fasta,
         fasta_fai,
-        cram_merge
+        always_use_cram
     )
 
     merged_crams = SAMTOOLS_MERGE.out.cram

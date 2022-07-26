@@ -19,13 +19,14 @@ include { BCFTOOLS_VIEW                          } from '../../modules/nf-core/m
 
 workflow POST_PROCESS {
     take:
-        gvcfs           // channel: [mandatory] [ meta, gvcf ] => The fresh GVCFs called with HaplotypeCaller
-        peds            // channel: [mandatory] [ meta, peds ] => The pedigree files for the samples
-        fasta           // channel: [mandatory] [ fasta ] => fasta reference
-        fasta_fai       // channel: [mandatory] [ fasta_fai ] => fasta reference index
-        dict            // channel: [mandatory] [ dict ] => sequence dictionary
-        output_mode     // value:   [mandatory] whether or not to make the output seqplorer- or seqr-compatible
-        skip_genotyping // boolean  [mandatory] whether or not to skip the genotyping
+        gvcfs               // channel: [mandatory] [ meta, gvcf ] => The fresh GVCFs called with HaplotypeCaller
+        peds                // channel: [mandatory] [ meta, peds ] => The pedigree files for the samples
+        fasta               // channel: [mandatory] [ fasta ] => fasta reference
+        fasta_fai           // channel: [mandatory] [ fasta_fai ] => fasta reference index
+        dict                // channel: [mandatory] [ dict ] => sequence dictionary
+        output_mode         // value:   [mandatory] whether or not to make the output seqplorer- or seqr-compatible
+        skip_genotyping     // boolean: [mandatory] whether or not to skip the genotyping
+        use_bcftools_merge  // boolean: [mandatory] whether or not to use bcftools merge instead of CombineGVCFs
 
     main:
 
@@ -77,7 +78,7 @@ workflow POST_PROCESS {
     // Merge/Combine all the GVCFs from each family
     //
 
-    if (params.merge){
+    if (use_bcftools_merge){
 
         BCFTOOLS_MERGE(
             combine_gvcfs_input,
