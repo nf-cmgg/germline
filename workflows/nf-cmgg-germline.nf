@@ -21,17 +21,9 @@ def checkPathParamList = [
     params.fasta_fai,
     params.dict,
     params.strtablefile,
-    params.dbnsfp, 
-    params.dbnsfp_tbi,
-    params.spliceai_indel,
-    params.spliceai_indel_tbi,
-    params.spliceai_snv,
-    params.spliceai_snv_tbi,
-    params.mastermind,
-    params.mastermind_tbi,
-    params.eog,
-    params.eog_tbi,
-    params.vep_merged_cache
+    params.vep_merged_cache,
+    params.vcfanno_toml,
+    params.vcfanno_resources
 ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
@@ -72,15 +64,18 @@ if (params.output_mode == "seqplorer") {
 // Importing the file pipeline parameters
 //
 
+// Input files
 fasta              = params.fasta               ? Channel.fromPath(params.fasta).collect()              : Channel.empty()
 
+// Input values
 output_mode        = params.output_mode         ?: Channel.empty()
 scatter_count      = params.scatter_count       ?: Channel.empty()
-always_use_cram    = params.always_use_cram     ?: Channel.empty()
 
-use_dragstr_model  = params.use_dragstr_model   ?: Channel.empty()
-skip_genotyping    = params.skip_genotyping     ?: Channel.empty()
-use_bcftools_merge = params.use_bcftools_merge  ?: Channel.empty()
+// Booleans
+always_use_cram    = params.always_use_cram
+use_dragstr_model  = params.use_dragstr_model
+skip_genotyping    = params.skip_genotyping
+use_bcftools_merge = params.use_bcftools_merge
 
 //
 // Importing the value pipeline parameters
@@ -95,7 +90,7 @@ genome             = params.genome              ?: Channel.empty()
 vep_cache_version  = params.vep_cache_version   ?: Channel.empty()
 species            = params.species             ?: Channel.empty()
 
-vep_merged_cache   = params.vep_merged_cache    ? Channel.fromPath(params.vep_merged_cache).collect()   : Channel.value([])
+vep_merged_cache   = params.vep_merged_cache    ? Channel.fromPath(params.vep_merged_cache).collect()   : []
 
 vcfanno            = params.vcfanno             ?: Channel.empty()
 
@@ -184,6 +179,7 @@ include { ANNOTATION               } from '../subworkflows/local/annotation'
 include { SAMTOOLS_FAIDX as FAIDX                                    } from '../modules/nf-core/modules/samtools/faidx/main'
 include { GATK4_CREATESEQUENCEDICTIONARY as CREATESEQUENCEDICTIONARY } from '../modules/nf-core/modules/gatk4/createsequencedictionary/main'
 include { GATK4_COMPOSESTRTABLEFILE as COMPOSESTRTABLEFILE           } from '../modules/nf-core/modules/gatk4/composestrtablefile/main'
+include { UNTAR                                                      } from '../modules/nf-core/modules/untar/main'
 include { VCF2DB                                                     } from '../modules/nf-core/modules/vcf2db/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS                                } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main'
 include { MULTIQC                                                    } from '../modules/nf-core/modules/multiqc/main'
@@ -248,6 +244,19 @@ workflow NF_CMGG_GERMLINE {
         ch_versions  = ch_versions.mix(COMPOSESTRTABLEFILE.out.versions) 
     } else {
         strtablefile = Channel.fromPath(params.strtablefile).collect()
+    }
+
+    //
+    // Untar the vcfanno resources directory if it is tarzipped
+    //
+
+    if (vcfanno && params.vcfanno_resources.endsWith(".tar.gz")) {
+        UNTAR( [ [], params.vcfanno_resources ])
+
+        vcfanno_resources = UNTAR.out.untar.map({meta, dir -> dir})
+        ch_versions       = ch_versions.mix(UNTAR.out.versions)
+    } else {
+        vcfanno_resources = Channel.fromPath(params.vcfanno_resources).collect()
     }
 
     //
