@@ -55,7 +55,11 @@ if (params.output_mode == "seqplorer") {
 
     // Check if a species is entered
     if (!params.species) { exit 1, "A species should be supplied for seqplorer mode (use --species)"}
-       
+    
+    // Check if all vcfanno files are supplied when vcfanno should be used
+    if (params.vcfanno && (!params.vcfanno_toml || !params.vcfanno_resources)) {
+        exit 1, "A TOML file and resource directory should be supplied when using vcfanno (use --vcfanno_toml and --vcfanno_resources)"
+    }
 }
 
 /*
@@ -96,9 +100,10 @@ species            = params.species             ?: Channel.empty()
 
 vep_merged_cache   = params.vep_merged_cache    ? Channel.fromPath(params.vep_merged_cache).collect()   : Channel.value([])
 
-vcfanno            = params.vcfanno
-vcfanno_toml       = params.vcfanno_toml
-vcfanno_resources  = params.vcfanno_resources
+vcfanno            = params.vcfanno             ?: Channel.empty()
+
+vcfanno_toml       = params.vcfanno_toml        ? Channel.fromPath(params.vcfanno_toml).collect()       : Channel.empty()
+vcfanno_resources  = params.vcfanno_resources   ? Channel.fromPath(params.vcfanno_resources).collect()  : Channel.empty()
 
 //
 // Check for the presence of EnsemblVEP plugins that use extra files

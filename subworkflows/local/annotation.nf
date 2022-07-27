@@ -44,8 +44,8 @@ workflow ANNOTATION {
     ch_versions         = ch_versions.mix(ENSEMBLVEP.out.versions)
 
     if (vcfanno) {
-        if (vcfanno_resources ==~ /^.*\.tar\.gz$/) {
-            UNTAR([[], vcfanno_resources])
+        if (vcfanno_resources.contains(".tar.gz") ) {
+            UNTAR(vcfanno_resources.map({tar -> [[], tar]}))
 
             resource_dir = UNTAR.out.untar.map({meta, dir -> dir})
             ch_versions  = ch_versions.mix(UNTAR.out.versions)
