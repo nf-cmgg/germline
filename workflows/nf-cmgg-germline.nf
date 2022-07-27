@@ -73,9 +73,6 @@ if (params.output_mode == "seqplorer") {
 //
 
 fasta              = params.fasta               ? Channel.fromPath(params.fasta).collect()              : Channel.empty()
-fasta_fai          = params.fasta_fai           ? Channel.fromPath(params.fasta_fai).collect()          : null
-dict               = params.dict                ? Channel.fromPath(params.dict).collect()               : null
-strtablefile       = params.strtablefile        ? Channel.fromPath(params.strtablefile).collect()       : null
 
 output_mode        = params.output_mode         ?: Channel.empty()
 scatter_count      = params.scatter_count       ?: Channel.empty()
@@ -207,6 +204,53 @@ workflow NF_CMGG_GERMLINE {
     ch_reports  = Channel.empty()
 
     //
+    // Create the FASTA index from the FASTA file
+    //
+
+    if (!params.fasta_fai) {
+        FAIDX(
+            fasta
+        )
+
+        fasta_fai   = FAIDX.out.fai
+        ch_versions = ch_versions.mix(FAIDX.out.versions)
+    } else {
+        fasta_fai   = Channel.fromPath(params.fasta_fai).collect()
+    }
+
+    //
+    // Create the sequence dictionary from the FASTA file
+    //
+
+    if (!params.dict) {
+        CREATESEQUENCEDICTIONARY(
+            fasta
+        )
+
+        dict        = CREATESEQUENCEDICTIONARY.out.dict
+        ch_versions = ch_versions.mix(CREATESEQUENCEDICTIONARY.out.versions)
+    } else {
+        dict        = Channel.fromPath(params.dict).collect()
+    }
+
+    //
+    // Create the STR table file from the FASTA file
+    //
+
+    if (use_dragstr_model && !params.strtablefile) {
+        COMPOSESTRTABLEFILE(
+            fasta,
+            fasta_fai,
+            dict
+        )
+
+        strtablefile = COMPOSESTRTABLEFILE.out.str_table
+        ch_versions  = ch_versions.mix(COMPOSESTRTABLEFILE.out.versions) 
+    } else {
+        strtablefile = Channel.fromPath(params.strtablefile).collect()
+    }
+
+    //
     // Read in samplesheet, validate and stage input files
     //
 
@@ -231,47 +275,6 @@ workflow NF_CMGG_GERMLINE {
              })
 
     peds = inputs.peds.distinct()
-
-    //
-    // Create the FASTA index from the FASTA file
-    //
-
-    if (!fasta_fai) {
-        FAIDX(
-            fasta
-        )
-
-        fasta_fai = FAIDX.out.fai
-        ch_versions = ch_versions.mix(FAIDX.out.versions)
-    } 
-
-    //
-    // Create the sequence dictionary from the FASTA file
-    //
-
-    if (!dict) {
-        CREATESEQUENCEDICTIONARY(
-            fasta
-        )
-
-        dict = CREATESEQUENCEDICTIONARY.out.dict
-        ch_versions = ch_versions.mix(CREATESEQUENCEDICTIONARY.out.versions)
-    } 
-
-    //
-    // Create the STR table file from the FASTA file
-    //
-
-    if (use_dragstr_model && !strtablefile) {
-        COMPOSESTRTABLEFILE(
-            fasta,
-            fasta_fai,
-            dict
-        )
-
-        strtablefile = COMPOSESTRTABLEFILE.out.str_table
-        ch_versions = ch_versions.mix(COMPOSESTRTABLEFILE.out.versions) 
-    } 
 
     //
     // Perform the variant calling
