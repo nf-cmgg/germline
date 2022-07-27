@@ -95,7 +95,6 @@ vep_merged_cache   = params.vep_merged_cache    ? Channel.fromPath(params.vep_me
 vcfanno            = params.vcfanno             ?: Channel.empty()
 
 vcfanno_toml       = params.vcfanno_toml        ? Channel.fromPath(params.vcfanno_toml).collect()       : Channel.empty()
-vcfanno_resources  = params.vcfanno_resources   ? Channel.fromPath(params.vcfanno_resources).collect()  : Channel.empty()
 
 //
 // Check for the presence of EnsemblVEP plugins that use extra files
@@ -200,64 +199,24 @@ workflow NF_CMGG_GERMLINE {
     ch_reports  = Channel.empty()
 
     //
-    // Create the FASTA index from the FASTA file
+    // Create the optional input files if they are not supplied
     //
 
-    if (!params.fasta_fai) {
-        FAIDX(
-            fasta
-        )
+    (fasta_fai, ch_versions)            = params.fasta_fai                           
+        ? [Channel.fromPath(params.fasta_fai).collect(), ch_versions.mix(Channel.empty())]
+        : [FAIDX(fasta).fai, ch_versions.mix(FAIDX.out.versions)]
 
-        fasta_fai   = FAIDX.out.fai
-        ch_versions = ch_versions.mix(FAIDX.out.versions)
-    } else {
-        fasta_fai   = Channel.fromPath(params.fasta_fai).collect()
-    }
+    (dict, ch_versions)                 = params.dict
+        ? [Channel.fromPath(params.dict).collect(), ch_versions.mix(Channel.empty())]
+        : [CREATESEQUENCEDICTIONARY(fasta).dict, ch_versions.mix(CREATESEQUENCEDICTIONARY.out.versions)]
 
-    //
-    // Create the sequence dictionary from the FASTA file
-    //
+    (strtablefile, ch_versions)         = use_dragstr_model && params.strtablefile   
+        ? [Channel.fromPath(params.strtablefile).collect(), ch_versions.mix(Channel.empty())]
+        : [COMPOSESTRTABLEFILE(fasta,fasta_fai,dict).str_table, ch_versions.mix(COMPOSESTRTABLEFILE.out.versions)]
 
-    if (!params.dict) {
-        CREATESEQUENCEDICTIONARY(
-            fasta
-        )
-
-        dict        = CREATESEQUENCEDICTIONARY.out.dict
-        ch_versions = ch_versions.mix(CREATESEQUENCEDICTIONARY.out.versions)
-    } else {
-        dict        = Channel.fromPath(params.dict).collect()
-    }
-
-    //
-    // Create the STR table file from the FASTA file
-    //
-
-    if (use_dragstr_model && !params.strtablefile) {
-        COMPOSESTRTABLEFILE(
-            fasta,
-            fasta_fai,
-            dict
-        )
-
-        strtablefile = COMPOSESTRTABLEFILE.out.str_table
-        ch_versions  = ch_versions.mix(COMPOSESTRTABLEFILE.out.versions) 
-    } else {
-        strtablefile = Channel.fromPath(params.strtablefile).collect()
-    }
-
-    //
-    // Untar the vcfanno resources directory if it is tarzipped
-    //
-
-    if (vcfanno && params.vcfanno_resources.endsWith(".tar.gz")) {
-        UNTAR( [ [], params.vcfanno_resources ])
-
-        vcfanno_resources = UNTAR.out.untar.map({meta, dir -> dir})
-        ch_versions       = ch_versions.mix(UNTAR.out.versions)
-    } else {
-        vcfanno_resources = Channel.fromPath(params.vcfanno_resources).collect()
-    }
+    (vcfanno_resources, ch_versions)    = vcfanno && !params.vcfanno_resources.endsWith(".tar.gz")
+        ? [Channel.fromPath(params.vcfanno_resources).collect(), ch_versions.mix(Channel.empty())]
+        : [UNTAR( [ [], params.vcfanno_resources ]).untar.map({meta, dir -> dir}), ch_versions.mix(UNTAR.out.versions)]
 
     //
     // Read in samplesheet, validate and stage input files
