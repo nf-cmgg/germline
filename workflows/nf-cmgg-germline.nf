@@ -66,6 +66,9 @@ if (params.output_mode == "seqplorer") {
 
 // Input files
 fasta              = params.fasta               ? Channel.fromPath(params.fasta).collect()              : Channel.empty()
+fasta_fai          = params.fasta_fai           ? Channel.fromPath(params.fasta_fai).collect()          : null
+dict               = params.dict                ? Channel.fromPath(params.dict).collect()               : null
+strtablefile       = params.strtablefile        ? Channel.fromPath(params.strtablefile).collect()       : null
 
 // Input values
 output_mode        = params.output_mode         ?: Channel.empty()
@@ -95,6 +98,7 @@ vep_merged_cache   = params.vep_merged_cache    ? Channel.fromPath(params.vep_me
 vcfanno            = params.vcfanno             ?: Channel.empty()
 
 vcfanno_toml       = params.vcfanno_toml        ? Channel.fromPath(params.vcfanno_toml).collect()       : Channel.empty()
+vcfanno_res_inp    = params.vcfanno_resources   ? Channel.fromPath(params.vcfanno_resources).collect()  : Channel.empty()
 
 //
 // Check for the presence of EnsemblVEP plugins that use extra files
@@ -202,21 +206,27 @@ workflow NF_CMGG_GERMLINE {
     // Create the optional input files if they are not supplied
     //
 
-    (fasta_fai, ch_versions)            = params.fasta_fai                           
-        ? [Channel.fromPath(params.fasta_fai).collect(), ch_versions.mix(Channel.empty())]
-        : [FAIDX(fasta).fai, ch_versions.mix(FAIDX.out.versions)]
+    if (!fasta_fai) {
+        fasta_fai   = FAIDX(fasta).fai
+        ch_versions = ch_versions.mix(FAIDX.out.versions)
+    }
 
-    (dict, ch_versions)                 = params.dict
-        ? [Channel.fromPath(params.dict).collect(), ch_versions.mix(Channel.empty())]
-        : [CREATESEQUENCEDICTIONARY(fasta).dict, ch_versions.mix(CREATESEQUENCEDICTIONARY.out.versions)]
+    if (!dict) {
+        dict        = CREATESEQUENCEDICTIONARY(fasta).dict
+        ch_versions = ch_versions.mix(CREATESEQUENCEDICTIONARY.out.versions)
+    }
 
-    (strtablefile, ch_versions)         = use_dragstr_model && params.strtablefile   
-        ? [Channel.fromPath(params.strtablefile).collect(), ch_versions.mix(Channel.empty())]
-        : [COMPOSESTRTABLEFILE(fasta,fasta_fai,dict).str_table, ch_versions.mix(COMPOSESTRTABLEFILE.out.versions)]
+    if (use_dragstr_model && !strtablefile) {
+        strtablefile = COMPOSESTRTABLEFILE(fasta,fasta_fai,dict).str_table
+        ch_versions  = ch_versions.mix(COMPOSESTRTABLEFILE.out.versions)
+    }
 
-    (vcfanno_resources, ch_versions)    = vcfanno && !params.vcfanno_resources.endsWith(".tar.gz")
-        ? [Channel.fromPath(params.vcfanno_resources).collect(), ch_versions.mix(Channel.empty())]
-        : [UNTAR( [ [], params.vcfanno_resources ]).untar.map({meta, dir -> dir}), ch_versions.mix(UNTAR.out.versions)]
+    if (output_mode == "seqplorer" && vcfanno && params.vcfanno_resources.endsWith(".tar.gz")) {
+        vcfanno_resources = UNTAR( vcfanno_res_inp.map({dir -> [ [], dir ]}) ).untar.map({meta, dir -> dir})
+        ch_versions       = ch_versions.mix(UNTAR.out.versions)
+    } else {
+        vcfanno_resources = vcfanno_res_inp
+    }
 
     //
     // Read in samplesheet, validate and stage input files
