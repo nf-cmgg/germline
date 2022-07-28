@@ -15,23 +15,23 @@ You will need to create a samplesheet with information about the samples you wou
 The `sample` identifiers have to be the same when you have re-sequenced the same sample more than once e.g. to increase sequencing depth. A `family_id` also needs to be supplied to let the pipeline know on what samples it needs to perform joint-genotyping. Below is an example of how the samplesheet should look like.
 
 ```console
-sample,family_id,cram,crai,bed
-SAMPLE_1,FAMILY_ID1,SAMPLE_1.cram,SAMPLE_1.crai,SAMPLE_1.bed
-SAMPLE_2,FAMILY_ID1,SAMPLE_2.cram,SAMPLE_2.crai,SAMPLE_2.bed
-SAMPLE_3,FAMILY_ID2,SAMPLE_3.cram,SAMPLE_3.crai,SAMPLE_3.bed
+sample,cram,crai,bed,ped
+SAMPLE_1,SAMPLE_1.cram,SAMPLE_1.crai,SAMPLE_1.bed,FAMILY_1.ped
+SAMPLE_2,SAMPLE_2.cram,SAMPLE_2.crai,SAMPLE_2.bed,FAMILY_1.ped
+SAMPLE_3,SAMPLE_3.cram,SAMPLE_3.crai,SAMPLE_3.bed,FAMILY_2.ped
 ```
 
 ### Full samplesheet
 
 The samplesheet can have as many columns as you desire, however, there is a strict requirement for the first 5 columns to match those defined in the table below.
 
-| Column      | Description                                                                                                                                                                            |
-| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sample`    | Custom sample name. This entry will be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`). |
-| `family_id` | Custom family ID. Spaces in family IDs are automatically converted to underscores (`_`).                                                                                               |
-| `cram`      | Full path to CRAM file fetched from the preprocessing pipeline. File has to have the extension ".cram".                                                                                |
-| `crai`      | Full path to CRAM index file fetched from the preprocessing pipeline. File has to have the extension ".crai" or ".bai".                                                                |
-| `bed`       | Full path to BED file fetched containing the regions to call on. File has to have the extension ".bed".                                                                                |
+| Column   | Description                                                                                                                                                                            |
+| -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sample` | Custom sample name. This entry will be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`). |
+| `cram`   | Full path to CRAM file fetched from the preprocessing pipeline. File has to have the extension ".cram".                                                                                |
+| `crai`   | Full path to CRAM index file fetched from the preprocessing pipeline. File has to have the extension ".crai" or ".bai".                                                                |
+| `bed`    | Full path to BED file containing the regions to call on. File has to have the extension ".bed".                                                                                        |
+| `ped`    | Full path to PED file containing the relational information between samples in the same family to call on. File has to have the extension ".ped".                                      |
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
@@ -40,7 +40,7 @@ An [example samplesheet](../assets/samplesheet.csv) has been provided with the p
 The typical command for running the pipeline is as follows:
 
 ```console
-nextflow run main.nf --input samplesheet.csv --outdir <OUTDIR> --genome GRCh38 -profile docker
+nextflow run main.nf --input samplesheet.csv --outdir <OUTDIR> --scatter_count 5 --fasta genome.fasta -profile docker
 ```
 
 This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.

@@ -4,21 +4,20 @@
 
 include { ENSEMBLVEP                          } from '../../modules/nf-core/modules/ensemblvep/main'
 include { VCFANNO                             } from '../../modules/nf-core/modules/vcfanno/main'
-include { UNTAR                               } from '../../modules/nf-core/modules/untar/main'
 include { TABIX_BGZIP as BGZIP_ANNOTATED_VCFS } from '../../modules/nf-core/modules/tabix/bgzip/main'
 
 workflow ANNOTATION {
     take:
-        vcfs              // channel: [mandatory] [ meta, vcfs ] => The post-processed VCFs
-        fasta             // channel: [mandatory] [ fasta ] => fasta reference
-        genome            // value:   [mandatory] Which genome was used to align the samples to
-        species           // value:   [mandatory] Which species the samples are from
-        vep_cache_version // value:   [mandatory] which version of VEP to use
-        vep_merged_cache  // channel: [optional]  [ vep_merged_cache ] => The VEP cache to use
-        vep_extra_files   // channel: [optional]  [ file_1, file_2, file_3, ... ] => All files necessary for using the desired plugins
-        vcfanno           // boolean: [mandatory] Whether or not annotation using VCFanno should be performed too
-        vcfanno_toml      // channel: [mandatory if vcfanno == true] [ toml_config_file ] => The TOML config file for VCFanno
-        vcfanno_resources // channel: [mandatory if vcfanno == true] [ resource_dir ] => The directory containing the reference files for VCFanno
+        vcfs                 // channel: [mandatory] [ meta, vcfs ] => The post-processed VCFs
+        fasta                // channel: [mandatory] [ fasta ] => fasta reference
+        genome               // value:   [mandatory] Which genome was used to align the samples to
+        species              // value:   [mandatory] Which species the samples are from
+        vep_cache_version    // value:   [mandatory] which version of VEP to use
+        vep_merged_cache     // channel: [optional]  [ vep_merged_cache ] => The VEP cache to use
+        vep_extra_files      // channel: [optional]  [ file_1, file_2, file_3, ... ] => All files necessary for using the desired plugins
+        vcfanno              // boolean: [mandatory] Whether or not annotation using VCFanno should be performed too
+        vcfanno_toml         // channel: [mandatory if vcfanno == true] [ toml_config_file ] => The TOML config file for VCFanno
+        vcfanno_resources    // channel: [mandatory if vcfanno == true] [ resource_dir ] => The directory containing the reference files for VCFanno
 
     main:
 
@@ -44,20 +43,10 @@ workflow ANNOTATION {
     ch_versions         = ch_versions.mix(ENSEMBLVEP.out.versions)
 
     if (vcfanno) {
-        if (vcfanno_resources ==~ /^.*\.tar\.gz$/) {
-            UNTAR([[], vcfanno_resources])
-
-            resource_dir = UNTAR.out.untar.map({meta, dir -> dir})
-            ch_versions  = ch_versions.mix(UNTAR.out.versions)
-        }
-        else {
-            resource_dir = vcfanno_resources
-        }
-
         VCFANNO(
             ENSEMBLVEP.out.vcf.map({ meta, vcf -> [ meta, vcf, [] ] }),
             vcfanno_toml,
-            resource_dir
+            vcfanno_resources
         )
 
         ch_annotated_vcfs = VCFANNO.out.vcf

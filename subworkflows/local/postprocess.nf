@@ -104,20 +104,20 @@ workflow POST_PROCESS {
 
     }
 
+    //
+    // Create indexes for the combined GVCFs
+    //
+
+    TABIX_COMBINED_GVCFS(
+        combined_gvcfs
+    )
+
+    ch_versions = ch_versions.mix(TABIX_COMBINED_GVCFS.out.versions)
+
+    indexed_combined_gvcfs = combined_gvcfs
+                            .combine(TABIX_COMBINED_GVCFS.out.tbi, by:0)
+
     if (!skip_genotyping){
-
-        //
-        // Create indexes for the combined GVCFs
-        //
-
-        TABIX_COMBINED_GVCFS(
-            combined_gvcfs
-        )
-
-        ch_versions = ch_versions.mix(TABIX_COMBINED_GVCFS.out.versions)
-
-        indexed_combined_gvcfs = combined_gvcfs
-                                .combine(TABIX_COMBINED_GVCFS.out.tbi, by:0)
                                 
         //
         // Genotype the combined GVCFs
@@ -147,19 +147,6 @@ workflow POST_PROCESS {
         ch_versions = ch_versions.mix(BGZIP_GENOTYPED_VCFS.out.versions)
 
     } else {
-
-        //
-        // Create indexes for the combined GVCFs
-        //
-
-        TABIX_COMBINED_GVCFS(
-            combined_gvcfs
-        )
-
-        ch_versions = ch_versions.mix(TABIX_COMBINED_GVCFS.out.versions)
-
-        indexed_combined_gvcfs = combined_gvcfs
-                                .combine(TABIX_COMBINED_GVCFS.out.tbi, by:0)
 
         //
         // Remove the ref blocks from the GVCF
