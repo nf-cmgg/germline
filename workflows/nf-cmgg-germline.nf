@@ -222,7 +222,7 @@ workflow NF_CMGG_GERMLINE {
     }
 
     if (output_mode == "seqplorer" && vcfanno && params.vcfanno_resources.endsWith(".tar.gz")) {
-        vcfanno_resources = UNTAR( vcfanno_res_inp.map({dir -> [ [], dir ]}) ).untar.map({meta, dir -> dir})
+        vcfanno_resources = UNTAR(vcfanno_res_inp.map({dir -> [ [], dir ]})).untar.map({meta, dir -> dir})
         ch_versions       = ch_versions.mix(UNTAR.out.versions)
     } else {
         vcfanno_resources = vcfanno_res_inp
