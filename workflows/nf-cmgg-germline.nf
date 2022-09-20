@@ -163,7 +163,6 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
 
-include { INPUT_CHECK              } from '../subworkflows/local/input_check'
 include { GERMLINE_VARIANT_CALLING } from '../subworkflows/local/germline_variant_calling'
 include { POST_PROCESS             } from '../subworkflows/local/postprocess'
 include { VCF_QC                   } from '../subworkflows/local/vcf_qc'
@@ -232,20 +231,16 @@ workflow NF_CMGG_GERMLINE {
     // Read in samplesheet, validate and stage input files
     //
 
-    INPUT_CHECK (
-        ch_input
-    )
-
-    ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
-
-    inputs = INPUT_CHECK.out.crams
+    inputs = parse_input(ch_input).view()
              .multiMap({meta, cram, crai, bed, ped ->
-                 new_meta_ped = [:]
-                 new_meta_ped.id = meta.family
-                 new_meta_ped.family = meta.family
+                 ped_family_id = get_family_id_from_ped(ped)
 
+                 new_meta_ped = [:]
                  new_meta = meta.clone()
-                 new_meta.samplename = meta.id
+
+                 new_meta_ped.id     = meta.family ?: ped_family_id
+                 new_meta_ped.family = meta.family ?: ped_family_id
+                 new_meta.family     = meta.family ?: ped_family_id
 
                  beds:                                [new_meta, bed]
                  germline_variant_calling_input_cram: [new_meta, cram, crai]
@@ -380,6 +375,161 @@ workflow.onComplete {
         NfcoreTemplate.email(workflow, params, summary_params, projectDir, log, multiqc_report)
     }
     NfcoreTemplate.summary(workflow, params, log)
+}
+
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    FUNCTIONS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
+
+def parse_input(input_csv) {
+
+    // The samplesheet schema (change this to adjust the input check)
+    def samplesheet_schema = [
+        'columns': [
+            'sample': [
+                'content': 'meta',
+                'meta_name': 'id,samplename',
+                'pattern': '',
+            ],
+            'family': [
+                'content': 'meta',
+                'meta_name': 'family',
+                'pattern': ''
+            ],
+            'cram': [
+                'content': 'file',
+                'pattern': '^.*\\.cram$',
+            ],
+            'crai': [
+                'content': 'file',
+                'pattern': '^.*\\.crai$',
+            ],
+            'bed': [
+                'content': 'file',
+                'pattern': '^.*\\.bed$',
+            ],
+            'ped': [
+                'content': 'file',
+                'pattern': '^.*\\.ped$',
+            ]
+        ],
+        'required': ['sample','cram'],
+    ]    
+
+    // Don't change these variables    
+    def row_count = 1
+    def all_columns = samplesheet_schema.columns.keySet().collect()
+    def mandatory_columns = samplesheet_schema.required
+
+    // Header checks
+    Channel.value(input_csv).splitCsv(strip:true).first().map({ row ->
+
+        if(row != all_columns) {
+            def commons = all_columns.intersect(row)
+            def diffs = all_columns.plus(row)
+            diffs.removeAll(commons)
+
+            if(diffs.size() > 0){
+                def missing_columns = []
+                def wrong_columns = []
+                for(diff : diffs){
+                    diff in all_columns ? missing_columns.add(diff) : wrong_columns.add(diff)
+                }
+                if(missing_columns.size() > 0){
+                    exit 1, "[Samplesheet Error] The column(s) $missing_columns is/are not present. The header should look like: $all_columns"
+                }
+                else {
+                    exit 1, "[Samplesheet Error] The column(s) $wrong_columns should not be in the header. The header should look like: $all_columns"
+                }
+            }
+            else {
+                exit 1, "[Samplesheet Error] The columns $row are not in the right order. The header should look like: $all_columns"
+            }
+
+        }
+    })
+
+    // Field checks + returning the channels
+    Channel.value(input_csv).splitCsv(header:true, strip:true).map({ row ->
+
+        row_count++
+
+        // Check the mandatory columns
+        def missing_mandatory_columns = []
+        for(column : mandatory_columns) {
+            row[column] ?: missing_mandatory_columns.add(column)
+        }
+        if(missing_mandatory_columns.size > 0){
+            exit 1, "[Samplesheet Error] The mandatory column(s) $missing_mandatory_columns is/are empty on line $row_count"
+        }
+
+        def output = []
+        def meta = [:]
+        for(col : samplesheet_schema.columns) {
+            key = col.key
+            content = row[key]
+            
+            if(!(content ==~ col.value['pattern']) && col.value['pattern'] != '' && content != '') {
+                exit 1, "[Samplesheet Error] The content of column '$key' on line $row_count does not match the pattern '${col.value['pattern']}'"
+            }
+
+            if(col.value['content'] == 'file'){
+                output.add(content ? file(content, checkIfExists:true) : [])
+            }
+            else if(col.value['content'] == 'meta' && content != ''){
+                for(meta_name : col.value['meta_name'].split(",")){
+                    meta[meta_name] = content.replace(' ', '_')
+                }
+            }
+        }
+
+        output.add(0, meta)
+        return output
+    })
+    
+}
+
+def get_family_id_from_ped(ped_file){
+
+    // Read the PED file
+    def ped = file(ped_file).text
+
+    // Perform a validity check on the PED file since vcf2db is picky and not capable of giving good error messages
+    comment_count = 0
+    line_count = 0
+
+    for( line : ped.readLines()) {
+        line_count++
+        if (line_count == 1 && line ==~ /^#.*$/) {
+            continue
+        }
+        else if (line_count > 1 && line ==~ /^#.*$/) {
+            exit 1, "[PED file error] A commented line was found on line ${line_count} in ${ped_file}, the only commented line allowed is an optional header on line 1."
+        }
+        else if (line_count == 1 && line ==~ /^#.* $/) {
+            exit 1, "[PED file error] The header in ${ped_file} contains a trailing space, please remove this."
+        }
+        else if (line ==~ /^.+#.*$/) {
+            exit 1, "[PED file error] A '#' has been found as a non-starting character on line ${line_count} in ${ped_file}, this is an illegal character and should be removed."
+        }
+        else if (line ==~ /^[^#].* .*$/) {
+            exit 1, "[PED file error] A space has been found on line ${line_count} in ${ped_file}, please only use tabs to seperate the values (and change spaces in names to '_')."
+        }
+        else if ((line ==~ /^(\w+\t)+\w+$/) == false) {
+            exit 1, "[PED file error] An illegal character has been found on line ${line_count} in ${ped_file}, only a-z; A-Z; 0-9 and '_' are allowed as column values."
+        }
+        else if ((line ==~ /^(\w+\t){5}\w+$/) == false) {
+            exit 1, "[PED file error] ${ped_file} should contain exactly 6 tab-delimited columns (family_id    individual_id    paternal_id    maternal_id    sex    phenotype). This is not the case on line ${line_count}."
+        }
+    }
+    if (ped =~ /\n$/) {
+        exit 1, "[PED file error] An empty new line has been detected at the end of ${ped_file}, please remove this line."
+    }
+
+    // get family_id
+    return (ped =~ /\n([^#]\w+)/)[0][1]
 }
 
 /*

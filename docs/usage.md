@@ -12,13 +12,13 @@ You will need to create a samplesheet with information about the samples you wou
 
 ### Example of the samplesheet
 
-The `sample` identifiers have to be the same when you have re-sequenced the same sample more than once e.g. to increase sequencing depth. A `family_id` also needs to be supplied to let the pipeline know on what samples it needs to perform joint-genotyping. Below is an example of how the samplesheet should look like.
+The `sample` identifiers have to be the same when you have re-sequenced the same sample more than once e.g. to increase sequencing depth. Either the `ped` or `family` field can be used to specify the family name. The pipeline automatically extracts the family id from the `ped` file if the `family` field is empty. The `family` is used to specify on which samples the joint-genotyping should be performed. Below is an example of how the samplesheet could look like.
 
 ```console
-sample,cram,crai,bed,ped
-SAMPLE_1,SAMPLE_1.cram,SAMPLE_1.crai,SAMPLE_1.bed,FAMILY_1.ped
-SAMPLE_2,SAMPLE_2.cram,SAMPLE_2.crai,SAMPLE_2.bed,FAMILY_1.ped
-SAMPLE_3,SAMPLE_3.cram,SAMPLE_3.crai,SAMPLE_3.bed,FAMILY_2.ped
+sample,family,cram,crai,bed,ped
+SAMPLE_1,FAMILY_1,SAMPLE_1.cram,SAMPLE_1.crai,SAMPLE_1.bed,FAMILY_1.ped
+SAMPLE_2,FAMILY_1,SAMPLE_2.cram,SAMPLE_2.crai,SAMPLE_2.bed,FAMILY_1.ped
+SAMPLE_3,FAMILY_2,SAMPLE_3.cram,SAMPLE_3.crai,SAMPLE_3.bed,FAMILY_2.ped
 ```
 
 ### Full samplesheet
@@ -28,6 +28,7 @@ The samplesheet can have as many columns as you desire, however, there is a stri
 | Column   | Description                                                                                                                                                                            |
 | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `sample` | Custom sample name. This entry will be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`). |
+| `family` | The family ID of the specified sample. This field is optional, as the family id can also be extracted from the `ped` file. Spaces in sample names are automatically converted to underscores (`_`). |
 | `cram`   | Full path to CRAM file fetched from the preprocessing pipeline. File has to have the extension ".cram".                                                                                |
 | `crai`   | Full path to CRAM index file fetched from the preprocessing pipeline. File has to have the extension ".crai" or ".bai".                                                                |
 | `bed`    | Full path to BED file containing the regions to call on. File has to have the extension ".bed".                                                                                        |
