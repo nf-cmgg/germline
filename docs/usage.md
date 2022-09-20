@@ -25,14 +25,14 @@ SAMPLE_3,FAMILY_2,SAMPLE_3.cram,SAMPLE_3.crai,SAMPLE_3.bed,FAMILY_2.ped
 
 The samplesheet can have as many columns as you desire, however, there is a strict requirement for the first 5 columns to match those defined in the table below.
 
-| Column   | Description                                                                                                                                                                            |
-| -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sample` | Custom sample name. This entry will be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`). |
+| Column   | Description                                                                                                                                                                                         |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sample` | Custom sample name. This entry will be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`).              |
 | `family` | The family ID of the specified sample. This field is optional, as the family id can also be extracted from the `ped` file. Spaces in sample names are automatically converted to underscores (`_`). |
-| `cram`   | Full path to CRAM file fetched from the preprocessing pipeline. File has to have the extension ".cram".                                                                                |
-| `crai`   | Full path to CRAM index file fetched from the preprocessing pipeline. File has to have the extension ".crai" or ".bai".                                                                |
-| `bed`    | Full path to BED file containing the regions to call on. File has to have the extension ".bed".                                                                                        |
-| `ped`    | Full path to PED file containing the relational information between samples in the same family to call on. File has to have the extension ".ped".                                      |
+| `cram`   | Full path to CRAM file fetched from the preprocessing pipeline. File has to have the extension ".cram".                                                                                             |
+| `crai`   | Full path to CRAM index file fetched from the preprocessing pipeline. File has to have the extension ".crai" or ".bai".                                                                             |
+| `bed`    | Full path to BED file containing the regions to call on. File has to have the extension ".bed".                                                                                                     |
+| `ped`    | Full path to PED file containing the relational information between samples in the same family to call on. File has to have the extension ".ped".                                                   |
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
