@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$id": "https://raw.githubusercontent.com/nf-core/tva/master/assets/schema_input.json",
-    "title": "nf-core/tva pipeline - params.input schema",
+    "$id": "https://raw.githubusercontent.com/nf-core/nf-cmgg-germline/master/assets/schema_input.json",
+    "title": "nf-core/nf-cmgg-germline pipeline - params.input schema",
     "description": "Schema for the file provided with params.input",
     "type": "array",
     "items": {

@@ -1,4 +1,4 @@
-# nf-core/tva: Output
+# nf-core/nf-cmgg-germline: Output
 
 ## Introduction
 
