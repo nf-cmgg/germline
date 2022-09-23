@@ -4,4 +4,4 @@ contact_links:
     about: Please join the nf-core community here
   - name: "Slack #nf-cmgg-germline channel"
     url: https://nfcore.slack.com/channels/nf-cmgg-germline
-    about: Discussion about the CenterForMedicalGeneticsGhent/nf-cmgg-germline pipeline
+    about: Discussion about the nf-core/nf-cmgg-germline pipeline

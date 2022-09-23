@@ -1,4 +1,4 @@
-# CenterForMedicalGeneticsGhent/nf-cmgg-germline: Output
+# nf-core/nf-cmgg-germline: Output
 
 ## Introduction
 

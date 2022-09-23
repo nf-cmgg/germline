@@ -4,15 +4,15 @@
   |\\ | |__  __ /  ` /  \\ |__) |__         }  {
   | \\| |       \\__, \\__/ |  \\ |___     \\`-._,-`-,
                                         `._,._,'
-  CenterForMedicalGeneticsGhent/nf-cmgg-germline v${version}
+  nf-core/nf-cmgg-germline v${version}
 ----------------------------------------------------
 Run Name: $runName
 
 <% if (success){
-    out << "## CenterForMedicalGeneticsGhent/nf-cmgg-germline execution completed successfully! ##"
+    out << "## nf-core/nf-cmgg-germline execution completed successfully! ##"
 } else {
     out << """####################################################
-## CenterForMedicalGeneticsGhent/nf-cmgg-germline execution completed unsuccessfully! ##
+## nf-core/nf-cmgg-germline execution completed unsuccessfully! ##
 ####################################################
 The exit status of the task that caused the workflow execution to fail was: $exitStatus.
 The full error message was:
@@ -35,5 +35,5 @@ Pipeline Configuration:
 <% out << summary.collect{ k,v -> " - $k: $v" }.join("\n") %>
 
 --
-CenterForMedicalGeneticsGhent/nf-cmgg-germline
-https://github.com/CenterForMedicalGeneticsGhent/nf-cmgg-germline
+nf-core/nf-cmgg-germline
+https://github.com/nf-core/nf-cmgg-germline

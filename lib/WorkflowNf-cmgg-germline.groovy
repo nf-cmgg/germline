@@ -1,5 +1,5 @@
 //
-// This file holds several functions specific to the workflow/nf-cmgg-germline.nf in the CenterForMedicalGeneticsGhent/nf-cmgg-germline pipeline
+// This file holds several functions specific to the workflow/nf-cmgg-germline.nf in the nf-core/nf-cmgg-germline pipeline
 //
 
 class WorkflowNf-cmgg-germline {
