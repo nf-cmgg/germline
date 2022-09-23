@@ -197,6 +197,8 @@ workflow POST_PROCESS {
     ch_versions = ch_versions.mix(MERGE_VCF_HEADERS.out.versions)
     ch_versions = ch_versions.mix(BGZIP_PED_VCFS.out.versions)
 
+    
+
     //
     // Filter the variants 
     //

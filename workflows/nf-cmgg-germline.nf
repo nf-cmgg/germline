@@ -231,7 +231,7 @@ workflow NF_CMGG_GERMLINE {
     // Read in samplesheet, validate and stage input files
     //
 
-    inputs = parse_input(ch_input).view()
+    inputs = parse_input(ch_input)
              .multiMap({meta, cram, crai, bed, ped ->
                  ped_family_id = get_family_id_from_ped(ped)
 
