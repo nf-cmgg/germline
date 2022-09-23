@@ -1,9 +1,9 @@
 #!/usr/bin/env nextflow
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    nf-core/nf-cmgg-germline
+    CenterForMedicalGeneticsGhent/nf-cmgg-germline
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Github : https://github.com/nf-core/nf-cmgg-germline
+    Github : https://github.com/CenterForMedicalGeneticsGhent/nf-cmgg-germline
 Website: https://nf-co.re/nf-cmgg-germline
     Slack  : https://nfcore.slack.com/channels/nf-cmgg-germline
 ----------------------------------------------------------------------------------------
@@ -36,7 +36,7 @@ WorkflowMain.initialise(workflow, params, log)
 include { NF-CMGG-GERMLINE } from './workflows/nf-cmgg-germline'
 
 //
-// WORKFLOW: Run main nf-core/nf-cmgg-germline analysis pipeline
+// WORKFLOW: Run main CenterForMedicalGeneticsGhent/nf-cmgg-germline analysis pipeline
 //
 workflow NFCORE_NF-CMGG-GERMLINE {
     NF-CMGG-GERMLINE ()

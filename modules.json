@@ -1,6 +1,6 @@
 {
-    "name": "nf-core/nf-cmgg-germline",
-    "homePage": "https://github.com/nf-core/nf-cmgg-germline",
+    "name": "CenterForMedicalGeneticsGhent/nf-cmgg-germline",
+    "homePage": "https://github.com/CenterForMedicalGeneticsGhent/nf-cmgg-germline",
     "repos": {
         "nf-core/modules": {
             "git_url": "https://github.com/nf-core/modules.git",

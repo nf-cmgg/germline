@@ -10,7 +10,7 @@ on:
 jobs:
   run-tower:
     name: Run AWS full tests
-    if: github.repository == 'nf-core/nf-cmgg-germline'
+    if: github.repository == 'CenterForMedicalGeneticsGhent/nf-cmgg-germline'
     runs-on: ubuntu-latest
     steps:
       - name: Launch workflow via tower
