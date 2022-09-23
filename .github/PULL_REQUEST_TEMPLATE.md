@@ -1,7 +1,7 @@
 <!--
-# nf-cmgg-germline pull request
+# CenterForMedicalGeneticsGhent/nf-cmgg-germline pull request
 
-Many thanks for contributing to nf-cmgg-germline!
+Many thanks for contributing to CenterForMedicalGeneticsGhent/nf-cmgg-germline!
 
 Please fill in the appropriate checklist below (delete whatever is not relevant).
 These are the most common things requested on pull requests (PRs).
