@@ -48,10 +48,11 @@ jobs:
           sudo rm -rf "$AGENT_TOOLSDIRECTORY"
           $CONDA/bin/conda install -c bioconda nf-test
 
+
       - name: Run pipeline with tests settings
         uses: Wandalen/wretry.action@v1.0.11
         with:
-          command: nf-test test ${{ matrix.test }}.test
+          command: $CONDA/bin/nf-test test ${{ matrix.test }}.test
           attempt_limit: 3
 
       - name: Output log on failure
