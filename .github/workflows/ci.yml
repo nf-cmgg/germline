@@ -44,6 +44,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          export NEXTFLOW_HOME=$(which nextflow)
           sudo rm -rf "/usr/local/share/boost"
           sudo rm -rf "$AGENT_TOOLSDIRECTORY"
           sudo bash; mkdir /opt/nf-test; cd /opt/nf-test; wget https://github.com/askimed/nf-test/releases/download/v0.6.0/nf-test-0.6.0.tar.gz; tar xvfz nf-test-0.6.0.tar.gz; chmod +x nf-test;
