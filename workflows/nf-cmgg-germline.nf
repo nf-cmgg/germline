@@ -367,6 +367,7 @@ workflow NF_CMGG_GERMLINE {
         []
     )
 
+    // Test comment to be removed
 }
 
 
