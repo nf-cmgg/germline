@@ -59,14 +59,14 @@ jobs:
         if: failure()
         run: |
           sudo apt install bat > /dev/null
-          batcat --decorations=always --color=always /tmp/pytest_workflow_*/*/log.{out,err}
+          batcat --decorations=always --color=always .nf-test/tests/*/meta/std.{out,err}
       - name: Upload logs on failure
         if: failure()
         uses: actions/upload-artifact@v2
         with:
           name: nf-test-logs
           path: |
-            .nf-test/tests/*/meta.nextflow.log
+            .nf-test/tests/*/meta/nextflow.log
             .nf-test/tests/*/meta/std.out
             .nf-test/tests/*/meta/std.err
             .nf-test/tests/*/meta/trace.csv
