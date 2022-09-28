@@ -2,20 +2,20 @@
 // GENOTYPE
 //
 
-include { GATK4_GENOTYPEGVCFS as GENOTYPE_GVCFS  } from '../../modules/nf-core/modules/gatk4/genotypegvcfs/main'
-include { GATK4_COMBINEGVCFS as COMBINEGVCFS     } from '../../modules/nf-core/modules/gatk4/combinegvcfs/main'
-include { GATK4_REBLOCKGVCF as REBLOCKGVCF       } from '../../modules/nf-core/modules/gatk4/reblockgvcf/main'
-include { TABIX_TABIX as TABIX_GVCFS             } from '../../modules/nf-core/modules/tabix/tabix/main'
-include { TABIX_TABIX as TABIX_COMBINED_GVCFS    } from '../../modules/nf-core/modules/tabix/tabix/main'
-include { TABIX_BGZIP as BGZIP_GENOTYPED_VCFS    } from '../../modules/nf-core/modules/tabix/bgzip/main'
-include { TABIX_BGZIP as BGZIP_PED_VCFS          } from '../../modules/nf-core/modules/tabix/bgzip/main'
-include { RTGTOOLS_PEDFILTER as PEDFILTER        } from '../../modules/nf-core/modules/rtgtools/pedfilter/main'
-include { MERGE_VCF_HEADERS                      } from '../../modules/local/merge_vcf_headers'
-include { BCFTOOLS_FILTER as FILTER_SNPS         } from '../../modules/nf-core/modules/bcftools/filter/main'
-include { BCFTOOLS_FILTER as FILTER_INDELS       } from '../../modules/nf-core/modules/bcftools/filter/main'
-include { BCFTOOLS_MERGE                         } from '../../modules/nf-core/modules/bcftools/merge/main'
-include { BCFTOOLS_CONVERT                       } from '../../modules/nf-core/modules/bcftools/convert/main'
-include { BCFTOOLS_VIEW                          } from '../../modules/nf-core/modules/bcftools/view/main'
+include { GATK4_GENOTYPEGVCFS as GENOTYPE_GVCFS     } from '../../modules/nf-core/modules/gatk4/genotypegvcfs/main'
+include { GATK4_COMBINEGVCFS as COMBINEGVCFS        } from '../../modules/nf-core/modules/gatk4/combinegvcfs/main'
+include { GATK4_REBLOCKGVCF as REBLOCKGVCF          } from '../../modules/nf-core/modules/gatk4/reblockgvcf/main'
+include { TABIX_TABIX as TABIX_GVCFS                } from '../../modules/nf-core/modules/tabix/tabix/main'
+include { TABIX_TABIX as TABIX_COMBINED_GVCFS       } from '../../modules/nf-core/modules/tabix/tabix/main'
+include { TABIX_BGZIP as BGZIP_GENOTYPED_VCFS       } from '../../modules/nf-core/modules/tabix/bgzip/main'
+include { TABIX_BGZIPTABIX as BGZIP_TABIX_PED_VCFS  } from '../../modules/nf-core/modules/tabix/bgziptabix/main'
+include { RTGTOOLS_PEDFILTER as PEDFILTER           } from '../../modules/nf-core/modules/rtgtools/pedfilter/main'
+include { MERGE_VCF_HEADERS                         } from '../../modules/local/merge_vcf_headers'
+include { BCFTOOLS_FILTER as FILTER_SNPS            } from '../../modules/nf-core/modules/bcftools/filter/main'
+include { BCFTOOLS_FILTER as FILTER_INDELS          } from '../../modules/nf-core/modules/bcftools/filter/main'
+include { BCFTOOLS_MERGE                            } from '../../modules/nf-core/modules/bcftools/merge/main'
+include { BCFTOOLS_CONVERT                          } from '../../modules/nf-core/modules/bcftools/convert/main'
+include { BCFTOOLS_VIEW                             } from '../../modules/nf-core/modules/bcftools/view/main'
 
 workflow POST_PROCESS {
     take:
@@ -190,14 +190,14 @@ workflow POST_PROCESS {
         merge_vcf_headers_input
     )
 
-    BGZIP_PED_VCFS( 
+    BGZIP_TABIX_PED_VCFS( 
         MERGE_VCF_HEADERS.out.vcf
     )
 
     ch_versions = ch_versions.mix(MERGE_VCF_HEADERS.out.versions)
-    ch_versions = ch_versions.mix(BGZIP_PED_VCFS.out.versions)
+    ch_versions = ch_versions.mix(BGZIP_TABIX_PED_VCFS.out.versions)
 
-    
+    vcfs_without_index = BGZIP_TABIX_PED_VCFS.out.gz_tbi.map({ meta, vcf, tbi -> [ meta, vcf ]})
 
     //
     // Filter the variants 
@@ -205,7 +205,7 @@ workflow POST_PROCESS {
 
     if (output_mode == "seqplorer") {
         FILTER_SNPS(
-            BGZIP_PED_VCFS.out.output
+            vcfs_without_index
         )
 
         FILTER_INDELS(
@@ -218,7 +218,7 @@ workflow POST_PROCESS {
         post_processed_vcfs = FILTER_INDELS.out.vcf
     }
     else {
-        post_processed_vcfs = BGZIP_PED_VCFS.out.output
+        post_processed_vcfs = vcfs_without_index
     }
 
     emit:
