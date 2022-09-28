@@ -16,8 +16,8 @@ WorkflowNfCmggGermline.initialise(params, log)
 // Check input path parameters to see if they exist
 //
 
-def checkPathParamList = [ 
-    params.fasta, 
+def checkPathParamList = [
+    params.fasta,
     params.fasta_fai,
     params.dict,
     params.strtablefile,
@@ -47,7 +47,7 @@ if (params.output_mode == "seqplorer") {
 
     // Check if a species is entered
     if (!params.species) { exit 1, "A species should be supplied for seqplorer mode (use --species)"}
-    
+
     // Check if all vcfanno files are supplied when vcfanno should be used
     if (params.vcfanno && (!params.vcfanno_toml || !params.vcfanno_resources)) {
         exit 1, "A TOML file and resource directory should be supplied when using vcfanno (use --vcfanno_toml and --vcfanno_resources)"
@@ -95,7 +95,7 @@ species            = params.species             ?: Channel.empty()
 
 vep_merged_cache   = params.vep_merged_cache    ? Channel.fromPath(params.vep_merged_cache).collect()   : []
 
-vcfanno            = params.vcfanno             ?: Channel.empty()
+vcfanno            = params.vcfanno
 
 vcfanno_toml       = params.vcfanno_toml        ? Channel.fromPath(params.vcfanno_toml).collect()       : Channel.empty()
 vcfanno_res_inp    = params.vcfanno_resources   ? Channel.fromPath(params.vcfanno_resources).collect()  : Channel.empty()
@@ -220,11 +220,15 @@ workflow NF_CMGG_GERMLINE {
         ch_versions  = ch_versions.mix(COMPOSESTRTABLEFILE.out.versions)
     }
 
-    if (output_mode == "seqplorer" && vcfanno && params.vcfanno_resources.endsWith(".tar.gz")) {
-        vcfanno_resources = UNTAR(vcfanno_res_inp.map({dir -> [ [], dir ]})).untar.map({meta, dir -> dir})
-        ch_versions       = ch_versions.mix(UNTAR.out.versions)
+    if (output_mode == "seqplorer" && vcfanno) {
+        vcfanno_resources = params.vcfanno_resources.endsWith(".tar.gz") ?
+                                UNTAR(vcfanno_res_inp.map({dir -> [ [], dir ]})).untar.map({meta, dir -> dir}) :
+                                vcfanno_res_inp
+        ch_versions       = params.vcfanno_resources.endsWith(".tar.gz") ?
+                                ch_versions.mix(UNTAR.out.versions) :
+                                ch_versions
     } else {
-        vcfanno_resources = vcfanno_res_inp
+        vcfanno_resources = []
     }
 
     //
@@ -320,7 +324,7 @@ workflow NF_CMGG_GERMLINE {
 
         ch_versions = ch_versions.mix(ANNOTATION.out.versions)
         ch_reports  = ch_reports.mix(ANNOTATION.out.reports)
-    }  
+    }
 
     //
     // Create Gemini-compatible database files
@@ -329,7 +333,7 @@ workflow NF_CMGG_GERMLINE {
     if (output_mode == "seqplorer") {
         vcf2db_input = ANNOTATION.out.annotated_vcfs
                        .combine(peds, by: 0)
-        
+
         VCF2DB(
             vcf2db_input
         )
@@ -350,12 +354,12 @@ workflow NF_CMGG_GERMLINE {
     //
 
     ch_multiqc_files = Channel.empty()
-    
+
     ch_multiqc_files = ch_multiqc_files.mix(
                                         ch_versions_yaml,
                                         ch_reports.collect()
                                         )
-                                        
+
     MULTIQC(
         ch_multiqc_files.collect(),
         ch_multiqc_custom_config,
@@ -418,9 +422,9 @@ def parse_input(input_csv) {
             ]
         ],
         'required': ['sample','cram'],
-    ]    
+    ]
 
-    // Don't change these variables    
+    // Don't change these variables
     def row_count = 1
     def all_columns = samplesheet_schema.columns.keySet().collect()
     def mandatory_columns = samplesheet_schema.required
@@ -472,7 +476,7 @@ def parse_input(input_csv) {
         for(col : samplesheet_schema.columns) {
             key = col.key
             content = row[key]
-            
+
             if(!(content ==~ col.value['pattern']) && col.value['pattern'] != '' && content != '') {
                 exit 1, "[Samplesheet Error] The content of column '$key' on line $row_count does not match the pattern '${col.value['pattern']}'"
             }
@@ -490,7 +494,7 @@ def parse_input(input_csv) {
         output.add(0, meta)
         return output
     })
-    
+
 }
 
 def get_family_id_from_ped(ped_file){

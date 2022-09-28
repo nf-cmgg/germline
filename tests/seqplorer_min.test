@@ -1,0 +1,19 @@
+nextflow_pipeline {
+
+    name "The bare minimum seqplorer mode tests"
+    script "main.nf"
+
+    test("Success") {
+
+        when {
+            params {
+                output_mode = "seqplorer"
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+}

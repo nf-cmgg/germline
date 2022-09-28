@@ -1,0 +1,22 @@
+nextflow_pipeline {
+
+    name "The Seqr mode test without genotyping and using bcftools merge"
+    script "main.nf"
+
+    test("Success") {
+
+        when {
+            params {
+                output_mode         = "seqr"
+                skip_genotyping     = true
+                fasta_fai           = "https://github.com/nf-core/test-datasets/raw/modules/data/genomics/homo_sapiens/genome/chr21/sequence/genome.fasta.fai"
+                use_bcftools_merge  = true
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+}
