@@ -29,6 +29,7 @@ jobs:
 
       - name: Check code lints with Black
         uses: psf/black@stable
+        run: black .
 
       # If the above check failed, post a comment on the PR explaining the failure
       - name: Post PR comment
