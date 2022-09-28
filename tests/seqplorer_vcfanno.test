@@ -1,0 +1,24 @@
+nextflow_pipeline {
+
+    name "The seqplorer mode tests with VCFanno"
+    script "main.nf"
+
+    test("Success") {
+
+        when {
+            params {
+                output_mode = "seqplorer"
+
+                vcfanno           = true
+                vcfanno_toml      = "https://github.com/nf-core/test-datasets/raw/modules/data/genomics/homo_sapiens/genome/vcf/vcfanno/vcfanno.toml"
+                vcfanno_resources = "https://github.com/nf-core/test-datasets/raw/modules/data/genomics/homo_sapiens/genome/vcf/vcfanno/vcfanno_grch38_module_test.tar.gz"
+
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+}

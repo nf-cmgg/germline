@@ -53,17 +53,17 @@ workflow ANNOTATION {
         ch_versions       = ch_versions.mix(VCFANNO.out.versions)
     }
     else {
-        ch_annotated_vcfs = BGZIP_ANNOTATED_VCFS.out.output
+        ch_annotated_vcfs = ENSEMBLVEP.out.vcf.map({ meta, vcf -> [ meta, vcf, [] ] })
     }
 
     BGZIP_ANNOTATED_VCFS(
         ch_annotated_vcfs
     )
-    
+
     ch_versions = ch_versions.mix(BGZIP_ANNOTATED_VCFS.out.versions)
 
     emit:
     annotated_vcfs  = BGZIP_ANNOTATED_VCFS.out.output
-    reports         = ch_reports 
+    reports         = ch_reports
     versions        = ch_versions
 }

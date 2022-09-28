@@ -20,7 +20,10 @@ workflow VCF_QC {
     //
 
     BCFTOOLS_STATS(
-        vcfs
+        vcfs.map({ meta, vcf -> [ meta, vcf, [] ]}),
+        [],
+        [],
+        []
     )
 
     VCFTOOLS_TSTV_COUNT(
