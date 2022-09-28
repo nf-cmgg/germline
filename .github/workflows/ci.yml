@@ -46,13 +46,13 @@ jobs:
         run: |
           sudo rm -rf "/usr/local/share/boost"
           sudo rm -rf "$AGENT_TOOLSDIRECTORY"
-          $CONDA/bin/conda install -c bioconda nf-test
-
+          sudo bash; mkdir /opt/nf-test; cd /opt/nf-test; wget https://github.com/askimed/nf-test/releases/download/v0.6.0/nf-test-0.6.0.tar.gz; tar xvfz nf-test-0.6.0.tar.gz; chmod +x nf-test;
+          echo "/opt/nf-test" >> $GITHUB_PATH;
 
       - name: Run pipeline with tests settings
         uses: Wandalen/wretry.action@v1.0.11
         with:
-          command: $CONDA/bin/nf-test test ${{ matrix.test }}.test
+          command: nf-test test ${{ matrix.test }}.test
           attempt_limit: 3
 
       - name: Output log on failure
