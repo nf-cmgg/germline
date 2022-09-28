@@ -206,7 +206,7 @@ workflow NF_CMGG_GERMLINE {
     //
 
     if (!fasta_fai) {
-        fasta_fai   = FAIDX(fasta).fai
+        fasta_fai   = FAIDX(fasta.map({ fasta -> [ [id:"fasta_fai"], fasta ]})).fai.map({ meta, fasta -> [ fasta ]})
         ch_versions = ch_versions.mix(FAIDX.out.versions)
     }
 
@@ -353,12 +353,14 @@ workflow NF_CMGG_GERMLINE {
     
     ch_multiqc_files = ch_multiqc_files.mix(
                                         ch_versions_yaml,
-                                        ch_reports.collect(),
-                                        ch_multiqc_custom_config
+                                        ch_reports.collect()
                                         )
                                         
     MULTIQC(
-        ch_multiqc_files.collect()
+        ch_multiqc_files.collect(),
+        ch_multiqc_custom_config,
+        [],
+        []
     )
 
 }
