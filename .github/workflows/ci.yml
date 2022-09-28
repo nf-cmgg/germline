@@ -43,7 +43,10 @@ jobs:
           python-version: "3.x"
 
       - name: Install dependencies
-        run: $CONDA/bin/conda install -c bioconda nf-test
+        run: |
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          $CONDA/bin/conda install -c bioconda nf-test
 
       - name: Run pipeline with tests settings
         uses: Wandalen/wretry.action@v1.0.11
