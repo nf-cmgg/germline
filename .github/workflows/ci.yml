@@ -36,8 +36,6 @@ jobs:
         uses: nf-core/setup-nextflow@v1
         with:
           version: "${{ matrix.NXF_VER }}"
-        run: |
-          which nextflow >> $GITHUB_PATH
 
       - name: Set up Python
         uses: actions/setup-python@v2
