@@ -34,7 +34,7 @@ jobs:
 
       - name: Install nextflow
         run: |
-          sudo bash; mkdir /opt/nextflow; cd /opt/nextflow; wget https://github.com/nextflow-io/nextflow/releases/download/v22.04.0/nextflow; chmod +x nextflow;
+          sudo bash; mkdir /opt/nextflow; cd /opt/nextflow; wget https://github.com/nextflow-io/nextflow/releases/download/v{{ matrix.NXF_VER }}/nextflow; chmod +x nextflow;
           echo "/opt/nextflow" >> $GITHUB_PATH;
 
       - name: Install nf-test
