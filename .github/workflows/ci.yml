@@ -51,7 +51,6 @@ jobs:
 
       - name: Run pipeline with test data
         run: |
-          which nextflow
           nf-test test tests/${{ matrix.test }}.test
 
 
