@@ -10,7 +10,6 @@ on:
 
 env:
   NXF_ANSI_LOG: false
-  ACTIONS_RUNNER_DEBUG: true
 
 jobs:
   test_all:
