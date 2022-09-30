@@ -10,6 +10,7 @@ on:
 
 env:
   NXF_ANSI_LOG: false
+  ACTIONS_RUNNER_DEBUG: true
 
 jobs:
   test_all:
@@ -19,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        NXF_VER:
+          - 22.04.0
         test:
           - "default"
           - "fails"
@@ -30,10 +33,15 @@ jobs:
       - name: Check out pipeline code
         uses: actions/checkout@v2
 
-      - name: Install nextflow
-        run: |
-          sudo bash; mkdir /opt/nextflow; cd /opt/nextflow; wget https://github.com/nextflow-io/nextflow/releases/download/v22.04.0/nextflow; chmod +x nextflow;
-          echo "/opt/nextflow" >> $GITHUB_PATH;
+      # - name: Install nextflow
+      #   run: |
+      #     sudo bash; mkdir /opt/nextflow; cd /opt/nextflow; wget https://github.com/nextflow-io/nextflow/releases/download/v22.04.0/nextflow; chmod +x nextflow;
+      #     echo "/opt/nextflow" >> $GITHUB_PATH;
+
+      - name: Install Nextflow
+        uses: nf-core/setup-nextflow@v1
+        with:
+          version: "${{ matrix.NXF_VER }}"
 
       - name: Install nf-test
         run: |
