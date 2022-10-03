@@ -18,10 +18,10 @@ nextflow_pipeline {
 
         then {
             assert workflow.success
-            assert path("${outputDir}/families/Proband_12345/reports/Proband_12345.TsTv.count").md5 == "dd579177c21fb1802e98e801e0525291"
-            assert path("${outputDir}/families/Proband_12345/reports/Proband_12345.bcftools_stats.txt").md5 == "e5892ef292fc2a7960244e6243583e15"
-            assert path("${outputDir}/families/Proband_12345/reports/Proband_12345.TsTv.qual").md5 == "7b13e18c7a97db1e0ebe476386eb7ab8"
-            assert path("${outputDir}/families/Proband_12345/reports/Proband_12345.FILTER.summary").md5 == "e78a9d259a1ffc9dd3e7578f853cd8ea"
+            assert file("${outputDir}/families/Proband_12345/reports/Proband_12345.TsTv.count").exists()
+            assert file("${outputDir}/families/Proband_12345/reports/Proband_12345.bcftools_stats.txt").exists()
+            assert file("${outputDir}/families/Proband_12345/reports/Proband_12345.TsTv.qual").exists()
+            assert file("${outputDir}/families/Proband_12345/reports/Proband_12345.FILTER.summary").exists()
             assert path("${outputDir}/families/Proband_12345/Proband_12345.ann.vcf.gz").linesGzip.contains("chr21\t6448991\t.\tG\tC\t31.6\tGATKCutoffSNP\tAC=1;AF=0.5;AN=2;AS_BaseQRankSum=2.7;AS_FS=0;AS_MQ=17.23;AS_MQRankSum=-1;AS_QD=2.91;AS_ReadPosRankSum=0.9;AS_SOR=0.18;BaseQRankSum=2.74;DP=11;ExcessHet=0;FS=0;MLEAC=1;MLEAF=0.5;MQ=19.21;MQRankSum=-0.98;QD=2.88;ReadPosRankSum=0.992;SOR=0.18;CSQ=C|intron_variant|MODIFIER|CBSL|ENSG00000274276|Transcript|ENST00000398168|protein_coding||15/16|ENST00000398168.6:c.1468-426C>G||||||||1||-1||SNV|HGNC|HGNC:51829|YES|NM_001354009.3||1|P4|CCDS82646.1|ENSP00000381234|P0DN79.36||UPI0000036BC5||||||||chr21:g.6448991G>C||||||||||||||||||||||||||||||\tGT:AD:DP:GQ:PL\t./.:0,0:.:.:.\t0/1:8,3:11:21:39,0,21")
             assert file("${outputDir}/families/Proband_12345/Proband_12345.db").exists()
             assert path("${outputDir}/families/Proband_12345/Proband_12345_filtered_snps_indels.vcf.gz").linesGzip.contains("chr21\t6448991\t.\tG\tC\t31.64\tGATKCutoffSNP\tAC=1;AF=0.5;AN=2;AS_BaseQRankSum=2.7;AS_FS=0;AS_MQ=17.23;AS_MQRankSum=-1;AS_QD=2.91;AS_ReadPosRankSum=0.9;AS_SOR=0.18;BaseQRankSum=2.74;DP=11;ExcessHet=0;FS=0;MLEAC=1;MLEAF=0.5;MQ=19.21;MQRankSum=-0.98;QD=2.88;ReadPosRankSum=0.992;SOR=0.18\tGT:AD:DP:GQ:PL\t./.:0,0:.:.:.\t0/1:8,3:11:21:39,0,21")
