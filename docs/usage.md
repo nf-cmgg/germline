@@ -1,4 +1,5 @@
 # CenterForMedicalGeneticsGhent/nf-cmgg-germline: Usage
+
 ## Introduction
 
 ## Samplesheet input
