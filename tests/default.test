@@ -13,7 +13,7 @@ nextflow_pipeline {
             assert path("${outputDir}/families/Proband_12345/reports/Proband_12345.FILTER.summar").md5 == "1427238776c9965b01c144b3140a1d7a"
             assert path("${outputDir}/families/Proband_12345/Proband_12345.vcf.g").linesGzip.contains("chr21\t6448991\t.\tG\tC\t31.64\t.\tAC=1;AF=0.500;AN=2;AS_QD=2.91;BaseQRankSum=2.74;DP=28;ExcessHet=0.0000;FS=0.000;MLEAC=1;MLEAF=0.500;MQ=19.21;MQRankSum=-9.800e-01;QD=2.88;ReadPosRankSum=0.992;SOR=0.180\tGT:AD:DP:GQ:PL\t./.:17,0:17:40\t0/1:8,3:11:21:39,0,21")
             assert file("${outputDir}/families/Proband_12345/Proband_12345.vcf.gz.tb").exists()
-            assert file("${outputDir}/multiqc_reports/multiqc_report.htm").exists()
+            assert file("${outputDir}/multiqc_reports/multiqc_report.html").exists()
             assert path("${outputDir}/individuals/NA24385D2_NVQ_034/NA24385D2_NVQ_034.g.vcf.g").linesGzip.contains("chr21\t2\t.\tN\t<NON_REF>\t.\t.\tEND=6118038\tGT:DP:GQ:MIN_DP:PL\t0/0:0:0:0:0,0,0")
             assert file("${outputDir}/individuals/NA24385D2_NVQ_034/NA24385D2_NVQ_034.g.vcf.gz.tb").exists()
             assert path("${outputDir}/individuals/NA12878K12_NVQ_034/NA12878K12_NVQ_034.g.vcf.g").linesGzip.contains("chr21\t2\t.\tN\t<NON_REF>\t.\t.\tEND=6118023\tGT:DP:GQ:MIN_DP:PL\t0/0:0:0:0:0,0,0")
