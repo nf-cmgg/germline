@@ -9,7 +9,7 @@ nextflow_pipeline {
             assert workflow.success
             assert path("${outputDir}/families/Proband_12345/reports/Proband_12345.TsTv.count").md5 == "c4c5d1d04ad9090639c3524736a4b60e"
             assert path("${outputDir}/families/Proband_12345/reports/Proband_12345.bcftools_stats.txt").md5 == "966a901419d1714d75340243e785333f"
-            assert path("${outputDir}/families/Proband_12345/reports/Proband_12345.TsTv.qual").exists()
+            assert file("${outputDir}/families/Proband_12345/reports/Proband_12345.TsTv.qual").exists()
             assert path("${outputDir}/families/Proband_12345/reports/Proband_12345.FILTER.summary").md5 == "1427238776c9965b01c144b3140a1d7a"
             assert path("${outputDir}/families/Proband_12345/Proband_12345.vcf.gz").linesGzip.contains("chr21\t6448991\t.\tG\tC\t31.64\t.\tAC=1;AF=0.500;AN=2;AS_QD=2.91;BaseQRankSum=2.74;DP=28;ExcessHet=0.0000;FS=0.000;MLEAC=1;MLEAF=0.500;MQ=19.21;MQRankSum=-9.800e-01;QD=2.88;ReadPosRankSum=0.992;SOR=0.180\tGT:AD:DP:GQ:PL\t./.:17,0:17:40\t0/1:8,3:11:21:39,0,21")
             assert file("${outputDir}/families/Proband_12345/Proband_12345.vcf.gz.tbi").exists()
