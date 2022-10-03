@@ -19,8 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        NXF_VER:
-          - "22.04.0"
+        nxf_ver: ["21.10.3", "22.04.0"]
         test:
           - "default"
           - "fails"
@@ -32,41 +31,42 @@ jobs:
       - name: Check out pipeline code
         uses: actions/checkout@v2
 
-      - name: Install Nextflow
-        uses: nf-core/setup-nextflow@v1
-        with:
-          version: "${{ matrix.NXF_VER }}"
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.x"
-
-      - name: Install dependencies
+      - name: Install nextflow
         run: |
-          sudo rm -rf "/usr/local/share/boost"
-          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          sudo bash; mkdir /opt/nextflow; cd /opt/nextflow; wget https://github.com/nextflow-io/nextflow/releases/download/v${{ matrix.nxf_ver }}/nextflow; chmod +x nextflow;
+          echo "/opt/nextflow" >> $GITHUB_PATH;
+
+      # - name: Install Nextflow
+      #   uses: nf-core/setup-nextflow@v1
+      #   with:
+      #     version: "${{ matrix.nxf_ver }}"
+
+      - name: Install nf-test
+        run: |
           sudo bash; mkdir /opt/nf-test; cd /opt/nf-test; wget https://github.com/askimed/nf-test/releases/download/v0.6.0/nf-test-0.6.0.tar.gz; tar xvfz nf-test-0.6.0.tar.gz; chmod +x nf-test;
           echo "/opt/nf-test" >> $GITHUB_PATH;
 
-      - name: Run pipeline with tests settings
-        uses: Wandalen/wretry.action@v1.0.11
-        with:
-          command: nf-test test ${{ matrix.test }}.test
-          attempt_limit: 3
+      - name: Free some space
+        run: |
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+
+      - name: Run pipeline with test data
+        run: |
+          nf-test test tests/${{ matrix.test }}.test
 
       - name: Output log on failure
         if: failure()
         run: |
           sudo apt install bat > /dev/null
-          batcat --decorations=always --color=always /tmp/pytest_workflow_*/*/log.{out,err}
+          batcat --decorations=always --color=always .nf-test/tests/*/meta/std.{out,err}
       - name: Upload logs on failure
         if: failure()
         uses: actions/upload-artifact@v2
         with:
           name: nf-test-logs
           path: |
-            .nf-test/tests/*/meta.nextflow.log
+            .nf-test/tests/*/meta/nextflow.log
             .nf-test/tests/*/meta/std.out
             .nf-test/tests/*/meta/std.err
             .nf-test/tests/*/meta/trace.csv

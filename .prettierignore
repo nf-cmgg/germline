@@ -1,5 +1,7 @@
 email_template.html
+adaptivecard_template.json
 .nextflow*
+.nf-test/
 work/
 data/
 results/

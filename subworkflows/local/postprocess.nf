@@ -9,7 +9,7 @@ include { TABIX_TABIX as TABIX_GVCFS                } from '../../modules/nf-cor
 include { TABIX_TABIX as TABIX_COMBINED_GVCFS       } from '../../modules/nf-core/modules/tabix/tabix/main'
 include { TABIX_BGZIP as BGZIP_GENOTYPED_VCFS       } from '../../modules/nf-core/modules/tabix/bgzip/main'
 include { TABIX_BGZIPTABIX as BGZIP_TABIX_PED_VCFS  } from '../../modules/nf-core/modules/tabix/bgziptabix/main'
-include { RTGTOOLS_PEDFILTER as PEDFILTER           } from '../../modules/nf-core/modules/rtgtools/pedfilter/main'
+include { RTGTOOLS_PEDFILTER as PEDFILTER           } from '../../modules/local/rtgtools/pedfilter/main'
 include { MERGE_VCF_HEADERS                         } from '../../modules/local/merge_vcf_headers'
 include { BCFTOOLS_FILTER as FILTER_SNPS            } from '../../modules/nf-core/modules/bcftools/filter/main'
 include { BCFTOOLS_FILTER as FILTER_INDELS          } from '../../modules/nf-core/modules/bcftools/filter/main'
@@ -43,7 +43,7 @@ workflow POST_PROCESS {
 
     indexed_gvcfs = gvcfs
                     .combine(TABIX_GVCFS.out.tbi, by: 0)
-                    .map({ meta, gvcf, tbi -> 
+                    .map({ meta, gvcf, tbi ->
                         [ meta, gvcf, tbi, []]
                     })
 
@@ -118,7 +118,7 @@ workflow POST_PROCESS {
                             .combine(TABIX_COMBINED_GVCFS.out.tbi, by:0)
 
     if (!skip_genotyping){
-                                
+
         //
         // Genotype the combined GVCFs
         //
@@ -190,7 +190,7 @@ workflow POST_PROCESS {
         merge_vcf_headers_input
     )
 
-    BGZIP_TABIX_PED_VCFS( 
+    BGZIP_TABIX_PED_VCFS(
         MERGE_VCF_HEADERS.out.vcf
     )
 
@@ -200,7 +200,7 @@ workflow POST_PROCESS {
     vcfs_without_index = BGZIP_TABIX_PED_VCFS.out.gz_tbi.map({ meta, vcf, tbi -> [ meta, vcf ]})
 
     //
-    // Filter the variants 
+    // Filter the variants
     //
 
     if (output_mode == "seqplorer") {
@@ -214,7 +214,7 @@ workflow POST_PROCESS {
 
         ch_versions = ch_versions.mix(FILTER_SNPS.out.versions)
         ch_versions = ch_versions.mix(FILTER_INDELS.out.versions)
-        
+
         post_processed_vcfs = FILTER_INDELS.out.vcf
     }
     else {
@@ -222,6 +222,6 @@ workflow POST_PROCESS {
     }
 
     emit:
-    post_processed_vcfs  
+    post_processed_vcfs
     versions = ch_versions
 }

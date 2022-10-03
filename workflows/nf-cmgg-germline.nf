@@ -150,8 +150,8 @@ else if (params.eog || params.eog_tbi || params.vep_eog) {
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-ch_multiqc_config        = file("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
-ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multiqc_config) : Channel.empty()
+ch_multiqc_config   = params.multiqc_config ? file(params.multiqc_config, checkIfExists: true) : file("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
+multiqc_logo        = params.multiqc_logo   ? file(params.multiqc_logo, checkIfExists: true)   : file("$projectDir/assets/CMGG_logo.png", checkIfExists: true)
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -362,11 +362,12 @@ workflow NF_CMGG_GERMLINE {
 
     MULTIQC(
         ch_multiqc_files.collect(),
-        ch_multiqc_custom_config,
+        ch_multiqc_config,
         [],
-        []
+        multiqc_logo
     )
 
+    // Test comment to be removed
 }
 
 
@@ -379,6 +380,9 @@ workflow NF_CMGG_GERMLINE {
 workflow.onComplete {
     if (params.email || params.email_on_fail) {
         NfcoreTemplate.email(workflow, params, summary_params, projectDir, log, multiqc_report)
+    }
+    if (params.hook_url) {
+        NfcoreTemplate.adaptivecard(workflow, params, summary_params, projectDir, log, multiqc_report)
     }
     NfcoreTemplate.summary(workflow, params, log)
 }

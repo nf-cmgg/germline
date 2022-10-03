@@ -39,7 +39,7 @@
                 },
                 "ensemblvep": {
                     "branch": "master",
-                    "git_sha": "973151e9eab9bac400aa99f099075a10cdd8e84c"
+                    "git_sha": "5ccf6fbcc913f34ee2897689081d1cf60cecdb35"
                 },
                 "gatk4/calibratedragstrmodel": {
                     "branch": "master",
@@ -73,10 +73,6 @@
                     "branch": "master",
                     "git_sha": "90aef30f432332bdf0ce9f4b9004aa5d5c4960bb"
                 },
-                "rtgtools/pedfilter": {
-                    "branch": "master",
-                    "git_sha": "1a4ab76618a2269ee653aefff8a5ee1f855e5f83"
-                },
                 "samtools/faidx": {
                     "branch": "master",
                     "git_sha": "3eb99152cedbb7280258858e5df08478a4670696"
@@ -87,7 +83,7 @@
                 },
                 "tabix/bgzip": {
                     "branch": "master",
-                    "git_sha": "07e2868920201d81e5b99fda47101ce6c67268eb"
+                    "git_sha": "31c0b49f6527ef196e89eca49a36af2de71711f8"
                 },
                 "tabix/bgziptabix": {
                     "branch": "master",
