@@ -1,11 +1,9 @@
 #!/usr/bin/env nextflow
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    nf-core/tva
+    CenterForMedicalGeneticsGhent/nf-cmgg-germline
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Github : https://github.com/nf-core/tva
-    Website: https://nf-co.re/tva
-    Slack  : https://nfcore.slack.com/channels/tva
+    Github : https://github.com/CenterForMedicalGeneticsGhent/nf-cmgg-germline
 ----------------------------------------------------------------------------------------
 */
 
@@ -33,13 +31,13 @@ WorkflowMain.initialise(workflow, params, log)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { TVA } from './workflows/tva'
+include { NF_CMGG_GERMLINE } from './workflows/nf-cmgg-germline'
 
 //
-// WORKFLOW: Run main nf-core/tva analysis pipeline
+// WORKFLOW: Run main nf-cmgg-germline analysis pipeline
 //
-workflow NFCORE_TVA {
-    TVA ()
+workflow NFCORE_NF_CMGG_GERMLINE {
+    NF_CMGG_GERMLINE ()
 }
 
 /*
@@ -53,7 +51,7 @@ workflow NFCORE_TVA {
 // See: https://github.com/nf-core/rnaseq/issues/619
 //
 workflow {
-    NFCORE_TVA ()
+    NFCORE_NF_CMGG_GERMLINE ()
 }
 
 /*

@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$id": "https://raw.githubusercontent.com/nf-core/tva/master/nextflow_schema.json",
-    "title": "nf-core/tva pipeline parameters",
+    "$id": "https://raw.githubusercontent.com/CenterForMedicalGeneticsGhent/nf-cmgg-germline/master/nextflow_schema.json",
+    "title": "CenterForMedicalGeneticsGhent/nf-cmgg-germline pipeline parameters",
     "description": "A nextflow pipeline for calling and annotating variants",
     "type": "object",
     "definitions": {
@@ -19,7 +19,7 @@
                     "pattern": "^\\S+\\.csv$",
                     "schema": "assets/schema_input.json",
                     "description": "Path to comma-separated file containing information about the samples in the experiment.",
-                    "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row. See [usage docs](https://nf-co.re/tva/usage#samplesheet-input).",
+                    "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with samples, and a header row. See [usage docs](https://github.com/CenterForMedicalGeneticsGhent/nf-cmgg-germline/blob/dev/docs/usage.md).",
                     "fa_icon": "fas fa-file-csv"
                 },
                 "outdir": {
@@ -47,21 +47,39 @@
             "type": "object",
             "fa_icon": "fas fa-dna",
             "description": "Reference genome related files and options required for the workflow.",
+            "required": ["fasta"],
             "properties": {
                 "genome": {
                     "type": "string",
-                    "description": "Name of iGenomes reference.",
+                    "description": "[Seqplorer mode only] The genome used for the samples",
                     "fa_icon": "fas fa-book",
-                    "help_text": "If using a reference genome configured in the pipeline using iGenomes, use this parameter to give the ID for the reference. This is then used to build the full paths for all required reference genome files e.g. `--genome GRCh38`. \n\nSee the [nf-core website docs](https://nf-co.re/usage/reference_genomes) for more details."
+                    "default": "GRCh38"
                 },
                 "fasta": {
                     "type": "string",
                     "format": "file-path",
                     "mimetype": "text/plain",
-                    "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
-                    "description": "Path to FASTA genome file.",
-                    "help_text": "This parameter is *mandatory* if `--genome` is not specified. If you don't have a BWA index available this will be generated for you automatically. Combine with `--save_reference` to save BWA index for future runs.",
+                    "pattern": "^\\S+\\.fn?a(sta)?$",
+                    "description": "Path to the FASTA reference file.",
                     "fa_icon": "far fa-file-code"
+                },
+                "fasta_fai": {
+                    "type": "string",
+                    "pattern": "^\\S+\\.fai$",
+                    "description": "The index of the FASTA file",
+                    "fa_icon": "far fa-file-code"
+                },
+                "dict": {
+                    "type": "string",
+                    "pattern": "^\\S+\\.dict$",
+                    "description": "The sequence dictionary of the FASTA reference",
+                    "fa_icon": "far fa-file-code"
+                },
+                "strtablefile": {
+                    "type": "string",
+                    "description": "The STR table file generated from the FASTA reference",
+                    "fa_icon": "fas fa-folder",
+                    "pattern": "^\\S+\\.zip$"
                 },
                 "igenomes_base": {
                     "type": "string",
@@ -77,6 +95,64 @@
                     "fa_icon": "fas fa-ban",
                     "hidden": true,
                     "help_text": "Do not load `igenomes.config` when running the pipeline. You may choose this option if you observe clashes between custom parameters and those supplied in `igenomes.config`."
+                }
+            }
+        },
+        "pipeline_specific_parameters": {
+            "title": "Pipeline specific parameters",
+            "type": "object",
+            "description": "Parameters that define how the pipeline works",
+            "default": "",
+            "properties": {
+                "scatter_count": {
+                    "type": "integer",
+                    "default": 2,
+                    "fa_icon": "fas fa-cut",
+                    "description": "The amount of times the BED file should be split (for parallelization of GATK Haplotypecaller)",
+                    "minimum": 1
+                },
+                "species": {
+                    "type": "string",
+                    "default": "homo_sapiens",
+                    "description": "[Seqplorer mode only] The species of the samples (must be lower case and have underscores as spaces)",
+                    "fa_icon": "fas fa-user-circle",
+                    "pattern": "^[a-z_]*$"
+                },
+                "output_mode": {
+                    "type": "string",
+                    "default": "seqr",
+                    "enum": ["seqplorer", "seqr"],
+                    "description": "The filter mode for the VCF outputs (has to be either 'seqr' or 'seqplorer')",
+                    "fa_icon": "fas fa-question-circle"
+                },
+                "always_use_cram": {
+                    "type": "boolean",
+                    "description": "Whether or not the modules should always return a CRAM file instead of a BAM file",
+                    "fa_icon": "fas fa-question-circle",
+                    "default": true
+                }
+            }
+        },
+        "module_specific_parameters": {
+            "title": "Module specific parameters",
+            "type": "object",
+            "description": "Parameter that define how specific modules work",
+            "default": "",
+            "properties": {
+                "use_dragstr_model": {
+                    "type": "boolean",
+                    "description": "Whether or not the DRAGSTR models should be used",
+                    "fa_icon": "fas fa-question-circle"
+                },
+                "skip_genotyping": {
+                    "type": "boolean",
+                    "description": "Whether or not the genotyping should be skipped (does GVCF -> VCF conversion using bcftools view and convert instead)",
+                    "fa_icon": "fas fa-question-circle"
+                },
+                "use_bcftools_merge": {
+                    "type": "boolean",
+                    "description": "Whether or not to use bcftools merge instead of CombineGVCFs",
+                    "fa_icon": "fas fa-question-circle"
                 }
             }
         },
@@ -207,6 +283,13 @@
                     "fa_icon": "fas fa-file-upload",
                     "hidden": true
                 },
+                "multiqc_logo": {
+                    "type": "string",
+                    "default": "None",
+                    "fa_icon": "far fa-font-awesome-logo-full",
+                    "hidden": true,
+                    "description": "The logo for the reports in MultiQC"
+                },
                 "monochrome_logs": {
                     "type": "boolean",
                     "description": "Do not use coloured log outputs.",
@@ -245,6 +328,128 @@
                     "description": "Run this workflow with Conda. You can also use '-profile conda' instead of providing this parameter.",
                     "hidden": true,
                     "fa_icon": "fas fa-bacon"
+                },
+                "hook_url": {
+                    "type": "string",
+                    "fa_icon": "fas fa-share-alt",
+                    "description": "A hook URL for Microsoft Teams"
+                }
+            }
+        },
+        "annotation_parameters": {
+            "title": "Annotation parameters",
+            "type": "object",
+            "description": "Parameters to configure Ensembl VEP and VCFanno (only used when \"--output_mode seqplorer\" is used)",
+            "default": "",
+            "properties": {
+                "vep_dbnsfp": {
+                    "type": "boolean",
+                    "description": "[Seqplorer mode only] Use the dbNSFP plugin with Ensembl VEP. The '--dbnsfp' and '--dbnsfp_tbi' parameters need to be specified when using this plugin.",
+                    "fa_icon": "fas fa-question-circle"
+                },
+                "vep_spliceai": {
+                    "type": "boolean",
+                    "description": "[Seqplorer mode only] Use the SpliceAI plugin with Ensembl VEP. The '--spliceai_indel', '--spliceai_indel_tbi', '--spliceai_snv' and '--spliceai_snv_tbi' parameters need to be specified when using this plugin.",
+                    "fa_icon": "fas fa-question-circle"
+                },
+                "vep_spliceregion": {
+                    "type": "boolean",
+                    "description": "[Seqplorer mode only] Use the SpliceRegion plugin with Ensembl VEP",
+                    "fa_icon": "fas fa-question-circle"
+                },
+                "vep_mastermind": {
+                    "type": "boolean",
+                    "description": "[Seqplorer mode only] Use the Mastermind plugin with Ensembl VEP, The '--mastermind' and '--mastermind_tbi' parameters need to be specified when using this plugin.",
+                    "fa_icon": "fas fa-question-circle"
+                },
+                "vep_eog": {
+                    "type": "boolean",
+                    "description": "[Seqplorer mode only] Use the custom EOG annotation with Ensembl VEP, The '--eog and '--eog_tbi' parameters need to be specified when using this plugin.",
+                    "fa_icon": "fas fa-question-circle"
+                },
+                "vep_merged_cache": {
+                    "type": "string",
+                    "default": "None",
+                    "description": "[Seqplorer mode only] The path to the folder containing the merged cache",
+                    "fa_icon": "fas fa-folder"
+                },
+                "vep_version": {
+                    "type": "string",
+                    "default": "105.0",
+                    "description": "[Seqplorer mode only] The version of the VEP tool to be used",
+                    "fa_icon": "fas fa-code-branch"
+                },
+                "vep_cache_version": {
+                    "type": "string",
+                    "default": "105",
+                    "description": "[Seqplorer mode only] The version of the cache to be used",
+                    "fa_icon": "fas fa-code-branch"
+                },
+                "dbnsfp": {
+                    "type": "string",
+                    "default": "None",
+                    "description": "[Seqplorer mode only] The dbSNFP file",
+                    "fa_icon": "fas fa-folder"
+                },
+                "dbnsfp_tbi": {
+                    "type": "string",
+                    "default": "None",
+                    "description": "[Seqplorer mode only] The index of the dbSNFP file"
+                },
+                "spliceai_indel": {
+                    "type": "string",
+                    "default": "None",
+                    "description": "[Seqplorer mode only] The VCF containing indels for spliceAI",
+                    "fa_icon": "far fa-file-alt"
+                },
+                "spliceai_indel_tbi": {
+                    "type": "string",
+                    "default": "None",
+                    "description": "[Seqplorer mode only] The index of the VCF containing indels for spliceAI"
+                },
+                "spliceai_snv": {
+                    "type": "string",
+                    "default": "None",
+                    "description": "[Seqplorer mode only] The VCF containing SNVs for spliceAI"
+                },
+                "spliceai_snv_tbi": {
+                    "type": "string",
+                    "default": "None",
+                    "description": "[Seqplorer mode only] The index of the VCF containing SNVs for spliceAI"
+                },
+                "mastermind": {
+                    "type": "string",
+                    "default": "None",
+                    "description": "[Seqplorer mode only] The VCF for Mastermind"
+                },
+                "mastermind_tbi": {
+                    "type": "string",
+                    "default": "None",
+                    "description": "[Seqplorer mode only] The index of the VCF for Mastermind"
+                },
+                "eog": {
+                    "type": "string",
+                    "default": "None",
+                    "description": "[Seqplorer mode only] The VCF containing EOG annotations"
+                },
+                "eog_tbi": {
+                    "type": "string",
+                    "default": "None",
+                    "description": "[Seqplorer mode only] The index of the VCF containing EOG annotations"
+                },
+                "vcfanno": {
+                    "type": "boolean",
+                    "description": "[Seqplorer mode only] Whether or not an extra annotation step should be performed with VCFanno"
+                },
+                "vcfanno_toml": {
+                    "type": "string",
+                    "default": "None",
+                    "description": "[Seqplorer mode only] The TOML file containing the configuration for VCFanno"
+                },
+                "vcfanno_resources": {
+                    "type": "string",
+                    "default": "None",
+                    "description": "[Seqplorer mode only] The folder containing the reference annotation resources specified in the configuration TOML"
                 }
             }
         }
@@ -257,6 +462,12 @@
             "$ref": "#/definitions/reference_genome_options"
         },
         {
+            "$ref": "#/definitions/pipeline_specific_parameters"
+        },
+        {
+            "$ref": "#/definitions/module_specific_parameters"
+        },
+        {
             "$ref": "#/definitions/institutional_config_options"
         },
         {
@@ -264,6 +475,9 @@
         },
         {
             "$ref": "#/definitions/generic_options"
+        },
+        {
+            "$ref": "#/definitions/annotation_parameters"
         }
     ]
 }

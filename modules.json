@@ -1,16 +1,114 @@
 {
-    "name": "nf-core/tva",
-    "homePage": "https://github.com/nf-core/tva",
+    "name": "CenterForMedicalGeneticsGhent/nf-cmgg-germline",
+    "homePage": "https://github.com/CenterForMedicalGeneticsGhent/nf-cmgg-germline",
     "repos": {
         "nf-core/modules": {
-            "custom/dumpsoftwareversions": {
-                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
-            },
-            "fastqc": {
-                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
-            },
-            "multiqc": {
-                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            "git_url": "https://github.com/nf-core/modules.git",
+            "modules": {
+                "bcftools/concat": {
+                    "branch": "master",
+                    "git_sha": "682f789f93070bd047868300dd018faf3d434e7c"
+                },
+                "bcftools/convert": {
+                    "branch": "master",
+                    "git_sha": "8656636f0d0a86aa3966052b5c2cd06141647c70"
+                },
+                "bcftools/filter": {
+                    "branch": "master",
+                    "git_sha": "682f789f93070bd047868300dd018faf3d434e7c"
+                },
+                "bcftools/merge": {
+                    "branch": "master",
+                    "git_sha": "8656636f0d0a86aa3966052b5c2cd06141647c70"
+                },
+                "bcftools/stats": {
+                    "branch": "master",
+                    "git_sha": "41dfa13929d2c178855159a69d2e2958c52be155"
+                },
+                "bcftools/view": {
+                    "branch": "master",
+                    "git_sha": "682f789f93070bd047868300dd018faf3d434e7c"
+                },
+                "bedtools/split": {
+                    "branch": "master",
+                    "git_sha": "90aef30f432332bdf0ce9f4b9004aa5d5c4960bb"
+                },
+                "custom/dumpsoftwareversions": {
+                    "branch": "master",
+                    "git_sha": "82501fe6d0d12614db67751d30af98d16e63dc59"
+                },
+                "ensemblvep": {
+                    "branch": "master",
+                    "git_sha": "5ccf6fbcc913f34ee2897689081d1cf60cecdb35"
+                },
+                "gatk4/calibratedragstrmodel": {
+                    "branch": "master",
+                    "git_sha": "4c7ef30fb64f75ba4499d3b8fba24a068b1ce586"
+                },
+                "gatk4/combinegvcfs": {
+                    "branch": "master",
+                    "git_sha": "169b2b96c1167f89ab07127b7057c1d90a6996c7"
+                },
+                "gatk4/composestrtablefile": {
+                    "branch": "master",
+                    "git_sha": "114a54c8d5a8e898a126c2804e3e221286eb2682"
+                },
+                "gatk4/createsequencedictionary": {
+                    "branch": "master",
+                    "git_sha": "169b2b96c1167f89ab07127b7057c1d90a6996c7"
+                },
+                "gatk4/genotypegvcfs": {
+                    "branch": "master",
+                    "git_sha": "169b2b96c1167f89ab07127b7057c1d90a6996c7"
+                },
+                "gatk4/haplotypecaller": {
+                    "branch": "master",
+                    "git_sha": "e53d091a6de1ae9fd681351c085d8abe076ba1ec"
+                },
+                "gatk4/reblockgvcf": {
+                    "branch": "master",
+                    "git_sha": "873215c8ae3882e3ce1c8c62fbae16e74d631270"
+                },
+                "multiqc": {
+                    "branch": "master",
+                    "git_sha": "90aef30f432332bdf0ce9f4b9004aa5d5c4960bb"
+                },
+                "samtools/faidx": {
+                    "branch": "master",
+                    "git_sha": "3eb99152cedbb7280258858e5df08478a4670696"
+                },
+                "samtools/index": {
+                    "branch": "master",
+                    "git_sha": "897c33d5da084b61109500ee44c01da2d3e4e773"
+                },
+                "tabix/bgzip": {
+                    "branch": "master",
+                    "git_sha": "31c0b49f6527ef196e89eca49a36af2de71711f8"
+                },
+                "tabix/bgziptabix": {
+                    "branch": "master",
+                    "git_sha": "5e7b1ef9a5a2d9258635bcbf70fcf37dacd1b247"
+                },
+                "tabix/tabix": {
+                    "branch": "master",
+                    "git_sha": "5e7b1ef9a5a2d9258635bcbf70fcf37dacd1b247"
+                },
+                "untar": {
+                    "branch": "master",
+                    "git_sha": "b63b9f752dc8e43fc70b0491aad5e0a270ab0e10"
+                },
+                "vcf2db": {
+                    "branch": "master",
+                    "git_sha": "233fa70811a03a4cecb2ece483b5c8396e2cee1d"
+                },
+                "vcfanno": {
+                    "branch": "master",
+                    "git_sha": "13631304102ca3d99def3578611b79332f6fd175"
+                },
+                "vcftools": {
+                    "branch": "master",
+                    "git_sha": "5e7b1ef9a5a2d9258635bcbf70fcf37dacd1b247"
+                }
             }
         }
     }

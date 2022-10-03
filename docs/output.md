@@ -1,68 +1,85 @@
-# nf-core/tva: Output
+# CenterForMedicalGeneticsGhent/nf-cmgg-germline: Output
 
 ## Introduction
 
 This document describes the output produced by the pipeline. Most of the plots are taken from the MultiQC report, which summarises results at the end of the pipeline.
 
-The directories listed below will be created in the results directory after the pipeline has finished. All paths are relative to the top-level results directory.
+The directories listed below will be created in the results directory after the pipeline has finished. All paths are relative to the top-level results directory. This is an example output when the pipeline has been run with the test data provided in the [samplesheet](../assets/samplesheet.csv). The output consists of 4 directories: `families`, `individuals`, `multiqc_reports` and `pipeline_info`.
 
-<!-- TODO nf-core: Write this documentation describing your workflow's output -->
+- The folder `families` contains the combined VCFs of every individual in the same family along with the quality reports generated from these files
+  - Seqr mode: The unfiltered VCFs after the merge of the individual VCFs, also contains the indices of these VCFs
+  - Seqplorer mode: The filtered VCFs and the annotated VCFs. Also contains a Gemini DB file of the annotated VCFs
+- The folder `individuals` contains the GVCF and index of every individual
+- The folder `multiqc_reports` contains all the MultiQC report files
+- The folder `pipeline_info` contains reports on the execution of the pipeline
+
+### Seqr mode
+
+```bash
+results/
+├── families
+│   └── Proband_12345
+│       ├── Proband_12345.vcf.gz
+│       ├── Proband_12345.vcf.gz.tbi
+│       └── reports
+│           ├── Proband_12345.bcftools_stats.txt
+│           ├── Proband_12345.FILTER.summary
+│           ├── Proband_12345.TsTv.count
+│           └── Proband_12345.TsTv.qual
+├── individuals
+│   ├── NA12878K12_NVQ_034
+│   │   ├── NA12878K12_NVQ_034.g.vcf.gz
+│   │   └── NA12878K12_NVQ_034.g.vcf.gz.tbi
+│   └── NA24385D2_NVQ_034
+│       ├── NA24385D2_NVQ_034.g.vcf.gz
+│       └── NA24385D2_NVQ_034.g.vcf.gz.tbi
+├── multiqc_reports
+│   ├── multiqc_data
+│   ├── multiqc_plots
+│   └── multiqc_report.html
+└── pipeline_info
+    ├── execution_report_2022-10-03_11-56-25.html
+    ├── execution_timeline_2022-10-03_11-56-25.html
+    ├── execution_trace_2022-10-03_11-56-25.txt
+    └── pipeline_dag_2022-10-03_11-56-25.html
+```
+
+### Seqplorer mode
+
+```bash
+results/
+├── families
+│   └── Proband_12345
+│       ├── Proband_12345.ann.vcf.gz
+│       ├── Proband_12345.db
+│       ├── Proband_12345_filtered_snps_indels.vcf.gz
+│       └── reports
+│           ├── Proband_12345.bcftools_stats.txt
+│           ├── Proband_12345.FILTER.summary
+│           ├── Proband_12345.TsTv.count
+│           └── Proband_12345.TsTv.qual
+├── individuals
+│   ├── NA12878K12_NVQ_034
+│   │   ├── NA12878K12_NVQ_034.g.vcf.gz
+│   │   └── NA12878K12_NVQ_034.g.vcf.gz.tbi
+│   └── NA24385D2_NVQ_034
+│       ├── NA24385D2_NVQ_034.g.vcf.gz
+│       └── NA24385D2_NVQ_034.g.vcf.gz.tbi
+├── multiqc_reports
+│   ├── multiqc_data
+│   ├── multiqc_plots
+│   └── multiqc_report.html
+└── pipeline_info
+    ├── execution_report_2022-10-03_11-51-54.html
+    ├── execution_timeline_2022-10-03_11-51-54.html
+    ├── execution_trace_2022-10-03_11-51-54.txt
+    └── pipeline_dag_2022-10-03_11-51-54.html
+```
 
 ## Pipeline overview
 
 The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes data using the following steps:
 
-- [FastQC](#fastqc) - Raw read QC
-- [MultiQC](#multiqc) - Aggregate report describing results and QC from the whole pipeline
-- [Pipeline information](#pipeline-information) - Report metrics generated during the workflow execution
-
-### FastQC
-
-<details markdown="1">
-<summary>Output files</summary>
-
-- `fastqc/`
-  - `*_fastqc.html`: FastQC report containing quality metrics.
-  - `*_fastqc.zip`: Zip archive containing the FastQC report, tab-delimited data file and plot images.
-
-</details>
-
-[FastQC](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/) gives general quality metrics about your sequenced reads. It provides information about the quality score distribution across your reads, per base sequence content (%A/T/G/C), adapter contamination and overrepresented sequences. For further reading and documentation see the [FastQC help pages](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/).
-
-![MultiQC - FastQC sequence counts plot](images/mqc_fastqc_counts.png)
-
-![MultiQC - FastQC mean quality scores plot](images/mqc_fastqc_quality.png)
-
-![MultiQC - FastQC adapter content plot](images/mqc_fastqc_adapter.png)
-
-> **NB:** The FastQC plots displayed in the MultiQC report shows _untrimmed_ reads. They may contain adapter sequence and potentially regions with low quality.
-
-### MultiQC
-
-<details markdown="1">
-<summary>Output files</summary>
-
-- `multiqc/`
-  - `multiqc_report.html`: a standalone HTML file that can be viewed in your web browser.
-  - `multiqc_data/`: directory containing parsed statistics from the different tools used in the pipeline.
-  - `multiqc_plots/`: directory containing static images from the report in various formats.
-
-</details>
-
-[MultiQC](http://multiqc.info) is a visualization tool that generates a single HTML report summarising all samples in your project. Most of the pipeline QC results are visualised in the report and further statistics are available in the report data directory.
-
-Results generated by MultiQC collate pipeline QC from supported tools e.g. FastQC. The pipeline has special steps which also allow the software versions to be reported in the MultiQC output for future traceability. For more information about how to use MultiQC reports, see <http://multiqc.info>.
-
-### Pipeline information
-
-<details markdown="1">
-<summary>Output files</summary>
-
-- `pipeline_info/`
-  - Reports generated by Nextflow: `execution_report.html`, `execution_timeline.html`, `execution_trace.txt` and `pipeline_dag.dot`/`pipeline_dag.svg`.
-  - Reports generated by the pipeline: `pipeline_report.html`, `pipeline_report.txt` and `software_versions.yml`. The `pipeline_report*` files will only be present if the `--email` / `--email_on_fail` parameter's are used when running the pipeline.
-  - Reformatted samplesheet files used as input to the pipeline: `samplesheet.valid.csv`.
-
-</details>
+![Metro map of the pipeline workflow](images/nf-cmgg-germline_metro.png)
 
 [Nextflow](https://www.nextflow.io/docs/latest/tracing.html) provides excellent functionality for generating various reports relevant to the running and execution of the pipeline. This will allow you to troubleshoot errors with the running of the pipeline, and also provide you with other information such as launch commands, run times and resource usage.

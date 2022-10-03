@@ -10,41 +10,65 @@ on:
 
 env:
   NXF_ANSI_LOG: false
-  CAPSULE_LOG: none
 
 jobs:
-  test:
-    name: Run pipeline with test data
+  test_all:
+    name: Run pipeline with test data (complete)
     # Only run on push if this is the nf-core dev branch (merged PRs)
-    if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/tva') }}"
+    if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'CenterForMedicalGeneticsGhent/nf-cmgg-germline') }}"
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # Nextflow versions
-        include:
-          # Test pipeline minimum Nextflow version
-          - NXF_VER: "21.10.3"
-            NXF_EDGE: ""
-          # Test latest edge release of Nextflow
-          - NXF_VER: ""
-            NXF_EDGE: "1"
+        nxf_ver: ["21.10.3", "22.04.0"]
+        test:
+          - "default"
+          - "fails"
+          - "seqplorer_min"
+          - "seqplorer_vcfanno"
+          - "seqr_full"
+          - "seqr_no_genotyping"
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v2
 
-      - name: Install Nextflow
-        env:
-          NXF_VER: ${{ matrix.NXF_VER }}
-          # Uncomment only if the edge release is more recent than the latest stable release
-          # See https://github.com/nextflow-io/nextflow/issues/2467
-          # NXF_EDGE: ${{ matrix.NXF_EDGE }}
+      - name: Install nextflow
         run: |
-          wget -qO- get.nextflow.io | bash
-          sudo mv nextflow /usr/local/bin/
+          sudo bash; mkdir /opt/nextflow; cd /opt/nextflow; wget https://github.com/nextflow-io/nextflow/releases/download/v${{ matrix.nxf_ver }}/nextflow; chmod +x nextflow;
+          echo "/opt/nextflow" >> $GITHUB_PATH;
+
+      # - name: Install Nextflow
+      #   uses: nf-core/setup-nextflow@v1
+      #   with:
+      #     version: "${{ matrix.nxf_ver }}"
+
+      - name: Install nf-test
+        run: |
+          sudo bash; mkdir /opt/nf-test; cd /opt/nf-test; wget https://github.com/askimed/nf-test/releases/download/v0.6.0/nf-test-0.6.0.tar.gz; tar xvfz nf-test-0.6.0.tar.gz; chmod +x nf-test;
+          echo "/opt/nf-test" >> $GITHUB_PATH;
+
+      - name: Free some space
+        run: |
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
 
       - name: Run pipeline with test data
-        # TODO nf-core: You can customise CI pipeline run tests as required
-        # For example: adding multiple test runs with different parameters
-        # Remember that you can parallelise this by using strategy.matrix
         run: |
-          nextflow run ${GITHUB_WORKSPACE} -profile test,docker --outdir ./results
+          nf-test test tests/${{ matrix.test }}.test
+
+      - name: Output log on failure
+        if: failure()
+        run: |
+          sudo apt install bat > /dev/null
+          batcat --decorations=always --color=always .nf-test/tests/*/meta/std.{out,err}
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: nf-test-logs
+          path: |
+            .nf-test/tests/*/meta/nextflow.log
+            .nf-test/tests/*/meta/std.out
+            .nf-test/tests/*/meta/std.err
+            .nf-test/tests/*/meta/trace.csv
+            .nf-test/tests/*/work
+            .nf-test/*/output

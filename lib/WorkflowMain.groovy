@@ -1,5 +1,5 @@
 //
-// This file holds several functions specific to the main.nf workflow in the nf-core/tva pipeline
+// This file holds several functions specific to the main.nf workflow in the CenterForMedicalGeneticsGhent/nf-cmgg-germline pipeline
 //
 
 class WorkflowMain {
@@ -9,7 +9,6 @@ class WorkflowMain {
     //
     public static String citation(workflow) {
         return "If you use ${workflow.manifest.name} for your analysis please cite:\n\n" +
-            // TODO nf-core: Add Zenodo DOI for pipeline after first release
             //"* The pipeline\n" +
             //"  https://doi.org/10.5281/zenodo.XXXXXXX\n\n" +
             "* The nf-core framework\n" +
@@ -22,7 +21,7 @@ class WorkflowMain {
     // Print help to screen if required
     //
     public static String help(workflow, params, log) {
-        def command = "nextflow run ${workflow.manifest.name} --input samplesheet.csv --genome GRCh37 -profile docker"
+        def command = "nextflow run ${workflow.manifest.name} --input samplesheet.csv --scatter_count 5 --fasta genome.fasta --outdir results -profile docker"
         def help_string = ''
         help_string += NfcoreTemplate.logo(workflow, params.monochrome_logs)
         help_string += NfcoreSchema.paramsHelp(workflow, params, command)
@@ -59,6 +58,7 @@ class WorkflowMain {
         }
 
         // Print parameter summary log to screen
+
         log.info paramsSummaryLog(workflow, params, log)
 
         // Check that a -profile or Nextflow config has been provided to run the pipeline
@@ -78,17 +78,15 @@ class WorkflowMain {
             System.exit(1)
         }
     }
-
     //
     // Get attribute from genome config file e.g. fasta
     //
-    public static String getGenomeAttribute(params, attribute) {
-        def val = ''
+    public static Object getGenomeAttribute(params, attribute) {
         if (params.genomes && params.genome && params.genomes.containsKey(params.genome)) {
             if (params.genomes[ params.genome ].containsKey(attribute)) {
-                val = params.genomes[ params.genome ][ attribute ]
+                return params.genomes[ params.genome ][ attribute ]
             }
         }
-        return val
+        return null
     }
 }

@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$id": "https://raw.githubusercontent.com/nf-core/tva/master/assets/schema_input.json",
-    "title": "nf-core/tva pipeline - params.input schema",
+    "$id": "https://github.com/CenterForMedicalGeneticsGhent/nf-cmgg-germline/raw/master/assets/schema_input.json",
+    "title": "CenterForMedicalGeneticsGhent/nf-cmgg-germline pipeline - params.input schema",
     "description": "Schema for the file provided with params.input",
     "type": "array",
     "items": {
@@ -12,25 +12,27 @@
                 "pattern": "^\\S+$",
                 "errorMessage": "Sample name must be provided and cannot contain spaces"
             },
-            "fastq_1": {
+            "family_id": {
                 "type": "string",
-                "pattern": "^\\S+\\.f(ast)?q\\.gz$",
-                "errorMessage": "FastQ file for reads 1 must be provided, cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
+                "pattern": "^\\S+$",
+                "errorMessage": "Family ID must be provided and cannot contain spaces"
             },
-            "fastq_2": {
-                "errorMessage": "FastQ file for reads 2 cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'",
-                "anyOf": [
-                    {
-                        "type": "string",
-                        "pattern": "^\\S+\\.f(ast)?q\\.gz$"
-                    },
-                    {
-                        "type": "string",
-                        "maxLength": 0
-                    }
-                ]
+            "cram": {
+                "type": "string",
+                "pattern": "^\\S+\\.cram$",
+                "errorMessage": "CRAM file must be provided, cannot contain spaces and must have extension '.cram'"
+            },
+            "crai": {
+                "type": "string",
+                "pattern": "^\\S+\\.c?[br]ai$",
+                "errorMessage": "CRAM index file must be provided, cannot contain spaces and must have extension '.crai' or '.bai'"
+            },
+            "bed": {
+                "type": "string",
+                "pattern": "^\\S+\\.bed$",
+                "errorMessage": "BED file must be provided, cannot contain spaces and must have extension '.bed'"
             }
         },
-        "required": ["sample", "fastq_1"]
+        "required": ["sample", "family_id", "cram", "crai", "bed"]
     }
 }

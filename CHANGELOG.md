@@ -1,16 +1,14 @@
-# nf-core/tva: Changelog
+# CenterForMedicalGeneticsGhent/nf-cmgg-germline: Changelog
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v1.0dev - [date]
+## v1.0.0 - Beautiful Bruges - [Oct 3 2022]
 
-Initial release of nf-core/tva, created with the [nf-core](https://nf-co.re/) template.
+### Added
 
-### `Added`
+- Full release of the pipeline
 
-### `Fixed`
+## v1.0dev - [May 31 2022]
 
-### `Dependencies`
-
-### `Deprecated`
+Initial release of CenterForMedicalGeneticsGhent/nf-cmgg-germline, created with the [nf-core](https://nf-co.re/) template.

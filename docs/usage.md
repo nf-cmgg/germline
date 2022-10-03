@@ -1,54 +1,38 @@
-# nf-core/tva: Usage
-
-## :warning: Please read this documentation on the nf-core website: [https://nf-co.re/tva/usage](https://nf-co.re/tva/usage)
-
-> _Documentation of pipeline parameters is generated automatically from the pipeline schema and can no longer be found in markdown files._
+# CenterForMedicalGeneticsGhent/nf-cmgg-germline: Usage
 
 ## Introduction
 
-<!-- TODO nf-core: Add documentation about anything specific to running your pipeline. For general topics, please point to (and add to) the main nf-core website. -->
-
 ## Samplesheet input
 
-You will need to create a samplesheet with information about the samples you would like to analyse before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row as shown in the examples below.
+You will need to create a samplesheet with information about the samples you would like to analyse before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 5 columns, and a header row as shown in the examples below.
 
-```console
+```bash
 --input '[path to samplesheet file]'
 ```
 
-### Multiple runs of the same sample
+### Example of the samplesheet
 
-The `sample` identifiers have to be the same when you have re-sequenced the same sample more than once e.g. to increase sequencing depth. The pipeline will concatenate the raw reads before performing any downstream analysis. Below is an example for the same sample sequenced across 3 lanes:
+The `sample` identifiers have to be the same when you have re-sequenced the same sample more than once e.g. to increase sequencing depth. Either the `ped` or `family` field can be used to specify the family name. The pipeline automatically extracts the family id from the `ped` file if the `family` field is empty. The `family` is used to specify on which samples the joint-genotyping should be performed. Below is an example of how the samplesheet could look like.
 
 ```console
-sample,fastq_1,fastq_2
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
-CONTROL_REP1,AEG588A1_S1_L003_R1_001.fastq.gz,AEG588A1_S1_L003_R2_001.fastq.gz
-CONTROL_REP1,AEG588A1_S1_L004_R1_001.fastq.gz,AEG588A1_S1_L004_R2_001.fastq.gz
+sample,family,cram,crai,bed,ped
+SAMPLE_1,FAMILY_1,SAMPLE_1.cram,SAMPLE_1.crai,SAMPLE_1.bed,FAMILY_1.ped
+SAMPLE_2,FAMILY_1,SAMPLE_2.cram,SAMPLE_2.crai,SAMPLE_2.bed,FAMILY_1.ped
+SAMPLE_3,FAMILY_2,SAMPLE_3.cram,SAMPLE_3.crai,SAMPLE_3.bed,FAMILY_2.ped
 ```
 
 ### Full samplesheet
 
-The pipeline will auto-detect whether a sample is single- or paired-end using the information provided in the samplesheet. The samplesheet can have as many columns as you desire, however, there is a strict requirement for the first 3 columns to match those defined in the table below.
+The samplesheet can have as many columns as you desire, however, there is a strict requirement for the first 5 columns to match those defined in the table below.
 
-A final samplesheet file consisting of both single- and paired-end data may look something like the one below. This is for 6 samples, where `TREATMENT_REP3` has been sequenced twice.
-
-```console
-sample,fastq_1,fastq_2
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
-CONTROL_REP2,AEG588A2_S2_L002_R1_001.fastq.gz,AEG588A2_S2_L002_R2_001.fastq.gz
-CONTROL_REP3,AEG588A3_S3_L002_R1_001.fastq.gz,AEG588A3_S3_L002_R2_001.fastq.gz
-TREATMENT_REP1,AEG588A4_S4_L003_R1_001.fastq.gz,
-TREATMENT_REP2,AEG588A5_S5_L003_R1_001.fastq.gz,
-TREATMENT_REP3,AEG588A6_S6_L003_R1_001.fastq.gz,
-TREATMENT_REP3,AEG588A6_S6_L004_R1_001.fastq.gz,
-```
-
-| Column    | Description                                                                                                                                                                            |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sample`  | Custom sample name. This entry will be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`). |
-| `fastq_1` | Full path to FastQ file for Illumina short reads 1. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz".                                                             |
-| `fastq_2` | Full path to FastQ file for Illumina short reads 2. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz".                                                             |
+| Column   | Description                                                                                                                                                                                         |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sample` | Custom sample name. This entry will be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`).              |
+| `family` | The family ID of the specified sample. This field is optional, as the family id can also be extracted from the `ped` file. Spaces in sample names are automatically converted to underscores (`_`). |
+| `cram`   | Full path to CRAM file fetched from the preprocessing pipeline. File has to have the extension ".cram".                                                                                             |
+| `crai`   | Full path to CRAM index file fetched from the preprocessing pipeline. File has to have the extension ".crai" or ".bai".                                                                             |
+| `bed`    | Full path to BED file containing the regions to call on. File has to have the extension ".bed".                                                                                                     |
+| `ped`    | Full path to PED file containing the relational information between samples in the same family to call on. File has to have the extension ".ped".                                                   |
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
@@ -57,35 +41,19 @@ An [example samplesheet](../assets/samplesheet.csv) has been provided with the p
 The typical command for running the pipeline is as follows:
 
 ```console
-nextflow run nf-core/tva --input samplesheet.csv --outdir <OUTDIR> --genome GRCh37 -profile docker
+nextflow run CenterForMedicalGeneticsGhent/nf-cmgg-germline --input samplesheet.csv --outdir <OUTDIR> --scatter_count 5 --fasta genome.fasta -profile docker
 ```
 
 This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
 
 Note that the pipeline will create the following files in your working directory:
 
-```console
+```bash
 work                # Directory containing the nextflow working files
-<OUTIDR>            # Finished results in specified location (defined with --outdir)
+<OUTDIR>            # Finished results in specified location (defined with --outdir)
 .nextflow_log       # Log file from Nextflow
 # Other nextflow hidden files, eg. history of pipeline runs and old logs.
 ```
-
-### Updating the pipeline
-
-When you run the above command, Nextflow automatically pulls the pipeline code from GitHub and stores it as a cached version. When running the pipeline after this, it will always use the cached version if available - even if the pipeline has been updated since. To make sure that you're running the latest version of the pipeline, make sure that you regularly update the cached version of the pipeline:
-
-```console
-nextflow pull nf-core/tva
-```
-
-### Reproducibility
-
-It is a good idea to specify a pipeline version when running the pipeline on your data. This ensures that a specific version of the pipeline code and software are used when you run your pipeline. If you keep using the same tag, you'll be running the same version of the pipeline, even if there have been changes to the code since.
-
-First, go to the [nf-core/tva releases page](https://github.com/nf-core/tva/releases) and find the latest version number - numeric only (eg. `1.3.1`). Then specify this when running the pipeline with `-r` (one hyphen) - eg. `-r 1.3.1`.
-
-This version number will be logged in reports when you run the pipeline, so that you'll know what you used when you look back in the future.
 
 ## Core Nextflow arguments
 
@@ -251,6 +219,6 @@ Some HPC setups also allow you to run nextflow within a cluster job submitted yo
 In some cases, the Nextflow Java virtual machines can start to request a large amount of memory.
 We recommend adding the following line to your environment to limit this (typically in `~/.bashrc` or `~./bash_profile`):
 
-```console
+```bash
 NXF_OPTS='-Xms1g -Xmx4g'
 ```
