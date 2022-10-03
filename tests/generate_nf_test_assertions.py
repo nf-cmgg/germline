@@ -36,7 +36,7 @@ if __name__ == "__main__":
         ):
             continue
         if os.path.isfile(abs_path):
-            file_name = output[path_length:-1]
+            file_name = output[path_length:]
             if (
                 re.search("^.*\.tbi$", output)
                 or re.search("^.*\.db$", output)

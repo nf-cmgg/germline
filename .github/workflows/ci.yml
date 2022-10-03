@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        nxf_ver: ["21.10.3", ""]
+        nxf_ver: ["21.10.3"]
         test:
           - "default"
           - "fails"
