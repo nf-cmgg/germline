@@ -11,7 +11,7 @@ process RTGTOOLS_PEDFILTER {
     tuple val(meta), path(ped)
 
     output:
-    tuple val(meta), path("*.vcf"), emit: vcf
+    tuple val(meta), path("*.vcf")   , emit: vcf
     path "versions.yml"              , emit: versions
 
     when:

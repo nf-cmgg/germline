@@ -6,6 +6,69 @@ This document describes the output produced by the pipeline. Most of the plots a
 
 The directories listed below will be created in the results directory after the pipeline has finished. All paths are relative to the top-level results directory.
 
+### Seqr mode
+
+```bash
+results/
+├── families
+│   └── Proband_12345
+│       ├── Proband_12345.vcf.gz
+│       ├── Proband_12345.vcf.gz.tbi
+│       └── reports
+│           ├── Proband_12345.bcftools_stats.txt
+│           ├── Proband_12345.FILTER.summary
+│           ├── Proband_12345.TsTv.count
+│           └── Proband_12345.TsTv.qual
+├── individuals
+│   ├── NA12878K12_NVQ_034
+│   │   ├── NA12878K12_NVQ_034.g.vcf.gz
+│   │   └── NA12878K12_NVQ_034.g.vcf.gz.tbi
+│   └── NA24385D2_NVQ_034
+│       ├── NA24385D2_NVQ_034.g.vcf.gz
+│       └── NA24385D2_NVQ_034.g.vcf.gz.tbi
+├── multiqc_reports
+│   ├── multiqc_data
+│   ├── multiqc_plots
+│   └── multiqc_report.html
+└── pipeline_info
+    ├── execution_report_2022-10-03_11-56-25.html
+    ├── execution_timeline_2022-10-03_11-56-25.html
+    ├── execution_trace_2022-10-03_11-56-25.txt
+    └── pipeline_dag_2022-10-03_11-56-25.html
+```
+
+### Seqplorer mode
+
+```bash
+results/
+├── families
+│   └── Proband_12345
+│       ├── Proband_12345.ann.vcf.gz
+│       ├── Proband_12345.db
+│       ├── Proband_12345_filtered_snps_indels.vcf.gz
+│       └── reports
+│           ├── Proband_12345.bcftools_stats.txt
+│           ├── Proband_12345.FILTER.summary
+│           ├── Proband_12345.TsTv.count
+│           └── Proband_12345.TsTv.qual
+├── individuals
+│   ├── NA12878K12_NVQ_034
+│   │   ├── NA12878K12_NVQ_034.g.vcf.gz
+│   │   └── NA12878K12_NVQ_034.g.vcf.gz.tbi
+│   └── NA24385D2_NVQ_034
+│       ├── NA24385D2_NVQ_034.g.vcf.gz
+│       └── NA24385D2_NVQ_034.g.vcf.gz.tbi
+├── multiqc_reports
+│   ├── multiqc_data
+│   ├── multiqc_plots
+│   └── multiqc_report.html
+└── pipeline_info
+    ├── execution_report_2022-10-03_11-51-54.html
+    ├── execution_timeline_2022-10-03_11-51-54.html
+    ├── execution_trace_2022-10-03_11-51-54.txt
+    └── pipeline_dag_2022-10-03_11-51-54.html
+```
+
 <!-- TODO nf-core: Write this documentation describing your workflow's output -->
 
 ## Pipeline overview

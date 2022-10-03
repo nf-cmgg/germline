@@ -39,7 +39,7 @@
                 },
                 "ensemblvep": {
                     "branch": "master",
-                    "git_sha": "973151e9eab9bac400aa99f099075a10cdd8e84c"
+                    "git_sha": "5ccf6fbcc913f34ee2897689081d1cf60cecdb35"
                 },
                 "gatk4/calibratedragstrmodel": {
                     "branch": "master",
