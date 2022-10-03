@@ -26,11 +26,19 @@ if __name__ == "__main__":
 
     for output in all_outputs:
         abs_path = os.path.abspath(output)
-        if re.search("^.*/multiqc_data/", output) or re.search("^.*/multiqc_plots/", output) or re.search("^.*/pipeline_info/", output):
+        if (
+            re.search("^.*/multiqc_data/", output)
+            or re.search("^.*/multiqc_plots/", output)
+            or re.search("^.*/pipeline_info/", output)
+        ):
             continue
         if os.path.isfile(abs_path):
             file_name = re.search("^[a-zA-Z1-9]*/(.*)$", output).group(1)
-            if re.search("^.*\.tbi$", output) or re.search("^.*\.db$", output) or re.search("^.*multiqc_report.html$", output):
+            if (
+                re.search("^.*\.tbi$", output)
+                or re.search("^.*\.db$", output)
+                or re.search("^.*multiqc_report.html$", output)
+            ):
                 print(f'assert file("${{outputDir}}/{file_name}").exists()')
             elif re.search("^.*\.vcf.gz$", output):
                 with gzip.open(abs_path, "rt") as vcf:
