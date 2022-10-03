@@ -32,20 +32,20 @@ jobs:
       - name: Check out pipeline code
         uses: actions/checkout@v2
 
-      - name: Install nextflow
-        run: |
-          sudo bash; mkdir /opt/nextflow; cd /opt/nextflow; wget https://github.com/nextflow-io/nextflow/releases/download/v22.04.0/nextflow; chmod +x nextflow;
-          echo "/opt/nextflow" >> $GITHUB_PATH;
+      # - name: Install nextflow
+      #   run: |
+      #     sudo bash; mkdir /opt/nextflow; cd /opt/nextflow; wget https://github.com/nextflow-io/nextflow/releases/download/v22.04.0/nextflow; chmod +x nextflow;
+      #     echo "/opt/nextflow" >> $GITHUB_PATH;
 
-      # - name: Install Nextflow
-      #   uses: nf-core/setup-nextflow@v1
-      #   with:
-      #     version: "${{ matrix.NXF_VER }}"
+      - name: Install Nextflow
+        uses: nf-core/setup-nextflow@v1
+        with:
+          version: "${{ matrix.NXF_VER }}"
 
       - name: Install nf-test
         run: |
           sudo bash; mkdir /opt/nf-test; cd /opt/nf-test; wget https://github.com/askimed/nf-test/releases/download/v0.6.0/nf-test-0.6.0.tar.gz; tar xvfz nf-test-0.6.0.tar.gz; chmod +x nf-test;
-          echo "/opt/nf-test" >> $GITHUB_PATH;
+          export GITHUB_PATH="/opt/nf-test:$GITHUB_PATH"
 
       - name: Free some space
         run: |
