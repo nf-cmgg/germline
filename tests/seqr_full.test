@@ -9,7 +9,6 @@ nextflow_pipeline {
             params {
                 output_mode         = "seqr"
                 use_dragstr_model   = true
-                fasta_fai           = "https://github.com/nf-core/test-datasets/raw/modules/data/genomics/homo_sapiens/genome/chr21/sequence/genome.fasta.fai"
                 always_use_cram     = true
             }
         }
