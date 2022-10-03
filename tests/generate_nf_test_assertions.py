@@ -1,4 +1,5 @@
 import argparse
+from fileinput import filename
 import glob
 import gzip
 import hashlib
@@ -22,6 +23,8 @@ if __name__ == "__main__":
 
     tab = "\\t"
 
+    path_length = len(test_dir)
+
     print("assert workflow.success")
 
     for output in all_outputs:
@@ -33,7 +36,7 @@ if __name__ == "__main__":
         ):
             continue
         if os.path.isfile(abs_path):
-            file_name = re.search("^[a-zA-Z1-9]*/(.*)$", output).group(1)
+            file_name = output[path_length:-1]
             if (
                 re.search("^.*\.tbi$", output)
                 or re.search("^.*\.db$", output)
