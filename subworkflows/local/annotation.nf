@@ -53,7 +53,7 @@ workflow ANNOTATION {
         ch_versions       = ch_versions.mix(VCFANNO.out.versions)
     }
     else {
-        ch_annotated_vcfs = ENSEMBLVEP.out.vcf.map({ meta, vcf -> [ meta, vcf, [] ] })
+        ch_annotated_vcfs = ENSEMBLVEP.out.vcf
     }
 
     BGZIP_ANNOTATED_VCFS(

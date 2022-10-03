@@ -12,13 +12,13 @@ if __name__ == "__main__":
         "test_dir",
         metavar="TEST_DIRECTORY",
         type=str,
-        help="The folder containing the test outputs (usually called `.nf-test`",
+        help="The folder containing the test outputs (usually called `.nf-test/tests/<ID>/outputs`",
     )
 
     args = parser.parse_args()
 
     test_dir = args.test_dir
-    all_outputs = glob.glob(f"{test_dir}/**/output/**", recursive=True)
+    all_outputs = glob.glob(f"{test_dir}/**", recursive=True)
 
     tab = "\\t"
 
@@ -26,10 +26,10 @@ if __name__ == "__main__":
 
     for output in all_outputs:
         abs_path = os.path.abspath(output)
-        if re.search("^.*/multiqc_data/", output) or re.search("^.*/multiqc_plots/", output):
+        if re.search("^.*/multiqc_data/", output) or re.search("^.*/multiqc_plots/", output) or re.search("^.*/pipeline_info/", output):
             continue
         if os.path.isfile(abs_path):
-            file_name = re.search("^.*/output/(.*)$", output).group(1)
+            file_name = re.search("^[a-zA-Z1-9]*/(.*)$", output).group(1)
             if re.search("^.*\.tbi$", output) or re.search("^.*\.db$", output) or re.search("^.*multiqc_report.html$", output):
                 print(f'assert file("${{outputDir}}/{file_name}").exists()')
             elif re.search("^.*\.vcf.gz$", output):

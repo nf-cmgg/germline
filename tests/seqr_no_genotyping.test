@@ -17,11 +17,12 @@ nextflow_pipeline {
         then {
             assert workflow.success
             assert path("${outputDir}/families/Proband_12345/reports/Proband_12345.TsTv.count").md5 == "8dcfdbcaac118df1d5ad407dd2af699f"
-            assert path("${outputDir}/families/Proband_12345/reports/Proband_12345.bcftools_stats.txt").md5 == "8f91f678232df7db35f8dd12e0f4abee"
+            assert path("${outputDir}/families/Proband_12345/reports/Proband_12345.bcftools_stats.txt").md5 == "18fc38df9afb92101a64ac8b3f9b7d26"
             assert path("${outputDir}/families/Proband_12345/reports/Proband_12345.TsTv.qual").md5 == "bc68ae4e688e9fb772b457069e604883"
-            assert path("${outputDir}/families/Proband_12345/reports/Proband_12345.FILTER.summary").md5 == "2a92e8a11960b52331968b8f95e7bf1c"
-            assert path("${outputDir}/families/Proband_12345/Proband_12345.vcf.gz").linesGzip.contains("chr21\t6448991\t.\tG\tC,<NON_REF>\t4.23\t.\tAS_QUALapprox=|39|0;AS_RAW_BaseQRankSum=|2.7,1|NaN;AS_RAW_MQ=3168.00|891.00|0.00;AS_RAW_MQRankSum=|-1.0,1|NaN;AS_RAW_ReadPosRankSum=|0.9,1|NaN;AS_SB_TABLE=0,8|0,3|0,0;AS_VarDP=8|3|0;BaseQRankSum=2.744;MQRankSum=-0.98;QUALapprox=39;RAW_GT_COUNT=0,1,0;RAW_MQandDP=4059,11;ReadPosRankSum=0.992;VarDP=11;DP=11;AN=2;AC=1,0\tGT:AD:DP:GP:GQ:PG:PL:SB\t./.:.:.:.:.:.:.:.\t0/1:8,3,0:11:4.23,0,51,54.23,86,105.23:4:0,34.77,64.77,30,64.77,60:39,0,21,59,56,80:0,8,0,3")
+            assert path("${outputDir}/families/Proband_12345/reports/Proband_12345.FILTER.summary").md5 == "2af047b63f540752f71ed40dd0da4f38"
+            assert path("${outputDir}/families/Proband_12345/Proband_12345.vcf.gz").linesGzip.contains("chr21\t6448991\t.\tG\tC,<NON_REF>\t4.23\t.\tAS_QUALapprox=|39|0;AS_RAW_BaseQRankSum=|2.7,1|NaN;AS_RAW_MQ=3168.00|891.00|0.00;AS_RAW_MQRankSum=|-1.0,1|NaN;AS_RAW_ReadPosRankSum=|0.9,1|NaN;AS_SB_TABLE=0,8|0,3|0,0;AS_VarDP=8|3|0;BaseQRankSum=2.744;MQRankSum=-0.98;QUALapprox=39;RAW_GT_COUNT=0,1,0;RAW_MQandDP=4059,11;ReadPosRankSum=0.992;VarDP=11;DP=11;AN=2;AC=1,0\tGT:AD:DP:GP:GQ:PG:PL:SB\t./.:.:.:.:.:.:.:.\t0/1:8,3,0:11:4.23,0,24.01,63.26,95.03,87.27:4:0,34.77,37.78,39.03,73.8,42.04:39,0,21,59,56,80:0,8,0,3")
             assert file("${outputDir}/families/Proband_12345/Proband_12345.vcf.gz.tbi").exists()
+            assert file("${outputDir}/multiqc_reports/multiqc_report.html").exists()
             assert path("${outputDir}/individuals/NA24385D2_NVQ_034/NA24385D2_NVQ_034.g.vcf.gz").linesGzip.contains("chr21\t2\t.\tN\t<NON_REF>\t.\t.\tEND=6118038\tGT:DP:GQ:MIN_DP:PL\t0/0:0:0:0:0,0,0")
             assert file("${outputDir}/individuals/NA24385D2_NVQ_034/NA24385D2_NVQ_034.g.vcf.gz.tbi").exists()
             assert path("${outputDir}/individuals/NA12878K12_NVQ_034/NA12878K12_NVQ_034.g.vcf.gz").linesGzip.contains("chr21\t2\t.\tN\t<NON_REF>\t.\t.\tEND=6118023\tGT:DP:GQ:MIN_DP:PL\t0/0:0:0:0:0,0,0")
