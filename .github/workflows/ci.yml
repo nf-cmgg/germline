@@ -36,11 +36,6 @@ jobs:
       - name: Check out pipeline code
         uses: actions/checkout@v2
 
-      # - name: Install nextflow
-      #   run: |
-      #     sudo bash; mkdir /opt/nextflow; cd /opt/nextflow; wget https://github.com/nextflow-io/nextflow/releases/download/v${{ matrix.nxf_ver }}/nextflow; chmod +x nextflow;
-      #     echo "/opt/nextflow" >> $GITHUB_PATH;
-
       - name: Install Nextflow
         uses: nf-core/setup-nextflow@v1
         with:
