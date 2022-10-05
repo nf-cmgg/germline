@@ -29,7 +29,9 @@ jobs:
           - "seqr_no_genotyping"
     steps:
       - name: Free some space
-        uses: easimon/maximize-build-space@v6
+        run: |
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
 
       - name: Check out pipeline code
         uses: actions/checkout@v2
