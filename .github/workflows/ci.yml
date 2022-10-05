@@ -28,6 +28,9 @@ jobs:
           - "seqr_full"
           - "seqr_no_genotyping"
     steps:
+      - name: Free some space
+        uses: easimon/maximize-build-space@v6
+
       - name: Check out pipeline code
         uses: actions/checkout@v2
 
@@ -45,9 +48,6 @@ jobs:
         run: |
           sudo bash; mkdir /opt/nf-test; cd /opt/nf-test; wget https://github.com/askimed/nf-test/releases/download/v0.6.0/nf-test-0.6.0.tar.gz; tar xvfz nf-test-0.6.0.tar.gz; chmod +x nf-test;
           echo "/opt/nf-test" >> $GITHUB_PATH;
-
-      - name: Free some space
-        uses: easimon/maximize-build-space@v6
 
       - name: Run pipeline with test data
         run: |
