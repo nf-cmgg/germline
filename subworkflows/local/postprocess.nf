@@ -2,20 +2,21 @@
 // GENOTYPE
 //
 
-include { GATK4_GENOTYPEGVCFS as GENOTYPE_GVCFS     } from '../../modules/nf-core/modules/gatk4/genotypegvcfs/main'
-include { GATK4_COMBINEGVCFS as COMBINEGVCFS        } from '../../modules/nf-core/modules/gatk4/combinegvcfs/main'
-include { GATK4_REBLOCKGVCF as REBLOCKGVCF          } from '../../modules/nf-core/modules/gatk4/reblockgvcf/main'
-include { TABIX_TABIX as TABIX_GVCFS                } from '../../modules/nf-core/modules/tabix/tabix/main'
-include { TABIX_TABIX as TABIX_COMBINED_GVCFS       } from '../../modules/nf-core/modules/tabix/tabix/main'
-include { TABIX_BGZIP as BGZIP_GENOTYPED_VCFS       } from '../../modules/nf-core/modules/tabix/bgzip/main'
-include { TABIX_BGZIPTABIX as BGZIP_TABIX_PED_VCFS  } from '../../modules/nf-core/modules/tabix/bgziptabix/main'
 include { RTGTOOLS_PEDFILTER as PEDFILTER           } from '../../modules/local/rtgtools/pedfilter/main'
 include { MERGE_VCF_HEADERS                         } from '../../modules/local/merge_vcf_headers'
-include { BCFTOOLS_FILTER as FILTER_SNPS            } from '../../modules/nf-core/modules/bcftools/filter/main'
-include { BCFTOOLS_FILTER as FILTER_INDELS          } from '../../modules/nf-core/modules/bcftools/filter/main'
-include { BCFTOOLS_MERGE                            } from '../../modules/nf-core/modules/bcftools/merge/main'
-include { BCFTOOLS_CONVERT                          } from '../../modules/nf-core/modules/bcftools/convert/main'
-include { BCFTOOLS_VIEW                             } from '../../modules/nf-core/modules/bcftools/view/main'
+
+include { GATK4_GENOTYPEGVCFS as GENOTYPE_GVCFS     } from '../../modules/nf-core/gatk4/genotypegvcfs/main'
+include { GATK4_COMBINEGVCFS as COMBINEGVCFS        } from '../../modules/nf-core/gatk4/combinegvcfs/main'
+include { GATK4_REBLOCKGVCF as REBLOCKGVCF          } from '../../modules/nf-core/gatk4/reblockgvcf/main'
+include { TABIX_TABIX as TABIX_GVCFS                } from '../../modules/nf-core/tabix/tabix/main'
+include { TABIX_TABIX as TABIX_COMBINED_GVCFS       } from '../../modules/nf-core/tabix/tabix/main'
+include { TABIX_BGZIP as BGZIP_GENOTYPED_VCFS       } from '../../modules/nf-core/tabix/bgzip/main'
+include { TABIX_BGZIPTABIX as BGZIP_TABIX_PED_VCFS  } from '../../modules/nf-core/tabix/bgziptabix/main'
+include { BCFTOOLS_FILTER as FILTER_SNPS            } from '../../modules/nf-core/bcftools/filter/main'
+include { BCFTOOLS_FILTER as FILTER_INDELS          } from '../../modules/nf-core/bcftools/filter/main'
+include { BCFTOOLS_MERGE                            } from '../../modules/nf-core/bcftools/merge/main'
+include { BCFTOOLS_CONVERT                          } from '../../modules/nf-core/bcftools/convert/main'
+include { BCFTOOLS_VIEW                             } from '../../modules/nf-core/bcftools/view/main'
 
 workflow POST_PROCESS {
     take:
