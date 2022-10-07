@@ -283,13 +283,6 @@
                     "fa_icon": "fas fa-file-upload",
                     "hidden": true
                 },
-                "multiqc_logo": {
-                    "type": "string",
-                    "default": "None",
-                    "fa_icon": "far fa-font-awesome-logo-full",
-                    "hidden": true,
-                    "description": "The logo for the reports in MultiQC"
-                },
                 "monochrome_logs": {
                     "type": "boolean",
                     "description": "Do not use coloured log outputs.",
@@ -346,11 +339,6 @@
                     "description": "Run this workflow with Conda. You can also use '-profile conda' instead of providing this parameter.",
                     "hidden": true,
                     "fa_icon": "fas fa-bacon"
-                },
-                "hook_url": {
-                    "type": "string",
-                    "fa_icon": "fas fa-share-alt",
-                    "description": "A hook URL for Microsoft Teams"
                 }
             }
         },
