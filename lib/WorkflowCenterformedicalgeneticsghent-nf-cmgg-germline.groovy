@@ -1,8 +1,10 @@
 //
-// This file holds several functions specific to the workflow/nf-cmgg-germline.nf in the nf-core/nf-cmgg-germline pipeline
+// This file holds several functions specific to the workflow/centerformedicalgeneticsghent-nf-cmgg-germline.nf in the nf-core/centerformedicalgeneticsghent-nf-cmgg-germline pipeline
 //
 
-class WorkflowNf-cmgg-germline {
+import groovy.text.SimpleTemplateEngine
+
+class WorkflowCenterformedicalgeneticsghent-nf-cmgg-germline {
 
     //
     // Check and validate parameters
@@ -42,6 +44,23 @@ class WorkflowNf-cmgg-germline {
         yaml_file_text        += "data: |\n"
         yaml_file_text        += "${summary_section}"
         return yaml_file_text
+    }
+
+    public static String methodsDescriptionText(run_workflow, mqc_methods_yaml) {
+        // Convert  to a named map so can be used as with familar NXF ${workflow} variable syntax in the MultiQC YML file
+        def meta = [:]
+        meta.workflow = run_workflow.toMap()
+        meta["manifest_map"] = run_workflow.manifest.toMap()
+
+        meta["doi_text"] = meta.manifest_map.doi ? "(doi: <a href=\'https://doi.org/${meta.manifest_map.doi}\'>${meta.manifest_map.doi}</a>)" : ""
+        meta["nodoi_text"] = meta.manifest_map.doi ? "": "<li>If available, make sure to update the text to include the Zenodo DOI of version of the pipeline used. </li>"
+
+        def methods_text = mqc_methods_yaml.text
+
+        def engine =  new SimpleTemplateEngine()
+        def description_html = engine.createTemplate(methods_text).make(meta)
+
+        return description_html
     }//
     // Exit pipeline if incorrect --genome key provided
     //

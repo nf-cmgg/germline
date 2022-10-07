@@ -1,4 +1,4 @@
-# nf-core/nf-cmgg-germline: Citations
+# nf-core/centerformedicalgeneticsghent-nf-cmgg-germline: Citations
 
 ## [nf-core](https://pubmed.ncbi.nlm.nih.gov/32055031/)
 
