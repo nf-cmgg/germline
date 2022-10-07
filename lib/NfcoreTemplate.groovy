@@ -150,8 +150,7 @@ class NfcoreTemplate {
     // Construct and send adaptive card
     // https://adaptivecards.io
     //
-
-    public static void adaptivecard(workflow, params, summary_params, projectDir, log, multiqc_report=[]) {
+    public static void adaptivecard(workflow, params, summary_params, projectDir, log) {
         def hook_url = params.hook_url
 
         def summary = [:]
@@ -186,7 +185,7 @@ class NfcoreTemplate {
 
         // Render the JSON template
         def engine       = new groovy.text.GStringTemplateEngine()
-        def hf = new File("$projectDir/assets/adaptivecard_template.json")
+        def hf = new File("$projectDir/assets/adaptivecard.json")
         def json_template = engine.createTemplate(hf).make(msg_fields)
         def json_message  = json_template.toString()
 
@@ -198,7 +197,7 @@ class NfcoreTemplate {
         post.getOutputStream().write(json_message.getBytes("UTF-8"));
         def postRC = post.getResponseCode();
         if (! postRC.equals(200)) {
-            println(post.getErrorStream().getText());
+            log.warn(post.getErrorStream().getText());
         }
     }
 
