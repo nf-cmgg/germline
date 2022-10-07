@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        nxf_ver: ["21.10.3", "22.04.0"]
+        nxf_ver: ["21.10.3", ""]
         test:
           - "default"
           - "fails"
@@ -28,28 +28,23 @@ jobs:
           - "seqr_full"
           - "seqr_no_genotyping"
     steps:
+      - name: Free some space
+        run: |
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+
       - name: Check out pipeline code
         uses: actions/checkout@v2
 
-      - name: Install nextflow
-        run: |
-          sudo bash; mkdir /opt/nextflow; cd /opt/nextflow; wget https://github.com/nextflow-io/nextflow/releases/download/v${{ matrix.nxf_ver }}/nextflow; chmod +x nextflow;
-          echo "/opt/nextflow" >> $GITHUB_PATH;
-
-      # - name: Install Nextflow
-      #   uses: nf-core/setup-nextflow@v1
-      #   with:
-      #     version: "${{ matrix.nxf_ver }}"
+      - name: Install Nextflow
+        uses: nf-core/setup-nextflow@v1
+        with:
+          version: "${{ matrix.nxf_ver }}"
 
       - name: Install nf-test
         run: |
           sudo bash; mkdir /opt/nf-test; cd /opt/nf-test; wget https://github.com/askimed/nf-test/releases/download/v0.6.0/nf-test-0.6.0.tar.gz; tar xvfz nf-test-0.6.0.tar.gz; chmod +x nf-test;
           echo "/opt/nf-test" >> $GITHUB_PATH;
-
-      - name: Free some space
-        run: |
-          sudo rm -rf "/usr/local/share/boost"
-          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
 
       - name: Run pipeline with test data
         run: |

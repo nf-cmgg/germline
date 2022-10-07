@@ -2,10 +2,10 @@
 // VCF_QC
 //
 
-include { BCFTOOLS_STATS                  } from '../../modules/nf-core/modules/bcftools/stats/main'
-include { VCFTOOLS as VCFTOOLS_SUMMARY    } from '../../modules/nf-core/modules/vcftools/main'
-include { VCFTOOLS as VCFTOOLS_TSTV_COUNT } from '../../modules/nf-core/modules/vcftools/main'
-include { VCFTOOLS as VCFTOOLS_TSTV_QUAL  } from '../../modules/nf-core/modules/vcftools/main'
+include { BCFTOOLS_STATS                  } from '../../modules/nf-core/bcftools/stats/main'
+include { VCFTOOLS as VCFTOOLS_SUMMARY    } from '../../modules/nf-core/vcftools/main'
+include { VCFTOOLS as VCFTOOLS_TSTV_COUNT } from '../../modules/nf-core/vcftools/main'
+include { VCFTOOLS as VCFTOOLS_TSTV_QUAL  } from '../../modules/nf-core/vcftools/main'
 
 workflow VCF_QC {
     take:
@@ -27,20 +27,20 @@ workflow VCF_QC {
     )
 
     VCFTOOLS_TSTV_COUNT(
-        vcfs, 
-        [], 
+        vcfs,
+        [],
         []
     )
 
     VCFTOOLS_TSTV_QUAL(
-        vcfs, 
-        [], 
+        vcfs,
+        [],
         []
     )
-    
+
     VCFTOOLS_SUMMARY(
-        vcfs, 
-        [], 
+        vcfs,
+        [],
         []
     )
 

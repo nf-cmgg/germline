@@ -2,9 +2,9 @@
 // ANNOTATION
 //
 
-include { ENSEMBLVEP                          } from '../../modules/nf-core/modules/ensemblvep/main'
-include { VCFANNO                             } from '../../modules/nf-core/modules/vcfanno/main'
-include { TABIX_BGZIP as BGZIP_ANNOTATED_VCFS } from '../../modules/nf-core/modules/tabix/bgzip/main'
+include { ENSEMBLVEP                          } from '../../modules/nf-core/ensemblvep/main'
+include { VCFANNO                             } from '../../modules/nf-core/vcfanno/main'
+include { TABIX_BGZIP as BGZIP_ANNOTATED_VCFS } from '../../modules/nf-core/tabix/bgzip/main'
 
 workflow ANNOTATION {
     take:
