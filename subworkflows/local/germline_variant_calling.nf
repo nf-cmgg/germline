@@ -2,13 +2,14 @@
 // GERMLINE VARIANT CALLING
 //
 
-include { GATK4_HAPLOTYPECALLER as HAPLOTYPECALLER              } from '../../modules/nf-core/modules/gatk4/haplotypecaller/main'
-include { GATK4_CALIBRATEDRAGSTRMODEL as CALIBRATEDRAGSTRMODEL  } from '../../modules/nf-core/modules/gatk4/calibratedragstrmodel/main'
-include { BCFTOOLS_CONCAT                                       } from '../../modules/nf-core/modules/bcftools/concat/main'
-include { BEDTOOLS_SPLIT                                        } from '../../modules/nf-core/modules/bedtools/split/main'
 include { MERGE_BEDS                                            } from '../../modules/local/merge_beds'
 include { SAMTOOLS_MERGE                                        } from '../../modules/local/samtools_merge'
-include { SAMTOOLS_INDEX                                        } from '../../modules/nf-core/modules/samtools/index/main'
+
+include { GATK4_HAPLOTYPECALLER as HAPLOTYPECALLER              } from '../../modules/nf-core/gatk4/haplotypecaller/main'
+include { GATK4_CALIBRATEDRAGSTRMODEL as CALIBRATEDRAGSTRMODEL  } from '../../modules/nf-core/gatk4/calibratedragstrmodel/main'
+include { BCFTOOLS_CONCAT                                       } from '../../modules/nf-core/bcftools/concat/main'
+include { BEDTOOLS_SPLIT                                        } from '../../modules/nf-core/bedtools/split/main'
+include { SAMTOOLS_INDEX                                        } from '../../modules/nf-core/samtools/index/main'
 
 workflow GERMLINE_VARIANT_CALLING {
     take:
@@ -49,7 +50,7 @@ workflow GERMLINE_VARIANT_CALLING {
     merged_crams = SAMTOOLS_MERGE.out.cram
                     .mix(SAMTOOLS_MERGE.out.bam)
                     .map({ meta, cram -> [ meta, cram, [] ]})
-                    .mix(cram_branch.single.map({meta, cram, crai -> 
+                    .mix(cram_branch.single.map({meta, cram, crai ->
                             [ meta, cram[0], crai[0]]
                         }))
                     .branch({ meta, cram, crai ->
@@ -106,7 +107,7 @@ workflow GERMLINE_VARIANT_CALLING {
     }
 
     //
-    // Generate DRAGSTR models 
+    // Generate DRAGSTR models
     //
 
     if (use_dragstr_model) {
@@ -128,7 +129,7 @@ workflow GERMLINE_VARIANT_CALLING {
 
         cram_models = ready_crams.combine(split_beds, by: 0)
                           .combine(CALIBRATEDRAGSTRMODEL.out.dragstr_model, by: 0)
-    } 
+    }
     else {
         cram_models = ready_crams.combine(split_beds, by: 0)
     }
@@ -166,10 +167,10 @@ workflow GERMLINE_VARIANT_CALLING {
     //
     // Merge the GVCFs if split BED files were used
     //
-    
+
     if (scatter_count > 1) {
         concat_input = haplotypecaller_vcfs
-                      .map({meta, vcf, tbi -> 
+                      .map({meta, vcf, tbi ->
                           new_meta = meta.clone()
                           new_meta.id = new_meta.samplename
                           [ new_meta, vcf, tbi ]
@@ -191,6 +192,6 @@ workflow GERMLINE_VARIANT_CALLING {
     }
 
     emit:
-    gvcfs    
+    gvcfs
     versions = ch_versions
 }
