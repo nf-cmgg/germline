@@ -189,6 +189,7 @@ include { ANNOTATION               } from '../subworkflows/local/annotation'
 include { SAMTOOLS_FAIDX as FAIDX                                    } from '../modules/nf-core/samtools/faidx/main'
 include { GATK4_CREATESEQUENCEDICTIONARY as CREATESEQUENCEDICTIONARY } from '../modules/nf-core/gatk4/createsequencedictionary/main'
 include { GATK4_COMPOSESTRTABLEFILE as COMPOSESTRTABLEFILE           } from '../modules/nf-core/gatk4/composestrtablefile/main'
+include { INDEX_TO_BED                                               } from '../modules/local/indextobed'
 include { UNTAR                                                      } from '../modules/nf-core/untar/main'
 include { VCF2DB                                                     } from '../modules/nf-core/vcf2db/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS                                } from '../modules/nf-core/custom/dumpsoftwareversions/main'
@@ -243,9 +244,15 @@ workflow CMGGGERMLINE {
     // Read in samplesheet, validate and stage input files
     //
 
+<<<<<<< HEAD:workflows/cmgg-germline.nf
     inputs = parse_input(ch_input).multiMap(
         { meta, cram, crai, bed, ped ->
             ped_family_id = get_family_id_from_ped(ped)
+=======
+    inputs = parse_input(ch_input)
+             .multiMap({meta, cram, crai, bed, ped ->
+                 ped_family_id = meta.family ?: get_family_id_from_ped(ped)
+>>>>>>> 917501b (Added support for no BED input + PED fixes):workflows/nf-cmgg-germline.nf
 
             new_meta_ped = [:]
             new_meta = meta.clone()
@@ -259,7 +266,26 @@ workflow CMGGGERMLINE {
         }
     )
 
-    peds = inputs.peds.distinct()
+    beds = inputs.beds.branch({ meta, bed ->
+                            valid: bed != []
+                            invalid: bed == []
+                        })
+
+    //
+    // Create a BED file from the FASTA index to paralellize genome calls
+    //
+
+    // TODO Only perform this once
+
+    INDEX_TO_BED(
+        beds.invalid.combine(fasta_fai).map({ meta, bed, fasta_fai -> [ meta, fasta_fai ]})
+    )
+
+    peds = inputs.peds.distinct().groupTuple().map({ meta, peds ->
+                                                    output = peds.size() == 1  ? peds[0] :
+                                                             peds[0] == []     ? peds[1] : peds[0]
+                                                    [ meta, output ]
+                                                }).view()
 
     //
     // Perform the variant calling
@@ -267,7 +293,7 @@ workflow CMGGGERMLINE {
 
     GERMLINE_VARIANT_CALLING(
         inputs.germline_variant_calling_input_cram,
-        inputs.beds,
+        beds.valid.mix(INDEX_TO_BED.out.bed),
         fasta,
         fasta_fai,
         dict,
@@ -501,8 +527,13 @@ def parse_input(input_csv) {
 
 def get_family_id_from_ped(ped_file){
 
+    // Check if there is a file
+    if (ped_file.isEmpty()){
+        exit 1, "[PED file error] Please specify either the family or enter a PED file into the samplesheet for each sample"
+    }
+
     // Read the PED file
-    def ped = file(ped_file).text
+    def ped = file(ped_file, checkIfExists: true).text
 
     // Perform a validity check on the PED file since vcf2db is picky and not capable of giving good error messages
     comment_count = 0

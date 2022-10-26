@@ -178,8 +178,13 @@ workflow POST_PROCESS {
     // Add pedigree information
     //
 
+    ped_input = converted_vcfs.combine(peds, by:0).branch({ meta, vcf, ped ->
+        has_ped: ped
+        no_ped: ped == []
+    })
+
     PEDFILTER(
-        peds
+        ped_input.has_ped.map({ meta, vcf, ped -> [ meta, ped ]})
     )
 
     ch_versions = ch_versions.mix(PEDFILTER.out.versions)
@@ -192,7 +197,7 @@ workflow POST_PROCESS {
     )
 
     BGZIP_TABIX_PED_VCFS(
-        MERGE_VCF_HEADERS.out.vcf
+        MERGE_VCF_HEADERS.out.vcf.mix(ped_input.no_ped.map({ meta, vcf, ped -> [ meta, vcf ]}))
     )
 
     ch_versions = ch_versions.mix(MERGE_VCF_HEADERS.out.versions)
