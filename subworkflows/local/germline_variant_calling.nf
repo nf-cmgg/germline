@@ -139,7 +139,7 @@ workflow GERMLINE_VARIANT_CALLING {
     //
 
     cram_intervals = cram_models
-        .map{ meta, cram, crai, bed, dragstr_model=[] ->
+        .map{ meta, cram, crai, bed=[], dragstr_model=[] ->
             new_meta = meta.clone()
 
             // If either no scatter is done, i.e. one interval (1), then don't rename samples
