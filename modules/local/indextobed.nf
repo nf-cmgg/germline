@@ -2,10 +2,10 @@ process INDEX_TO_BED {
     tag "$meta.id"
     label "process_low"
 
-    conda (params.enable_conda ? "conda-forge::pigz=2.3.4" : null)
+    conda (params.enable_conda ? "anaconda::gawk=5.1.0" : null)
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/pigz:2.3.4' :
-        'quay.io/biocontainers/pigz:2.3.4' }"
+        'https://depot.galaxyproject.org/singularity/gawk:5.1.0' :
+        'quay.io/biocontainers/gawk:5.1.0' }"
 
     input:
     tuple val(meta), path(fasta_fai)
@@ -25,7 +25,7 @@ process INDEX_TO_BED {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        pigz: \$( pigz --version 2>&1 | sed 's/pigz //g' )
+        gawk: \$(awk -Wversion | sed '1!d; s/.*Awk //; s/,.*//')
     END_VERSIONS
     """
 }
