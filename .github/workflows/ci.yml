@@ -43,7 +43,7 @@ jobs:
 
       - name: Install nf-test
         run: |
-          sudo bash; mkdir /opt/nf-test; cd /opt/nf-test; wget https://github.com/askimed/nf-test/releases/download/v0.6.0/nf-test-0.6.0.tar.gz; tar xvfz nf-test-0.6.0.tar.gz; chmod +x nf-test;
+          sudo bash; mkdir /opt/nf-test; cd /opt/nf-test; wget https://github.com/askimed/nf-test/releases/download/v0.7.0/nf-test-0.7.0.tar.gz; tar xvfz nf-test-0.6.0.tar.gz; chmod +x nf-test;
           echo "/opt/nf-test" >> $GITHUB_PATH;
 
       - name: Run pipeline with test data
