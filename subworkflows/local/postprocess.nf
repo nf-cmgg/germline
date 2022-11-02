@@ -9,6 +9,7 @@ include { GATK4_GENOTYPEGVCFS as GENOTYPE_GVCFS     } from '../../modules/nf-cor
 include { GATK4_COMBINEGVCFS as COMBINEGVCFS        } from '../../modules/nf-core/gatk4/combinegvcfs/main'
 include { GATK4_REBLOCKGVCF as REBLOCKGVCF          } from '../../modules/nf-core/gatk4/reblockgvcf/main'
 include { TABIX_TABIX as TABIX_GVCFS                } from '../../modules/nf-core/tabix/tabix/main'
+include { TABIX_TABIX as TABIX_REBLOCKED_GVCFS      } from '../../modules/nf-core/tabix/tabix/main'
 include { TABIX_TABIX as TABIX_COMBINED_GVCFS       } from '../../modules/nf-core/tabix/tabix/main'
 include { TABIX_BGZIP as BGZIP_GENOTYPED_VCFS       } from '../../modules/nf-core/tabix/bgzip/main'
 include { TABIX_BGZIPTABIX as BGZIP_TABIX_PED_VCFS  } from '../../modules/nf-core/tabix/bgziptabix/main'
@@ -17,6 +18,7 @@ include { BCFTOOLS_FILTER as FILTER_INDELS          } from '../../modules/nf-cor
 include { BCFTOOLS_MERGE                            } from '../../modules/nf-core/bcftools/merge/main'
 include { BCFTOOLS_CONVERT                          } from '../../modules/nf-core/bcftools/convert/main'
 include { BCFTOOLS_VIEW                             } from '../../modules/nf-core/bcftools/view/main'
+include { BCFTOOLS_SORT                             } from '../../modules/nf-core/bcftools/sort/main'
 
 workflow POST_PROCESS {
     take:
@@ -65,7 +67,20 @@ workflow POST_PROCESS {
 
     ch_versions = ch_versions.mix(REBLOCKGVCF.out.versions)
 
-    combine_gvcfs_input = REBLOCKGVCF.out.vcf
+    //
+    // Sort the VCF files
+    //
+
+    BCFTOOLS_SORT(
+        REBLOCKGVCF.out.vcf.map({ meta, vcf, tbi -> [ meta, vcf ]})
+    )
+
+    TABIX_REBLOCKED_GVCFS(
+        BCFTOOLS_SORT.out.vcf
+    )
+
+    combine_gvcfs_input = BCFTOOLS_SORT.out.vcf
+                            .combine(TABIX_REBLOCKED_GVCFS.out.tbi, by:0)
                             .map({ meta, gvcf, tbi ->
                                 def new_meta = [:]
                                 new_meta.id = meta.family
