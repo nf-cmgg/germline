@@ -285,7 +285,7 @@ workflow CMGGGERMLINE {
                                                     output = peds.size() == 1  ? peds[0] :
                                                              peds[0] == []     ? peds[1] : peds[0]
                                                     [ meta, output ]
-                                                }).view()
+                                                })
 
     //
     // Perform the variant calling
