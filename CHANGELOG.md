@@ -3,6 +3,14 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.1.0dev
+
+- Added genomic data support (WIP)
+  - Added a sorting step before family merging
+  - Added automatic BED file generation from the FASTA index
+- Some minor improvements which could speed up pipeline execution
+- Added better support for the family and PED input
+
 ## v1.0.1 - Happy Hollebeke - [Oct 7 2022]
 
 ### Changes
