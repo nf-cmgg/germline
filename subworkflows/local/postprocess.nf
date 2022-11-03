@@ -82,17 +82,19 @@ workflow POST_PROCESS {
     combine_gvcfs_input = BCFTOOLS_SORT.out.vcf
                             .combine(TABIX_REBLOCKED_GVCFS.out.tbi, by:0)
                             .map({ meta, gvcf, tbi ->
-                                def new_meta = [:]
+                                def new_meta = [:] // TODO don't create a new meta here
                                 new_meta.id = meta.family
                                 new_meta.family = meta.family
 
                                 [ new_meta, gvcf, tbi ]
                             })
-                            .groupTuple()
+                            .groupTuple() // TODO add groupTuple size (size of family)
 
     //
     // Merge/Combine all the GVCFs from each family
     //
+
+    // TODO add better support for families containing only one sample
 
     if (use_bcftools_merge){
 
@@ -192,6 +194,8 @@ workflow POST_PROCESS {
     //
     // Add pedigree information
     //
+
+    // TODO fix header not the same error when one ped file is supplied in a multi sample family
 
     ped_input = converted_vcfs.combine(peds, by:0).branch({ meta, vcf, ped ->
         has_ped: ped

@@ -252,6 +252,8 @@ workflow NF_CMGG_GERMLINE {
                  peds:                                [new_meta_ped, ped]
              })
 
+    // TODO specify the family size (warning: a sample can be supplied multiple times. This should not be counted towards the family total)
+
     beds = inputs.beds.branch({ meta, bed ->
                             valid: bed != []
                             invalid: bed == []
