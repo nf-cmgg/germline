@@ -49,11 +49,10 @@ workflow GERMLINE_VARIANT_CALLING {
 
     merged_crams = SAMTOOLS_MERGE.out.cram
                     .mix(SAMTOOLS_MERGE.out.bam)
-                    .map({ meta, cram -> [ meta, cram, [] ]})
                     .mix(cram_branch.single.map({meta, cram, crai ->
                             [ meta, cram[0], crai[0]]
                         }))
-                    .branch({ meta, cram, crai ->
+                    .branch({ meta, cram, crai=[] ->
                         not_indexed: crai == []
                             return [ meta, cram ]
                         indexed: crai != []
@@ -175,7 +174,7 @@ workflow GERMLINE_VARIANT_CALLING {
                           new_meta.id = new_meta.samplename
                           [ new_meta, vcf, tbi ]
                       })
-                      .groupTuple()
+                      .groupTuple(size:scatter_count, remainder:true)
 
         BCFTOOLS_CONCAT(
             concat_input
