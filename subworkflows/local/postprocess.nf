@@ -86,26 +86,31 @@ workflow POST_PROCESS {
         .join(TABIX_SORTED_GVCFS.out.tbi)
         .map(
             { meta, gvcf, tbi ->
-                def new_meta = [:] // TODO don't create a new meta here
+                def new_meta = meta.clone()
                 new_meta.id = meta.family
+                new_meta.remove('sample')
                 new_meta.family = meta.family
 
-                [ new_meta, gvcf, tbi ]
+                [ groupKey(new_meta, new_meta.family_count), gvcf, tbi ]
             }
         )
-        .groupTuple() // TODO add groupTuple size (size of family)
+        .groupTuple()
+        .branch(
+            { meta, vcfs, tbis ->
+                multiple: meta.family_count > 1
+                single:   meta.family_count == 1
+            }
+        )
         .set { combine_gvcfs_input }
 
     //
     // Merge/Combine all the GVCFs from each family
     //
 
-    // TODO add better support for families containing only one sample
-
     if (use_bcftools_merge){
 
         BCFTOOLS_MERGE(
-            combine_gvcfs_input,
+            combine_gvcfs_input.multiple,
             [],
             fasta,
             fasta_fai
@@ -117,7 +122,7 @@ workflow POST_PROCESS {
     } else {
 
         COMBINEGVCFS(
-            combine_gvcfs_input,
+            combine_gvcfs_input.multiple,
             fasta,
             fasta_fai,
             dict
@@ -140,6 +145,7 @@ workflow POST_PROCESS {
 
     combined_gvcfs
         .join(TABIX_COMBINED_GVCFS.out.tbi)
+        .mix(combine_gvcfs_input.single)
         .set { indexed_combined_gvcfs }
 
     if (!skip_genotyping){

@@ -301,16 +301,40 @@ workflow CMGGGERMLINE {
     )
 =======
     parse_input(ch_input)
-        .multiMap(
+        .tap { ch_raw_inputs }
+        .distinct()
+        .map(
             { meta, cram, crai, bed, ped ->
+                [ meta.family, 1 ]
+            }
+        )
+        .groupTuple()
+        .map(
+            { family, count ->
+                [ family, count.sum() ]
+            }
+        )
+        .combine(
+            ch_raw_inputs
+                .map(
+                    { meta, cram, crai, bed, ped ->
+                        [ meta.family, meta, cram, crai, bed, ped ]
+                    }
+                )
+        , by:0)
+        .multiMap(
+            { family, family_count, meta, cram, crai, bed, ped ->
                 ped_family_id = meta.family ?: get_family_id_from_ped(ped)
 
                 new_meta_ped = [:]
                 new_meta = meta.clone()
 
-                new_meta_ped.id     = meta.family ?: ped_family_id
-                new_meta_ped.family = meta.family ?: ped_family_id
-                new_meta.family     = meta.family ?: ped_family_id
+                new_meta_ped.id           = meta.family ?: ped_family_id
+                new_meta_ped.family       = meta.family ?: ped_family_id
+                new_meta_ped.family_count = family_count
+
+                new_meta.family           = meta.family ?: ped_family_id
+                new_meta.family_count     = family_count
 
                 beds:                                [new_meta, bed]
                 germline_variant_calling_input_cram: [new_meta, cram, crai]
@@ -319,8 +343,6 @@ workflow CMGGGERMLINE {
         )
         .set { ch_parsed_inputs }
 >>>>>>> bcab663 (refactored the code):workflows/nf-cmgg-germline.nf
-
-    // TODO specify the family size (warning: a sample can be supplied multiple times. This should not be counted towards the family total)
 
     ch_parsed_inputs.beds
         .branch(
