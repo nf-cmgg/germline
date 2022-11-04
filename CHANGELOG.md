@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added automatic BED file generation from the FASTA index
 - Some minor improvements which could speed up pipeline execution
 - Added better support for the family and PED input
+- Refactored the code for better readability
 
 ## v1.0.1 - Happy Hollebeke - [Oct 7 2022]
 

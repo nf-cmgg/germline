@@ -215,27 +215,60 @@ workflow CMGGGERMLINE {
     //
 
     if (!fasta_fai) {
-        fasta_fai   = FAIDX(fasta.map({ fasta -> [ [id:"fasta_fai"], fasta ]})).fai.map({ meta, fasta -> [ fasta ]})
+        FAIDX(
+            fasta.map({ fasta -> [ [id:"fasta_fai"], fasta ]})
+        )
         ch_versions = ch_versions.mix(FAIDX.out.versions)
+
+        FAIDX.out.fai
+            .map({ meta, fasta_fai -> [ fasta_fai ]})
+            .collect()
+            .set { fasta_fai }
     }
 
     if (!dict) {
-        dict        = CREATESEQUENCEDICTIONARY(fasta).dict
+        CREATESEQUENCEDICTIONARY(
+            fasta
+        )
         ch_versions = ch_versions.mix(CREATESEQUENCEDICTIONARY.out.versions)
+
+        CREATESEQUENCEDICTIONARY.out.dict
+            .collect()
+            .set { dict }
     }
 
     if (use_dragstr_model && !strtablefile) {
-        strtablefile = COMPOSESTRTABLEFILE(fasta,fasta_fai,dict).str_table
+        COMPOSESTRTABLEFILE(
+            fasta,
+            fasta_fai,
+            dict
+        )
         ch_versions  = ch_versions.mix(COMPOSESTRTABLEFILE.out.versions)
+
+        COMPOSESTRTABLEFILE.out.str_table
+            .collect()
+            .set { strtablefile }
     }
 
     if (output_mode == "seqplorer" && vcfanno) {
-        vcfanno_resources = params.vcfanno_resources.endsWith(".tar.gz") ?
-                                UNTAR(vcfanno_res_inp.map({dir -> [ [], dir ]})).untar.map({meta, dir -> dir}) :
-                                vcfanno_res_inp
-        ch_versions       = params.vcfanno_resources.endsWith(".tar.gz") ?
-                                ch_versions.mix(UNTAR.out.versions) :
-                                ch_versions
+        if (params.vcfanno_resources.endsWith(".tar.gz")) {
+            UNTAR(
+                vcfanno_res_inp.map({dir -> [ [], dir ]})
+            )
+            ch_versions = ch_versions.mix(UNTAR.out.versions)
+
+            UNTAR.out.untar
+                .map(
+                    { meta, dir ->
+                        dir
+                    }
+                )
+                .collect()
+                .set { vcfanno_resources }
+        } else {
+            Channel.value(vcfanno_res_inp)
+                .set { vcfanno_resources }
+        }
     } else {
         vcfanno_resources = []
     }
@@ -244,6 +277,7 @@ workflow CMGGGERMLINE {
     // Read in samplesheet, validate and stage input files
     //
 
+<<<<<<< HEAD:workflows/cmgg-germline.nf
 <<<<<<< HEAD:workflows/cmgg-germline.nf
     inputs = parse_input(ch_input).multiMap(
         { meta, cram, crai, bed, ped ->
@@ -265,13 +299,37 @@ workflow CMGGGERMLINE {
             peds:                                [new_meta_ped, ped]
         }
     )
+=======
+    parse_input(ch_input)
+        .multiMap(
+            { meta, cram, crai, bed, ped ->
+                ped_family_id = meta.family ?: get_family_id_from_ped(ped)
+
+                new_meta_ped = [:]
+                new_meta = meta.clone()
+
+                new_meta_ped.id     = meta.family ?: ped_family_id
+                new_meta_ped.family = meta.family ?: ped_family_id
+                new_meta.family     = meta.family ?: ped_family_id
+
+                beds:                                [new_meta, bed]
+                germline_variant_calling_input_cram: [new_meta, cram, crai]
+                peds:                                [new_meta_ped, ped]
+            }
+        )
+        .set { ch_parsed_inputs }
+>>>>>>> bcab663 (refactored the code):workflows/nf-cmgg-germline.nf
 
     // TODO specify the family size (warning: a sample can be supplied multiple times. This should not be counted towards the family total)
 
-    beds = inputs.beds.branch({ meta, bed ->
-                            valid: bed != []
-                            invalid: bed == []
-                        })
+    ch_parsed_inputs.beds
+        .branch(
+            { meta, bed ->
+                valid: bed != []
+                invalid: bed == []
+            }
+        )
+        .set { beds }
 
     //
     // Create a BED file from the FASTA index to paralellize genome calls
@@ -283,18 +341,23 @@ workflow CMGGGERMLINE {
         beds.invalid.combine(fasta_fai).map({ meta, bed, fasta_fai -> [ meta, fasta_fai ]})
     )
 
-    peds = inputs.peds.distinct().groupTuple().map({ meta, peds ->
-                                                    output = peds.size() == 1  ? peds[0] :
-                                                             peds[0] == []     ? peds[1] : peds[0]
-                                                    [ meta, output ]
-                                                })
+    ch_parsed_inputs.peds
+        .distinct()
+        .groupTuple()
+        .map(
+            { meta, peds ->
+                output = peds.size() == 1 ? peds[0] : peds[0] == [] ? peds[1] : peds[0]
+                [ meta, output ]
+            }
+        )
+        .set { peds }
 
     //
     // Perform the variant calling
     //
 
     GERMLINE_VARIANT_CALLING(
-        inputs.germline_variant_calling_input_cram,
+        ch_parsed_inputs.germline_variant_calling_input_cram,
         beds.valid.mix(INDEX_TO_BED.out.bed),
         fasta,
         fasta_fai,
@@ -359,10 +422,25 @@ workflow CMGGGERMLINE {
         ch_versions = ch_versions.mix(ANNOTATION.out.versions)
         ch_reports  = ch_reports.mix(ANNOTATION.out.reports)
 
+<<<<<<< HEAD:workflows/cmgg-germline.nf
         //
         // Create Gemini-compatible database files
         //
         VCF2DB( ANNOTATION.out.annotated_vcfs.combine(peds, by: 0))
+=======
+    //
+    // Create Gemini-compatible database files
+    //
+
+    if (output_mode == "seqplorer") {
+        ANNOTATION.out.annotated_vcfs
+            .combine(peds, by: 0)
+            .set { vcf2db_input }
+
+        VCF2DB(
+            vcf2db_input
+        )
+>>>>>>> bcab663 (refactored the code):workflows/nf-cmgg-germline.nf
     }
 
     //
@@ -381,10 +459,7 @@ workflow CMGGGERMLINE {
 
     ch_multiqc_files = Channel.empty()
 
-    ch_multiqc_files = ch_multiqc_files.mix(
-                                        ch_versions_yaml,
-                                        ch_reports.collect()
-                                        )
+    ch_multiqc_files = ch_multiqc_files.mix(ch_versions_yaml, ch_reports.collect())
 
     MULTIQC(
         ch_multiqc_files.collect(),
@@ -392,8 +467,6 @@ workflow CMGGGERMLINE {
         [],
         multiqc_logo
     )
-
-    // Test comment to be removed
 }
 
 
@@ -426,7 +499,7 @@ def parse_input(input_csv) {
         'columns': [
             'sample': [
                 'content': 'meta',
-                'meta_name': 'id,samplename',
+                'meta_name': 'id,sample',
                 'pattern': '',
             ],
             'family': [

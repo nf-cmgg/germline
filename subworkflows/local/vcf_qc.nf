@@ -13,7 +13,7 @@ workflow VCF_QC {
 
     main:
 
-    ch_versions         = Channel.empty()
+    ch_versions = Channel.empty()
 
     //
     // Perform all quality control steps
