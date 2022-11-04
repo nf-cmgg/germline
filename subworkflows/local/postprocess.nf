@@ -9,7 +9,7 @@ include { GATK4_GENOTYPEGVCFS as GENOTYPE_GVCFS     } from '../../modules/nf-cor
 include { GATK4_COMBINEGVCFS as COMBINEGVCFS        } from '../../modules/nf-core/gatk4/combinegvcfs/main'
 include { GATK4_REBLOCKGVCF as REBLOCKGVCF          } from '../../modules/nf-core/gatk4/reblockgvcf/main'
 include { TABIX_TABIX as TABIX_GVCFS                } from '../../modules/nf-core/tabix/tabix/main'
-include { TABIX_TABIX as TABIX_REBLOCKED_GVCFS      } from '../../modules/nf-core/tabix/tabix/main'
+include { TABIX_TABIX as TABIX_SORTED_GVCFS         } from '../../modules/nf-core/tabix/tabix/main'
 include { TABIX_TABIX as TABIX_COMBINED_GVCFS       } from '../../modules/nf-core/tabix/tabix/main'
 include { TABIX_BGZIP as BGZIP_GENOTYPED_VCFS       } from '../../modules/nf-core/tabix/bgzip/main'
 include { TABIX_BGZIPTABIX as BGZIP_TABIX_PED_VCFS  } from '../../modules/nf-core/tabix/bgziptabix/main'
@@ -44,11 +44,14 @@ workflow POST_PROCESS {
         gvcfs
     )
 
-    indexed_gvcfs = gvcfs
-                    .combine(TABIX_GVCFS.out.tbi, by: 0)
-                    .map({ meta, gvcf, tbi ->
-                        [ meta, gvcf, tbi, []]
-                    })
+    gvcfs
+        .join(TABIX_GVCFS.out.tbi)
+        .map(
+            { meta, gvcf, tbi ->
+                [ meta, gvcf, tbi, []]
+            }
+        )
+        .set { indexed_gvcfs }
 
     ch_versions = ch_versions.mix(TABIX_GVCFS.out.versions)
 
@@ -75,20 +78,23 @@ workflow POST_PROCESS {
         REBLOCKGVCF.out.vcf.map({ meta, vcf, tbi -> [ meta, vcf ]})
     )
 
-    TABIX_REBLOCKED_GVCFS(
+    TABIX_SORTED_GVCFS(
         BCFTOOLS_SORT.out.vcf
     )
 
-    combine_gvcfs_input = BCFTOOLS_SORT.out.vcf
-                            .combine(TABIX_REBLOCKED_GVCFS.out.tbi, by:0)
-                            .map({ meta, gvcf, tbi ->
-                                def new_meta = [:] // TODO don't create a new meta here
-                                new_meta.id = meta.family
-                                new_meta.family = meta.family
+    BCFTOOLS_SORT.out.vcf
+        .join(TABIX_SORTED_GVCFS.out.tbi)
+        .map(
+            { meta, gvcf, tbi ->
+                def new_meta = [:] // TODO don't create a new meta here
+                new_meta.id = meta.family
+                new_meta.family = meta.family
 
-                                [ new_meta, gvcf, tbi ]
-                            })
-                            .groupTuple() // TODO add groupTuple size (size of family)
+                [ new_meta, gvcf, tbi ]
+            }
+        )
+        .groupTuple() // TODO add groupTuple size (size of family)
+        .set { combine_gvcfs_input }
 
     //
     // Merge/Combine all the GVCFs from each family
@@ -105,7 +111,7 @@ workflow POST_PROCESS {
             fasta_fai
         )
 
-        combined_gvcfs = BCFTOOLS_MERGE.out.merged_variants
+        BCFTOOLS_MERGE.out.merged_variants.set { combined_gvcfs }
         ch_versions = ch_versions.mix(BCFTOOLS_MERGE.out.versions)
 
     } else {
@@ -117,7 +123,7 @@ workflow POST_PROCESS {
             dict
         )
 
-        combined_gvcfs = COMBINEGVCFS.out.combined_gvcf
+        COMBINEGVCFS.out.combined_gvcf.set { combined_gvcfs }
         ch_versions = ch_versions.mix(COMBINEGVCFS.out.versions)
 
     }
@@ -132,8 +138,9 @@ workflow POST_PROCESS {
 
     ch_versions = ch_versions.mix(TABIX_COMBINED_GVCFS.out.versions)
 
-    indexed_combined_gvcfs = combined_gvcfs
-                            .combine(TABIX_COMBINED_GVCFS.out.tbi, by:0)
+    combined_gvcfs
+        .join(TABIX_COMBINED_GVCFS.out.tbi)
+        .set { indexed_combined_gvcfs }
 
     if (!skip_genotyping){
 
@@ -141,10 +148,13 @@ workflow POST_PROCESS {
         // Genotype the combined GVCFs
         //
 
-        genotype_gvcfs_input = indexed_combined_gvcfs
-                            .map({ meta, gvcf, tbi ->
-                                [ meta, gvcf, tbi, [], [] ]
-                            })
+        indexed_combined_gvcfs
+            .map(
+                { meta, gvcf, tbi ->
+                    [ meta, gvcf, tbi, [], [] ]
+                }
+            )
+            .set { genotype_gvcfs_input }
 
         GENOTYPE_GVCFS(
             genotype_gvcfs_input,
@@ -161,7 +171,7 @@ workflow POST_PROCESS {
             GENOTYPE_GVCFS.out.vcf
         )
 
-        converted_vcfs = BGZIP_GENOTYPED_VCFS.out.output
+        BGZIP_GENOTYPED_VCFS.out.output.set { converted_vcfs }
         ch_versions = ch_versions.mix(BGZIP_GENOTYPED_VCFS.out.versions)
 
     } else {
@@ -187,7 +197,7 @@ workflow POST_PROCESS {
             fasta
         )
 
-        converted_vcfs = BCFTOOLS_CONVERT.out.vcf
+        BCFTOOLS_CONVERT.out.vcf.set { converted_vcfs }
         ch_versions = ch_versions.mix(BCFTOOLS_CONVERT.out.versions)
     }
 
@@ -197,10 +207,15 @@ workflow POST_PROCESS {
 
     // TODO fix header not the same error when one ped file is supplied in a multi sample family
 
-    ped_input = converted_vcfs.combine(peds, by:0).branch({ meta, vcf, ped ->
-        has_ped: ped
-        no_ped: ped == []
-    })
+    converted_vcfs
+        .combine(peds, by:0)
+        .branch(
+            { meta, vcf, ped ->
+                has_ped: ped
+                no_ped: ped == []
+            }
+        )
+    .set { ped_input }
 
     PEDFILTER(
         ped_input.has_ped.map({ meta, vcf, ped -> [ meta, ped ]})
@@ -208,8 +223,9 @@ workflow POST_PROCESS {
 
     ch_versions = ch_versions.mix(PEDFILTER.out.versions)
 
-    merge_vcf_headers_input = converted_vcfs
-                                .combine(PEDFILTER.out.vcf, by:0)
+    converted_vcfs
+        .join(PEDFILTER.out.vcf)
+        .set { merge_vcf_headers_input }
 
     MERGE_VCF_HEADERS(
         merge_vcf_headers_input
@@ -222,7 +238,9 @@ workflow POST_PROCESS {
     ch_versions = ch_versions.mix(MERGE_VCF_HEADERS.out.versions)
     ch_versions = ch_versions.mix(BGZIP_TABIX_PED_VCFS.out.versions)
 
-    vcfs_without_index = BGZIP_TABIX_PED_VCFS.out.gz_tbi.map({ meta, vcf, tbi -> [ meta, vcf ]})
+    BGZIP_TABIX_PED_VCFS.out.gz_tbi
+        .map({ meta, vcf, tbi -> [ meta, vcf ]})
+        .set { vcfs_without_index }
 
     //
     // Filter the variants
@@ -240,10 +258,10 @@ workflow POST_PROCESS {
         ch_versions = ch_versions.mix(FILTER_SNPS.out.versions)
         ch_versions = ch_versions.mix(FILTER_INDELS.out.versions)
 
-        post_processed_vcfs = FILTER_INDELS.out.vcf
+        FILTER_INDELS.out.vcf.set { post_processed_vcfs }
     }
     else {
-        post_processed_vcfs = vcfs_without_index
+        vcfs_without_index.set { post_processed_vcfs }
     }
 
     emit:
