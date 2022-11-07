@@ -209,13 +209,23 @@ workflow GERMLINE_VARIANT_CALLING {
                 }
             )
             .groupTuple(size:scatter_count, remainder:true)
+            .branch(
+                { meta, vcfs, tbis ->
+                    multiple: vcfs.size() > 1
+                        return [ meta, vcfs, tbis ]
+                    single: vcfs.size() == 1
+                        return [ meta, vcfs[0] ]
+                }
+            )
             .set { concat_input }
 
         BCFTOOLS_CONCAT(
-            concat_input
+            concat_input.multiple
         )
 
-        BCFTOOLS_CONCAT.out.vcf.set { gvcfs }
+        BCFTOOLS_CONCAT.out.vcf
+            .mix(concat_input.single)
+            .set { gvcfs }
         ch_versions = ch_versions.mix(BCFTOOLS_CONCAT.out.versions)
     }
     else {
