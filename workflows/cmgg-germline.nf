@@ -310,6 +310,13 @@ workflow CMGGGERMLINE {
 
 >>>>>>> 85433cf (fixed some major issues):workflows/nf-cmgg-germline.nf
     parse_input(ch_input)
+        .map(
+            { meta, cram, crai, bed, ped ->
+                new_meta = meta.clone()
+                new_meta.family = meta.family ?: get_family_id_from_ped(ped)
+                [ new_meta, cram, crai, bed, ped ]
+            }
+        )
         .tap { ch_raw_inputs }
         .distinct()
         .map(
@@ -334,7 +341,7 @@ workflow CMGGGERMLINE {
         , by:0)
         .multiMap(
             { family, family_count, meta, cram, crai, bed, ped ->
-                ped_family_id = meta.family ?: get_family_id_from_ped(ped)
+                ped_family_id = meta.family
 
                 new_meta_ped = [:]
                 new_meta = meta.clone()
