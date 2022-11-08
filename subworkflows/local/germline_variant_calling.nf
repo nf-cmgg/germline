@@ -44,6 +44,9 @@ workflow GERMLINE_VARIANT_CALLING {
         )
         .set { cram_branch }
 
+    cram_branch.multiple.dump(tag:'cram_branch_multiple', pretty:true)
+    cram_branch.single.dump(tag:'cram_branch_single', pretty:true)
+
     SAMTOOLS_MERGE(
         cram_branch.multiple,
         fasta,
@@ -70,6 +73,9 @@ workflow GERMLINE_VARIANT_CALLING {
         )
         .set { merged_crams }
 
+    merged_crams.not_indexed.dump(tag:'merged_crams_not_indexed', pretty:true)
+    merged_crams.indexed.dump(tag:'merged_crams_indexed', pretty:true)
+
     SAMTOOLS_INDEX(
         merged_crams.not_indexed
     )
@@ -80,6 +86,7 @@ workflow GERMLINE_VARIANT_CALLING {
             .join(SAMTOOLS_INDEX.out.bai)
         )
         .mix(merged_crams.indexed)
+        .dump(tag:'ready_crams', pretty:true)
         .set { ready_crams }
 
     //
@@ -104,6 +111,7 @@ workflow GERMLINE_VARIANT_CALLING {
 
     MERGE_BEDS.out.bed
         .mix(bed_branch.single)
+        .dump(tag:'merged_beds', pretty:true)
         .set { merged_beds }
 
     //
@@ -125,6 +133,8 @@ workflow GERMLINE_VARIANT_CALLING {
     else {
         merged_beds.set { split_beds }
     }
+
+    split_beds.dump(tag:'split_beds', pretty:true)
 
     //
     // Generate DRAGSTR models
@@ -150,15 +160,17 @@ workflow GERMLINE_VARIANT_CALLING {
         ch_versions = ch_versions.mix(CALIBRATEDRAGSTRMODEL.out.versions)
 
         ready_crams
-            .combine(split_beds, by:0)
-            .combine(CALIBRATEDRAGSTRMODEL.out.dragstr_model, by:0)
+            .join(split_beds)
+            .join(CALIBRATEDRAGSTRMODEL.out.dragstr_model)
             .set { cram_models }
     }
     else {
         ready_crams
-            .combine(split_beds, by:0)
+            .join(split_beds)
             .set { cram_models }
     }
+
+    cram_models.dump(tag:'cram_models', pretty:true)
 
     //
     // Remap CRAM channel to fit the haplotypecaller input format
@@ -175,6 +187,7 @@ workflow GERMLINE_VARIANT_CALLING {
                 [ new_meta, cram, crai, bed, dragstr_model ]
             }
         )
+        .dump(tag:'cram_intervals', pretty:true)
         .set { cram_intervals }
 
     //
@@ -192,6 +205,7 @@ workflow GERMLINE_VARIANT_CALLING {
 
     HAPLOTYPECALLER.out.vcf
         .join(HAPLOTYPECALLER.out.tbi)
+        .dump(tag:'haplotypecaller_vcfs', pretty:true)
         .set { haplotypecaller_vcfs }
     ch_versions = ch_versions.mix(HAPLOTYPECALLER.out.versions)
 
@@ -218,6 +232,9 @@ workflow GERMLINE_VARIANT_CALLING {
                 }
             )
             .set { concat_input }
+
+        concat_input.multiple.dump(tag:'concat_input_multiple', pretty:true)
+        concat_input.single.dump(tag:'concat_input_single', pretty:true)
 
         BCFTOOLS_CONCAT(
             concat_input.multiple

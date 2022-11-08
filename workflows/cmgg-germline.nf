@@ -223,6 +223,7 @@ workflow CMGGGERMLINE {
         FAIDX.out.fai
             .map({ meta, fasta_fai -> [ fasta_fai ]})
             .collect()
+            .dump(tag:'fasta_fai', pretty:true)
             .set { fasta_fai }
     }
 
@@ -234,6 +235,7 @@ workflow CMGGGERMLINE {
 
         CREATESEQUENCEDICTIONARY.out.dict
             .collect()
+            .dump(tag:'dict', pretty:true)
             .set { dict }
     }
 
@@ -247,6 +249,7 @@ workflow CMGGGERMLINE {
 
         COMPOSESTRTABLEFILE.out.str_table
             .collect()
+            .dump(tag:'strtablefile', pretty:true)
             .set { strtablefile }
     }
 
@@ -269,6 +272,7 @@ workflow CMGGGERMLINE {
             Channel.value(vcfanno_res_inp)
                 .set { vcfanno_resources }
         }
+        vcfanno_resources.dump(tag:'vcfanno_resources', pretty:true)
     } else {
         vcfanno_resources = []
     }
@@ -277,6 +281,7 @@ workflow CMGGGERMLINE {
     // Read in samplesheet, validate and stage input files
     //
 
+<<<<<<< HEAD:workflows/cmgg-germline.nf
 <<<<<<< HEAD:workflows/cmgg-germline.nf
 <<<<<<< HEAD:workflows/cmgg-germline.nf
     inputs = parse_input(ch_input).multiMap(
@@ -300,6 +305,10 @@ workflow CMGGGERMLINE {
         }
     )
 =======
+=======
+    // TODO improve family counting (https://nextflow.slack.com/archives/C02T98A23U7/p1667575984019099?thread_ts=1667566834.976879&cid=C02T98A23U7)
+
+>>>>>>> 85433cf (fixed some major issues):workflows/nf-cmgg-germline.nf
     parse_input(ch_input)
         .tap { ch_raw_inputs }
         .distinct()
@@ -311,7 +320,8 @@ workflow CMGGGERMLINE {
         .groupTuple()
         .map(
             { family, count ->
-                [ family, count.sum() ]
+                counts = family ? count.sum() : 1
+                [ family, counts ]
             }
         )
         .combine(
@@ -329,20 +339,24 @@ workflow CMGGGERMLINE {
                 new_meta_ped = [:]
                 new_meta = meta.clone()
 
-                new_meta_ped.id           = meta.family ?: ped_family_id
+                new_meta_ped.id           = meta.family ?: ped_family_id ?: meta.sample
                 new_meta_ped.family       = meta.family ?: ped_family_id
                 new_meta_ped.family_count = family_count
 
                 new_meta.family           = meta.family ?: ped_family_id
                 new_meta.family_count     = family_count
 
-                beds:                                [new_meta, bed]
-                germline_variant_calling_input_cram: [new_meta, cram, crai]
-                peds:                                [new_meta_ped, ped]
+                beds: [new_meta, bed]
+                cram: [new_meta, cram, crai]
+                peds: [new_meta_ped, ped]
             }
         )
         .set { ch_parsed_inputs }
 >>>>>>> bcab663 (refactored the code):workflows/nf-cmgg-germline.nf
+
+    ch_parsed_inputs.beds.dump(tag:'input_beds', pretty:true)
+    ch_parsed_inputs.cram.dump(tag:'input_crams', pretty:true)
+    ch_parsed_inputs.peds.dump(tag:'input_peds', pretty:true)
 
     ch_parsed_inputs.beds
         .branch(
@@ -352,6 +366,9 @@ workflow CMGGGERMLINE {
             }
         )
         .set { beds }
+
+    beds.valid.dump(tag:'valid_beds', pretty:true)
+    beds.invalid.dump(tag:'invalid_beds', pretty:true)
 
     //
     // Create a BED file from the FASTA index to paralellize genome calls
@@ -372,6 +389,7 @@ workflow CMGGGERMLINE {
                 [ meta, output ]
             }
         )
+        .dump(tag:'peds', pretty:true)
         .set { peds }
 
     //
@@ -379,8 +397,8 @@ workflow CMGGGERMLINE {
     //
 
     GERMLINE_VARIANT_CALLING(
-        ch_parsed_inputs.germline_variant_calling_input_cram,
-        beds.valid.mix(INDEX_TO_BED.out.bed),
+        ch_parsed_inputs.cram,
+        beds.valid.mix(INDEX_TO_BED.out.bed.dump(tag:'created_beds', pretty:true)),
         fasta,
         fasta_fai,
         dict,
@@ -392,12 +410,16 @@ workflow CMGGGERMLINE {
 
     ch_versions = ch_versions.mix(GERMLINE_VARIANT_CALLING.out.versions)
 
+    GERMLINE_VARIANT_CALLING.out.gvcfs
+        .dump(tag:'variantcalling_output', pretty:true)
+        .set { postprocess_input }
+
     //
     // Joint-genotyping of the families
     //
 
     POST_PROCESS(
-        GERMLINE_VARIANT_CALLING.out.gvcfs,
+        postprocess_input,
         peds,
         fasta,
         fasta_fai,
@@ -409,12 +431,17 @@ workflow CMGGGERMLINE {
 
     ch_versions = ch_versions.mix(POST_PROCESS.out.versions)
 
+    POST_PROCESS.out.post_processed_vcfs
+        .dump(tag:'postprocess_output', pretty:true)
+        .tap { vcf_qc_input }
+        .set { annotation_input }
+
     //
     // Quality control of the called variants
     //
 
     VCF_QC(
-        POST_PROCESS.out.post_processed_vcfs
+        vcf_qc_input
     )
 
     ch_versions = ch_versions.mix(VCF_QC.out.versions)
@@ -424,13 +451,13 @@ workflow CMGGGERMLINE {
     ch_reports  = ch_reports.mix(VCF_QC.out.vcftools_filter_summary.collect{it[1]}.ifEmpty([]))
 
     //
-    // Annotation of the variants
+    // Annotation of the variants and creation of Gemini-compatible database files
     //
     if (output_mode == "seqplorer") {
 
         // Perform the annotation
         ANNOTATION(
-            POST_PROCESS.out.post_processed_vcfs,
+            annotation_input,
             fasta,
             genome,
             species,
@@ -445,6 +472,7 @@ workflow CMGGGERMLINE {
         ch_reports  = ch_reports.mix(ANNOTATION.out.reports)
 
 <<<<<<< HEAD:workflows/cmgg-germline.nf
+<<<<<<< HEAD:workflows/cmgg-germline.nf
         //
         // Create Gemini-compatible database files
         //
@@ -453,16 +481,25 @@ workflow CMGGGERMLINE {
     //
     // Create Gemini-compatible database files
     //
+=======
+        // TODO fix issue when PED file is missing
+>>>>>>> 85433cf (fixed some major issues):workflows/nf-cmgg-germline.nf
 
-    if (output_mode == "seqplorer") {
         ANNOTATION.out.annotated_vcfs
-            .combine(peds, by: 0)
+            .dump(tag:'annotation_output', pretty:true)
+            .join(peds)
             .set { vcf2db_input }
 
         VCF2DB(
             vcf2db_input
         )
+<<<<<<< HEAD:workflows/cmgg-germline.nf
 >>>>>>> bcab663 (refactored the code):workflows/nf-cmgg-germline.nf
+=======
+
+        VCF2DB.out.db
+            .dump(tag:'vcf2db_output', pretty:true)
+>>>>>>> 85433cf (fixed some major issues):workflows/nf-cmgg-germline.nf
     }
 
     //
@@ -527,7 +564,8 @@ def parse_input(input_csv) {
             'family': [
                 'content': 'meta',
                 'meta_name': 'family',
-                'pattern': ''
+                'pattern': '',
+                'default': null,
             ],
             'cram': [
                 'content': 'file',
@@ -536,14 +574,17 @@ def parse_input(input_csv) {
             'crai': [
                 'content': 'file',
                 'pattern': '^.*\\.crai$',
+                'default': [],
             ],
             'bed': [
                 'content': 'file',
                 'pattern': '^.*\\.bed$',
+                'default': [],
             ],
             'ped': [
                 'content': 'file',
                 'pattern': '^.*\\.ped$',
+                'default': [],
             ]
         ],
         'required': ['sample','cram'],
@@ -607,11 +648,11 @@ def parse_input(input_csv) {
             }
 
             if(col.value['content'] == 'file'){
-                output.add(content ? file(content, checkIfExists:true) : [])
+                output.add(content ? file(content, checkIfExists:true) : col.value['default'] ?: [])
             }
-            else if(col.value['content'] == 'meta' && content != ''){
+            else if(col.value['content'] == 'meta'){
                 for(meta_name : col.value['meta_name'].split(",")){
-                    meta[meta_name] = content.replace(' ', '_')
+                    meta[meta_name] = content != '' ? content.replace(' ', '_') : col.value['default'] ?: null
                 }
             }
         }
@@ -626,7 +667,7 @@ def get_family_id_from_ped(ped_file){
 
     // Check if there is a file
     if (ped_file.isEmpty()){
-        exit 1, "[PED file error] Please specify either the family or enter a PED file into the samplesheet for each sample"
+        return null
     }
 
     // Read the PED file
