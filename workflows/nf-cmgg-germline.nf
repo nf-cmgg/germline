@@ -276,6 +276,13 @@ workflow NF_CMGG_GERMLINE {
     // TODO improve family counting (https://nextflow.slack.com/archives/C02T98A23U7/p1667575984019099?thread_ts=1667566834.976879&cid=C02T98A23U7)
 
     parse_input(ch_input)
+        .map(
+            { meta, cram, crai, bed, ped ->
+                new_meta = meta.clone()
+                new_meta.family = meta.family ?: get_family_id_from_ped(ped)
+                [ new_meta, cram, crai, bed, ped ]
+            }
+        )
         .tap { ch_raw_inputs }
         .distinct()
         .map(
@@ -300,7 +307,7 @@ workflow NF_CMGG_GERMLINE {
         , by:0)
         .multiMap(
             { family, family_count, meta, cram, crai, bed, ped ->
-                ped_family_id = meta.family ?: get_family_id_from_ped(ped)
+                ped_family_id = meta.family
 
                 new_meta_ped = [:]
                 new_meta = meta.clone()
