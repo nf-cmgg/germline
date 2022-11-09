@@ -216,8 +216,6 @@ workflow POST_PROCESS {
     // Add pedigree information
     //
 
-    // TODO fix header not the same error when one ped file is supplied in a multi sample family
-
     converted_vcfs
         .join(peds)
         .branch(
