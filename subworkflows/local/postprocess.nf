@@ -239,7 +239,7 @@ workflow POST_PROCESS {
     ch_versions = ch_versions.mix(PEDFILTER.out.versions)
 
     BGZIP_GENOTYPED_VCFS(
-        merge_header_input
+        merge_header_input.map({ meta, vcf, ped -> [ meta, vcf ]})
     )
 
     ch_versions = ch_versions.mix(BGZIP_GENOTYPED_VCFS.out.versions)
