@@ -88,12 +88,16 @@ workflow POST_PROCESS {
         .join(TABIX_SORTED_GVCFS.out.tbi)
         .map(
             { meta, gvcf, tbi ->
-                def new_meta = meta.clone()
-                new_meta.id = meta.family ?: meta.sample
-                new_meta.remove('sample')
+                new_meta = [:]
                 new_meta.family = meta.family
-
-                [ groupKey(new_meta, new_meta.family_count.toInteger()), gvcf, tbi ]
+                new_meta.id = meta.family ?: meta.sample
+                new_meta.family_count = meta.family_count
+                [ new_meta, gvcf, tbi ]
+            }
+        )
+        .map( // Extra map because `groupKey()` doesn't like meta cloning
+            { meta, gvcf, tbi ->
+                [ groupKey(meta, meta.family_count.toInteger()), gvcf, tbi ]
             }
         )
         .groupTuple()

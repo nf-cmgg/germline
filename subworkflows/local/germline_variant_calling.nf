@@ -127,11 +127,32 @@ workflow GERMLINE_VARIANT_CALLING {
         ch_versions = ch_versions.mix(BEDTOOLS_SPLIT.out.versions)
 
         BEDTOOLS_SPLIT.out.beds
+            .map(
+                { meta, beds ->
+                    new_meta = meta.clone()
+                    new_meta.bed_count = beds instanceof Path ? 1 : beds.size()
+                    [ new_meta, beds ]
+                }
+            )
             .transpose()
+            .map(
+                { meta, bed ->
+                    new_meta = meta.clone()
+                    new_meta.remove("bed_count")
+                    [ new_meta, meta.bed_count, bed ]
+                }
+            )
             .set { split_beds }
     }
     else {
-        merged_beds.set { split_beds }
+        merged_beds
+        .map(
+            { meta, bed ->
+                bed_count = bed ? 1 : 0
+                [ meta, bed_count, bed ]
+            }
+        )
+        .set { split_beds }
     }
 
     split_beds.dump(tag:'split_beds', pretty:true)
@@ -160,13 +181,13 @@ workflow GERMLINE_VARIANT_CALLING {
         ch_versions = ch_versions.mix(CALIBRATEDRAGSTRMODEL.out.versions)
 
         ready_crams
-            .join(split_beds)
-            .join(CALIBRATEDRAGSTRMODEL.out.dragstr_model)
+            .combine(split_beds, by:0)
+            .combine(CALIBRATEDRAGSTRMODEL.out.dragstr_model, by:0)
             .set { cram_models }
     }
     else {
         ready_crams
-            .join(split_beds)
+            .combine(split_beds, by:0)
             .set { cram_models }
     }
 
@@ -178,11 +199,12 @@ workflow GERMLINE_VARIANT_CALLING {
 
     cram_models
         .map(
-            { meta, cram, crai, bed=[], dragstr_model=[] ->
+            { meta, cram, crai, bed_count, bed=[], dragstr_model=[] ->
                 new_meta = meta.clone()
 
                 // If either no scatter is done, i.e. one interval (1), then don't rename samples
-                new_meta.id = scatter_count <= 1 ? meta.id : bed.baseName
+                new_meta.id = bed_count <= 1 ? meta.id : bed.baseName
+                new_meta.bed_count = bed_count
 
                 [ new_meta, cram, crai, bed, dragstr_model ]
             }
@@ -219,10 +241,16 @@ workflow GERMLINE_VARIANT_CALLING {
                 { meta, vcf, tbi ->
                     new_meta = meta.clone()
                     new_meta.id = new_meta.sample
-                    [ new_meta, vcf, tbi ]
+                    new_meta.remove('bed_count')
+                    [ groupKey(new_meta, meta.bed_count.toInteger()), vcf, tbi ]
                 }
             )
-            .groupTuple(size:scatter_count, remainder:true)
+            .map( // Extra map because `groupKey()` doesn't like meta cloning
+                { meta, vcf, tbi ->
+                    [ groupKey(meta, meta.bed_count.toInteger()), vcf, tbi ]
+                }
+            )
+            .groupTuple()
             .branch(
                 { meta, vcfs, tbis ->
                     multiple: vcfs.size() > 1
