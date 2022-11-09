@@ -42,6 +42,8 @@ workflow ANNOTATION {
     ch_reports  = ch_reports.mix(ENSEMBLVEP.out.report)
     ch_versions = ch_versions.mix(ENSEMBLVEP.out.versions)
 
+
+
     if (vcfanno) {
         VCFANNO(
             ENSEMBLVEP.out.vcf.map({ meta, vcf -> [ meta, vcf, [] ] }),
