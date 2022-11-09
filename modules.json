@@ -73,6 +73,10 @@
                         "branch": "master",
                         "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
                     },
+                    "gawk": {
+                        "branch": "master",
+                        "git_sha": "6955d35195c3260f5449022450e3bc2ccb3e9662"
+                    },
                     "multiqc": {
                         "branch": "master",
                         "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"

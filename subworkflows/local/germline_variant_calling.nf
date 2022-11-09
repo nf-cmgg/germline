@@ -245,11 +245,6 @@ workflow GERMLINE_VARIANT_CALLING {
                     [ groupKey(new_meta, meta.bed_count.toInteger()), vcf, tbi ]
                 }
             )
-            .map( // Extra map because `groupKey()` doesn't like meta cloning
-                { meta, vcf, tbi ->
-                    [ groupKey(meta, meta.bed_count.toInteger()), vcf, tbi ]
-                }
-            )
             .groupTuple()
             .branch(
                 { meta, vcfs, tbis ->
