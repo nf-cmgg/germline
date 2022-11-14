@@ -181,7 +181,7 @@ include { ANNOTATION               } from '../subworkflows/local/annotation'
 include { SAMTOOLS_FAIDX as FAIDX                                    } from '../modules/nf-core/samtools/faidx/main'
 include { GATK4_CREATESEQUENCEDICTIONARY as CREATESEQUENCEDICTIONARY } from '../modules/nf-core/gatk4/createsequencedictionary/main'
 include { GATK4_COMPOSESTRTABLEFILE as COMPOSESTRTABLEFILE           } from '../modules/nf-core/gatk4/composestrtablefile/main'
-include { INDEX_TO_BED                                               } from '../modules/local/indextobed'
+include { GAWK as INDEX_TO_BED                                       } from '../modules/nf-core/gawk/main'
 include { UNTAR                                                      } from '../modules/nf-core/untar/main'
 include { VCF2DB                                                     } from '../modules/nf-core/vcf2db/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS                                } from '../modules/nf-core/custom/dumpsoftwareversions/main'
@@ -273,8 +273,6 @@ workflow NF_CMGG_GERMLINE {
     // Read in samplesheet, validate and stage input files
     //
 
-    // TODO improve family counting (https://nextflow.slack.com/archives/C02T98A23U7/p1667575984019099?thread_ts=1667566834.976879&cid=C02T98A23U7)
-
     parse_input(ch_input)
         .map(
             { meta, cram, crai, bed, ped ->
@@ -333,8 +331,8 @@ workflow NF_CMGG_GERMLINE {
     ch_parsed_inputs.beds
         .branch(
             { meta, bed ->
-                valid: bed != []
-                invalid: bed == []
+                valid: bed
+                invalid: !bed
             }
         )
         .set { beds }
@@ -346,11 +344,24 @@ workflow NF_CMGG_GERMLINE {
     // Create a BED file from the FASTA index to paralellize genome calls
     //
 
-    // TODO Only perform this once
-
     INDEX_TO_BED(
-        beds.invalid.combine(fasta_fai).map({ meta, bed, fasta_fai -> [ meta, fasta_fai ]})
+        fasta_fai.map({ fasta_fai -> [ [id:'fasta_bed'], fasta_fai ] }),
+        []
     )
+
+    beds.invalid
+        .combine(
+            INDEX_TO_BED.out.output
+            .map({ meta, fasta_fai -> fasta_fai })
+            .collect()
+        )
+        .map(
+            { meta, empty_bed, created_bed ->
+                [ meta, created_bed ]
+            }
+        )
+        .dump(tag:'created_beds', pretty:true)
+        .set { created_beds }
 
     ch_parsed_inputs.peds
         .distinct()
@@ -370,7 +381,7 @@ workflow NF_CMGG_GERMLINE {
 
     GERMLINE_VARIANT_CALLING(
         ch_parsed_inputs.cram,
-        beds.valid.mix(INDEX_TO_BED.out.bed.dump(tag:'created_beds', pretty:true)),
+        beds.valid.mix(created_beds),
         fasta,
         fasta_fai,
         dict,
