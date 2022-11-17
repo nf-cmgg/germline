@@ -494,6 +494,7 @@ workflow CMGGGERMLINE {
         ch_versions = ch_versions.mix(ANNOTATION.out.versions)
         ch_reports  = ch_reports.mix(ANNOTATION.out.reports)
 
+<<<<<<< HEAD
 <<<<<<< HEAD:workflows/cmgg-germline.nf
 <<<<<<< HEAD:workflows/cmgg-germline.nf
         //
@@ -505,6 +506,9 @@ workflow CMGGGERMLINE {
     // Create Gemini-compatible database files
     //
 =======
+=======
+<<<<<<< HEAD
+>>>>>>> ba019c1 (some formatting)
         // TODO fix issue when PED file is missing
 >>>>>>> 85433cf (fixed some major issues):workflows/nf-cmgg-germline.nf
 
@@ -522,7 +526,16 @@ workflow CMGGGERMLINE {
 
         VCF2DB.out.db
             .dump(tag:'vcf2db_output', pretty:true)
+<<<<<<< HEAD
 >>>>>>> 85433cf (fixed some major issues):workflows/nf-cmgg-germline.nf
+=======
+=======
+        //
+        // Create Gemini-compatible database files
+        //
+        VCF2DB( ANNOTATION.out.annotated_vcfs.combine(peds, by: 0))
+>>>>>>> e325585 (some formatting)
+>>>>>>> ba019c1 (some formatting)
     }
 
     //
