@@ -243,21 +243,21 @@ workflow CMGGGERMLINE {
     // Read in samplesheet, validate and stage input files
     //
 
-    inputs = parse_input(ch_input)
-             .multiMap({meta, cram, crai, bed, ped ->
-                 ped_family_id = get_family_id_from_ped(ped)
+    inputs = parse_input(ch_input).multiMap(
+        { meta, cram, crai, bed, ped ->
+            ped_family_id = get_family_id_from_ped(ped)
 
-                 new_meta_ped = [:]
-                 new_meta = meta.clone()
+            new_meta_ped = [:]
+            new_meta = meta.clone()
+            new_meta_ped.id     = meta.family ?: ped_family_id
+            new_meta_ped.family = meta.family ?: ped_family_id
+            new_meta.family     = meta.family ?: ped_family_id
 
-                 new_meta_ped.id     = meta.family ?: ped_family_id
-                 new_meta_ped.family = meta.family ?: ped_family_id
-                 new_meta.family     = meta.family ?: ped_family_id
-
-                 beds:                                [new_meta, bed]
-                 germline_variant_calling_input_cram: [new_meta, cram, crai]
-                 peds:                                [new_meta_ped, ped]
-             })
+            beds:                                [new_meta, bed]
+            germline_variant_calling_input_cram: [new_meta, cram, crai]
+            peds:                                [new_meta_ped, ped]
+        }
+    )
 
     peds = inputs.peds.distinct()
 
@@ -313,7 +313,6 @@ workflow CMGGGERMLINE {
     //
     // Annotation of the variants
     //
-
     if (output_mode == "seqplorer") {
 
         // Perform the annotation
@@ -329,22 +328,13 @@ workflow CMGGGERMLINE {
             vcfanno_toml,
             vcfanno_resources
         )
-
         ch_versions = ch_versions.mix(ANNOTATION.out.versions)
         ch_reports  = ch_reports.mix(ANNOTATION.out.reports)
-    }
 
-    //
-    // Create Gemini-compatible database files
-    //
-
-    if (output_mode == "seqplorer") {
-        vcf2db_input = ANNOTATION.out.annotated_vcfs
-                       .combine(peds, by: 0)
-
-        VCF2DB(
-            vcf2db_input
-        )
+        //
+        // Create Gemini-compatible database files
+        //
+        VCF2DB( ANNOTATION.out.annotated_vcfs.combine(peds, by: 0))
     }
 
     //
