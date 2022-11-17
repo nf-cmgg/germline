@@ -38,7 +38,8 @@
                     "bedtools/split": {
                         "branch": "master",
                         "git_sha": "87d0d9003b0236a044428d66b6fcce0e73606039",
-                        "installed_by": ["modules"]
+                        "installed_by": ["modules"],
+                        "patch": "modules/nf-core/bedtools/split/bedtools-split.diff"
                     },
                     "custom/dumpsoftwareversions": {
                         "branch": "master",
