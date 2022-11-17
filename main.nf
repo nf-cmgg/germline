@@ -31,13 +31,13 @@ WorkflowMain.initialise(workflow, params, log)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { NF_CMGG_GERMLINE } from './workflows/nf-cmgg-germline'
+include { CMGGGERMLINE } from './workflows/cmgg-germline'
 
 //
 // WORKFLOW: Run main nf-cmgg-germline analysis pipeline
 //
-workflow NFCORE_NF_CMGG_GERMLINE {
-    NF_CMGG_GERMLINE ()
+workflow CMGG_CMGGGERMLINE {
+    CMGGGERMLINE ()
 }
 
 /*
@@ -51,7 +51,7 @@ workflow NFCORE_NF_CMGG_GERMLINE {
 // See: https://github.com/nf-core/rnaseq/issues/619
 //
 workflow {
-    NFCORE_NF_CMGG_GERMLINE ()
+    CMGG_CMGGGERMLINE ()
 }
 
 /*

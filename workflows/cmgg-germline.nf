@@ -10,7 +10,7 @@ def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
 // Validate input parameters
 //
 
-WorkflowNfCmggGermline.initialise(params, log)
+WorkflowCmggGermline.initialise(params, log)
 
 //
 // Check input path parameters to see if they exist
@@ -135,6 +135,14 @@ else if (params.mastermind || params.mastermind_tbi || params.vep_mastermind) {
     exit 1, "Please specify '--vep_mastermind true', '--mastermind PATH/TO/MASTERMIND/FILE' and '--mastermind_tbi PATH/TO/MASTERMIND/INDEX/FILE' to use the mastermind VEP plugin."
 }
 
+// Check if all maxentscan files are given
+if (params.maxentscan && params.vep_maxentscan) {
+    vep_extra_files.add(file(params.maxentscan, checkIfExists: true))
+}
+else if (params.maxentscan || params.vep_maxentscan) {
+    exit 1, "Please specify '--vep_maxentscan true', '--maxentscan PATH/TO/MAXENTSCAN/' to use the MaxEntScan VEP plugin."
+}
+
 // Check if all EOG files are given
 if (params.eog && params.eog_tbi && params.vep_eog) {
     vep_extra_files.add(file(params.eog, checkIfExists: true))
@@ -196,7 +204,7 @@ include { MULTIQC                                                    } from '../
 def multiqc_report = []
 
 // The main workflow
-workflow NF_CMGG_GERMLINE {
+workflow CMGGGERMLINE {
 
     ch_versions = Channel.empty()
     ch_reports  = Channel.empty()
