@@ -10,6 +10,7 @@
 <<<<<<< HEAD
                         "git_sha": "78cf39939fbe160a1410c44a6c5946f9a4c56e7e",
                         "installed_by": ["modules"]
+<<<<<<< HEAD
                     },
                     "bcftools/convert": {
                         "branch": "master",
@@ -52,6 +53,23 @@
                             "modules"
                         ]
 >>>>>>> 55646de (rename worflow internally)
+=======
+                    },
+                    "bcftools/convert": {
+                        "branch": "master",
+                        "git_sha": "78cf39939fbe160a1410c44a6c5946f9a4c56e7e",
+                        "installed_by": ["modules"]
+                    },
+                    "bcftools/filter": {
+                        "branch": "master",
+                        "git_sha": "78cf39939fbe160a1410c44a6c5946f9a4c56e7e",
+                        "installed_by": ["modules"]
+                    },
+                    "bcftools/merge": {
+                        "branch": "master",
+                        "git_sha": "78cf39939fbe160a1410c44a6c5946f9a4c56e7e",
+                        "installed_by": ["modules"]
+>>>>>>> 1aeb830 (prettier)
                     },
                     "bcftools/sort": {
                         "branch": "master",
@@ -62,6 +80,7 @@
 <<<<<<< HEAD
                         "git_sha": "78cf39939fbe160a1410c44a6c5946f9a4c56e7e",
                         "installed_by": ["modules"]
+<<<<<<< HEAD
                     },
                     "bcftools/view": {
                         "branch": "master",
@@ -93,10 +112,23 @@
                             "modules"
                         ]
 >>>>>>> 55646de (rename worflow internally)
+=======
+                    },
+                    "bcftools/view": {
+                        "branch": "master",
+                        "git_sha": "78cf39939fbe160a1410c44a6c5946f9a4c56e7e",
+                        "installed_by": ["modules"]
+                    },
+                    "bedtools/split": {
+                        "branch": "master",
+                        "git_sha": "87d0d9003b0236a044428d66b6fcce0e73606039",
+                        "installed_by": ["modules"]
+>>>>>>> 1aeb830 (prettier)
                     },
                     "custom/dumpsoftwareversions": {
                         "branch": "master",
                         "git_sha": "8022c68e7403eecbd8ba9c49496f69f8c49d50f0",
+<<<<<<< HEAD
 <<<<<<< HEAD
                         "installed_by": ["modules"]
 =======
@@ -104,11 +136,17 @@
                             "modules"
                         ]
 >>>>>>> 55646de (rename worflow internally)
+=======
+                        "installed_by": ["modules"]
+>>>>>>> 1aeb830 (prettier)
                     },
                     "ensemblvep": {
                         "branch": "master",
                         "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1aeb830 (prettier)
                         "installed_by": ["modules"],
                         "patch": "modules/nf-core/ensemblvep/ensemblvep.diff"
                     },
@@ -116,6 +154,7 @@
                         "branch": "master",
                         "git_sha": "7578005a576f3ac1b0d4f10c037dde34cdedfb67",
                         "installed_by": ["modules"]
+<<<<<<< HEAD
                     },
                     "gatk4/combinegvcfs": {
                         "branch": "master",
@@ -200,6 +239,38 @@
                             "modules"
                         ]
 >>>>>>> 55646de (rename worflow internally)
+=======
+                    },
+                    "gatk4/combinegvcfs": {
+                        "branch": "master",
+                        "git_sha": "7578005a576f3ac1b0d4f10c037dde34cdedfb67",
+                        "installed_by": ["modules"]
+                    },
+                    "gatk4/composestrtablefile": {
+                        "branch": "master",
+                        "git_sha": "7578005a576f3ac1b0d4f10c037dde34cdedfb67",
+                        "installed_by": ["modules"]
+                    },
+                    "gatk4/createsequencedictionary": {
+                        "branch": "master",
+                        "git_sha": "7578005a576f3ac1b0d4f10c037dde34cdedfb67",
+                        "installed_by": ["modules"]
+                    },
+                    "gatk4/genotypegvcfs": {
+                        "branch": "master",
+                        "git_sha": "7578005a576f3ac1b0d4f10c037dde34cdedfb67",
+                        "installed_by": ["modules"]
+                    },
+                    "gatk4/haplotypecaller": {
+                        "branch": "master",
+                        "git_sha": "7578005a576f3ac1b0d4f10c037dde34cdedfb67",
+                        "installed_by": ["modules"]
+                    },
+                    "gatk4/reblockgvcf": {
+                        "branch": "master",
+                        "git_sha": "7578005a576f3ac1b0d4f10c037dde34cdedfb67",
+                        "installed_by": ["modules"]
+>>>>>>> 1aeb830 (prettier)
                     },
                     "gawk": {
                         "branch": "master",
@@ -209,6 +280,7 @@
                         "branch": "master",
                         "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
 <<<<<<< HEAD
+<<<<<<< HEAD
                         "installed_by": ["modules"]
                     },
                     "samtools/faidx": {
@@ -239,76 +311,99 @@
                             "modules"
                         ]
 >>>>>>> 55646de (rename worflow internally)
+=======
+                        "installed_by": ["modules"]
+                    },
+                    "samtools/faidx": {
+                        "branch": "master",
+                        "git_sha": "cf5b9c30a2adacc581793afb79fae5f5b50bed01",
+                        "installed_by": ["modules"]
+                    },
+                    "samtools/index": {
+                        "branch": "master",
+                        "git_sha": "cf5b9c30a2adacc581793afb79fae5f5b50bed01",
+                        "installed_by": ["modules"]
+>>>>>>> 1aeb830 (prettier)
                     },
                     "tabix/bgzip": {
                         "branch": "master",
                         "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
 <<<<<<< HEAD
+<<<<<<< HEAD
                         "installed_by": ["modules"]
 =======
                         "installed_by": [
                             "modules"
                         ]
 >>>>>>> 55646de (rename worflow internally)
+=======
+                        "installed_by": ["modules"]
+>>>>>>> 1aeb830 (prettier)
                     },
                     "tabix/bgziptabix": {
                         "branch": "master",
                         "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
 <<<<<<< HEAD
+<<<<<<< HEAD
                         "installed_by": ["modules"]
 =======
                         "installed_by": [
                             "modules"
                         ]
 >>>>>>> 55646de (rename worflow internally)
+=======
+                        "installed_by": ["modules"]
+>>>>>>> 1aeb830 (prettier)
                     },
                     "tabix/tabix": {
                         "branch": "master",
                         "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
 <<<<<<< HEAD
+<<<<<<< HEAD
                         "installed_by": ["modules"]
 =======
                         "installed_by": [
                             "modules"
                         ]
 >>>>>>> 55646de (rename worflow internally)
+=======
+                        "installed_by": ["modules"]
+>>>>>>> 1aeb830 (prettier)
                     },
                     "untar": {
                         "branch": "master",
                         "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
 <<<<<<< HEAD
+<<<<<<< HEAD
                         "installed_by": ["modules"]
 =======
                         "installed_by": [
                             "modules"
                         ]
 >>>>>>> 55646de (rename worflow internally)
+=======
+                        "installed_by": ["modules"]
+>>>>>>> 1aeb830 (prettier)
                     },
                     "vcf2db": {
                         "branch": "master",
                         "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
 <<<<<<< HEAD
+<<<<<<< HEAD
                         "installed_by": ["modules"]
 =======
                         "installed_by": [
                             "modules"
                         ]
 >>>>>>> 55646de (rename worflow internally)
+=======
+                        "installed_by": ["modules"]
+>>>>>>> 1aeb830 (prettier)
                     },
                     "vcfanno": {
                         "branch": "master",
                         "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
 <<<<<<< HEAD
-                        "installed_by": ["modules"]
-=======
-                        "installed_by": [
-                            "modules"
-                        ]
->>>>>>> 55646de (rename worflow internally)
-                    },
-                    "vcftools": {
-                        "branch": "master",
-                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
 <<<<<<< HEAD
                         "installed_by": ["modules"]
 =======
@@ -316,6 +411,24 @@
                             "modules"
                         ]
 >>>>>>> 55646de (rename worflow internally)
+=======
+                        "installed_by": ["modules"]
+>>>>>>> 1aeb830 (prettier)
+                    },
+                    "vcftools": {
+                        "branch": "master",
+                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
+<<<<<<< HEAD
+<<<<<<< HEAD
+                        "installed_by": ["modules"]
+=======
+                        "installed_by": [
+                            "modules"
+                        ]
+>>>>>>> 55646de (rename worflow internally)
+=======
+                        "installed_by": ["modules"]
+>>>>>>> 1aeb830 (prettier)
                     }
                 }
             }
