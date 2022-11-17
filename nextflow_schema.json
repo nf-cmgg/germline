@@ -363,6 +363,11 @@
                     "description": "[Seqplorer mode only] Use the SpliceRegion plugin with Ensembl VEP",
                     "fa_icon": "fas fa-question-circle"
                 },
+                "vep_mastermind": {
+                    "type": "boolean",
+                    "description": "[Seqplorer mode only] Use the Mastermind plugin with Ensembl VEP, The '--mastermind' and '--mastermind_tbi' parameters need to be specified when using this plugin.",
+                    "fa_icon": "fas fa-question-circle"
+                },
                 "vep_maxentscan": {
                     "type": "boolean",
                     "description": "[Seqplorer mode only] Use the MaxEntScan plugin with Ensembl VEP, The '--maxentscan' parameter need to be specified when using this plugin.",
@@ -429,6 +434,18 @@
                     "default": "None",
                     "format": "file-path",
                     "description": "[Seqplorer mode only] The index of the VCF containing SNVs for spliceAI"
+                },
+                "mastermind": {
+                    "type": "string",
+                    "default": "None",
+                    "format": "file-path",
+                    "description": "[Seqplorer mode only] The VCF for Mastermind"
+                },
+                "mastermind_tbi": {
+                    "type": "string",
+                    "default": "None",
+                    "format": "file-path",
+                    "description": "[Seqplorer mode only] The index of the VCF for Mastermind"
                 },
                 "maxentscan": {
                     "type": "string",
