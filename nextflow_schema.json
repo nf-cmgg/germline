@@ -363,9 +363,9 @@
                     "description": "[Seqplorer mode only] Use the SpliceRegion plugin with Ensembl VEP",
                     "fa_icon": "fas fa-question-circle"
                 },
-                "vep_mastermind": {
+                "vep_maxentscan": {
                     "type": "boolean",
-                    "description": "[Seqplorer mode only] Use the Mastermind plugin with Ensembl VEP, The '--mastermind' and '--mastermind_tbi' parameters need to be specified when using this plugin.",
+                    "description": "[Seqplorer mode only] Use the MaxEntScan plugin with Ensembl VEP, The '--maxentscan' parameter need to be specified when using this plugin.",
                     "fa_icon": "fas fa-question-circle"
                 },
                 "vep_eog": {
@@ -376,6 +376,7 @@
                 "vep_merged_cache": {
                     "type": "string",
                     "default": "None",
+                    "format": "directory-path",
                     "description": "[Seqplorer mode only] The path to the folder containing the merged cache",
                     "fa_icon": "fas fa-folder"
                 },
@@ -395,52 +396,56 @@
                     "type": "string",
                     "default": "None",
                     "description": "[Seqplorer mode only] The dbSNFP file",
+                    "format": "directory-path",
                     "fa_icon": "fas fa-folder"
                 },
                 "dbnsfp_tbi": {
                     "type": "string",
                     "default": "None",
+                    "format": "file-path",
                     "description": "[Seqplorer mode only] The index of the dbSNFP file"
                 },
                 "spliceai_indel": {
                     "type": "string",
                     "default": "None",
+                    "format": "file-path",
                     "description": "[Seqplorer mode only] The VCF containing indels for spliceAI",
                     "fa_icon": "far fa-file-alt"
                 },
                 "spliceai_indel_tbi": {
                     "type": "string",
                     "default": "None",
+                    "format": "file-path",
                     "description": "[Seqplorer mode only] The index of the VCF containing indels for spliceAI"
                 },
                 "spliceai_snv": {
                     "type": "string",
                     "default": "None",
+                    "format": "file-path",
                     "description": "[Seqplorer mode only] The VCF containing SNVs for spliceAI"
                 },
                 "spliceai_snv_tbi": {
                     "type": "string",
                     "default": "None",
+                    "format": "file-path",
                     "description": "[Seqplorer mode only] The index of the VCF containing SNVs for spliceAI"
                 },
-                "mastermind": {
+                "maxentscan": {
                     "type": "string",
                     "default": "None",
-                    "description": "[Seqplorer mode only] The VCF for Mastermind"
-                },
-                "mastermind_tbi": {
-                    "type": "string",
-                    "default": "None",
-                    "description": "[Seqplorer mode only] The index of the VCF for Mastermind"
+                    "format": "directory-path",
+                    "description": "[Seqplorer mode only] MaxEntScan executable directory"
                 },
                 "eog": {
                     "type": "string",
                     "default": "None",
+                    "format": "file-path",
                     "description": "[Seqplorer mode only] The VCF containing EOG annotations"
                 },
                 "eog_tbi": {
                     "type": "string",
                     "default": "None",
+                    "format": "file-path",
                     "description": "[Seqplorer mode only] The index of the VCF containing EOG annotations"
                 },
                 "vcfanno": {
@@ -450,11 +455,13 @@
                 "vcfanno_toml": {
                     "type": "string",
                     "default": "None",
+                    "format": "file-path",
                     "description": "[Seqplorer mode only] The TOML file containing the configuration for VCFanno"
                 },
                 "vcfanno_resources": {
                     "type": "string",
                     "default": "None",
+                    "format": "directory-path",
                     "description": "[Seqplorer mode only] The folder containing the reference annotation resources specified in the configuration TOML"
                 }
             }
