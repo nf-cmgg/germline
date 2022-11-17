@@ -18,7 +18,7 @@ WorkflowCmggGermline.initialise(params, log)
 
 def checkPathParamList = [
     params.fasta,
-    params.fasta_fai,
+    params.fai,
     params.dict,
     params.strtablefile,
     params.vep_merged_cache,
@@ -66,7 +66,7 @@ if (params.output_mode == "seqplorer") {
 
 // Input files
 fasta              = params.fasta               ? Channel.fromPath(params.fasta).collect()              : Channel.empty()
-fasta_fai          = params.fasta_fai           ? Channel.fromPath(params.fasta_fai).collect()          : null
+fasta_fai          = params.fai                 ? Channel.fromPath(params.fai).collect()                : null
 dict               = params.dict                ? Channel.fromPath(params.dict).collect()               : null
 strtablefile       = params.strtablefile        ? Channel.fromPath(params.strtablefile).collect()       : null
 

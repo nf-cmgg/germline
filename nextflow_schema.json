@@ -47,39 +47,58 @@
             "type": "object",
             "fa_icon": "fas fa-dna",
             "description": "Reference genome related files and options required for the workflow.",
-            "required": ["fasta"],
             "properties": {
                 "genome": {
                     "type": "string",
-                    "description": "[Seqplorer mode only] The genome used for the samples",
-                    "fa_icon": "fas fa-book",
-                    "default": "GRCh38"
+                    "default": "hg38",
+                    "description": "Reference genome build"
                 },
                 "fasta": {
                     "type": "string",
                     "format": "file-path",
                     "mimetype": "text/plain",
-                    "pattern": "^\\S+\\.fn?a(sta)?$",
-                    "description": "Path to the FASTA reference file.",
-                    "fa_icon": "far fa-file-code"
+                    "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
+                    "description": "Path to FASTA genome file.",
+                    "help_text": "This parameter is *mandatory* if `--genome` is not specified. The path to the reference genome fasta.",
+                    "fa_icon": "far fa-file-code",
+                    "hidden": true
                 },
-                "fasta_fai": {
+                "fai": {
                     "type": "string",
+                    "format": "file-path",
+                    "mimetype": "text/plain",
                     "pattern": "^\\S+\\.fai$",
-                    "description": "The index of the FASTA file",
-                    "fa_icon": "far fa-file-code"
+                    "description": "Path to FASTA genome index file.",
+                    "help_text": "This parameter is *mandatory* if `--genome` is not specified.",
+                    "fa_icon": "far fa-file-code",
+                    "hidden": true
                 },
                 "dict": {
                     "type": "string",
                     "pattern": "^\\S+\\.dict$",
                     "description": "The sequence dictionary of the FASTA reference",
-                    "fa_icon": "far fa-file-code"
+                    "fa_icon": "far fa-file-code",
+                    "hidden": true
                 },
                 "strtablefile": {
                     "type": "string",
                     "description": "The STR table file generated from the FASTA reference",
                     "fa_icon": "fas fa-folder",
-                    "pattern": "^\\S+\\.zip$"
+                    "pattern": "^\\S+\\.zip$",
+                    "hidden": true
+                },
+                "genomes_base": {
+                    "type": "string",
+                    "default": "/references/",
+                    "hidden": true,
+                    "description": "Directory base for CMGG reference store",
+                    "fa_icon": "fas fa-download"
+                },
+                "genomes_ignore": {
+                    "type": "boolean",
+                    "hidden": true,
+                    "description": "Do not load the local references",
+                    "fa_icon": "fas fa-ban"
                 },
                 "igenomes_base": {
                     "type": "string",
