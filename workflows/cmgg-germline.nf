@@ -324,6 +324,13 @@ workflow CMGGGERMLINE {
                 new_meta.family           = meta.family ?: ped_family_id
                 new_meta.family_count     = family_count
 
+                beds: [new_meta, bed]
+                cram: [new_meta, cram, crai]
+                peds: [new_meta_ped, ped]
+            }
+        )
+        .set { ch_parsed_inputs }
+
     ch_parsed_inputs.beds.dump(tag:'input_beds', pretty:true)
     ch_parsed_inputs.cram.dump(tag:'input_crams', pretty:true)
     ch_parsed_inputs.peds.dump(tag:'input_peds', pretty:true)
