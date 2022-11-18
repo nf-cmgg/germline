@@ -280,38 +280,6 @@ workflow CMGGGERMLINE {
     //
     // Read in samplesheet, validate and stage input files
     //
-
-<<<<<<< HEAD:workflows/cmgg-germline.nf
-<<<<<<< HEAD:workflows/cmgg-germline.nf
-<<<<<<< HEAD:workflows/cmgg-germline.nf
-<<<<<<< HEAD:workflows/cmgg-germline.nf
-    inputs = parse_input(ch_input).multiMap(
-        { meta, cram, crai, bed, ped ->
-            ped_family_id = get_family_id_from_ped(ped)
-=======
-    inputs = parse_input(ch_input)
-             .multiMap({meta, cram, crai, bed, ped ->
-                 ped_family_id = meta.family ?: get_family_id_from_ped(ped)
->>>>>>> 917501b (Added support for no BED input + PED fixes):workflows/nf-cmgg-germline.nf
-
-            new_meta_ped = [:]
-            new_meta = meta.clone()
-            new_meta_ped.id     = meta.family ?: ped_family_id
-            new_meta_ped.family = meta.family ?: ped_family_id
-            new_meta.family     = meta.family ?: ped_family_id
-
-            beds:                                [new_meta, bed]
-            germline_variant_calling_input_cram: [new_meta, cram, crai]
-            peds:                                [new_meta_ped, ped]
-        }
-    )
-=======
-=======
-    // TODO improve family counting (https://nextflow.slack.com/archives/C02T98A23U7/p1667575984019099?thread_ts=1667566834.976879&cid=C02T98A23U7)
-
->>>>>>> 85433cf (fixed some major issues):workflows/nf-cmgg-germline.nf
-=======
->>>>>>> 260a400 (improved index to bed conversion):workflows/nf-cmgg-germline.nf
     parse_input(ch_input)
         .map(
             { meta, cram, crai, bed, ped ->
@@ -355,14 +323,6 @@ workflow CMGGGERMLINE {
 
                 new_meta.family           = meta.family ?: ped_family_id
                 new_meta.family_count     = family_count
-
-                beds: [new_meta, bed]
-                cram: [new_meta, cram, crai]
-                peds: [new_meta_ped, ped]
-            }
-        )
-        .set { ch_parsed_inputs }
->>>>>>> bcab663 (refactored the code):workflows/nf-cmgg-germline.nf
 
     ch_parsed_inputs.beds.dump(tag:'input_beds', pretty:true)
     ch_parsed_inputs.cram.dump(tag:'input_crams', pretty:true)
@@ -494,23 +454,10 @@ workflow CMGGGERMLINE {
         ch_versions = ch_versions.mix(ANNOTATION.out.versions)
         ch_reports  = ch_reports.mix(ANNOTATION.out.reports)
 
-<<<<<<< HEAD
-<<<<<<< HEAD:workflows/cmgg-germline.nf
-<<<<<<< HEAD:workflows/cmgg-germline.nf
-        //
-        // Create Gemini-compatible database files
-        //
-        VCF2DB( ANNOTATION.out.annotated_vcfs.combine(peds, by: 0))
-=======
     //
     // Create Gemini-compatible database files
     //
-=======
-=======
-<<<<<<< HEAD
->>>>>>> ba019c1 (some formatting)
         // TODO fix issue when PED file is missing
->>>>>>> 85433cf (fixed some major issues):workflows/nf-cmgg-germline.nf
 
         ANNOTATION.out.annotated_vcfs
             .dump(tag:'annotation_output', pretty:true)
@@ -520,22 +467,10 @@ workflow CMGGGERMLINE {
         VCF2DB(
             vcf2db_input
         )
-<<<<<<< HEAD:workflows/cmgg-germline.nf
->>>>>>> bcab663 (refactored the code):workflows/nf-cmgg-germline.nf
-=======
 
         VCF2DB.out.db
             .dump(tag:'vcf2db_output', pretty:true)
-<<<<<<< HEAD
->>>>>>> 85433cf (fixed some major issues):workflows/nf-cmgg-germline.nf
-=======
-=======
-        //
-        // Create Gemini-compatible database files
-        //
-        VCF2DB( ANNOTATION.out.annotated_vcfs.combine(peds, by: 0))
->>>>>>> e325585 (some formatting)
->>>>>>> ba019c1 (some formatting)
+
     }
 
     //
