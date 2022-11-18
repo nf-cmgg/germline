@@ -10,7 +10,7 @@ def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
 // Validate input parameters
 //
 
-WorkflowNfCmggGermline.initialise(params, log)
+WorkflowCmggGermline.initialise(params, log)
 
 //
 // Check input path parameters to see if they exist
@@ -18,7 +18,7 @@ WorkflowNfCmggGermline.initialise(params, log)
 
 def checkPathParamList = [
     params.fasta,
-    params.fasta_fai,
+    params.fai,
     params.dict,
     params.strtablefile,
     params.vep_merged_cache,
@@ -66,7 +66,7 @@ if (params.output_mode == "seqplorer") {
 
 // Input files
 fasta              = params.fasta               ? Channel.fromPath(params.fasta).collect()              : Channel.empty()
-fasta_fai          = params.fasta_fai           ? Channel.fromPath(params.fasta_fai).collect()          : null
+fasta_fai          = params.fai                 ? Channel.fromPath(params.fai).collect()                : null
 dict               = params.dict                ? Channel.fromPath(params.dict).collect()               : null
 strtablefile       = params.strtablefile        ? Channel.fromPath(params.strtablefile).collect()       : null
 
@@ -135,6 +135,14 @@ else if (params.mastermind || params.mastermind_tbi || params.vep_mastermind) {
     exit 1, "Please specify '--vep_mastermind true', '--mastermind PATH/TO/MASTERMIND/FILE' and '--mastermind_tbi PATH/TO/MASTERMIND/INDEX/FILE' to use the mastermind VEP plugin."
 }
 
+// Check if all maxentscan files are given
+if (params.maxentscan && params.vep_maxentscan) {
+    vep_extra_files.add(file(params.maxentscan, checkIfExists: true))
+}
+else if (params.maxentscan || params.vep_maxentscan) {
+    exit 1, "Please specify '--vep_maxentscan true', '--maxentscan PATH/TO/MAXENTSCAN/' to use the MaxEntScan VEP plugin."
+}
+
 // Check if all EOG files are given
 if (params.eog && params.eog_tbi && params.vep_eog) {
     vep_extra_files.add(file(params.eog, checkIfExists: true))
@@ -197,7 +205,7 @@ include { MULTIQC                                                    } from '../
 def multiqc_report = []
 
 // The main workflow
-workflow NF_CMGG_GERMLINE {
+workflow CMGGGERMLINE {
 
     ch_versions = Channel.empty()
     ch_reports  = Channel.empty()
@@ -272,7 +280,6 @@ workflow NF_CMGG_GERMLINE {
     //
     // Read in samplesheet, validate and stage input files
     //
-
     parse_input(ch_input)
         .map(
             { meta, cram, crai, bed, ped ->
@@ -436,7 +443,6 @@ workflow NF_CMGG_GERMLINE {
     //
     // Annotation of the variants and creation of Gemini-compatible database files
     //
-
     if (output_mode == "seqplorer") {
 
         // Perform the annotation
@@ -452,10 +458,12 @@ workflow NF_CMGG_GERMLINE {
             vcfanno_toml,
             vcfanno_resources
         )
-
         ch_versions = ch_versions.mix(ANNOTATION.out.versions)
         ch_reports  = ch_reports.mix(ANNOTATION.out.reports)
 
+    //
+    // Create Gemini-compatible database files
+    //
         // TODO fix issue when PED file is missing
 
         ANNOTATION.out.annotated_vcfs
@@ -469,6 +477,7 @@ workflow NF_CMGG_GERMLINE {
 
         VCF2DB.out.db
             .dump(tag:'vcf2db_output', pretty:true)
+
     }
 
     //
