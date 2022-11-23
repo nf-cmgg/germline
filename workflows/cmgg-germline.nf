@@ -10,7 +10,7 @@ def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
 // Validate input parameters
 //
 
-WorkflowNfCmggGermline.initialise(params, log)
+WorkflowCmggGermline.initialise(params, log)
 
 //
 // Check input path parameters to see if they exist
@@ -18,7 +18,7 @@ WorkflowNfCmggGermline.initialise(params, log)
 
 def checkPathParamList = [
     params.fasta,
-    params.fasta_fai,
+    params.fai,
     params.dict,
     params.strtablefile,
     params.vep_merged_cache,
@@ -66,7 +66,7 @@ if (params.output_mode == "seqplorer") {
 
 // Input files
 fasta              = params.fasta               ? Channel.fromPath(params.fasta).collect()              : Channel.empty()
-fasta_fai          = params.fasta_fai           ? Channel.fromPath(params.fasta_fai).collect()          : null
+fasta_fai          = params.fai                 ? Channel.fromPath(params.fai).collect()                : null
 dict               = params.dict                ? Channel.fromPath(params.dict).collect()               : null
 strtablefile       = params.strtablefile        ? Channel.fromPath(params.strtablefile).collect()       : null
 
@@ -135,6 +135,14 @@ else if (params.mastermind || params.mastermind_tbi || params.vep_mastermind) {
     exit 1, "Please specify '--vep_mastermind true', '--mastermind PATH/TO/MASTERMIND/FILE' and '--mastermind_tbi PATH/TO/MASTERMIND/INDEX/FILE' to use the mastermind VEP plugin."
 }
 
+// Check if all maxentscan files are given
+if (params.maxentscan && params.vep_maxentscan) {
+    vep_extra_files.add(file(params.maxentscan, checkIfExists: true))
+}
+else if (params.maxentscan || params.vep_maxentscan) {
+    exit 1, "Please specify '--vep_maxentscan true', '--maxentscan PATH/TO/MAXENTSCAN/' to use the MaxEntScan VEP plugin."
+}
+
 // Check if all EOG files are given
 if (params.eog && params.eog_tbi && params.vep_eog) {
     vep_extra_files.add(file(params.eog, checkIfExists: true))
@@ -181,6 +189,7 @@ include { ANNOTATION               } from '../subworkflows/local/annotation'
 include { SAMTOOLS_FAIDX as FAIDX                                    } from '../modules/nf-core/samtools/faidx/main'
 include { GATK4_CREATESEQUENCEDICTIONARY as CREATESEQUENCEDICTIONARY } from '../modules/nf-core/gatk4/createsequencedictionary/main'
 include { GATK4_COMPOSESTRTABLEFILE as COMPOSESTRTABLEFILE           } from '../modules/nf-core/gatk4/composestrtablefile/main'
+include { GAWK as INDEX_TO_BED                                       } from '../modules/nf-core/gawk/main'
 include { UNTAR                                                      } from '../modules/nf-core/untar/main'
 include { VCF2DB                                                     } from '../modules/nf-core/vcf2db/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS                                } from '../modules/nf-core/custom/dumpsoftwareversions/main'
@@ -196,7 +205,7 @@ include { MULTIQC                                                    } from '../
 def multiqc_report = []
 
 // The main workflow
-workflow NF_CMGG_GERMLINE {
+workflow CMGGGERMLINE {
 
     ch_versions = Channel.empty()
     ch_reports  = Channel.empty()
@@ -206,27 +215,64 @@ workflow NF_CMGG_GERMLINE {
     //
 
     if (!fasta_fai) {
-        fasta_fai   = FAIDX(fasta.map({ fasta -> [ [id:"fasta_fai"], fasta ]})).fai.map({ meta, fasta -> [ fasta ]})
+        FAIDX(
+            fasta.map({ fasta -> [ [id:"fasta_fai"], fasta ]})
+        )
         ch_versions = ch_versions.mix(FAIDX.out.versions)
+
+        FAIDX.out.fai
+            .map({ meta, fasta_fai -> [ fasta_fai ]})
+            .collect()
+            .dump(tag:'fasta_fai', pretty:true)
+            .set { fasta_fai }
     }
 
     if (!dict) {
-        dict        = CREATESEQUENCEDICTIONARY(fasta).dict
+        CREATESEQUENCEDICTIONARY(
+            fasta
+        )
         ch_versions = ch_versions.mix(CREATESEQUENCEDICTIONARY.out.versions)
+
+        CREATESEQUENCEDICTIONARY.out.dict
+            .collect()
+            .dump(tag:'dict', pretty:true)
+            .set { dict }
     }
 
     if (use_dragstr_model && !strtablefile) {
-        strtablefile = COMPOSESTRTABLEFILE(fasta,fasta_fai,dict).str_table
+        COMPOSESTRTABLEFILE(
+            fasta,
+            fasta_fai,
+            dict
+        )
         ch_versions  = ch_versions.mix(COMPOSESTRTABLEFILE.out.versions)
+
+        COMPOSESTRTABLEFILE.out.str_table
+            .collect()
+            .dump(tag:'strtablefile', pretty:true)
+            .set { strtablefile }
     }
 
     if (output_mode == "seqplorer" && vcfanno) {
-        vcfanno_resources = params.vcfanno_resources.endsWith(".tar.gz") ?
-                                UNTAR(vcfanno_res_inp.map({dir -> [ [], dir ]})).untar.map({meta, dir -> dir}) :
-                                vcfanno_res_inp
-        ch_versions       = params.vcfanno_resources.endsWith(".tar.gz") ?
-                                ch_versions.mix(UNTAR.out.versions) :
-                                ch_versions
+        if (params.vcfanno_resources.endsWith(".tar.gz")) {
+            UNTAR(
+                vcfanno_res_inp.map({dir -> [ [], dir ]})
+            )
+            ch_versions = ch_versions.mix(UNTAR.out.versions)
+
+            UNTAR.out.untar
+                .map(
+                    { meta, dir ->
+                        dir
+                    }
+                )
+                .collect()
+                .set { vcfanno_resources }
+        } else {
+            Channel.value(vcfanno_res_inp)
+                .set { vcfanno_resources }
+        }
+        vcfanno_resources.dump(tag:'vcfanno_resources', pretty:true)
     } else {
         vcfanno_resources = []
     }
@@ -234,32 +280,115 @@ workflow NF_CMGG_GERMLINE {
     //
     // Read in samplesheet, validate and stage input files
     //
+    parse_input(ch_input)
+        .map(
+            { meta, cram, crai, bed, ped ->
+                new_meta = meta.clone()
+                new_meta.family = meta.family ?: get_family_id_from_ped(ped)
+                [ new_meta, cram, crai, bed, ped ]
+            }
+        )
+        .tap { ch_raw_inputs }
+        .distinct()
+        .map(
+            { meta, cram, crai, bed, ped ->
+                [ meta.family, 1 ]
+            }
+        )
+        .groupTuple()
+        .map(
+            { family, count ->
+                counts = family ? count.sum() : 1
+                [ family, counts ]
+            }
+        )
+        .combine(
+            ch_raw_inputs
+                .map(
+                    { meta, cram, crai, bed, ped ->
+                        [ meta.family, meta, cram, crai, bed, ped ]
+                    }
+                )
+        , by:0)
+        .multiMap(
+            { family, family_count, meta, cram, crai, bed, ped ->
+                ped_family_id = meta.family
 
-    inputs = parse_input(ch_input)
-             .multiMap({meta, cram, crai, bed, ped ->
-                 ped_family_id = get_family_id_from_ped(ped)
+                new_meta_ped = [:]
+                new_meta = meta.clone()
 
-                 new_meta_ped = [:]
-                 new_meta = meta.clone()
+                new_meta_ped.id           = meta.family ?: ped_family_id ?: meta.sample
+                new_meta_ped.family       = meta.family ?: ped_family_id
+                new_meta_ped.family_count = family_count
 
-                 new_meta_ped.id     = meta.family ?: ped_family_id
-                 new_meta_ped.family = meta.family ?: ped_family_id
-                 new_meta.family     = meta.family ?: ped_family_id
+                new_meta.family           = meta.family ?: ped_family_id
+                new_meta.family_count     = family_count
 
-                 beds:                                [new_meta, bed]
-                 germline_variant_calling_input_cram: [new_meta, cram, crai]
-                 peds:                                [new_meta_ped, ped]
-             })
+                beds: [new_meta, bed]
+                cram: [new_meta, cram, crai]
+                peds: [new_meta_ped, ped]
+            }
+        )
+        .set { ch_parsed_inputs }
 
-    peds = inputs.peds.distinct()
+    ch_parsed_inputs.beds.dump(tag:'input_beds', pretty:true)
+    ch_parsed_inputs.cram.dump(tag:'input_crams', pretty:true)
+    ch_parsed_inputs.peds.dump(tag:'input_peds', pretty:true)
+
+    ch_parsed_inputs.beds
+        .branch(
+            { meta, bed ->
+                valid: bed
+                invalid: !bed
+            }
+        )
+        .set { beds }
+
+    beds.valid.dump(tag:'valid_beds', pretty:true)
+    beds.invalid.dump(tag:'invalid_beds', pretty:true)
+
+    //
+    // Create a BED file from the FASTA index to paralellize genome calls
+    //
+
+    INDEX_TO_BED(
+        fasta_fai.map({ fasta_fai -> [ [id:'fasta_bed'], fasta_fai ] }),
+        []
+    )
+
+    beds.invalid
+        .combine(
+            INDEX_TO_BED.out.output
+            .map({ meta, fasta_fai -> fasta_fai })
+            .collect()
+        )
+        .map(
+            { meta, empty_bed, created_bed ->
+                [ meta, created_bed ]
+            }
+        )
+        .dump(tag:'created_beds', pretty:true)
+        .set { created_beds }
+
+    ch_parsed_inputs.peds
+        .distinct()
+        .groupTuple()
+        .map(
+            { meta, peds ->
+                output = peds.size() == 1 ? peds[0] : peds[0] == [] ? peds[1] : peds[0]
+                [ meta, output ]
+            }
+        )
+        .dump(tag:'peds', pretty:true)
+        .set { peds }
 
     //
     // Perform the variant calling
     //
 
     GERMLINE_VARIANT_CALLING(
-        inputs.germline_variant_calling_input_cram,
-        inputs.beds,
+        ch_parsed_inputs.cram,
+        beds.valid.mix(created_beds),
         fasta,
         fasta_fai,
         dict,
@@ -271,12 +400,16 @@ workflow NF_CMGG_GERMLINE {
 
     ch_versions = ch_versions.mix(GERMLINE_VARIANT_CALLING.out.versions)
 
+    GERMLINE_VARIANT_CALLING.out.gvcfs
+        .dump(tag:'variantcalling_output', pretty:true)
+        .set { postprocess_input }
+
     //
     // Joint-genotyping of the families
     //
 
     POST_PROCESS(
-        GERMLINE_VARIANT_CALLING.out.gvcfs,
+        postprocess_input,
         peds,
         fasta,
         fasta_fai,
@@ -288,12 +421,17 @@ workflow NF_CMGG_GERMLINE {
 
     ch_versions = ch_versions.mix(POST_PROCESS.out.versions)
 
+    POST_PROCESS.out.post_processed_vcfs
+        .dump(tag:'postprocess_output', pretty:true)
+        .tap { vcf_qc_input }
+        .set { annotation_input }
+
     //
     // Quality control of the called variants
     //
 
     VCF_QC(
-        POST_PROCESS.out.post_processed_vcfs
+        vcf_qc_input
     )
 
     ch_versions = ch_versions.mix(VCF_QC.out.versions)
@@ -303,14 +441,13 @@ workflow NF_CMGG_GERMLINE {
     ch_reports  = ch_reports.mix(VCF_QC.out.vcftools_filter_summary.collect{it[1]}.ifEmpty([]))
 
     //
-    // Annotation of the variants
+    // Annotation of the variants and creation of Gemini-compatible database files
     //
-
     if (output_mode == "seqplorer") {
 
         // Perform the annotation
         ANNOTATION(
-            POST_PROCESS.out.post_processed_vcfs,
+            annotation_input,
             fasta,
             genome,
             species,
@@ -321,22 +458,26 @@ workflow NF_CMGG_GERMLINE {
             vcfanno_toml,
             vcfanno_resources
         )
-
         ch_versions = ch_versions.mix(ANNOTATION.out.versions)
         ch_reports  = ch_reports.mix(ANNOTATION.out.reports)
-    }
 
     //
     // Create Gemini-compatible database files
     //
+        // TODO fix issue when PED file is missing
 
-    if (output_mode == "seqplorer") {
-        vcf2db_input = ANNOTATION.out.annotated_vcfs
-                       .combine(peds, by: 0)
+        ANNOTATION.out.annotated_vcfs
+            .dump(tag:'annotation_output', pretty:true)
+            .join(peds)
+            .set { vcf2db_input }
 
         VCF2DB(
             vcf2db_input
         )
+
+        VCF2DB.out.db
+            .dump(tag:'vcf2db_output', pretty:true)
+
     }
 
     //
@@ -355,10 +496,7 @@ workflow NF_CMGG_GERMLINE {
 
     ch_multiqc_files = Channel.empty()
 
-    ch_multiqc_files = ch_multiqc_files.mix(
-                                        ch_versions_yaml,
-                                        ch_reports.collect()
-                                        )
+    ch_multiqc_files = ch_multiqc_files.mix(ch_versions_yaml, ch_reports.collect())
 
     MULTIQC(
         ch_multiqc_files.collect(),
@@ -366,8 +504,6 @@ workflow NF_CMGG_GERMLINE {
         [],
         multiqc_logo
     )
-
-    // Test comment to be removed
 }
 
 
@@ -400,13 +536,14 @@ def parse_input(input_csv) {
         'columns': [
             'sample': [
                 'content': 'meta',
-                'meta_name': 'id,samplename',
+                'meta_name': 'id,sample',
                 'pattern': '',
             ],
             'family': [
                 'content': 'meta',
                 'meta_name': 'family',
-                'pattern': ''
+                'pattern': '',
+                'default': null,
             ],
             'cram': [
                 'content': 'file',
@@ -415,14 +552,17 @@ def parse_input(input_csv) {
             'crai': [
                 'content': 'file',
                 'pattern': '^.*\\.crai$',
+                'default': [],
             ],
             'bed': [
                 'content': 'file',
                 'pattern': '^.*\\.bed$',
+                'default': [],
             ],
             'ped': [
                 'content': 'file',
                 'pattern': '^.*\\.ped$',
+                'default': [],
             ]
         ],
         'required': ['sample','cram'],
@@ -486,11 +626,11 @@ def parse_input(input_csv) {
             }
 
             if(col.value['content'] == 'file'){
-                output.add(content ? file(content, checkIfExists:true) : [])
+                output.add(content ? file(content, checkIfExists:true) : col.value['default'] ?: [])
             }
-            else if(col.value['content'] == 'meta' && content != ''){
+            else if(col.value['content'] == 'meta'){
                 for(meta_name : col.value['meta_name'].split(",")){
-                    meta[meta_name] = content.replace(' ', '_')
+                    meta[meta_name] = content != '' ? content.replace(' ', '_') : col.value['default'] ?: null
                 }
             }
         }
@@ -503,8 +643,13 @@ def parse_input(input_csv) {
 
 def get_family_id_from_ped(ped_file){
 
+    // Check if there is a file
+    if (ped_file.isEmpty()){
+        return null
+    }
+
     // Read the PED file
-    def ped = file(ped_file).text
+    def ped = file(ped_file, checkIfExists: true).text
 
     // Perform a validity check on the PED file since vcf2db is picky and not capable of giving good error messages
     comment_count = 0

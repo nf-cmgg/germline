@@ -39,8 +39,10 @@ workflow ANNOTATION {
         vep_extra_files
     )
 
-    ch_reports          = ch_reports.mix(ENSEMBLVEP.out.report)
-    ch_versions         = ch_versions.mix(ENSEMBLVEP.out.versions)
+    ch_reports  = ch_reports.mix(ENSEMBLVEP.out.report)
+    ch_versions = ch_versions.mix(ENSEMBLVEP.out.versions)
+
+
 
     if (vcfanno) {
         VCFANNO(

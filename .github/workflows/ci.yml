@@ -13,13 +13,13 @@ env:
 
 jobs:
   test_all:
-    name: Run pipeline with test data (complete)
+    name: Run nf-test with ${{ matrix.test }}-${{ matrix.NXF_VER }}
     # Only run on push if this is the nf-core dev branch (merged PRs)
     if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'CenterForMedicalGeneticsGhent/nf-cmgg-germline') }}"
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        nxf_ver: ["21.10.3", ""]
+        NXF_VER: ["22.10.1", ""]
         test:
           - "default"
           - "fails"
@@ -27,6 +27,13 @@ jobs:
           - "seqplorer_vcfanno"
           - "seqr_full"
           - "seqr_no_genotyping"
+          # - "seqplorer/minimal"
+          # - "seqplorer/vcfanno"
+          # - "seqr/full"
+          # - "seqr/individuals"
+          # - "seqr/mixed_input"
+          # - "seqr/no_genotyping"
+          # - "seqr/ped_family"
     steps:
       - name: Free some space
         run: |
@@ -39,31 +46,19 @@ jobs:
       - name: Install Nextflow
         uses: nf-core/setup-nextflow@v1
         with:
-          version: "${{ matrix.nxf_ver }}"
+          version: "${{ matrix.NXF_VER }}"
 
       - name: Install nf-test
         run: |
-          sudo bash; mkdir /opt/nf-test; cd /opt/nf-test; wget https://github.com/askimed/nf-test/releases/download/v0.6.0/nf-test-0.6.0.tar.gz; tar xvfz nf-test-0.6.0.tar.gz; chmod +x nf-test;
-          echo "/opt/nf-test" >> $GITHUB_PATH;
+          wget -qO- https://code.askimed.com/install/nf-test | bash
+          sudo mv nf-test /usr/local/bin/
 
       - name: Run pipeline with test data
         run: |
-          nf-test test tests/${{ matrix.test }}.test
+          nf-test test tests/${{ matrix.test }}.test --junitxml=default.xml
 
-      - name: Output log on failure
-        if: failure()
-        run: |
-          sudo apt install bat > /dev/null
-          batcat --decorations=always --color=always .nf-test/tests/*/meta/std.{out,err}
-      - name: Upload logs on failure
-        if: failure()
-        uses: actions/upload-artifact@v2
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v3
+        if: always() # always run even if the previous step fails
         with:
-          name: nf-test-logs
-          path: |
-            .nf-test/tests/*/meta/nextflow.log
-            .nf-test/tests/*/meta/std.out
-            .nf-test/tests/*/meta/std.err
-            .nf-test/tests/*/meta/trace.csv
-            .nf-test/tests/*/work
-            .nf-test/*/output
+          report_paths: "default.xml"
