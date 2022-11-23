@@ -39,7 +39,7 @@ if (params.input) { ch_input = file(params.input, checkIfExists: true) } else { 
 // Check for dependencies between parameters
 //
 
-if((params.dbsnp || params.dbnsp_tbi) && !(params.dbsnp && params.dbsnp_tbi)){
+if((params.dbsnp || params.dbsnp_tbi) && !(params.dbsnp && params.dbsnp_tbi)){
     exit 1, "You only specified --dbsnp or --dbsnp_tbi. Please specify both arguments with the correct file inputs."
 }
 
@@ -80,7 +80,7 @@ multiqc_logo        = params.multiqc_logo   ? file(params.multiqc_logo, checkIfE
 //
 
 include { GERMLINE_VARIANT_CALLING } from '../subworkflows/local/germline_variant_calling'
-include { POST_PROCESS             } from '../subworkflows/local/postprocess'
+include { GENOTYPING               } from '../subworkflows/local/genotyping'
 include { VCF_QC                   } from '../subworkflows/local/vcf_qc'
 include { ANNOTATION               } from '../subworkflows/local/annotation'
 
@@ -127,8 +127,8 @@ workflow CMGGGERMLINE {
     fasta_fai          = params.fai                 ? Channel.fromPath(params.fai).collect()                : null
     dict               = params.dict                ? Channel.fromPath(params.dict).collect()               : null
     strtablefile       = params.strtablefile        ? Channel.fromPath(params.strtablefile).collect()       : null
-    dbnsp              = params.dbsnp               ? Channel.fromPath(params.dbsnp).collect()              : null
-    dbnsp_tbi          = params.dbsnp               ? Channel.fromPath(params.dbsnp_tbi).collect()          : null
+    dbsnp              = params.dbsnp               ? Channel.fromPath(params.dbsnp).collect()              : []
+    dbsnp_tbi          = params.dbsnp_tbi           ? Channel.fromPath(params.dbsnp_tbi).collect()          : []
 
     // Input values
     output_mode        = params.output_mode         ?: Channel.empty()
@@ -137,8 +137,6 @@ workflow CMGGGERMLINE {
     // Booleans
     always_use_cram    = params.always_use_cram
     use_dragstr_model  = params.use_dragstr_model
-    skip_genotyping    = params.skip_genotyping
-    use_bcftools_merge = params.use_bcftools_merge
 
     //
     // Importing the value pipeline parameters
@@ -412,20 +410,19 @@ workflow CMGGGERMLINE {
     // Joint-genotyping of the families
     //
 
-    POST_PROCESS(
+    GENOTYPING(
         postprocess_input,
+        beds.valid.mix(created_beds),
         peds,
         fasta,
         fasta_fai,
         dict,
         output_mode,
-        skip_genotyping,
-        use_bcftools_merge
     )
 
-    ch_versions = ch_versions.mix(POST_PROCESS.out.versions)
+    ch_versions = ch_versions.mix(GENOTYPING.out.versions)
 
-    POST_PROCESS.out.post_processed_vcfs
+    GENOTYPING.out.genotyped_vcfs
         .dump(tag:'postprocess_output', pretty:true)
         .tap { vcf_qc_input }
         .set { annotation_input }

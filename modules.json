@@ -20,16 +20,6 @@
                         "git_sha": "78cf39939fbe160a1410c44a6c5946f9a4c56e7e",
                         "installed_by": "modules"
                     },
-                    "bcftools/merge": {
-                        "branch": "master",
-                        "git_sha": "78cf39939fbe160a1410c44a6c5946f9a4c56e7e",
-                        "installed_by": "modules"
-                    },
-                    "bcftools/sort": {
-                        "branch": "master",
-                        "git_sha": "78cf39939fbe160a1410c44a6c5946f9a4c56e7e",
-                        "installed_by": "modules"
-                    },
                     "bcftools/stats": {
                         "branch": "master",
                         "git_sha": "78cf39939fbe160a1410c44a6c5946f9a4c56e7e",
@@ -61,11 +51,6 @@
                         "git_sha": "7578005a576f3ac1b0d4f10c037dde34cdedfb67",
                         "installed_by": "modules"
                     },
-                    "gatk4/combinegvcfs": {
-                        "branch": "master",
-                        "git_sha": "7578005a576f3ac1b0d4f10c037dde34cdedfb67",
-                        "installed_by": "modules"
-                    },
                     "gatk4/composestrtablefile": {
                         "branch": "master",
                         "git_sha": "7578005a576f3ac1b0d4f10c037dde34cdedfb67",
@@ -75,6 +60,10 @@
                         "branch": "master",
                         "git_sha": "7578005a576f3ac1b0d4f10c037dde34cdedfb67",
                         "installed_by": "modules"
+                    },
+                    "gatk4/genomicsdbimport": {
+                        "branch": "master",
+                        "git_sha": "7578005a576f3ac1b0d4f10c037dde34cdedfb67"
                     },
                     "gatk4/genotypegvcfs": {
                         "branch": "master",

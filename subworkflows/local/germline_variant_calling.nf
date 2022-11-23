@@ -7,9 +7,11 @@ include { SAMTOOLS_MERGE                                        } from '../../mo
 
 include { GATK4_HAPLOTYPECALLER as HAPLOTYPECALLER              } from '../../modules/nf-core/gatk4/haplotypecaller/main'
 include { GATK4_CALIBRATEDRAGSTRMODEL as CALIBRATEDRAGSTRMODEL  } from '../../modules/nf-core/gatk4/calibratedragstrmodel/main'
+include { GATK4_REBLOCKGVCF as REBLOCKGVCF                      } from '../../modules/nf-core/gatk4/reblockgvcf/main'
 include { BCFTOOLS_CONCAT                                       } from '../../modules/nf-core/bcftools/concat/main'
 include { BEDTOOLS_SPLIT                                        } from '../../modules/nf-core/bedtools/split/main'
 include { SAMTOOLS_INDEX                                        } from '../../modules/nf-core/samtools/index/main'
+include { TABIX_TABIX as TABIX_GVCFS                            } from '../../modules/nf-core/tabix/tabix/main'
 
 workflow GERMLINE_VARIANT_CALLING {
     take:
@@ -267,7 +269,7 @@ workflow GERMLINE_VARIANT_CALLING {
 
         BCFTOOLS_CONCAT.out.vcf
             .mix(concat_input.single)
-            .set { gvcfs }
+            .set { tabixgvcfs_input }
         ch_versions = ch_versions.mix(BCFTOOLS_CONCAT.out.versions)
     }
     else {
@@ -277,8 +279,47 @@ workflow GERMLINE_VARIANT_CALLING {
                     [ meta, vcf ]
                 }
             )
-            .set { gvcfs }
+            .set { tabixgvcfs_input }
     }
+
+    tabixgvcfs_input.dump(tag:'tabixgvcfs_input', pretty: true)
+
+    //
+    // Create indices for all the GVCF files
+    //
+
+    TABIX_GVCFS(
+        tabixgvcfs_input
+    )
+
+    tabixgvcfs_input
+        .join(TABIX_GVCFS.out.tbi)
+        .map(
+            { meta, gvcf, tbi ->
+                [ meta, gvcf, tbi, []]
+            }
+        )
+        .dump(tag:'reblockgvcf_input', pretty:true)
+        .set { reblockgvcf_input }
+
+    ch_versions = ch_versions.mix(TABIX_GVCFS.out.versions)
+
+    //
+    // Reblock the single sample GVCF files
+    //
+
+    REBLOCKGVCF(
+        reblockgvcf_input,
+        fasta,
+        fasta_fai,
+        dict,
+        [],
+        []
+    )
+
+    REBLOCKGVCF.out.vcf.set { gvcfs }
+
+    ch_versions = ch_versions.mix(REBLOCKGVCF.out.versions)
 
     emit:
     gvcfs
