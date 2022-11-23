@@ -80,7 +80,7 @@ multiqc_logo        = params.multiqc_logo   ? file(params.multiqc_logo, checkIfE
 //
 
 include { GERMLINE_VARIANT_CALLING } from '../subworkflows/local/germline_variant_calling'
-include { GENOTYPING               } from '../subworkflows/local/genotyping'
+include { JOINT_GENOTYPING         } from '../subworkflows/local/joint_genotyping'
 include { VCF_QC                   } from '../subworkflows/local/vcf_qc'
 include { ANNOTATION               } from '../subworkflows/local/annotation'
 
@@ -410,7 +410,7 @@ workflow CMGGGERMLINE {
     // Joint-genotyping of the families
     //
 
-    GENOTYPING(
+    JOINT_GENOTYPING(
         postprocess_input,
         beds.valid.mix(created_beds),
         peds,
@@ -420,9 +420,9 @@ workflow CMGGGERMLINE {
         output_mode,
     )
 
-    ch_versions = ch_versions.mix(GENOTYPING.out.versions)
+    ch_versions = ch_versions.mix(JOINT_GENOTYPING.out.versions)
 
-    GENOTYPING.out.genotyped_vcfs
+    JOINT_GENOTYPING.out.genotyped_vcfs
         .dump(tag:'postprocess_output', pretty:true)
         .tap { vcf_qc_input }
         .set { annotation_input }

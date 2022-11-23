@@ -17,7 +17,7 @@ include { BCFTOOLS_FILTER as FILTER_INDELS           } from '../../modules/nf-co
 include { BCFTOOLS_CONVERT                           } from '../../modules/nf-core/bcftools/convert/main'
 include { BCFTOOLS_VIEW                              } from '../../modules/nf-core/bcftools/view/main'
 
-workflow GENOTYPING {
+workflow JOINT_GENOTYPING {
     take:
         gvcfs               // channel: [mandatory] [ meta, gvcf, tbi ] => The fresh GVCFs called with HaplotypeCaller
         beds                // channel: [mandatory] [ meta, bed ] => The BED files of the individuals
