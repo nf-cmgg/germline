@@ -1,8 +1,8 @@
 //
-// This file holds several functions specific to the workflow/nf-cmgg-germline.nf in the nf-cmgg-germline pipeline
+// This file holds several functions specific to the workflow/cmgg-germline.nf in the nf-cmgg-germline pipeline
 //
 
-class WorkflowNfCmggGermline {
+class WorkflowCmggGermline {
 
     //
     // Check and validate parameters
