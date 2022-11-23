@@ -23,7 +23,9 @@ def checkPathParamList = [
     params.strtablefile,
     params.vep_merged_cache,
     params.vcfanno_toml,
-    params.vcfanno_resources
+    params.vcfanno_resources,
+    params.dbsnp,
+    params.dbsnp_tbi
 ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
@@ -36,6 +38,10 @@ if (params.input) { ch_input = file(params.input, checkIfExists: true) } else { 
 //
 // Check for dependencies between parameters
 //
+
+if((params.dbsnp || params.dbnsp_tbi) && !(params.dbsnp && params.dbsnp_tbi)){
+    exit 1, "You only specified --dbsnp or --dbsnp_tbi. Please specify both arguments with the correct file inputs."
+}
 
 if (params.output_mode == "seqplorer") {
     // Check if a genome is given
@@ -52,104 +58,6 @@ if (params.output_mode == "seqplorer") {
     if (params.vcfanno && (!params.vcfanno_toml || !params.vcfanno_resources)) {
         exit 1, "A TOML file and resource directory should be supplied when using vcfanno (use --vcfanno_toml and --vcfanno_resources)"
     }
-}
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    IMPORT THE INPUT PARAMETERS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-//
-// Importing the file pipeline parameters
-//
-
-// Input files
-fasta              = params.fasta               ? Channel.fromPath(params.fasta).collect()              : Channel.empty()
-fasta_fai          = params.fai                 ? Channel.fromPath(params.fai).collect()                : null
-dict               = params.dict                ? Channel.fromPath(params.dict).collect()               : null
-strtablefile       = params.strtablefile        ? Channel.fromPath(params.strtablefile).collect()       : null
-
-// Input values
-output_mode        = params.output_mode         ?: Channel.empty()
-scatter_count      = params.scatter_count       ?: Channel.empty()
-
-// Booleans
-always_use_cram    = params.always_use_cram
-use_dragstr_model  = params.use_dragstr_model
-skip_genotyping    = params.skip_genotyping
-use_bcftools_merge = params.use_bcftools_merge
-
-//
-// Importing the value pipeline parameters
-//
-
-genome             = params.genome              ?: Channel.empty()
-
-//
-// Importing the annotation parameters
-//
-
-vep_cache_version  = params.vep_cache_version   ?: Channel.empty()
-species            = params.species             ?: Channel.empty()
-
-vep_merged_cache   = params.vep_merged_cache    ? Channel.fromPath(params.vep_merged_cache).collect()   : []
-
-vcfanno            = params.vcfanno
-
-vcfanno_toml       = params.vcfanno_toml        ? Channel.fromPath(params.vcfanno_toml).collect()       : Channel.empty()
-vcfanno_res_inp    = params.vcfanno_resources   ? Channel.fromPath(params.vcfanno_resources).collect()  : Channel.empty()
-
-//
-// Check for the presence of EnsemblVEP plugins that use extra files
-//
-
-vep_extra_files = []
-
-// Check if all dbnsfp files are given
-if (params.dbnsfp && params.dbnsfp_tbi && params.vep_dbnsfp) {
-    vep_extra_files.add(file(params.dbnsfp, checkIfExists: true))
-    vep_extra_files.add(file(params.dbnsfp_tbi, checkIfExists: true))
-}
-else if (params.dbnsfp || params.dbnsfp_tbi || params.vep_dbnsfp) {
-    exit 1, "Please specify '--vep_dbsnf true', '--dbnsfp PATH/TO/DBNSFP/FILE' and '--dbnspf_tbi PATH/TO/DBNSFP/INDEX/FILE' to use the dbnsfp VEP plugin."
-}
-
-// Check if all spliceai files are given
-if (params.spliceai_snv && params.spliceai_snv_tbi && params.spliceai_indel && params.spliceai_indel_tbi && params.vep_spliceai) {
-    vep_extra_files.add(file(params.spliceai_snv, checkIfExists: true))
-    vep_extra_files.add(file(params.spliceai_snv_tbi, checkIfExists: true))
-    vep_extra_files.add(file(params.spliceai_indel, checkIfExists: true))
-    vep_extra_files.add(file(params.spliceai_indel_tbi, checkIfExists: true))
-}
-else if (params.spliceai_snv || params.spliceai_snv_tbi || params.spliceai_indel || params.spliceai_indel_tbi || params.vep_spliceai) {
-    exit 1, "Please specify '--vep_spliceai true', '--spliceai_snv PATH/TO/SPLICEAI/SNV/FILE', '--spliceai_snv_tbi PATH/TO/SPLICEAI/SNV/INDEX/FILE', '--spliceai_indel PATH/TO/SPLICEAI/INDEL/FILE' and '--spliceai_indel_tbi PATH/TO/SPLICEAI/INDEL/INDEX/FILE' to use the SpliceAI VEP plugin."
-}
-
-// Check if all mastermind files are given
-if (params.mastermind && params.mastermind_tbi && params.vep_mastermind) {
-    vep_extra_files.add(file(params.mastermind, checkIfExists: true))
-    vep_extra_files.add(file(params.mastermind_tbi, checkIfExists: true))
-}
-else if (params.mastermind || params.mastermind_tbi || params.vep_mastermind) {
-    exit 1, "Please specify '--vep_mastermind true', '--mastermind PATH/TO/MASTERMIND/FILE' and '--mastermind_tbi PATH/TO/MASTERMIND/INDEX/FILE' to use the mastermind VEP plugin."
-}
-
-// Check if all maxentscan files are given
-if (params.maxentscan && params.vep_maxentscan) {
-    vep_extra_files.add(file(params.maxentscan, checkIfExists: true))
-}
-else if (params.maxentscan || params.vep_maxentscan) {
-    exit 1, "Please specify '--vep_maxentscan true', '--maxentscan PATH/TO/MAXENTSCAN/' to use the MaxEntScan VEP plugin."
-}
-
-// Check if all EOG files are given
-if (params.eog && params.eog_tbi && params.vep_eog) {
-    vep_extra_files.add(file(params.eog, checkIfExists: true))
-    vep_extra_files.add(file(params.eog_tbi, checkIfExists: true))
-}
-else if (params.eog || params.eog_tbi || params.vep_eog) {
-    exit 1, "Please specify '--vep_eog true', '--eog PATH/TO/EOG/FILE' and '--eog_tbi PATH/TO/EOG/INDEX/FILE' to use the EOG custom VEP plugin."
 }
 
 /*
@@ -209,6 +117,100 @@ workflow CMGGGERMLINE {
 
     ch_versions = Channel.empty()
     ch_reports  = Channel.empty()
+
+    //
+    // Importing the file pipeline parameters
+    //
+
+    // Input files
+    fasta              = params.fasta               ? Channel.fromPath(params.fasta).collect()              : Channel.empty()
+    fasta_fai          = params.fai                 ? Channel.fromPath(params.fai).collect()                : null
+    dict               = params.dict                ? Channel.fromPath(params.dict).collect()               : null
+    strtablefile       = params.strtablefile        ? Channel.fromPath(params.strtablefile).collect()       : null
+    dbnsp              = params.dbsnp               ? Channel.fromPath(params.dbsnp).collect()              : null
+    dbnsp_tbi          = params.dbsnp               ? Channel.fromPath(params.dbsnp_tbi).collect()          : null
+
+    // Input values
+    output_mode        = params.output_mode         ?: Channel.empty()
+    scatter_count      = params.scatter_count       ?: Channel.empty()
+
+    // Booleans
+    always_use_cram    = params.always_use_cram
+    use_dragstr_model  = params.use_dragstr_model
+    skip_genotyping    = params.skip_genotyping
+    use_bcftools_merge = params.use_bcftools_merge
+
+    //
+    // Importing the value pipeline parameters
+    //
+
+    genome             = params.genome              ?: Channel.empty()
+
+    //
+    // Importing the annotation parameters
+    //
+
+    vep_cache_version  = params.vep_cache_version   ?: Channel.empty()
+    species            = params.species             ?: Channel.empty()
+
+    vep_merged_cache   = params.vep_merged_cache    ? Channel.fromPath(params.vep_merged_cache).collect()   : []
+
+    vcfanno            = params.vcfanno
+
+    vcfanno_toml       = params.vcfanno_toml        ? Channel.fromPath(params.vcfanno_toml).collect()       : Channel.empty()
+    vcfanno_res_inp    = params.vcfanno_resources   ? Channel.fromPath(params.vcfanno_resources).collect()  : Channel.empty()
+
+    //
+    // Check for the presence of EnsemblVEP plugins that use extra files
+    //
+
+    vep_extra_files = []
+
+    // Check if all dbnsfp files are given
+    if (params.dbnsfp && params.dbnsfp_tbi && params.vep_dbnsfp) {
+        vep_extra_files.add(file(params.dbnsfp, checkIfExists: true))
+        vep_extra_files.add(file(params.dbnsfp_tbi, checkIfExists: true))
+    }
+    else if (params.dbnsfp || params.dbnsfp_tbi || params.vep_dbnsfp) {
+        exit 1, "Please specify '--vep_dbsnf true', '--dbnsfp PATH/TO/DBNSFP/FILE' and '--dbnspf_tbi PATH/TO/DBNSFP/INDEX/FILE' to use the dbnsfp VEP plugin."
+    }
+
+    // Check if all spliceai files are given
+    if (params.spliceai_snv && params.spliceai_snv_tbi && params.spliceai_indel && params.spliceai_indel_tbi && params.vep_spliceai) {
+        vep_extra_files.add(file(params.spliceai_snv, checkIfExists: true))
+        vep_extra_files.add(file(params.spliceai_snv_tbi, checkIfExists: true))
+        vep_extra_files.add(file(params.spliceai_indel, checkIfExists: true))
+        vep_extra_files.add(file(params.spliceai_indel_tbi, checkIfExists: true))
+    }
+    else if (params.spliceai_snv || params.spliceai_snv_tbi || params.spliceai_indel || params.spliceai_indel_tbi || params.vep_spliceai) {
+        exit 1, "Please specify '--vep_spliceai true', '--spliceai_snv PATH/TO/SPLICEAI/SNV/FILE', '--spliceai_snv_tbi PATH/TO/SPLICEAI/SNV/INDEX/FILE', '--spliceai_indel PATH/TO/SPLICEAI/INDEL/FILE' and '--spliceai_indel_tbi PATH/TO/SPLICEAI/INDEL/INDEX/FILE' to use the SpliceAI VEP plugin."
+    }
+
+    // Check if all mastermind files are given
+    if (params.mastermind && params.mastermind_tbi && params.vep_mastermind) {
+        vep_extra_files.add(file(params.mastermind, checkIfExists: true))
+        vep_extra_files.add(file(params.mastermind_tbi, checkIfExists: true))
+    }
+    else if (params.mastermind || params.mastermind_tbi || params.vep_mastermind) {
+        exit 1, "Please specify '--vep_mastermind true', '--mastermind PATH/TO/MASTERMIND/FILE' and '--mastermind_tbi PATH/TO/MASTERMIND/INDEX/FILE' to use the mastermind VEP plugin."
+    }
+
+    // Check if all maxentscan files are given
+    if (params.maxentscan && params.vep_maxentscan) {
+        vep_extra_files.add(file(params.maxentscan, checkIfExists: true))
+    }
+    else if (params.maxentscan || params.vep_maxentscan) {
+        exit 1, "Please specify '--vep_maxentscan true', '--maxentscan PATH/TO/MAXENTSCAN/' to use the MaxEntScan VEP plugin."
+    }
+
+    // Check if all EOG files are given
+    if (params.eog && params.eog_tbi && params.vep_eog) {
+        vep_extra_files.add(file(params.eog, checkIfExists: true))
+        vep_extra_files.add(file(params.eog_tbi, checkIfExists: true))
+    }
+    else if (params.eog || params.eog_tbi || params.vep_eog) {
+        exit 1, "Please specify '--vep_eog true', '--eog PATH/TO/EOG/FILE' and '--eog_tbi PATH/TO/EOG/INDEX/FILE' to use the EOG custom VEP plugin."
+    }
 
     //
     // Create the optional input files if they are not supplied
@@ -395,7 +397,9 @@ workflow CMGGGERMLINE {
         strtablefile,
         scatter_count,
         use_dragstr_model,
-        always_use_cram
+        always_use_cram,
+        dbsnp,
+        dbsnp_tbi
     )
 
     ch_versions = ch_versions.mix(GERMLINE_VARIANT_CALLING.out.versions)

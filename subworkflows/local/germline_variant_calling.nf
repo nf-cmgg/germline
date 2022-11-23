@@ -22,6 +22,8 @@ workflow GERMLINE_VARIANT_CALLING {
         scatter_count     // value:   [mandatory] how many times the BED files need to be split before the variant calling
         use_dragstr_model // boolean: [mandatory] whether or not to use the dragstr models for variant calling
         always_use_cram   // boolean: [mandatory] whether or not to retain the bam after merging or convert back to cram
+        dbsnp             // channel: [optional] The VCF containing the dbsnp variants
+        dbsnp_tbi         // channel: [optional] The index of the dbsnp VCF
 
     main:
 
@@ -221,8 +223,8 @@ workflow GERMLINE_VARIANT_CALLING {
         fasta,
         fasta_fai,
         dict,
-        [],
-        []
+        dbsnp,
+        dbsnp_tbi
     )
 
     HAPLOTYPECALLER.out.vcf
