@@ -39,8 +39,8 @@ if (params.input) { ch_input = file(params.input, checkIfExists: true) } else { 
 // Check for dependencies between parameters
 //
 
-if((params.dbsnp || params.dbsnp_tbi) && !(params.dbsnp && params.dbsnp_tbi)){
-    exit 1, "You only specified --dbsnp or --dbsnp_tbi. Please specify both arguments with the correct file inputs."
+if(params.dbsnp_tbi && !params.dbsnp){
+    exit 1, "Please specify the dbsnp VCF with --dbsnp VCF"
 }
 
 if (params.annotate) {
@@ -99,6 +99,7 @@ include { GATK4_CREATESEQUENCEDICTIONARY as CREATESEQUENCEDICTIONARY } from '../
 include { GATK4_COMPOSESTRTABLEFILE as COMPOSESTRTABLEFILE           } from '../modules/nf-core/gatk4/composestrtablefile/main'
 include { GAWK as INDEX_TO_BED                                       } from '../modules/nf-core/gawk/main'
 include { UNTAR                                                      } from '../modules/nf-core/untar/main'
+include { TABIX_TABIX as TABIX_DBSNP                                 } from '../modules/nf-core/tabix/tabix/main'
 include { BCFTOOLS_FILTER as FILTER_SNPS                             } from '../modules/nf-core/bcftools/filter/main'
 include { BCFTOOLS_FILTER as FILTER_INDELS                           } from '../modules/nf-core/bcftools/filter/main'
 include { VCF2DB                                                     } from '../modules/nf-core/vcf2db/main'
@@ -129,8 +130,8 @@ workflow CMGGGERMLINE {
     fasta_fai          = params.fai                 ? Channel.fromPath(params.fai).collect()                : null
     dict               = params.dict                ? Channel.fromPath(params.dict).collect()               : null
     strtablefile       = params.strtablefile        ? Channel.fromPath(params.strtablefile).collect()       : null
-    dbsnp              = params.dbsnp               ? Channel.fromPath(params.dbsnp).collect()              : []
-    dbsnp_tbi          = params.dbsnp_tbi           ? Channel.fromPath(params.dbsnp_tbi).collect()          : []
+    dbsnp              = params.dbsnp               ? Channel.fromPath(params.dbsnp).collect()              : null
+    dbsnp_tbi          = params.dbsnp_tbi           ? Channel.fromPath(params.dbsnp_tbi).collect()          : null
 
     // Input values
     filter             = params.filter
@@ -279,6 +280,14 @@ workflow CMGGGERMLINE {
         vcfanno_resources.dump(tag:'vcfanno_resources', pretty:true)
     } else {
         vcfanno_resources = []
+    }
+
+    if (dbsnp && !dbsnp_tbi) {
+        TABIX_DBSNP(
+            [ [id:'dbsnp'], dbsnp ]
+        )
+
+        TABIX_DBSNP.out.tbi.set { dbsnp_tbi }
     }
 
     //
