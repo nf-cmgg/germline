@@ -1,0 +1,3 @@
+#fam-id         ind-id  pat-id  mat-id  sex     phen
+Proband_12345	normal	tumour	0	2	0
+Proband_12345	tumour	0	0	1	0

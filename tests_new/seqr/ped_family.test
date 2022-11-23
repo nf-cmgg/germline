@@ -1,0 +1,41 @@
+nextflow_pipeline {
+
+    name "The ped family Seqr mode test"
+    script "main.nf"
+    config "tests/seqr/seqr.config"
+
+    test("Success") {
+
+        config "tests/seqr/ped_family.config"
+
+        expect {
+            assertAll(
+                { assert workflow.success }
+                { assert snapshot( workflow ).match() }
+                {
+                    assert snapshot(
+                        path("${outputDir}/ready/Proband_12345/reports/Proband_12345.TsTv.count"),
+                        path("${outputDir}/ready/Proband_12345/reports/Proband_12345.bcftools_stats.txt"),
+                        path("${outputDir}/ready/Proband_12345/reports/Proband_12345.FILTER.summary")
+                    ).match()
+                    assert file("${outputDir}/ready/Proband_12345/reports/Proband_12345.TsTv.qual").exists()
+                }
+                {
+                    assert snapshot(
+                        path("${outputDir}/ready/Proband_12345/Proband_12345.vcf.gz").linesGzip[68]
+                    ).match()
+                    assert file("${outputDir}/ready/Proband_12345/Proband_12345.vcf.gz.tbi").exists()
+                }
+                { assert file("${outputDir}/multiqc_reports/multiqc_report.html").exists() }
+                {
+                    assert snapshot(
+                        path("${outputDir}/individuals/NA24385D2_NVQ_034/NA24385D2_NVQ_034.g.vcf.gz").linesGzip[53],
+                        path("${outputDir}/individuals/NA12878K12_NVQ_034/NA12878K12_NVQ_034.g.vcf.gz").linesGzip[53]
+                    ).match()
+                    assert file("${outputDir}/individuals/NA24385D2_NVQ_034/NA24385D2_NVQ_034.g.vcf.gz.tbi").exists()
+                    assert file("${outputDir}/individuals/NA12878K12_NVQ_034/NA12878K12_NVQ_034.g.vcf.gz.tbi").exists()
+                }
+            )
+        }
+    }
+}
