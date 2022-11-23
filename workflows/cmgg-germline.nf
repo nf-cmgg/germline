@@ -43,7 +43,7 @@ if((params.dbsnp || params.dbsnp_tbi) && !(params.dbsnp && params.dbsnp_tbi)){
     exit 1, "You only specified --dbsnp or --dbsnp_tbi. Please specify both arguments with the correct file inputs."
 }
 
-if (params.output_mode == "seqplorer") {
+if (params.annotate) {
     // Check if a genome is given
     if (!params.genome) { exit 1, "A genome should be supplied for seqplorer mode (use --genome)"}
 
@@ -99,6 +99,8 @@ include { GATK4_CREATESEQUENCEDICTIONARY as CREATESEQUENCEDICTIONARY } from '../
 include { GATK4_COMPOSESTRTABLEFILE as COMPOSESTRTABLEFILE           } from '../modules/nf-core/gatk4/composestrtablefile/main'
 include { GAWK as INDEX_TO_BED                                       } from '../modules/nf-core/gawk/main'
 include { UNTAR                                                      } from '../modules/nf-core/untar/main'
+include { BCFTOOLS_FILTER as FILTER_SNPS                             } from '../modules/nf-core/bcftools/filter/main'
+include { BCFTOOLS_FILTER as FILTER_INDELS                           } from '../modules/nf-core/bcftools/filter/main'
 include { VCF2DB                                                     } from '../modules/nf-core/vcf2db/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS                                } from '../modules/nf-core/custom/dumpsoftwareversions/main'
 include { MULTIQC                                                    } from '../modules/nf-core/multiqc/main'
@@ -131,8 +133,10 @@ workflow CMGGGERMLINE {
     dbsnp_tbi          = params.dbsnp_tbi           ? Channel.fromPath(params.dbsnp_tbi).collect()          : []
 
     // Input values
-    output_mode        = params.output_mode         ?: Channel.empty()
-    scatter_count      = params.scatter_count       ?: Channel.empty()
+    filter             = params.filter
+    annotate           = params.annotate
+    gemini             = params.gemini
+    scatter_count      = params.scatter_count
 
     // Booleans
     always_use_cram    = params.always_use_cram
@@ -142,7 +146,7 @@ workflow CMGGGERMLINE {
     // Importing the value pipeline parameters
     //
 
-    genome             = params.genome              ?: Channel.empty()
+    genome             = params.genome
 
     //
     // Importing the annotation parameters
@@ -253,7 +257,7 @@ workflow CMGGGERMLINE {
             .set { strtablefile }
     }
 
-    if (output_mode == "seqplorer" && vcfanno) {
+    if (annotate && vcfanno) {
         if (params.vcfanno_resources.endsWith(".tar.gz")) {
             UNTAR(
                 vcfanno_res_inp.map({dir -> [ [], dir ]})
@@ -403,36 +407,61 @@ workflow CMGGGERMLINE {
     ch_versions = ch_versions.mix(GERMLINE_VARIANT_CALLING.out.versions)
 
     GERMLINE_VARIANT_CALLING.out.gvcfs
+        .map({ meta, vcf, tbi -> [meta, vcf]})
         .dump(tag:'variantcalling_output', pretty:true)
-        .set { postprocess_input }
+        .set { variantcalling_output }
 
     //
     // Joint-genotyping of the families
     //
 
     JOINT_GENOTYPING(
-        postprocess_input,
+        variantcalling_output,
         beds.valid.mix(created_beds),
         peds,
         fasta,
         fasta_fai,
         dict,
-        output_mode,
     )
 
     ch_versions = ch_versions.mix(JOINT_GENOTYPING.out.versions)
 
     JOINT_GENOTYPING.out.genotyped_vcfs
-        .dump(tag:'postprocess_output', pretty:true)
+        .dump(tag:'joint_genotyping_output', pretty:true)
         .tap { vcf_qc_input }
-        .set { annotation_input }
+        .set { joint_genotyping_output }
+
+    //
+    // Filter the variants
+    //
+
+    if (filter) {
+        FILTER_SNPS(
+            joint_genotyping_output
+        )
+
+        FILTER_INDELS(
+            FILTER_SNPS.out.vcf
+        )
+
+        ch_versions = ch_versions.mix(FILTER_SNPS.out.versions)
+        ch_versions = ch_versions.mix(FILTER_INDELS.out.versions)
+
+        FILTER_INDELS.out.vcf.set { filter_output }
+
+    }
+    else {
+        joint_genotyping_output.set { filter_output }
+    }
+
+    filter_output.dump(tag:'filter_output', pretty: true)
 
     //
     // Quality control of the called variants
     //
 
     VCF_QC(
-        vcf_qc_input
+        filter_output
     )
 
     ch_versions = ch_versions.mix(VCF_QC.out.versions)
@@ -444,11 +473,11 @@ workflow CMGGGERMLINE {
     //
     // Annotation of the variants and creation of Gemini-compatible database files
     //
-    if (output_mode == "seqplorer") {
+    if (annotate) {
 
         // Perform the annotation
         ANNOTATION(
-            annotation_input,
+            filter_output,
             fasta,
             genome,
             species,
@@ -462,19 +491,29 @@ workflow CMGGGERMLINE {
         ch_versions = ch_versions.mix(ANNOTATION.out.versions)
         ch_reports  = ch_reports.mix(ANNOTATION.out.reports)
 
+        ANNOTATION.out.annotated_vcfs.set { annotation_output }
+    } else {
+
+        filter_output.set { annotation_output }
+    }
+
+    annotation_output.dump(tag:'annotation_output', pretty:true)
+
     //
     // Create Gemini-compatible database files
     //
-        // TODO fix issue when PED file is missing
 
-        ANNOTATION.out.annotated_vcfs
-            .dump(tag:'annotation_output', pretty:true)
+    if(gemini){
+
+        annotation_output
             .join(peds)
             .set { vcf2db_input }
 
         VCF2DB(
             vcf2db_input
         )
+
+        ch_versions = ch_versions.mix(VCF2DB.out.versions)
 
         VCF2DB.out.db
             .dump(tag:'vcf2db_output', pretty:true)

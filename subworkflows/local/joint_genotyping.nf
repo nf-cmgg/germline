@@ -8,14 +8,8 @@ include { MERGE_BEDS                                 } from '../../modules/local
 
 include { GATK4_GENOMICSDBIMPORT as GENOMICSDBIMPORT } from '../../modules/nf-core/gatk4/genomicsdbimport/main'
 include { GATK4_GENOTYPEGVCFS as GENOTYPE_GVCFS      } from '../../modules/nf-core/gatk4/genotypegvcfs/main'
-include { TABIX_TABIX as TABIX_COMBINED_GVCFS        } from '../../modules/nf-core/tabix/tabix/main'
-include { TABIX_TABIX as TABIX_POSTPROCESSED_VCFS    } from '../../modules/nf-core/tabix/tabix/main'
 include { TABIX_BGZIP as BGZIP_GENOTYPED_VCFS        } from '../../modules/nf-core/tabix/bgzip/main'
 include { TABIX_BGZIP as BGZIP_PED_VCFS              } from '../../modules/nf-core/tabix/bgzip/main'
-include { BCFTOOLS_FILTER as FILTER_SNPS             } from '../../modules/nf-core/bcftools/filter/main'
-include { BCFTOOLS_FILTER as FILTER_INDELS           } from '../../modules/nf-core/bcftools/filter/main'
-include { BCFTOOLS_CONVERT                           } from '../../modules/nf-core/bcftools/convert/main'
-include { BCFTOOLS_VIEW                              } from '../../modules/nf-core/bcftools/view/main'
 
 workflow JOINT_GENOTYPING {
     take:
@@ -25,7 +19,6 @@ workflow JOINT_GENOTYPING {
         fasta               // channel: [mandatory] [ fasta ] => fasta reference
         fasta_fai           // channel: [mandatory] [ fasta_fai ] => fasta reference index
         dict                // channel: [mandatory] [ dict ] => sequence dictionary
-        output_mode         // value:   [mandatory] whether or not to make the output seqplorer- or seqr-compatible
 
     main:
 
@@ -161,32 +154,11 @@ workflow JOINT_GENOTYPING {
     ped_vcfs.no_ped
         .mix(BGZIP_PED_VCFS.out.output)
         .dump(tag:'filter_input', pretty:true)
-        .set { filter_input }
+        .set { genotyped_vcfs }
 
     //
     // Filter the variants
     //
-
-    // TODO: Move filter steps
-
-    if (output_mode == "seqplorer") {
-        FILTER_SNPS(
-            filter_input
-        )
-
-        FILTER_INDELS(
-            FILTER_SNPS.out.vcf
-        )
-
-        ch_versions = ch_versions.mix(FILTER_SNPS.out.versions)
-        ch_versions = ch_versions.mix(FILTER_INDELS.out.versions)
-
-        FILTER_INDELS.out.vcf.set { genotyped_vcfs }
-
-    }
-    else {
-        filter_input.set { genotyped_vcfs }
-    }
 
     emit:
     genotyped_vcfs     // channel: [meta, vcf] => The output channel containing the post processed VCF
