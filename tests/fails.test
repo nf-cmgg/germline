@@ -22,7 +22,7 @@ nextflow_pipeline {
 
         when {
             params {
-                output_mode = "seqplorer"
+                annotate    = true
                 vcfanno     = true
             }
         }
@@ -38,7 +38,7 @@ nextflow_pipeline {
 
         when {
             params {
-                output_mode = "seqplorer"
+                annotate    = true
                 vep_dbnsfp  = true
             }
         }
@@ -54,7 +54,7 @@ nextflow_pipeline {
 
         when {
             params {
-                output_mode     = "seqplorer"
+                annotate        = true
                 vep_spliceai    = true
             }
         }
@@ -71,7 +71,7 @@ nextflow_pipeline {
 
         when {
             params {
-                output_mode     = "seqplorer"
+                annotate        = true
                 vep_mastermind  = true
             }
         }
@@ -88,8 +88,8 @@ nextflow_pipeline {
 
         when {
             params {
-                output_mode   = "seqplorer"
-                vep_eog       = true
+                annotate    = true
+                vep_eog     = true
             }
         }
 

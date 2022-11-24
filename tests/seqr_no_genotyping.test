@@ -7,7 +7,6 @@ nextflow_pipeline {
 
         when {
             params {
-                output_mode         = "seqr"
                 skip_genotyping     = true
                 use_bcftools_merge  = true
             }
