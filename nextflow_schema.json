@@ -10,7 +10,10 @@
             "type": "object",
             "fa_icon": "fas fa-terminal",
             "description": "Define where the pipeline should find input data and save output data.",
-            "required": ["input", "outdir"],
+            "required": [
+                "input",
+                "outdir"
+            ],
             "properties": {
                 "input": {
                     "type": "string",
@@ -137,18 +140,20 @@
                     "fa_icon": "fas fa-user-circle",
                     "pattern": "^[a-z_]*$"
                 },
-                "output_mode": {
-                    "type": "string",
-                    "default": "seqr",
-                    "enum": ["seqplorer", "seqr"],
-                    "description": "The filter mode for the VCF outputs (has to be either 'seqr' or 'seqplorer')",
-                    "fa_icon": "fas fa-question-circle"
-                },
                 "always_use_cram": {
                     "type": "boolean",
                     "description": "Whether or not the modules should always return a CRAM file instead of a BAM file",
                     "fa_icon": "fas fa-question-circle",
                     "default": true
+                },
+                "filter": {
+                    "type": "boolean"
+                },
+                "annotate": {
+                    "type": "boolean"
+                },
+                "gemini": {
+                    "type": "boolean"
                 }
             }
         },
@@ -163,15 +168,13 @@
                     "description": "Whether or not the DRAGSTR models should be used",
                     "fa_icon": "fas fa-question-circle"
                 },
-                "skip_genotyping": {
-                    "type": "boolean",
-                    "description": "Whether or not the genotyping should be skipped (does GVCF -> VCF conversion using bcftools view and convert instead)",
-                    "fa_icon": "fas fa-question-circle"
+                "dbsnp": {
+                    "type": "string",
+                    "default": null
                 },
-                "use_bcftools_merge": {
-                    "type": "boolean",
-                    "description": "Whether or not to use bcftools merge instead of CombineGVCFs",
-                    "fa_icon": "fas fa-question-circle"
+                "dbsnp_tbi": {
+                    "type": "string",
+                    "default": null
                 }
             }
         },
@@ -277,7 +280,14 @@
                     "description": "Method used to save pipeline results to output directory.",
                     "help_text": "The Nextflow `publishDir` option specifies which intermediate files should be saved to the output directory. This option tells the pipeline what method should be used to move these files. See [Nextflow docs](https://www.nextflow.io/docs/latest/process.html#publishdir) for details.",
                     "fa_icon": "fas fa-copy",
-                    "enum": ["symlink", "rellink", "link", "copy", "copyNoFollow", "move"],
+                    "enum": [
+                        "symlink",
+                        "rellink",
+                        "link",
+                        "copy",
+                        "copyNoFollow",
+                        "move"
+                    ],
                     "hidden": true
                 },
                 "email_on_fail": {
@@ -367,6 +377,14 @@
             "description": "Parameters to configure Ensembl VEP and VCFanno (only used when \"--output_mode seqplorer\" is used)",
             "default": "",
             "properties": {
+                "vep_merged": {
+                    "type": "boolean",
+                    "default": true
+                },
+                "vep_cache": {
+                    "type": "string",
+                    "default": null
+                },
                 "vep_dbnsfp": {
                     "type": "boolean",
                     "description": "[Seqplorer mode only] Use the dbNSFP plugin with Ensembl VEP. The '--dbnsfp' and '--dbnsfp_tbi' parameters need to be specified when using this plugin.",
@@ -396,13 +414,6 @@
                     "type": "boolean",
                     "description": "[Seqplorer mode only] Use the custom EOG annotation with Ensembl VEP, The '--eog and '--eog_tbi' parameters need to be specified when using this plugin.",
                     "fa_icon": "fas fa-question-circle"
-                },
-                "vep_merged_cache": {
-                    "type": "string",
-                    "default": "None",
-                    "format": "directory-path",
-                    "description": "[Seqplorer mode only] The path to the folder containing the merged cache",
-                    "fa_icon": "fas fa-folder"
                 },
                 "vep_version": {
                     "type": "string",

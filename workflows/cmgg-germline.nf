@@ -130,7 +130,7 @@ workflow CMGGGERMLINE {
     fasta_fai          = params.fai                 ? Channel.fromPath(params.fai).collect()                : null
     dict               = params.dict                ? Channel.fromPath(params.dict).collect()               : null
     strtablefile       = params.strtablefile        ? Channel.fromPath(params.strtablefile).collect()       : null
-    dbsnp              = params.dbsnp               ? Channel.fromPath(params.dbsnp).collect()              : null
+    dbsnp              = params.dbsnp               ? Channel.fromPath(params.dbsnp).collect()              : []
     dbsnp_tbi          = params.dbsnp_tbi           ? Channel.fromPath(params.dbsnp_tbi).collect()          : null
 
     // Input values
