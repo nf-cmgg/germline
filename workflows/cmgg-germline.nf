@@ -21,7 +21,7 @@ def checkPathParamList = [
     params.fai,
     params.dict,
     params.strtablefile,
-    params.vep_merged_cache,
+    params.vep_cache,
     params.vcfanno_toml,
     params.vcfanno_resources,
     params.dbsnp,
@@ -156,7 +156,7 @@ workflow CMGGGERMLINE {
     vep_cache_version  = params.vep_cache_version   ?: Channel.empty()
     species            = params.species             ?: Channel.empty()
 
-    vep_merged_cache   = params.vep_merged_cache    ? Channel.fromPath(params.vep_merged_cache).collect()   : []
+    vep_cache          = params.vep_cache           ? Channel.fromPath(params.vep_cache).collect()          : []
 
     vcfanno            = params.vcfanno
 
@@ -491,7 +491,7 @@ workflow CMGGGERMLINE {
             genome,
             species,
             vep_cache_version,
-            vep_merged_cache,
+            vep_cache,
             vep_extra_files,
             vcfanno,
             vcfanno_toml,

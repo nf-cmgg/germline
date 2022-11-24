@@ -13,7 +13,7 @@ workflow ANNOTATION {
         genome               // value:   [mandatory] Which genome was used to align the samples to
         species              // value:   [mandatory] Which species the samples are from
         vep_cache_version    // value:   [mandatory] which version of VEP to use
-        vep_merged_cache     // channel: [optional]  [ vep_merged_cache ] => The VEP cache to use
+        vep_cache            // channel: [optional]  [ vep_cache ] => The VEP cache to use
         vep_extra_files      // channel: [optional]  [ file_1, file_2, file_3, ... ] => All files necessary for using the desired plugins
         vcfanno              // boolean: [mandatory] Whether or not annotation using VCFanno should be performed too
         vcfanno_toml         // channel: [mandatory if vcfanno == true] [ toml_config_file ] => The TOML config file for VCFanno
@@ -34,7 +34,7 @@ workflow ANNOTATION {
         genome,
         species,
         vep_cache_version,
-        vep_merged_cache,
+        vep_cache,
         fasta,
         vep_extra_files
     )
