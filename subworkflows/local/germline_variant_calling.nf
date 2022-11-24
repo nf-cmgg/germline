@@ -167,9 +167,10 @@ workflow GERMLINE_VARIANT_CALLING {
 
     if (use_dragstr_model) {
         ready_crams
+            .join(merged_beds)
             .map(
-                { meta, cram, crai ->
-                    [meta, cram, crai, []]
+                { meta, cram, crai, bed ->
+                    [meta, cram, crai, bed]
                 }
             )
             .set { calibratedragstrmodel_input }
