@@ -175,7 +175,7 @@ workflow CMGGGERMLINE {
         vep_extra_files.add(file(params.dbnsfp_tbi, checkIfExists: true))
     }
     else if (params.dbnsfp || params.dbnsfp_tbi || params.vep_dbnsfp) {
-        exit 1, "Please specify '--vep_dbsnf true', '--dbnsfp PATH/TO/DBNSFP/FILE' and '--dbnspf_tbi PATH/TO/DBNSFP/INDEX/FILE' to use the dbnsfp VEP plugin."
+        exit 1, "Please specify '--vep_dbsnfp true', '--dbnsfp PATH/TO/DBNSFP/FILE' and '--dbnspf_tbi PATH/TO/DBNSFP/INDEX/FILE' to use the dbnsfp VEP plugin."
     }
 
     // Check if all spliceai files are given
