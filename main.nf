@@ -18,6 +18,7 @@ nextflow.enable.dsl = 2
 params.fasta                = WorkflowMain.getGenomeAttribute(params, 'fasta')
 params.fai                  = WorkflowMain.getGenomeAttribute(params, 'fai')
 params.dict                 = WorkflowMain.getGenomeAttribute(params, 'dict')
+params.strtablefile         = WorkflowMain.getGenomeAttribute(params, 'strtablefile')
 params.dbsnp                = WorkflowMain.getGenomeAttribute(params, 'dbsnp')
 params.dbsnp_tbi            = WorkflowMain.getGenomeAttribute(params, 'dbsnp_tbi')
 params.vep_cache            = WorkflowMain.getGenomeAttribute(params, 'vep_cache')
