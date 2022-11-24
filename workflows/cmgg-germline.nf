@@ -131,7 +131,7 @@ workflow CMGGGERMLINE {
     dict               = params.dict                ? Channel.fromPath(params.dict).collect()               : null
     strtablefile       = params.strtablefile        ? Channel.fromPath(params.strtablefile).collect()       : null
     dbsnp              = params.dbsnp               ? Channel.fromPath(params.dbsnp).collect()              : []
-    dbsnp_tbi          = params.dbsnp_tbi           ? Channel.fromPath(params.dbsnp_tbi).collect()          : null
+    dbsnp_tbi          = params.dbsnp_tbi           ? Channel.fromPath(params.dbsnp_tbi).collect()          : []
 
     // Input values
     filter             = params.filter
@@ -166,6 +166,14 @@ workflow CMGGGERMLINE {
     //
     // Check for the presence of EnsemblVEP plugins that use extra files
     //
+
+    if (dbsnp != [] && dbsnp_tbi == []) {
+        TABIX_DBSNP(
+            [ [id:'dbsnp'], dbsnp ]
+        )
+
+        TABIX_DBSNP.out.tbi.set { dbsnp_tbi }
+    }
 
     vep_extra_files = []
 
@@ -280,14 +288,6 @@ workflow CMGGGERMLINE {
         vcfanno_resources.dump(tag:'vcfanno_resources', pretty:true)
     } else {
         vcfanno_resources = []
-    }
-
-    if (dbsnp && !dbsnp_tbi) {
-        TABIX_DBSNP(
-            [ [id:'dbsnp'], dbsnp ]
-        )
-
-        TABIX_DBSNP.out.tbi.set { dbsnp_tbi }
     }
 
     //
@@ -416,7 +416,6 @@ workflow CMGGGERMLINE {
     ch_versions = ch_versions.mix(GERMLINE_VARIANT_CALLING.out.versions)
 
     GERMLINE_VARIANT_CALLING.out.gvcfs
-        .map({ meta, vcf, tbi -> [meta, vcf]})
         .dump(tag:'variantcalling_output', pretty:true)
         .set { variantcalling_output }
 
