@@ -6,12 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## v1.1.0dev
 
 - Added genomic data support
-  - Added a sorting step before family merging
   - Added automatic BED file generation from the FASTA index
 - Some minor improvements which could speed up pipeline execution
 - Added better support for the family and PED input
 - Refactored the code for better readability
 - Added `dump` statements for better debugging
+- Updated the minimum Nextflow version to 22.10.1
+- Rewrote the post-processing subworkflow to a joint-genotyping workflow with GenomicsDBImport
+- Added `dbsnp` input to Haplotypecaller
 
 ## v1.0.1 - Happy Hollebeke - [Oct 7 2022]
 
