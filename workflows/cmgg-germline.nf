@@ -175,52 +175,54 @@ workflow CMGGGERMLINE {
         TABIX_DBSNP.out.tbi.set { dbsnp_tbi }
     }
 
-    vep_extra_files = []
+    if(annotate){
+        vep_extra_files = []
 
-    // Check if all dbnsfp files are given
-    if (params.dbnsfp && params.dbnsfp_tbi && params.vep_dbnsfp) {
-        vep_extra_files.add(file(params.dbnsfp, checkIfExists: true))
-        vep_extra_files.add(file(params.dbnsfp_tbi, checkIfExists: true))
-    }
-    else if (params.dbnsfp || params.dbnsfp_tbi || params.vep_dbnsfp) {
-        exit 1, "Please specify '--vep_dbsnfp true', '--dbnsfp PATH/TO/DBNSFP/FILE' and '--dbnspf_tbi PATH/TO/DBNSFP/INDEX/FILE' to use the dbnsfp VEP plugin."
-    }
+        // Check if all dbnsfp files are given
+        if (params.dbnsfp && params.dbnsfp_tbi && params.vep_dbnsfp) {
+            vep_extra_files.add(file(params.dbnsfp, checkIfExists: true))
+            vep_extra_files.add(file(params.dbnsfp_tbi, checkIfExists: true))
+        }
+        else if (params.vep_dbnsfp) {
+            exit 1, "Please specify '--vep_dbsnfp true', '--dbnsfp PATH/TO/DBNSFP/FILE' and '--dbnspf_tbi PATH/TO/DBNSFP/INDEX/FILE' to use the dbnsfp VEP plugin."
+        }
 
-    // Check if all spliceai files are given
-    if (params.spliceai_snv && params.spliceai_snv_tbi && params.spliceai_indel && params.spliceai_indel_tbi && params.vep_spliceai) {
-        vep_extra_files.add(file(params.spliceai_snv, checkIfExists: true))
-        vep_extra_files.add(file(params.spliceai_snv_tbi, checkIfExists: true))
-        vep_extra_files.add(file(params.spliceai_indel, checkIfExists: true))
-        vep_extra_files.add(file(params.spliceai_indel_tbi, checkIfExists: true))
-    }
-    else if (params.spliceai_snv || params.spliceai_snv_tbi || params.spliceai_indel || params.spliceai_indel_tbi || params.vep_spliceai) {
-        exit 1, "Please specify '--vep_spliceai true', '--spliceai_snv PATH/TO/SPLICEAI/SNV/FILE', '--spliceai_snv_tbi PATH/TO/SPLICEAI/SNV/INDEX/FILE', '--spliceai_indel PATH/TO/SPLICEAI/INDEL/FILE' and '--spliceai_indel_tbi PATH/TO/SPLICEAI/INDEL/INDEX/FILE' to use the SpliceAI VEP plugin."
-    }
+        // Check if all spliceai files are given
+        if (params.spliceai_snv && params.spliceai_snv_tbi && params.spliceai_indel && params.spliceai_indel_tbi && params.vep_spliceai) {
+            vep_extra_files.add(file(params.spliceai_snv, checkIfExists: true))
+            vep_extra_files.add(file(params.spliceai_snv_tbi, checkIfExists: true))
+            vep_extra_files.add(file(params.spliceai_indel, checkIfExists: true))
+            vep_extra_files.add(file(params.spliceai_indel_tbi, checkIfExists: true))
+        }
+        else if (params.vep_spliceai) {
+            exit 1, "Please specify '--vep_spliceai true', '--spliceai_snv PATH/TO/SPLICEAI/SNV/FILE', '--spliceai_snv_tbi PATH/TO/SPLICEAI/SNV/INDEX/FILE', '--spliceai_indel PATH/TO/SPLICEAI/INDEL/FILE' and '--spliceai_indel_tbi PATH/TO/SPLICEAI/INDEL/INDEX/FILE' to use the SpliceAI VEP plugin."
+        }
 
-    // Check if all mastermind files are given
-    if (params.mastermind && params.mastermind_tbi && params.vep_mastermind) {
-        vep_extra_files.add(file(params.mastermind, checkIfExists: true))
-        vep_extra_files.add(file(params.mastermind_tbi, checkIfExists: true))
-    }
-    else if (params.mastermind || params.mastermind_tbi || params.vep_mastermind) {
-        exit 1, "Please specify '--vep_mastermind true', '--mastermind PATH/TO/MASTERMIND/FILE' and '--mastermind_tbi PATH/TO/MASTERMIND/INDEX/FILE' to use the mastermind VEP plugin."
-    }
+        // Check if all mastermind files are given
+        if (params.mastermind && params.mastermind_tbi && params.vep_mastermind) {
+            vep_extra_files.add(file(params.mastermind, checkIfExists: true))
+            vep_extra_files.add(file(params.mastermind_tbi, checkIfExists: true))
+        }
+        else if (params.vep_mastermind) {
+            exit 1, "Please specify '--vep_mastermind true', '--mastermind PATH/TO/MASTERMIND/FILE' and '--mastermind_tbi PATH/TO/MASTERMIND/INDEX/FILE' to use the mastermind VEP plugin."
+        }
 
-    // Check if all maxentscan files are given
-    if (params.maxentscan && params.vep_maxentscan) {
-        vep_extra_files.add(file(params.maxentscan, checkIfExists: true))
-    }
-    else if (params.maxentscan || params.vep_maxentscan) {
-        exit 1, "Please specify '--vep_maxentscan true', '--maxentscan PATH/TO/MAXENTSCAN/' to use the MaxEntScan VEP plugin."
-    }
+        // Check if all maxentscan files are given
+        if (params.maxentscan && params.vep_maxentscan) {
+            vep_extra_files.add(file(params.maxentscan, checkIfExists: true))
+        }
+        else if (params.vep_maxentscan) {
+            exit 1, "Please specify '--vep_maxentscan true', '--maxentscan PATH/TO/MAXENTSCAN/' to use the MaxEntScan VEP plugin."
+        }
 
-    // Check if all EOG files are given
-    if (params.eog && params.eog_tbi && params.vep_eog) {
-        vep_extra_files.add(file(params.eog, checkIfExists: true))
-        vep_extra_files.add(file(params.eog_tbi, checkIfExists: true))
-    }
-    else if (params.eog || params.eog_tbi || params.vep_eog) {
-        exit 1, "Please specify '--vep_eog true', '--eog PATH/TO/EOG/FILE' and '--eog_tbi PATH/TO/EOG/INDEX/FILE' to use the EOG custom VEP plugin."
+        // Check if all EOG files are given
+        if (params.eog && params.eog_tbi && params.vep_eog) {
+            vep_extra_files.add(file(params.eog, checkIfExists: true))
+            vep_extra_files.add(file(params.eog_tbi, checkIfExists: true))
+        }
+        else if (params.vep_eog) {
+            exit 1, "Please specify '--vep_eog true', '--eog PATH/TO/EOG/FILE' and '--eog_tbi PATH/TO/EOG/INDEX/FILE' to use the EOG custom VEP plugin."
+        }
     }
 
     //
