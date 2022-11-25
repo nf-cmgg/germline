@@ -35,3 +35,5 @@ nextflow_pipeline {
         }
     }
 }
+
+// This will fail now due to a faulty cache in the VEP container

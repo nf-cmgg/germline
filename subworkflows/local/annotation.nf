@@ -45,27 +45,29 @@ workflow ANNOTATION {
 
 
     if (vcfanno) {
+
+        // TODO an index would probably have to be made
         VCFANNO(
             ENSEMBLVEP.out.vcf.map({ meta, vcf -> [ meta, vcf, [] ] }),
             vcfanno_toml,
             vcfanno_resources
         )
 
-        ch_annotated_vcfs = VCFANNO.out.vcf
+        BGZIP_ANNOTATED_VCFS(
+            VCFANNO.out.vcf
+        )
+
+        ch_annotated_vcfs = BGZIP_ANNOTATED_VCFS.out.output
         ch_versions       = ch_versions.mix(VCFANNO.out.versions)
     }
     else {
         ch_annotated_vcfs = ENSEMBLVEP.out.vcf
     }
 
-    BGZIP_ANNOTATED_VCFS(
-        ch_annotated_vcfs
-    )
-
     ch_versions = ch_versions.mix(BGZIP_ANNOTATED_VCFS.out.versions)
 
     emit:
-    annotated_vcfs  = BGZIP_ANNOTATED_VCFS.out.output
+    annotated_vcfs  = ch_annotated_vcfs
     reports         = ch_reports
     versions        = ch_versions
 }
