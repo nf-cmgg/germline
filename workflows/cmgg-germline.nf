@@ -284,7 +284,7 @@ workflow CMGGGERMLINE {
                 .collect()
                 .set { vcfanno_resources }
         } else {
-            Channel.value(vcfanno_res_inp)
+            vcfanno_res_inp
                 .set { vcfanno_resources }
         }
         vcfanno_resources.dump(tag:'vcfanno_resources', pretty:true)

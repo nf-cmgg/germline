@@ -46,10 +46,20 @@ workflow ANNOTATION {
 
     if (vcfanno) {
 
+        ENSEMBLVEP.out.vcf
+            .map(
+                { meta, vcf ->
+                    [ meta, vcf, [] ]
+                }
+            )
+            .dump(tag:'vcfanno_input', pretty:true)
+            .set { vcfanno_input }
+
         // TODO an index would probably have to be made
         VCFANNO(
-            ENSEMBLVEP.out.vcf.map({ meta, vcf -> [ meta, vcf, [] ] }),
+            vcfanno_input,
             vcfanno_toml,
+            [],
             vcfanno_resources
         )
 
