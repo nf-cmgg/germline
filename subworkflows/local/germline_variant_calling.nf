@@ -124,8 +124,7 @@ workflow GERMLINE_VARIANT_CALLING {
 
     if (scatter_count > 1) {
         BEDTOOLS_SPLIT(
-            merged_beds,
-            scatter_count
+            merged_beds
         )
 
         ch_versions = ch_versions.mix(BEDTOOLS_SPLIT.out.versions)

@@ -10,6 +10,8 @@ include { GATK4_GENOMICSDBIMPORT as GENOMICSDBIMPORT } from '../../modules/nf-co
 include { GATK4_GENOTYPEGVCFS as GENOTYPE_GVCFS      } from '../../modules/nf-core/gatk4/genotypegvcfs/main'
 include { TABIX_BGZIP as BGZIP_GENOTYPED_VCFS        } from '../../modules/nf-core/tabix/bgzip/main'
 include { TABIX_BGZIP as BGZIP_PED_VCFS              } from '../../modules/nf-core/tabix/bgzip/main'
+include { BEDTOOLS_SPLIT                             } from '../../modules/nf-core/bedtools/split/main'
+include { BCFTOOLS_CONCAT                            } from '../../modules/nf-core/bcftools/concat/main'
 
 workflow JOINT_GENOTYPING {
     take:
@@ -78,11 +80,27 @@ workflow JOINT_GENOTYPING {
 
     ch_versions = ch_versions.mix(GENOMICSDBIMPORT.out.versions)
 
-    // TODO: Add BED splitting
+    //
+    // Split the merged BED file
+    //
+
+    BEDTOOLS_SPLIT(
+        MERGE_BEDS.out.bed
+    )
+
     GENOMICSDBIMPORT.out.genomicsdb
+        .combine(BEDTOOLS_SPLIT.out.beds, by:0)
         .map(
-            { meta, db ->
-                [ meta, db, [], [], [] ]
+            { meta, vcf, beds ->
+                meta = meta + [bed_count: beds instanceof Path ? 1 : beds.size()]
+                [ meta, vcf, beds ]
+            }
+        )
+        .transpose()
+        .map(
+            { meta, db, bed ->
+                meta = meta + [id: bed.baseName]
+                [ meta, db, [], bed, [] ]
             }
         )
         .dump(tag:'genotypegvcfs_input', pretty:true)
@@ -101,14 +119,38 @@ workflow JOINT_GENOTYPING {
         []
     )
 
-    GENOTYPE_GVCFS.out.vcf.set { converted_vcfs }
+    GENOTYPE_GVCFS.out.vcf
+        .join(GENOTYPE_GVCFS.out.tbi)
+        .map(
+            { meta, vcf, tbi ->
+                meta = meta + [id: meta.family]
+                [ groupKey(meta, meta.bed_count), vcf, tbi ]
+            }
+        )
+        .groupTuple()
+        .dump(tag:'genotyped_vcfs', pretty:true)
+        .set { genotyped_vcfs }
     ch_versions = ch_versions.mix(GENOTYPE_GVCFS.out.versions)
+
+    BCFTOOLS_CONCAT(
+        genotyped_vcfs
+    )
+
+    BCFTOOLS_CONCAT.out.vcf
+        .map(
+            { meta, vcf ->
+                meta.remove("bed_count")
+                [ meta, vcf ]
+            }
+        )
+        .dump(tag:'concat_vcfs', pretty:true)
+        .set { concat_vcfs }
 
     //
     // Add pedigree information
     //
 
-    converted_vcfs
+    concat_vcfs
         .join(peds)
         .branch(
             { meta, vcf, ped ->
