@@ -25,7 +25,8 @@ def checkPathParamList = [
     params.vcfanno_toml,
     params.vcfanno_resources,
     params.dbsnp,
-    params.dbsnp_tbi
+    params.dbsnp_tbi,
+    params.somalier_sites
 ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
@@ -83,6 +84,7 @@ include { GERMLINE_VARIANT_CALLING } from '../subworkflows/local/germline_varian
 include { JOINT_GENOTYPING         } from '../subworkflows/local/joint_genotyping'
 include { VCF_QC                   } from '../subworkflows/local/vcf_qc'
 include { ANNOTATION               } from '../subworkflows/local/annotation'
+include { SOMALIER                 } from '../subworkflows/local/somalier'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -132,6 +134,7 @@ workflow CMGGGERMLINE {
     strtablefile       = params.strtablefile        ? Channel.fromPath(params.strtablefile).collect()       : null
     dbsnp              = params.dbsnp               ? Channel.fromPath(params.dbsnp).collect()              : []
     dbsnp_tbi          = params.dbsnp_tbi           ? Channel.fromPath(params.dbsnp_tbi).collect()          : []
+    somalier_sites     = params.somalier_sites      ? Channel.fromPath(params.somalier_sites).collect()     : []
 
     // Input values
     filter             = params.filter
@@ -327,16 +330,14 @@ workflow CMGGGERMLINE {
         , by:0)
         .multiMap(
             { family, family_count, meta, cram, crai, bed, ped ->
-                ped_family_id = meta.family
-
                 new_meta_ped = [:]
                 new_meta = meta.clone()
 
-                new_meta_ped.id           = meta.family ?: ped_family_id ?: meta.sample
-                new_meta_ped.family       = meta.family ?: ped_family_id
+                new_meta_ped.id           = meta.family ?: meta.sample
+                new_meta_ped.family       = meta.family ?: meta.sample
                 new_meta_ped.family_count = family_count
 
-                new_meta.family           = meta.family ?: ped_family_id
+                new_meta.family           = meta.family ?: meta.sample
                 new_meta.family_count     = family_count
 
                 beds: [new_meta, bed]
@@ -467,6 +468,21 @@ workflow CMGGGERMLINE {
     filter_output.dump(tag:'filter_output', pretty: true)
 
     //
+    // Somalier
+    //
+
+    SOMALIER(
+        filter_output,
+        fasta,
+        fasta_fai,
+        somalier_sites,
+        peds
+    )
+
+    SOMALIER.out.generated_peds
+        .set { generated_peds }
+
+    //
     // Quality control of the called variants
     //
 
@@ -516,7 +532,7 @@ workflow CMGGGERMLINE {
     if(gemini){
 
         annotation_output
-            .join(peds)
+            .join(generated_peds)
             .set { vcf2db_input }
 
         VCF2DB(

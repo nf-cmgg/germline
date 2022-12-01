@@ -55,7 +55,6 @@ workflow ANNOTATION {
             .dump(tag:'vcfanno_input', pretty:true)
             .set { vcfanno_input }
 
-        // TODO an index would probably have to be made
         VCFANNO(
             vcfanno_input,
             vcfanno_toml,

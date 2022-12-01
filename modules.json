@@ -98,6 +98,14 @@
                         "git_sha": "cf5b9c30a2adacc581793afb79fae5f5b50bed01",
                         "installed_by": "modules"
                     },
+                    "somalier/extract": {
+                        "branch": "master",
+                        "git_sha": "c04f08392f34fe300627e1fad5e4066c2c7e30be"
+                    },
+                    "somalier/relate": {
+                        "branch": "master",
+                        "git_sha": "c04f08392f34fe300627e1fad5e4066c2c7e30be"
+                    },
                     "tabix/bgzip": {
                         "branch": "master",
                         "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
