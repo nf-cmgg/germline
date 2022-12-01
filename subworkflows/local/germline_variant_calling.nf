@@ -9,9 +9,10 @@ include { GATK4_HAPLOTYPECALLER as HAPLOTYPECALLER              } from '../../mo
 include { GATK4_CALIBRATEDRAGSTRMODEL as CALIBRATEDRAGSTRMODEL  } from '../../modules/nf-core/gatk4/calibratedragstrmodel/main'
 include { GATK4_REBLOCKGVCF as REBLOCKGVCF                      } from '../../modules/nf-core/gatk4/reblockgvcf/main'
 include { BCFTOOLS_CONCAT                                       } from '../../modules/nf-core/bcftools/concat/main'
-include { BEDTOOLS_SPLIT                                        } from '../../modules/nf-core/bedtools/split/main'
 include { SAMTOOLS_INDEX                                        } from '../../modules/nf-core/samtools/index/main'
 include { TABIX_TABIX as TABIX_GVCFS                            } from '../../modules/nf-core/tabix/tabix/main'
+
+include { BED_SCATTER_BEDTOOLS                                  } from '../../subworkflows/nf-core/bed_scatter_bedtools/main'
 
 workflow GERMLINE_VARIANT_CALLING {
     take:
@@ -115,6 +116,11 @@ workflow GERMLINE_VARIANT_CALLING {
 
     MERGE_BEDS.out.bed
         .mix(bed_branch.single)
+        .map(
+            { meta, bed ->
+                [ meta, bed, scatter_count ]
+            }
+        )
         .dump(tag:'merged_beds', pretty:true)
         .set { merged_beds }
 
@@ -123,36 +129,20 @@ workflow GERMLINE_VARIANT_CALLING {
     //
 
     if (scatter_count > 1) {
-        BEDTOOLS_SPLIT(
+        BED_SCATTER_BEDTOOLS(
             merged_beds
         )
 
-        ch_versions = ch_versions.mix(BEDTOOLS_SPLIT.out.versions)
+        ch_versions = ch_versions.mix(BED_SCATTER_BEDTOOLS.out.versions)
 
-        BEDTOOLS_SPLIT.out.beds
-            .map(
-                { meta, beds ->
-                    new_meta = meta.clone()
-                    new_meta.bed_count = beds instanceof Path ? 1 : beds.size()
-                    [ new_meta, beds ]
-                }
-            )
-            .transpose()
-            .map(
-                { meta, bed ->
-                    new_meta = meta.clone()
-                    new_meta.remove("bed_count")
-                    [ new_meta, meta.bed_count, bed ]
-                }
-            )
+        BED_SCATTER_BEDTOOLS.out.scattered_beds
             .set { split_beds }
     }
     else {
         merged_beds
         .map(
-            { meta, bed ->
-                bed_count = bed ? 1 : 0
-                [ meta, bed_count, bed ]
+            { meta, bed, bed_count ->
+                [ meta, bed, 1 ]
             }
         )
         .set { split_beds }
@@ -168,7 +158,7 @@ workflow GERMLINE_VARIANT_CALLING {
         ready_crams
             .join(merged_beds)
             .map(
-                { meta, cram, crai, bed ->
+                { meta, cram, crai, bed, bed_count ->
                     [meta, cram, crai, bed]
                 }
             )
@@ -203,7 +193,7 @@ workflow GERMLINE_VARIANT_CALLING {
 
     cram_models
         .map(
-            { meta, cram, crai, bed_count, bed=[], dragstr_model=[] ->
+            { meta, cram, crai, bed, bed_count, dragstr_model=[] ->
                 new_meta = meta.clone()
 
                 // If either no scatter is done, i.e. one interval (1), then don't rename samples

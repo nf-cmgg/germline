@@ -32,7 +32,11 @@
                     },
                     "bedtools/split": {
                         "branch": "master",
-                        "git_sha": "87d0d9003b0236a044428d66b6fcce0e73606039"
+                        "git_sha": "87d0d9003b0236a044428d66b6fcce0e73606039",
+                        "installed_by": [
+                            "modules",
+                            "bed_scatter_bedtools"
+                        ]
                     },
                     "custom/dumpsoftwareversions": {
                         "branch": "master",
@@ -61,7 +65,10 @@
                     },
                     "gatk4/genomicsdbimport": {
                         "branch": "master",
-                        "git_sha": "7578005a576f3ac1b0d4f10c037dde34cdedfb67"
+                        "git_sha": "7578005a576f3ac1b0d4f10c037dde34cdedfb67",
+                        "installed_by": [
+                            "modules"
+                        ]
                     },
                     "gatk4/genotypegvcfs": {
                         "branch": "master",
@@ -100,11 +107,17 @@
                     },
                     "somalier/extract": {
                         "branch": "master",
-                        "git_sha": "c04f08392f34fe300627e1fad5e4066c2c7e30be"
+                        "git_sha": "c04f08392f34fe300627e1fad5e4066c2c7e30be",
+                        "installed_by": [
+                            "modules"
+                        ]
                     },
                     "somalier/relate": {
                         "branch": "master",
-                        "git_sha": "c04f08392f34fe300627e1fad5e4066c2c7e30be"
+                        "git_sha": "c04f08392f34fe300627e1fad5e4066c2c7e30be",
+                        "installed_by": [
+                            "modules"
+                        ]
                     },
                     "tabix/bgzip": {
                         "branch": "master",
@@ -144,7 +157,15 @@
                 }
             },
             "subworkflows": {
-                "nf-core": {}
+                "nf-core": {
+                    "bed_scatter_bedtools": {
+                        "branch": "master",
+                        "git_sha": "b72b5be98313e43dd04658c3e03166fbcb2f6865",
+                        "installed_by": [
+                            "subworkflows"
+                        ]
+                    }
+                }
             }
         }
     }

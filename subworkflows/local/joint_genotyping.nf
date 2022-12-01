@@ -10,8 +10,9 @@ include { GATK4_GENOMICSDBIMPORT as GENOMICSDBIMPORT } from '../../modules/nf-co
 include { GATK4_GENOTYPEGVCFS as GENOTYPE_GVCFS      } from '../../modules/nf-core/gatk4/genotypegvcfs/main'
 include { TABIX_BGZIP as BGZIP_GENOTYPED_VCFS        } from '../../modules/nf-core/tabix/bgzip/main'
 include { TABIX_BGZIP as BGZIP_PED_VCFS              } from '../../modules/nf-core/tabix/bgzip/main'
-include { BEDTOOLS_SPLIT                             } from '../../modules/nf-core/bedtools/split/main'
 include { BCFTOOLS_CONCAT                            } from '../../modules/nf-core/bcftools/concat/main'
+
+include { BED_SCATTER_BEDTOOLS                       } from '../../subworkflows/nf-core/bed_scatter_bedtools/main'
 
 workflow JOINT_GENOTYPING {
     take:
@@ -84,15 +85,26 @@ workflow JOINT_GENOTYPING {
     // Split the merged BED file
     //
 
-    BEDTOOLS_SPLIT(
-        MERGE_BEDS.out.bed
+    MERGE_BEDS.out.bed
+        .map(
+            { meta, bed ->
+                [ meta, bed, params.scatter_count]
+            }
+        )
+        .dump(tag:'scatter_input', pretty:true)
+        .set { scatter_input }
+
+    BED_SCATTER_BEDTOOLS(
+        scatter_input
     )
 
+    ch_versions = ch_versions.mix(BED_SCATTER_BEDTOOLS.out.versions)
+
     GENOMICSDBIMPORT.out.genomicsdb
-        .combine(BEDTOOLS_SPLIT.out.beds, by:0)
+        .combine(BED_SCATTER_BEDTOOLS.out.scattered_beds, by:0)
         .map(
-            { meta, vcf, beds ->
-                meta = meta + [bed_count: beds instanceof Path ? 1 : beds.size()]
+            { meta, vcf, beds, bed_count ->
+                meta = meta + [bed_count: bed_count]
                 [ meta, vcf, beds ]
             }
         )
@@ -105,6 +117,8 @@ workflow JOINT_GENOTYPING {
         )
         .dump(tag:'genotypegvcfs_input', pretty:true)
         .set { genotypegvcfs_input }
+
+    ch_versions = ch_versions.mix(GENOMICSDBIMPORT.out.versions)
 
     //
     // Genotype the combined GVCFs
@@ -119,6 +133,8 @@ workflow JOINT_GENOTYPING {
         []
     )
 
+    ch_versions = ch_versions.mix(GENOTYPE_GVCFS.out.versions)
+
     GENOTYPE_GVCFS.out.vcf
         .join(GENOTYPE_GVCFS.out.tbi)
         .map(
@@ -130,11 +146,12 @@ workflow JOINT_GENOTYPING {
         .groupTuple()
         .dump(tag:'genotyped_vcfs', pretty:true)
         .set { genotyped_vcfs }
-    ch_versions = ch_versions.mix(GENOTYPE_GVCFS.out.versions)
 
     BCFTOOLS_CONCAT(
         genotyped_vcfs
     )
+
+    ch_versions = ch_versions.mix(BCFTOOLS_CONCAT.out.versions)
 
     BCFTOOLS_CONCAT.out.vcf
         .map(
