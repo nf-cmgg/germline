@@ -23,9 +23,9 @@ jobs:
         test:
           - "default"
           - "fails"
-          - "annotate"
-          - "filter"
-          - "gemini"
+          - "annotate_test"
+          - "filter_test"
+          - "gemini_test"
           - "full"
     steps:
       - name: Free some space

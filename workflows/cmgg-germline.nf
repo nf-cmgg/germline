@@ -57,7 +57,7 @@ if (params.annotate) {
 
     // Check if all vcfanno files are supplied when vcfanno should be used
     if (params.vcfanno && (!params.vcfanno_config || !params.vcfanno_resources)) {
-        exit 1, "A TOML file and resource directory should be supplied when using vcfanno (use --vcfanno_config and --vcfanno_resources)"
+        exit 1, "A TOML file and resource files should be supplied when using vcfanno (use --vcfanno_config and --vcfanno_resources)"
     }
 }
 

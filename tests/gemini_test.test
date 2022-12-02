@@ -1,13 +1,13 @@
 nextflow_pipeline {
 
-    name "The bare minimum seqplorer mode tests"
+    name "Gemini tests"
     script "main.nf"
 
     test("Success") {
 
         when {
             params {
-                filter = true
+                gemini   = true
             }
         }
 
@@ -18,6 +18,7 @@ nextflow_pipeline {
             assert file("${outputDir}/ready/Proband_12345/reports/Proband_12345.TsTv.qual").exists()
             assert file("${outputDir}/ready/Proband_12345/reports/Proband_12345.FILTER.summary").exists()
             assert file("${outputDir}/ready/Proband_12345/Proband_12345.vcf.gz").exists()
+            assert file("${outputDir}/ready/Proband_12345/Proband_12345.db").exists()
             assert file("${outputDir}/individuals/NA24385D2_NVQ_034/NA24385D2_NVQ_034.g.vcf.gz").exists()
             assert file("${outputDir}/individuals/NA24385D2_NVQ_034/NA24385D2_NVQ_034.g.vcf.gz.tbi").exists()
             assert file("${outputDir}/individuals/NA12878K12_NVQ_034/NA12878K12_NVQ_034.g.vcf.gz").exists()

@@ -3,7 +3,7 @@ nextflow_pipeline {
     name "Tests of the pipeline with all optional parameters on default"
     script "main.nf"
 
-    test("Default") {
+    test("Success") {
 
         then {
             assert workflow.success

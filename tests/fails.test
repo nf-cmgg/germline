@@ -44,7 +44,7 @@ nextflow_pipeline {
 
         then {
             assert workflow.failed
-            assert workflow.stdout.contains("A TOML file and resource directory should be supplied when using vcfanno (use --vcfanno_config and --vcfanno_resources)")
+            assert workflow.stdout.contains("A TOML file and resource files should be supplied when using vcfanno (use --vcfanno_config and --vcfanno_resources)")
         }
 
     }
