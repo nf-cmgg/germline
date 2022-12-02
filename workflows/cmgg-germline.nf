@@ -505,6 +505,7 @@ workflow CMGGGERMLINE {
         ANNOTATION(
             filter_output,
             fasta,
+            fasta_fai,
             genome,
             species,
             vep_cache_version,
