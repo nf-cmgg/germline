@@ -22,8 +22,8 @@ def checkPathParamList = [
     params.dict,
     params.strtablefile,
     params.vep_cache,
-    params.vcfanno_toml,
-    params.vcfanno_resources,
+    params.vcfanno_config,
+    params.vcfanno_lua,
     params.dbsnp,
     params.dbsnp_tbi,
     params.somalier_sites
@@ -56,8 +56,8 @@ if (params.annotate) {
     if (!params.species) { exit 1, "A species should be supplied for seqplorer mode (use --species)"}
 
     // Check if all vcfanno files are supplied when vcfanno should be used
-    if (params.vcfanno && (!params.vcfanno_toml || !params.vcfanno_resources)) {
-        exit 1, "A TOML file and resource directory should be supplied when using vcfanno (use --vcfanno_toml and --vcfanno_resources)"
+    if (params.vcfanno && (!params.vcfanno_config || !params.vcfanno_resources)) {
+        exit 1, "A TOML file and resource directory should be supplied when using vcfanno (use --vcfanno_config and --vcfanno_resources)"
     }
 }
 
@@ -100,7 +100,6 @@ include { SAMTOOLS_FAIDX as FAIDX                                    } from '../
 include { GATK4_CREATESEQUENCEDICTIONARY as CREATESEQUENCEDICTIONARY } from '../modules/nf-core/gatk4/createsequencedictionary/main'
 include { GATK4_COMPOSESTRTABLEFILE as COMPOSESTRTABLEFILE           } from '../modules/nf-core/gatk4/composestrtablefile/main'
 include { GAWK as INDEX_TO_BED                                       } from '../modules/nf-core/gawk/main'
-include { UNTAR                                                      } from '../modules/nf-core/untar/main'
 include { TABIX_TABIX as TABIX_DBSNP                                 } from '../modules/nf-core/tabix/tabix/main'
 include { BCFTOOLS_FILTER as FILTER_SNPS                             } from '../modules/nf-core/bcftools/filter/main'
 include { BCFTOOLS_FILTER as FILTER_INDELS                           } from '../modules/nf-core/bcftools/filter/main'
@@ -159,12 +158,13 @@ workflow CMGGGERMLINE {
     vep_cache_version  = params.vep_cache_version   ?: Channel.empty()
     species            = params.species             ?: Channel.empty()
 
-    vep_cache          = params.vep_cache           ? Channel.fromPath(params.vep_cache).collect()          : []
+    vep_cache          = params.vep_cache           ? Channel.fromPath(params.vep_cache).collect()      : []
 
     vcfanno            = params.vcfanno
 
-    vcfanno_toml       = params.vcfanno_toml        ? Channel.fromPath(params.vcfanno_toml).collect()       : Channel.empty()
-    vcfanno_res_inp    = params.vcfanno_resources   ? Channel.fromPath(params.vcfanno_resources).collect()  : Channel.empty()
+    vcfanno_config     = params.vcfanno_config      ? Channel.fromPath(params.vcfanno_config).collect() : []
+    vcfanno_lua        = params.vcfanno_lue         ? Channel.fromPath(params.vcfanno_lua).collect()    : []
+    vcfanno_resources  = params.vcfanno_resources   ? Channel.of(params.vcfanno_resources.split(",")).map({ file(it, checkIfExists:true) }).collect()   : []
 
     //
     // Check for the presence of EnsemblVEP plugins that use extra files
@@ -269,30 +269,6 @@ workflow CMGGGERMLINE {
             .collect()
             .dump(tag:'strtablefile', pretty:true)
             .set { strtablefile }
-    }
-
-    if (annotate && vcfanno) {
-        if (params.vcfanno_resources.endsWith(".tar.gz")) {
-            UNTAR(
-                vcfanno_res_inp.map({dir -> [ [], dir ]})
-            )
-            ch_versions = ch_versions.mix(UNTAR.out.versions)
-
-            UNTAR.out.untar
-                .map(
-                    { meta, dir ->
-                        dir
-                    }
-                )
-                .collect()
-                .set { vcfanno_resources }
-        } else {
-            vcfanno_res_inp
-                .set { vcfanno_resources }
-        }
-        vcfanno_resources.dump(tag:'vcfanno_resources', pretty:true)
-    } else {
-        vcfanno_resources = []
     }
 
     //
@@ -512,7 +488,8 @@ workflow CMGGGERMLINE {
             vep_cache,
             vep_extra_files,
             vcfanno,
-            vcfanno_toml,
+            vcfanno_config,
+            vcfanno_lua,
             vcfanno_resources
         )
         ch_versions = ch_versions.mix(ANNOTATION.out.versions)

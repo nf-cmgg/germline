@@ -10,7 +10,10 @@
             "type": "object",
             "fa_icon": "fas fa-terminal",
             "description": "Define where the pipeline should find input data and save output data.",
-            "required": ["input", "outdir"],
+            "required": [
+                "input",
+                "outdir"
+            ],
             "properties": {
                 "input": {
                     "type": "string",
@@ -94,6 +97,12 @@
                     "description": "Directory base for CMGG reference store",
                     "fa_icon": "fas fa-download"
                 },
+                "cmgg_config_base": {
+                    "type": "string",
+                    "default": "/conf/",
+                    "description": "The base directory for the local config files",
+                    "fa_icon": "fas fa-folder"
+                },
                 "genomes_ignore": {
                     "type": "boolean",
                     "hidden": true,
@@ -171,12 +180,20 @@
                 "dbsnp": {
                     "type": "string",
                     "default": "None",
-                    "description": "The DBSNP VCF file"
+                    "description": "The DBSNP VCF file",
+                    "fa_icon": "far fa-file-alt"
                 },
                 "dbsnp_tbi": {
                     "type": "string",
                     "default": "None",
-                    "description": "The index of the DBSNP VCF file"
+                    "description": "The index of the DBSNP VCF file",
+                    "fa_icon": "far fa-file-alt"
+                },
+                "somalier_sites": {
+                    "type": "string",
+                    "default": "https://github.com/brentp/somalier/files/3412456/sites.hg38.vcf.gz",
+                    "fa_icon": "far fa-file-alt",
+                    "description": "A VCF file with sites for Somalier to use"
                 }
             }
         },
@@ -282,7 +299,14 @@
                     "description": "Method used to save pipeline results to output directory.",
                     "help_text": "The Nextflow `publishDir` option specifies which intermediate files should be saved to the output directory. This option tells the pipeline what method should be used to move these files. See [Nextflow docs](https://www.nextflow.io/docs/latest/process.html#publishdir) for details.",
                     "fa_icon": "fas fa-copy",
-                    "enum": ["symlink", "rellink", "link", "copy", "copyNoFollow", "move"],
+                    "enum": [
+                        "symlink",
+                        "rellink",
+                        "link",
+                        "copy",
+                        "copyNoFollow",
+                        "move"
+                    ],
                     "hidden": true
                 },
                 "email_on_fail": {
@@ -494,19 +518,22 @@
                 },
                 "vcfanno": {
                     "type": "boolean",
-                    "description": "[Annotate mode only] Whether or not an extra annotation step should be performed with VCFanno"
+                    "description": "[Annotate & VCFanno mode only] Whether or not an extra annotation step should be performed with VCFanno"
                 },
-                "vcfanno_toml": {
+                "vcfanno_config": {
                     "type": "string",
                     "default": "None",
-                    "format": "file-path",
-                    "description": "[Annotate mode only] The TOML file containing the configuration for VCFanno"
+                    "description": "[Annotate & VCFanno mode only] The path to the VCFanno config TOML"
+                },
+                "vcfanno_lua": {
+                    "type": "string",
+                    "default": null
                 },
                 "vcfanno_resources": {
                     "type": "string",
                     "default": "None",
                     "format": "directory-path",
-                    "description": "[Annotate mode only] The folder containing the reference annotation resources specified in the configuration TOML"
+                    "description": "[Annotate & VCFanno mode only] A comma-seperated list of resource files for VCFanno, please also supply their indices using this parameter"
                 }
             }
         }

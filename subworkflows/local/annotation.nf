@@ -19,7 +19,8 @@ workflow ANNOTATION {
         vep_cache            // channel: [optional]  [ vep_cache ] => The VEP cache to use
         vep_extra_files      // channel: [optional]  [ file_1, file_2, file_3, ... ] => All files necessary for using the desired plugins
         vcfanno              // boolean: [mandatory] Whether or not annotation using VCFanno should be performed too
-        vcfanno_toml         // channel: [mandatory if vcfanno == true] [ toml_config_file ] => The TOML config file for VCFanno
+        vcfanno_config       // channel: [mandatory if vcfanno == true] [ toml_config_file ] => The TOML config file for VCFanno
+        vcfanno_lua          // channel: [optional  if vcfanno == true] [ lua_file ] => A VCFanno Lua file
         vcfanno_resources    // channel: [mandatory if vcfanno == true] [ resource_dir ] => The directory containing the reference files for VCFanno
 
     main:
@@ -131,8 +132,8 @@ workflow ANNOTATION {
 
         VCFANNO(
             vcfanno_input,
-            vcfanno_toml,
-            [],
+            vcfanno_config,
+            vcfanno_lua,
             vcfanno_resources
         )
 
