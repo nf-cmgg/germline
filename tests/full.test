@@ -1,0 +1,37 @@
+nextflow_pipeline {
+
+    name "The seqplorer mode tests with VCFanno"
+    script "main.nf"
+
+    test("Success") {
+
+        when {
+            params {
+                filter   = true
+                annotate = true
+                gemini   = true
+
+                vcfanno           = true
+                vcfanno_toml      = "https://github.com/nf-core/test-datasets/raw/modules/data/genomics/homo_sapiens/genome/vcf/vcfanno/vcfanno.toml"
+                vcfanno_resources = "https://github.com/brentp/vcfanno/raw/master/example/exac.vcf.gz,https://github.com/brentp/vcfanno/raw/master/example/exac.vcf.gz.tbi"
+
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert file("${outputDir}/ready/Proband_12345/reports/Proband_12345.TsTv.count").exists()
+            assert file("${outputDir}/ready/Proband_12345/reports/Proband_12345.bcftools_stats.txt").exists()
+            assert file("${outputDir}/ready/Proband_12345/reports/Proband_12345.TsTv.qual").exists()
+            assert file("${outputDir}/ready/Proband_12345/reports/Proband_12345.FILTER.summary").exists()
+            assert file("${outputDir}/ready/Proband_12345/Proband_12345.ann.vcf.gz").exists()
+            assert file("${outputDir}/ready/Proband_12345/Proband_12345.vcf.gz").exists()
+            assert file("${outputDir}/ready/Proband_12345/Proband_12345.db").exists()
+            assert file("${outputDir}/individuals/NA24385D2_NVQ_034/NA24385D2_NVQ_034.g.vcf.gz").exists()
+            assert file("${outputDir}/individuals/NA24385D2_NVQ_034/NA24385D2_NVQ_034.g.vcf.gz.tbi").exists()
+            assert file("${outputDir}/individuals/NA12878K12_NVQ_034/NA12878K12_NVQ_034.g.vcf.gz").exists()
+            assert file("${outputDir}/individuals/NA12878K12_NVQ_034/NA12878K12_NVQ_034.g.vcf.gz.tbi").exists()
+            assert file("${outputDir}/multiqc_reports/multiqc_report.html").exists()
+        }
+    }
+}

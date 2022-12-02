@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rewrote the post-processing subworkflow to a joint-genotyping workflow with GenomicsDBImport
 - Added `dbsnp` input to Haplotypecaller
 - Added `somalier` as a new subworkflow
+- Improved `VCFanno`
 
 ## v1.0.1 - Happy Hollebeke - [Oct 7 2022]
 

@@ -23,17 +23,10 @@ jobs:
         test:
           - "default"
           - "fails"
-          - "seqplorer_min"
-          - "seqplorer_vcfanno"
-          - "seqr_full"
-          - "seqr_no_genotyping"
-          # - "seqplorer/minimal"
-          # - "seqplorer/vcfanno"
-          # - "seqr/full"
-          # - "seqr/individuals"
-          # - "seqr/mixed_input"
-          # - "seqr/no_genotyping"
-          # - "seqr/ped_family"
+          - "annotate"
+          - "filter"
+          - "gemini"
+          - "full"
     steps:
       - name: Free some space
         run: |

@@ -163,7 +163,7 @@ workflow CMGGGERMLINE {
     vcfanno            = params.vcfanno
 
     vcfanno_config     = params.vcfanno_config      ? Channel.fromPath(params.vcfanno_config).collect() : []
-    vcfanno_lua        = params.vcfanno_lue         ? Channel.fromPath(params.vcfanno_lua).collect()    : []
+    vcfanno_lua        = params.vcfanno_lua         ? Channel.fromPath(params.vcfanno_lua).collect()    : []
     vcfanno_resources  = params.vcfanno_resources   ? Channel.of(params.vcfanno_resources.split(",")).map({ file(it, checkIfExists:true) }).collect()   : []
 
     //

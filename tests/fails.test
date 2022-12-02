@@ -3,7 +3,7 @@ nextflow_pipeline {
     name "Tests of the pipeline with failing options"
     script "main.nf"
 
-    test("Missing required parameter") {
+    test("Missing fasta") {
 
         when {
             params {
@@ -13,12 +13,27 @@ nextflow_pipeline {
 
         then {
             assert workflow.failed
-            assert workflow.stdout.contains("* Missing required parameter: --fasta")
+            assert workflow.stdout.contains("Genome fasta file not specified with e.g. '--fasta genome.fa' or via a detectable config file.")
         }
 
     }
 
-    test("Seqplorer mode VCFanno - No required inputs") {
+    test("Missing required input") {
+
+        when {
+            params {
+                scatter_count = null
+            }
+        }
+
+        then {
+            assert workflow.failed
+            assert workflow.stdout.contains("* Missing required parameter: --scatter_count")
+        }
+
+    }
+
+    test("VCFanno - No required inputs") {
 
         when {
             params {
@@ -29,12 +44,12 @@ nextflow_pipeline {
 
         then {
             assert workflow.failed
-            assert workflow.stdout.contains("A TOML file and resource directory should be supplied when using vcfanno (use --vcfanno_toml and --vcfanno_resources)")
+            assert workflow.stdout.contains("A TOML file and resource directory should be supplied when using vcfanno (use --vcfanno_config and --vcfanno_resources)")
         }
 
     }
 
-    test("Seqplorer mode DBNSFP - No required inputs") {
+    test("DBNSFP - No required inputs") {
 
         when {
             params {
@@ -45,12 +60,12 @@ nextflow_pipeline {
 
         then {
             assert workflow.failed
-            assert workflow.stdout.contains("Please specify '--vep_dbsnf true', '--dbnsfp PATH/TO/DBNSFP/FILE' and '--dbnspf_tbi PATH/TO/DBNSFP/INDEX/FILE' to use the dbnsfp VEP plugin.")
+            assert workflow.stdout.contains("Please specify '--vep_dbsnfp true', '--dbnsfp PATH/TO/DBNSFP/FILE' and '--dbnspf_tbi PATH/TO/DBNSFP/INDEX/FILE' to use the dbnsfp VEP plugin.")
         }
 
     }
 
-    test("Seqplorer mode SpliceAI - No required inputs") {
+    test("SpliceAI - No required inputs") {
 
         when {
             params {
@@ -67,7 +82,7 @@ nextflow_pipeline {
     }
 
 
-    test("Seqplorer mode MasterMind - No required inputs") {
+    test("MasterMind - No required inputs") {
 
         when {
             params {
@@ -84,7 +99,7 @@ nextflow_pipeline {
     }
 
 
-    test("Seqplorer mode EOG - No required inputs") {
+    test("EOG - No required inputs") {
 
         when {
             params {

@@ -53,7 +53,7 @@
             "properties": {
                 "genome": {
                     "type": "string",
-                    "default": "hg38",
+                    "default": "GRCh38",
                     "description": "Reference genome build"
                 },
                 "fasta": {
@@ -63,8 +63,7 @@
                     "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
                     "description": "Path to FASTA genome file.",
                     "help_text": "This parameter is *mandatory* if `--genome` is not specified. The path to the reference genome fasta.",
-                    "fa_icon": "far fa-file-code",
-                    "hidden": true
+                    "fa_icon": "far fa-file-code"
                 },
                 "fai": {
                     "type": "string",
@@ -73,22 +72,19 @@
                     "pattern": "^\\S+\\.fai$",
                     "description": "Path to FASTA genome index file.",
                     "help_text": "This parameter is *mandatory* if `--genome` is not specified.",
-                    "fa_icon": "far fa-file-code",
-                    "hidden": true
+                    "fa_icon": "far fa-file-code"
                 },
                 "dict": {
                     "type": "string",
                     "pattern": "^\\S+\\.dict$",
                     "description": "The sequence dictionary of the FASTA reference",
-                    "fa_icon": "far fa-file-code",
-                    "hidden": true
+                    "fa_icon": "far fa-file-code"
                 },
                 "strtablefile": {
                     "type": "string",
                     "description": "The STR table file generated from the FASTA reference",
                     "fa_icon": "fas fa-folder",
-                    "pattern": "^\\S+\\.zip$",
-                    "hidden": true
+                    "pattern": "^\\S+\\.zip$"
                 },
                 "genomes_base": {
                     "type": "string",
@@ -101,7 +97,8 @@
                     "type": "string",
                     "default": "/conf/",
                     "description": "The base directory for the local config files",
-                    "fa_icon": "fas fa-folder"
+                    "fa_icon": "fas fa-folder",
+                    "hidden": true
                 },
                 "genomes_ignore": {
                     "type": "boolean",
@@ -164,7 +161,10 @@
                     "type": "boolean",
                     "description": "Whether the samples should be converted to a gemini database"
                 }
-            }
+            },
+            "required": [
+                "scatter_count"
+            ]
         },
         "module_specific_parameters": {
             "title": "Module specific parameters",
@@ -527,7 +527,7 @@
                 },
                 "vcfanno_lua": {
                     "type": "string",
-                    "default": null
+                    "default": "None"
                 },
                 "vcfanno_resources": {
                     "type": "string",
