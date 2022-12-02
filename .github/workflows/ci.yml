@@ -19,7 +19,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        NXF_VER: ["22.10.1", ""]
+        NXF_VER:
+          - "22.10.1"
+          - "latest-everything"
         test:
           - "default"
           - "fails"
