@@ -13,6 +13,7 @@ include { TABIX_BGZIP as BGZIP_PED_VCFS              } from '../../modules/nf-co
 include { BCFTOOLS_CONCAT                            } from '../../modules/nf-core/bcftools/concat/main'
 
 include { BED_SCATTER_BEDTOOLS                       } from '../../subworkflows/nf-core/bed_scatter_bedtools/main'
+include { VCF_GATHER_BCFTOOLS                        } from '../../subworkflows/nf-core/vcf_gather_bcftools/main'
 
 workflow JOINT_GENOTYPING {
     take:
@@ -104,15 +105,7 @@ workflow JOINT_GENOTYPING {
         .combine(BED_SCATTER_BEDTOOLS.out.scattered_beds, by:0)
         .map(
             { meta, vcf, beds, bed_count ->
-                meta = meta + [bed_count: bed_count]
-                [ meta, vcf, beds ]
-            }
-        )
-        .transpose()
-        .map(
-            { meta, db, bed ->
-                meta = meta + [id: bed.baseName]
-                [ meta, db, [], bed, [] ]
+                [ meta, vcf, [], beds, [] ]
             }
         )
         .dump(tag:'genotypegvcfs_input', pretty:true)
@@ -137,29 +130,19 @@ workflow JOINT_GENOTYPING {
 
     GENOTYPE_GVCFS.out.vcf
         .join(GENOTYPE_GVCFS.out.tbi)
-        .map(
-            { meta, vcf, tbi ->
-                meta = meta + [id: meta.family]
-                [ groupKey(meta, meta.bed_count), vcf, tbi ]
-            }
-        )
-        .groupTuple()
         .dump(tag:'genotyped_vcfs', pretty:true)
         .set { genotyped_vcfs }
 
-    BCFTOOLS_CONCAT(
-        genotyped_vcfs
+    VCF_GATHER_BCFTOOLS(
+        genotyped_vcfs,
+        BED_SCATTER_BEDTOOLS.out.scattered_beds,
+        [],
+        true
     )
 
-    ch_versions = ch_versions.mix(BCFTOOLS_CONCAT.out.versions)
+    ch_versions = ch_versions.mix(VCF_GATHER_BCFTOOLS.out.versions)
 
-    BCFTOOLS_CONCAT.out.vcf
-        .map(
-            { meta, vcf ->
-                meta.remove("bed_count")
-                [ meta, vcf ]
-            }
-        )
+    VCF_GATHER_BCFTOOLS.out.vcf
         .dump(tag:'concat_vcfs', pretty:true)
         .set { concat_vcfs }
 

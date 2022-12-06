@@ -13,15 +13,11 @@ workflow ANNOTATION {
         vcfs                 // channel: [mandatory] [ meta, vcfs ] => The post-processed VCFs
         fasta                // channel: [mandatory] [ fasta ] => fasta reference
         fasta_fai            // channel: [mandatory] [ fasta_fai ] => fasta index
-        genome               // value:   [mandatory] Which genome was used to align the samples to
-        species              // value:   [mandatory] Which species the samples are from
-        vep_cache_version    // value:   [mandatory] which version of VEP to use
         vep_cache            // channel: [optional]  [ vep_cache ] => The VEP cache to use
         vep_extra_files      // channel: [optional]  [ file_1, file_2, file_3, ... ] => All files necessary for using the desired plugins
-        vcfanno              // boolean: [mandatory] Whether or not annotation using VCFanno should be performed too
-        vcfanno_config       // channel: [mandatory if vcfanno == true] [ toml_config_file ] => The TOML config file for VCFanno
-        vcfanno_lua          // channel: [optional  if vcfanno == true] [ lua_file ] => A VCFanno Lua file
-        vcfanno_resources    // channel: [mandatory if vcfanno == true] [ resource_dir ] => The directory containing the reference files for VCFanno
+        vcfanno_config       // channel: [mandatory if params.vcfanno == true] [ toml_config_file ] => The TOML config file for VCFanno
+        vcfanno_lua          // channel: [optional  if params.vcfanno == true] [ lua_file ] => A VCFanno Lua file
+        vcfanno_resources    // channel: [mandatory if params.vcfanno == true] [ resource_dir ] => The directory containing the reference files for VCFanno
 
     main:
 
@@ -69,7 +65,7 @@ workflow ANNOTATION {
         .combine(all_regions)
         .map(
             { meta, vcf, meta2, chroms ->
-                meta = meta + [id:"${meta.id}_${meta2.chr}", regions:chroms]
+                meta = meta + [regions:chroms]
                 [ meta, vcf ]
             }
         )
@@ -82,9 +78,9 @@ workflow ANNOTATION {
 
     ENSEMBLVEP(
         vep_input,
-        genome,
-        species,
-        vep_cache_version,
+        params.genome,
+        params.species,
+        params.vep_cache_version,
         vep_cache,
         fasta,
         vep_extra_files
@@ -104,9 +100,9 @@ workflow ANNOTATION {
         .combine(count_chromosomes)
         .map(
             { meta, vcf, tbi, count ->
-                meta = meta + [id:meta.family]
-                meta.remove("regions")
-                [ groupKey(meta, count), vcf, tbi ]
+                new_meta = meta.clone()
+                new_meta.remove("regions")
+                [ groupKey(new_meta, count), vcf, tbi ]
             }
         )
         .groupTuple()
@@ -119,7 +115,7 @@ workflow ANNOTATION {
 
     ch_versions = ch_versions.mix(BCFTOOLS_CONCAT.out.versions)
 
-    if (vcfanno) {
+    if (params.vcfanno) {
 
         BCFTOOLS_CONCAT.out.vcf
             .map(

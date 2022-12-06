@@ -123,62 +123,29 @@ workflow CMGGGERMLINE {
     ch_reports  = Channel.empty()
 
     //
-    // Importing the file pipeline parameters
+    // Importing the input files
     //
-
-    // Input files
-    fasta              = params.fasta               ? Channel.fromPath(params.fasta).collect()              : Channel.empty()
+    fasta              = Channel.fromPath(params.fasta).collect()
     fasta_fai          = params.fai                 ? Channel.fromPath(params.fai).collect()                : null
     dict               = params.dict                ? Channel.fromPath(params.dict).collect()               : null
     strtablefile       = params.strtablefile        ? Channel.fromPath(params.strtablefile).collect()       : null
+
     dbsnp              = params.dbsnp               ? Channel.fromPath(params.dbsnp).collect()              : []
     dbsnp_tbi          = params.dbsnp_tbi           ? Channel.fromPath(params.dbsnp_tbi).collect()          : []
+
     somalier_sites     = params.somalier_sites      ? Channel.fromPath(params.somalier_sites).collect()     : []
 
-    // Input values
-    filter             = params.filter
-    annotate           = params.annotate
-    gemini             = params.gemini
-    scatter_count      = params.scatter_count
+    vep_cache          = params.vep_cache           ? Channel.fromPath(params.vep_cache).collect()          : []
 
-    // Booleans
-    always_use_cram    = params.always_use_cram
-    use_dragstr_model  = params.use_dragstr_model
-
-    //
-    // Importing the value pipeline parameters
-    //
-
-    genome             = params.genome
-
-    //
-    // Importing the annotation parameters
-    //
-
-    vep_cache_version  = params.vep_cache_version   ?: Channel.empty()
-    species            = params.species             ?: Channel.empty()
-
-    vep_cache          = params.vep_cache           ? Channel.fromPath(params.vep_cache).collect()      : []
-
-    vcfanno            = params.vcfanno
-
-    vcfanno_config     = params.vcfanno_config      ? Channel.fromPath(params.vcfanno_config).collect() : []
-    vcfanno_lua        = params.vcfanno_lua         ? Channel.fromPath(params.vcfanno_lua).collect()    : []
+    vcfanno_config     = params.vcfanno_config      ? Channel.fromPath(params.vcfanno_config).collect()     : []
+    vcfanno_lua        = params.vcfanno_lua         ? Channel.fromPath(params.vcfanno_lua).collect()        : []
     vcfanno_resources  = params.vcfanno_resources   ? Channel.of(params.vcfanno_resources.split(",")).map({ file(it, checkIfExists:true) }).collect()   : []
 
     //
     // Check for the presence of EnsemblVEP plugins that use extra files
     //
 
-    if (dbsnp != [] && dbsnp_tbi == []) {
-        TABIX_DBSNP(
-            [ [id:'dbsnp'], dbsnp ]
-        )
-
-        TABIX_DBSNP.out.tbi.set { dbsnp_tbi }
-    }
-
-    if(annotate){
+    if(params.annotate){
         vep_extra_files = []
 
         // Check if all dbnsfp files are given
@@ -232,6 +199,22 @@ workflow CMGGGERMLINE {
     // Create the optional input files if they are not supplied
     //
 
+    if (dbsnp != [] && dbsnp_tbi == []) {
+        TABIX_DBSNP(
+            [ [id:'dbsnp'], dbsnp ]
+        )
+
+        ch_versions = ch_versions.mix(TABIX_DBSNP.out.versions)
+        TABIX_DBSNP.out.tbi
+            .map(
+                { meta, tbi ->
+                    [ tbi ]
+                }
+            )
+            .collect()
+            .set { dbsnp_tbi }
+    }
+
     if (!fasta_fai) {
         FAIDX(
             fasta.map({ fasta -> [ [id:"fasta_fai"], fasta ]})
@@ -257,7 +240,7 @@ workflow CMGGGERMLINE {
             .set { dict }
     }
 
-    if (use_dragstr_model && !strtablefile) {
+    if (params.use_dragstr_model && !strtablefile) {
         COMPOSESTRTABLEFILE(
             fasta,
             fasta_fai,
@@ -385,9 +368,6 @@ workflow CMGGGERMLINE {
         fasta_fai,
         dict,
         strtablefile,
-        scatter_count,
-        use_dragstr_model,
-        always_use_cram,
         dbsnp,
         dbsnp_tbi
     )
@@ -409,7 +389,7 @@ workflow CMGGGERMLINE {
         peds,
         fasta,
         fasta_fai,
-        dict,
+        dict
     )
 
     ch_versions = ch_versions.mix(JOINT_GENOTYPING.out.versions)
@@ -423,7 +403,7 @@ workflow CMGGGERMLINE {
     // Filter the variants
     //
 
-    if (filter) {
+    if (params.filter) {
         FILTER_SNPS(
             joint_genotyping_output
         )
@@ -462,19 +442,14 @@ workflow CMGGGERMLINE {
     //
     // Annotation of the variants and creation of Gemini-compatible database files
     //
-    if (annotate) {
+    if (params.annotate) {
 
-        // Perform the annotation
         ANNOTATION(
             filter_output,
             fasta,
             fasta_fai,
-            genome,
-            species,
-            vep_cache_version,
             vep_cache,
             vep_extra_files,
-            vcfanno,
             vcfanno_config,
             vcfanno_lua,
             vcfanno_resources
@@ -484,18 +459,19 @@ workflow CMGGGERMLINE {
 
         ANNOTATION.out.annotated_vcfs.set { annotation_output }
     } else {
-
         filter_output.set { annotation_output }
     }
 
-    annotation_output.dump(tag:'annotation_output', pretty:true)
+    annotation_output
+        .tap { vcf2db_vcfs }
+        .dump(tag:'annotation_output', pretty:true)
 
     //
     // Perform QC on the final VCFs
     //
 
     BCFTOOLS_STATS_FAMILY(
-        annotation_output.map{ meta, vcf -> [ meta, vcf, [] ]},
+        annotation_output.map{ it + [[]]},
         [],
         [],
         []
@@ -507,10 +483,11 @@ workflow CMGGGERMLINE {
     // Create Gemini-compatible database files
     //
 
-    if(gemini){
+    if(params.gemini){
 
-        annotation_output
+        vcf2db_vcfs.view()
             .join(generated_peds)
+            .dump(tag:'vcf2db_input', pretty:true)
             .set { vcf2db_input }
 
         VCF2DB(

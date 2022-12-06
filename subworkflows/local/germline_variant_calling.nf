@@ -8,12 +8,12 @@ include { SAMTOOLS_MERGE                                        } from '../../mo
 include { GATK4_HAPLOTYPECALLER as HAPLOTYPECALLER              } from '../../modules/nf-core/gatk4/haplotypecaller/main'
 include { GATK4_CALIBRATEDRAGSTRMODEL as CALIBRATEDRAGSTRMODEL  } from '../../modules/nf-core/gatk4/calibratedragstrmodel/main'
 include { GATK4_REBLOCKGVCF as REBLOCKGVCF                      } from '../../modules/nf-core/gatk4/reblockgvcf/main'
-include { BCFTOOLS_CONCAT                                       } from '../../modules/nf-core/bcftools/concat/main'
 include { SAMTOOLS_INDEX                                        } from '../../modules/nf-core/samtools/index/main'
 include { BCFTOOLS_STATS as BCFTOOLS_STATS_INDIVIDUALS          } from '../../modules/nf-core/bcftools/stats/main'
 include { TABIX_TABIX as TABIX_GVCFS                            } from '../../modules/nf-core/tabix/tabix/main'
 
 include { BED_SCATTER_BEDTOOLS                                  } from '../../subworkflows/nf-core/bed_scatter_bedtools/main'
+include { VCF_GATHER_BCFTOOLS                                   } from '../../subworkflows/nf-core/vcf_gather_bcftools/main'
 
 workflow GERMLINE_VARIANT_CALLING {
     take:
@@ -23,9 +23,6 @@ workflow GERMLINE_VARIANT_CALLING {
         fasta_fai         // channel: [mandatory] [ fasta_fai ] => fasta reference index
         dict              // channel: [mandatory] [ dict ] => sequence dictionary
         strtablefile      // channel: [mandatory] [ strtablefile ] => STR table file
-        scatter_count     // value:   [mandatory] how many times the BED files need to be split before the variant calling
-        use_dragstr_model // boolean: [mandatory] whether or not to use the dragstr models for variant calling
-        always_use_cram   // boolean: [mandatory] whether or not to retain the bam after merging or convert back to cram
         dbsnp             // channel: [optional] The VCF containing the dbsnp variants
         dbsnp_tbi         // channel: [optional] The index of the dbsnp VCF
 
@@ -57,8 +54,7 @@ workflow GERMLINE_VARIANT_CALLING {
     SAMTOOLS_MERGE(
         cram_branch.multiple,
         fasta,
-        fasta_fai,
-        always_use_cram
+        fasta_fai
     )
 
     SAMTOOLS_MERGE.out.cram
@@ -120,7 +116,7 @@ workflow GERMLINE_VARIANT_CALLING {
         .mix(bed_branch.single)
         .map(
             { meta, bed ->
-                [ meta, bed, scatter_count ]
+                [ meta, bed, params.scatter_count ]
             }
         )
         .dump(tag:'merged_beds', pretty:true)
@@ -130,33 +126,21 @@ workflow GERMLINE_VARIANT_CALLING {
     // Split the BED files into multiple subsets
     //
 
-    if (scatter_count > 1) {
-        BED_SCATTER_BEDTOOLS(
-            merged_beds
-        )
-
-        ch_versions = ch_versions.mix(BED_SCATTER_BEDTOOLS.out.versions)
-
-        BED_SCATTER_BEDTOOLS.out.scattered_beds
-            .set { split_beds }
-    }
-    else {
+    BED_SCATTER_BEDTOOLS(
         merged_beds
-        .map(
-            { meta, bed, bed_count ->
-                [ meta, bed, 1 ]
-            }
-        )
-        .set { split_beds }
-    }
+    )
 
-    split_beds.dump(tag:'split_beds', pretty:true)
+    ch_versions = ch_versions.mix(BED_SCATTER_BEDTOOLS.out.versions)
+
+    BED_SCATTER_BEDTOOLS.out.scattered_beds
+        .dump(tag:'split_beds', pretty:true)
+        .set { split_beds }
 
     //
     // Generate DRAGSTR models
     //
 
-    if (use_dragstr_model) {
+    if (params.use_dragstr_model) {
         ready_crams
             .join(merged_beds)
             .map(
@@ -187,22 +171,15 @@ workflow GERMLINE_VARIANT_CALLING {
             .set { cram_models }
     }
 
-    cram_models.dump(tag:'cram_models', pretty:true)
-
     //
     // Remap CRAM channel to fit the haplotypecaller input format
     //
 
     cram_models
+        .dump(tag:'cram_models', pretty:true)
         .map(
             { meta, cram, crai, bed, bed_count, dragstr_model=[] ->
-                new_meta = meta.clone()
-
-                // If either no scatter is done, i.e. one interval (1), then don't rename samples
-                new_meta.id = bed_count <= 1 ? meta.id : bed.baseName
-                new_meta.bed_count = bed_count
-
-                [ new_meta, cram, crai, bed, dragstr_model ]
+                [ meta, cram, crai, bed, dragstr_model ]
             }
         )
         .dump(tag:'cram_intervals', pretty:true)
@@ -228,80 +205,28 @@ workflow GERMLINE_VARIANT_CALLING {
     ch_versions = ch_versions.mix(HAPLOTYPECALLER.out.versions)
 
     //
-    // Merge the GVCFs if split BED files were used
+    // Merge the GVCFs
     //
 
-    if (scatter_count > 1) {
-        haplotypecaller_vcfs
-            .map(
-                { meta, vcf, tbi ->
-                    new_meta = meta.clone()
-                    new_meta.id = new_meta.sample
-                    new_meta.remove('bed_count')
-                    [ groupKey(new_meta, meta.bed_count.toInteger()), vcf, tbi ]
-                }
-            )
-            .groupTuple()
-            .branch(
-                { meta, vcfs, tbis ->
-                    multiple: vcfs.size() > 1
-                        return [ meta, vcfs, tbis ]
-                    single: vcfs.size() == 1
-                        return [ meta, vcfs[0] ]
-                }
-            )
-            .set { concat_input }
+    VCF_GATHER_BCFTOOLS(
+        haplotypecaller_vcfs,
+        split_beds,
+        [],
+        false
+    )
 
-        concat_input.multiple.dump(tag:'concat_input_multiple', pretty:true)
-        concat_input.single.dump(tag:'concat_input_single', pretty:true)
-
-        BCFTOOLS_CONCAT(
-            concat_input.multiple
-        )
-
-        BCFTOOLS_CONCAT.out.vcf
-            .mix(concat_input.single)
-            .set { tabixgvcfs_input }
-        ch_versions = ch_versions.mix(BCFTOOLS_CONCAT.out.versions)
-    }
-    else {
-        haplotypecaller_vcfs
-            .map(
-                { meta, vcf, tbi ->
-                    [ meta, vcf ]
-                }
-            )
-            .set { tabixgvcfs_input }
-    }
-
-    tabixgvcfs_input.dump(tag:'tabixgvcfs_input', pretty: true)
+    VCF_GATHER_BCFTOOLS.out.vcf
+        .join(VCF_GATHER_BCFTOOLS.out.tbi)
+        .dump(tag:'reblockgvcf_input', pretty: true)
+        .set { reblockgvcf_input }
+    ch_versions = ch_versions.mix(VCF_GATHER_BCFTOOLS.out.versions)
 
     //
     // Create indices for all the GVCF files
     //
 
-    TABIX_GVCFS(
-        tabixgvcfs_input
-    )
-
-    tabixgvcfs_input
-        .join(TABIX_GVCFS.out.tbi)
-        .map(
-            { meta, gvcf, tbi ->
-                [ meta, gvcf, tbi, []]
-            }
-        )
-        .dump(tag:'reblockgvcf_input', pretty:true)
-        .set { reblockgvcf_input }
-
-    ch_versions = ch_versions.mix(TABIX_GVCFS.out.versions)
-
-    //
-    // Perform QC on the individual GVCF
-    //
-
     BCFTOOLS_STATS_INDIVIDUALS(
-        tabixgvcfs_input.join(TABIX_GVCFS.out.tbi),
+        reblockgvcf_input,
         [],
         [],
         []
@@ -314,7 +239,7 @@ workflow GERMLINE_VARIANT_CALLING {
     //
 
     REBLOCKGVCF(
-        reblockgvcf_input,
+        reblockgvcf_input.map{ it + [[]] },
         fasta,
         fasta_fai,
         dict,
