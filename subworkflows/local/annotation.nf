@@ -143,7 +143,7 @@ workflow ANNOTATION {
 
         ch_annotated_vcfs = BGZIP_ANNOTATED_VCFS.out.output
         ch_versions       = ch_versions.mix(VCFANNO.out.versions)
-        ch_versions = ch_versions.mix(BGZIP_ANNOTATED_VCFS.out.versions)
+        ch_versions       = ch_versions.mix(BGZIP_ANNOTATED_VCFS.out.versions)
     }
     else {
         ch_annotated_vcfs = BCFTOOLS_CONCAT.out.vcf

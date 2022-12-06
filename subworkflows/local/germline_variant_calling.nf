@@ -10,6 +10,7 @@ include { GATK4_CALIBRATEDRAGSTRMODEL as CALIBRATEDRAGSTRMODEL  } from '../../mo
 include { GATK4_REBLOCKGVCF as REBLOCKGVCF                      } from '../../modules/nf-core/gatk4/reblockgvcf/main'
 include { BCFTOOLS_CONCAT                                       } from '../../modules/nf-core/bcftools/concat/main'
 include { SAMTOOLS_INDEX                                        } from '../../modules/nf-core/samtools/index/main'
+include { BCFTOOLS_STATS as BCFTOOLS_STATS_INDIVIDUALS          } from '../../modules/nf-core/bcftools/stats/main'
 include { TABIX_TABIX as TABIX_GVCFS                            } from '../../modules/nf-core/tabix/tabix/main'
 
 include { BED_SCATTER_BEDTOOLS                                  } from '../../subworkflows/nf-core/bed_scatter_bedtools/main'
@@ -32,6 +33,7 @@ workflow GERMLINE_VARIANT_CALLING {
 
     gvcfs        = Channel.empty()
     ch_versions  = Channel.empty()
+    ch_reports   = Channel.empty()
 
     //
     // Merge the CRAM files if there are multiple per sample
@@ -295,6 +297,19 @@ workflow GERMLINE_VARIANT_CALLING {
     ch_versions = ch_versions.mix(TABIX_GVCFS.out.versions)
 
     //
+    // Perform QC on the individual GVCF
+    //
+
+    BCFTOOLS_STATS_INDIVIDUALS(
+        tabixgvcfs_input.join(TABIX_GVCFS.out.tbi),
+        [],
+        [],
+        []
+    )
+    ch_versions = ch_versions.mix(BCFTOOLS_STATS_INDIVIDUALS.out.versions)
+    ch_reports  = ch_reports.mix(BCFTOOLS_STATS_INDIVIDUALS.out.stats.collect{it[1]})
+
+    //
     // Reblock the single sample GVCF files
     //
 
@@ -303,15 +318,14 @@ workflow GERMLINE_VARIANT_CALLING {
         fasta,
         fasta_fai,
         dict,
-        [],
-        []
+        dbsnp,
+        dbsnp_tbi
     )
-
-    REBLOCKGVCF.out.vcf.set { gvcfs }
 
     ch_versions = ch_versions.mix(REBLOCKGVCF.out.versions)
 
     emit:
-    gvcfs
+    gvcfs    = REBLOCKGVCF.out.vcf
     versions = ch_versions
+    reports  = ch_reports
 }

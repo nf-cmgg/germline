@@ -13,14 +13,13 @@ nextflow_pipeline {
 
         then {
             assert workflow.success
-            assert file("${outputDir}/ready/Proband_12345/reports/Proband_12345.TsTv.count").exists()
             assert file("${outputDir}/ready/Proband_12345/reports/Proband_12345.bcftools_stats.txt").exists()
-            assert file("${outputDir}/ready/Proband_12345/reports/Proband_12345.TsTv.qual").exists()
-            assert file("${outputDir}/ready/Proband_12345/reports/Proband_12345.FILTER.summary").exists()
             assert file("${outputDir}/ready/Proband_12345/Proband_12345.ann.vcf.gz").exists()
             assert file("${outputDir}/ready/Proband_12345/Proband_12345.vcf.gz").exists()
+            assert file("${outputDir}/individuals/NA24385D2_NVQ_034/reports/NA24385D2_NVQ_034.bcftools_stats.txt").exists()
             assert file("${outputDir}/individuals/NA24385D2_NVQ_034/NA24385D2_NVQ_034.g.vcf.gz").exists()
             assert file("${outputDir}/individuals/NA24385D2_NVQ_034/NA24385D2_NVQ_034.g.vcf.gz.tbi").exists()
+            assert file("${outputDir}/individuals/NA12878K12_NVQ_034/reports/NA12878K12_NVQ_034.bcftools_stats.txt").exists()
             assert file("${outputDir}/individuals/NA12878K12_NVQ_034/NA12878K12_NVQ_034.g.vcf.gz").exists()
             assert file("${outputDir}/individuals/NA12878K12_NVQ_034/NA12878K12_NVQ_034.g.vcf.gz.tbi").exists()
             assert file("${outputDir}/multiqc_reports/multiqc_report.html").exists()

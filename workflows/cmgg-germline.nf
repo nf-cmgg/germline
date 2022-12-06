@@ -82,7 +82,6 @@ multiqc_logo        = params.multiqc_logo   ? file(params.multiqc_logo, checkIfE
 
 include { GERMLINE_VARIANT_CALLING } from '../subworkflows/local/germline_variant_calling'
 include { JOINT_GENOTYPING         } from '../subworkflows/local/joint_genotyping'
-include { VCF_QC                   } from '../subworkflows/local/vcf_qc'
 include { ANNOTATION               } from '../subworkflows/local/annotation'
 include { SOMALIER                 } from '../subworkflows/local/somalier'
 
@@ -103,6 +102,7 @@ include { GAWK as INDEX_TO_BED                                       } from '../
 include { TABIX_TABIX as TABIX_DBSNP                                 } from '../modules/nf-core/tabix/tabix/main'
 include { BCFTOOLS_FILTER as FILTER_SNPS                             } from '../modules/nf-core/bcftools/filter/main'
 include { BCFTOOLS_FILTER as FILTER_INDELS                           } from '../modules/nf-core/bcftools/filter/main'
+include { BCFTOOLS_STATS as BCFTOOLS_STATS_FAMILY                    } from '../modules/nf-core/bcftools/stats/main'
 include { VCF2DB                                                     } from '../modules/nf-core/vcf2db/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS                                } from '../modules/nf-core/custom/dumpsoftwareversions/main'
 include { MULTIQC                                                    } from '../modules/nf-core/multiqc/main'
@@ -393,6 +393,7 @@ workflow CMGGGERMLINE {
     )
 
     ch_versions = ch_versions.mix(GERMLINE_VARIANT_CALLING.out.versions)
+    ch_reports  = ch_reports.mix(GERMLINE_VARIANT_CALLING.out.reports)
 
     GERMLINE_VARIANT_CALLING.out.gvcfs
         .dump(tag:'variantcalling_output', pretty:true)
@@ -459,20 +460,6 @@ workflow CMGGGERMLINE {
         .set { generated_peds }
 
     //
-    // Quality control of the called variants
-    //
-
-    VCF_QC(
-        filter_output
-    )
-
-    ch_versions = ch_versions.mix(VCF_QC.out.versions)
-    ch_reports  = ch_reports.mix(VCF_QC.out.bcftools_stats.collect{it[1]}.ifEmpty([]))
-    ch_reports  = ch_reports.mix(VCF_QC.out.vcftools_tstv_count.collect{it[1]}.ifEmpty([]))
-    ch_reports  = ch_reports.mix(VCF_QC.out.vcftools_tstv_qual.collect{it[1]}.ifEmpty([]))
-    ch_reports  = ch_reports.mix(VCF_QC.out.vcftools_filter_summary.collect{it[1]}.ifEmpty([]))
-
-    //
     // Annotation of the variants and creation of Gemini-compatible database files
     //
     if (annotate) {
@@ -502,6 +489,19 @@ workflow CMGGGERMLINE {
     }
 
     annotation_output.dump(tag:'annotation_output', pretty:true)
+
+    //
+    // Perform QC on the final VCFs
+    //
+
+    BCFTOOLS_STATS_FAMILY(
+        annotation_output.map{ meta, vcf -> [ meta, vcf, [] ]},
+        [],
+        [],
+        []
+    )
+    ch_versions = ch_versions.mix(BCFTOOLS_STATS_FAMILY.out.versions)
+    ch_reports  = ch_reports.mix(BCFTOOLS_STATS_FAMILY.out.stats.collect{it[1]})
 
     //
     // Create Gemini-compatible database files
