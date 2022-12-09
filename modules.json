@@ -8,187 +8,133 @@
                     "bcftools/concat": {
                         "branch": "master",
                         "git_sha": "ce723d4eac38d1c0bde98e29c503b51a3022bffc",
-                        "installed_by": [
-                            "modules",
-                            "vcf_gather_bcftools"
-                        ]
+                        "installed_by": ["modules", "vcf_gather_bcftools"]
                     },
                     "bcftools/convert": {
                         "branch": "master",
                         "git_sha": "78cf39939fbe160a1410c44a6c5946f9a4c56e7e",
-                        "installed_by": [
-                            "modules"
-                        ]
+                        "installed_by": ["modules"]
                     },
                     "bcftools/filter": {
                         "branch": "master",
                         "git_sha": "78cf39939fbe160a1410c44a6c5946f9a4c56e7e",
-                        "installed_by": [
-                            "modules"
-                        ]
+                        "installed_by": ["modules"]
                     },
                     "bcftools/sort": {
                         "branch": "master",
                         "git_sha": "78cf39939fbe160a1410c44a6c5946f9a4c56e7e",
-                        "installed_by": [
-                            "vcf_gather_bcftools"
-                        ]
+                        "installed_by": ["vcf_gather_bcftools"]
                     },
                     "bcftools/stats": {
                         "branch": "master",
                         "git_sha": "78cf39939fbe160a1410c44a6c5946f9a4c56e7e",
-                        "installed_by": [
-                            "modules"
-                        ]
+                        "installed_by": ["modules"]
                     },
                     "bcftools/view": {
                         "branch": "master",
                         "git_sha": "78cf39939fbe160a1410c44a6c5946f9a4c56e7e",
-                        "installed_by": [
-                            "modules"
-                        ]
+                        "installed_by": ["modules"]
                     },
                     "custom/dumpsoftwareversions": {
                         "branch": "master",
                         "git_sha": "8022c68e7403eecbd8ba9c49496f69f8c49d50f0",
-                        "installed_by": [
-                            "modules"
-                        ]
+                        "installed_by": ["modules"]
                     },
                     "ensemblvep": {
                         "branch": "master",
                         "git_sha": "1ec0d59beb1e794a7a4a4351e15138ffa213aa20",
-                        "installed_by": [
-                            "modules"
-                        ],
+                        "installed_by": ["modules"],
                         "patch": "modules/nf-core/ensemblvep/ensemblvep.diff"
                     },
                     "gatk4/calibratedragstrmodel": {
                         "branch": "master",
                         "git_sha": "7578005a576f3ac1b0d4f10c037dde34cdedfb67",
-                        "installed_by": [
-                            "modules"
-                        ]
+                        "installed_by": ["modules"]
                     },
                     "gatk4/composestrtablefile": {
                         "branch": "master",
                         "git_sha": "7578005a576f3ac1b0d4f10c037dde34cdedfb67",
-                        "installed_by": [
-                            "modules"
-                        ]
+                        "installed_by": ["modules"]
                     },
                     "gatk4/createsequencedictionary": {
                         "branch": "master",
                         "git_sha": "7578005a576f3ac1b0d4f10c037dde34cdedfb67",
-                        "installed_by": [
-                            "modules"
-                        ]
+                        "installed_by": ["modules"]
                     },
                     "gatk4/genomicsdbimport": {
                         "branch": "master",
                         "git_sha": "7578005a576f3ac1b0d4f10c037dde34cdedfb67",
-                        "installed_by": [
-                            "modules"
-                        ]
+                        "installed_by": ["modules"]
                     },
                     "gatk4/genotypegvcfs": {
                         "branch": "master",
                         "git_sha": "7578005a576f3ac1b0d4f10c037dde34cdedfb67",
-                        "installed_by": [
-                            "modules"
-                        ]
+                        "installed_by": ["modules"]
                     },
                     "gatk4/haplotypecaller": {
                         "branch": "master",
                         "git_sha": "9e9cd1dc1865ee28514c6435e02f1618c091ae20",
-                        "installed_by": [
-                            "modules"
-                        ]
+                        "installed_by": ["modules"]
                     },
                     "gatk4/reblockgvcf": {
                         "branch": "master",
                         "git_sha": "7578005a576f3ac1b0d4f10c037dde34cdedfb67",
-                        "installed_by": [
-                            "modules"
-                        ]
+                        "installed_by": ["modules"]
                     },
                     "gawk": {
                         "branch": "master",
                         "git_sha": "6955d35195c3260f5449022450e3bc2ccb3e9662",
-                        "installed_by": [
-                            "modules"
-                        ]
+                        "installed_by": ["modules"]
                     },
                     "multiqc": {
                         "branch": "master",
                         "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
-                        "installed_by": [
-                            "modules"
-                        ]
+                        "installed_by": ["modules"]
                     },
                     "samtools/faidx": {
                         "branch": "master",
                         "git_sha": "cf5b9c30a2adacc581793afb79fae5f5b50bed01",
-                        "installed_by": [
-                            "modules"
-                        ]
+                        "installed_by": ["modules"]
                     },
                     "samtools/index": {
                         "branch": "master",
                         "git_sha": "cf5b9c30a2adacc581793afb79fae5f5b50bed01",
-                        "installed_by": [
-                            "modules"
-                        ]
+                        "installed_by": ["modules"]
                     },
                     "somalier/extract": {
                         "branch": "master",
                         "git_sha": "c04f08392f34fe300627e1fad5e4066c2c7e30be",
-                        "installed_by": [
-                            "modules"
-                        ]
+                        "installed_by": ["modules"]
                     },
                     "somalier/relate": {
                         "branch": "master",
                         "git_sha": "c04f08392f34fe300627e1fad5e4066c2c7e30be",
-                        "installed_by": [
-                            "modules"
-                        ]
+                        "installed_by": ["modules"]
                     },
                     "tabix/bgzip": {
                         "branch": "master",
                         "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
-                        "installed_by": [
-                            "modules"
-                        ]
+                        "installed_by": ["modules"]
                     },
                     "tabix/bgziptabix": {
                         "branch": "master",
                         "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
-                        "installed_by": [
-                            "modules"
-                        ]
+                        "installed_by": ["modules"]
                     },
                     "tabix/tabix": {
                         "branch": "master",
                         "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
-                        "installed_by": [
-                            "modules",
-                            "vcf_gather_bcftools"
-                        ]
+                        "installed_by": ["modules", "vcf_gather_bcftools"]
                     },
                     "vcf2db": {
                         "branch": "master",
                         "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
-                        "installed_by": [
-                            "modules"
-                        ]
+                        "installed_by": ["modules"]
                     },
                     "vcfanno": {
                         "branch": "master",
                         "git_sha": "2edbd10f12f7d3d681d2196707f15140d0e4d463",
-                        "installed_by": [
-                            "modules"
-                        ]
+                        "installed_by": ["modules"]
                     }
                 }
             },
@@ -197,9 +143,7 @@
                     "vcf_gather_bcftools": {
                         "branch": "master",
                         "git_sha": "15f5d081b02d899552d13ac908ba82980fb1dfee",
-                        "installed_by": [
-                            "subworkflows"
-                        ]
+                        "installed_by": ["subworkflows"]
                     }
                 }
             }
