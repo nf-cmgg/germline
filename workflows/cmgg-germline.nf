@@ -436,9 +436,6 @@ workflow CMGGGERMLINE {
         peds
     )
 
-    SOMALIER.out.generated_peds
-        .set { generated_peds }
-
     //
     // Annotation of the variants and creation of Gemini-compatible database files
     //
@@ -465,13 +462,14 @@ workflow CMGGGERMLINE {
     annotation_output
         .tap { vcf2db_vcfs }
         .dump(tag:'annotation_output', pretty:true)
+        .set { stats_input }
 
     //
     // Perform QC on the final VCFs
     //
 
     BCFTOOLS_STATS_FAMILY(
-        annotation_output.map{ it + [[]]},
+        stats_input.map{ it + [[]] },
         [],
         [],
         []
@@ -485,8 +483,8 @@ workflow CMGGGERMLINE {
 
     if(params.gemini){
 
-        vcf2db_vcfs.view()
-            .join(generated_peds)
+        vcf2db_vcfs
+            .join(SOMALIER.out.generated_peds)
             .dump(tag:'vcf2db_input', pretty:true)
             .set { vcf2db_input }
 

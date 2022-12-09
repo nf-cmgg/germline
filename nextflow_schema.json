@@ -129,12 +129,10 @@
             "description": "Parameters that define how the pipeline works",
             "default": "",
             "properties": {
-                "scatter_count": {
+                "scatter_size": {
                     "type": "integer",
-                    "default": 2,
-                    "fa_icon": "fas fa-cut",
-                    "description": "The amount of times the BED file should be split (for parallelization of GATK Haplotypecaller)",
-                    "minimum": 2
+                    "default": 1500000,
+                    "description": "The size of regions the BED files should be split into when scattering"
                 },
                 "species": {
                     "type": "string",
@@ -163,7 +161,7 @@
                 }
             },
             "required": [
-                "scatter_count"
+                "scatter_size"
             ]
         },
         "module_specific_parameters": {

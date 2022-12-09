@@ -12,7 +12,8 @@ include { SAMTOOLS_INDEX                                        } from '../../mo
 include { BCFTOOLS_STATS as BCFTOOLS_STATS_INDIVIDUALS          } from '../../modules/nf-core/bcftools/stats/main'
 include { TABIX_TABIX as TABIX_GVCFS                            } from '../../modules/nf-core/tabix/tabix/main'
 
-include { BED_SCATTER_BEDTOOLS                                  } from '../../subworkflows/nf-core/bed_scatter_bedtools/main'
+include { BED_SCATTER_GROOVY                                    } from '../../subworkflows/local/bed_scatter_groovy'
+
 include { VCF_GATHER_BCFTOOLS                                   } from '../../subworkflows/nf-core/vcf_gather_bcftools/main'
 
 workflow GERMLINE_VARIANT_CALLING {
@@ -114,11 +115,6 @@ workflow GERMLINE_VARIANT_CALLING {
 
     MERGE_BEDS.out.bed
         .mix(bed_branch.single)
-        .map(
-            { meta, bed ->
-                [ meta, bed, params.scatter_count ]
-            }
-        )
         .dump(tag:'merged_beds', pretty:true)
         .set { merged_beds }
 
@@ -126,13 +122,14 @@ workflow GERMLINE_VARIANT_CALLING {
     // Split the BED files into multiple subsets
     //
 
-    BED_SCATTER_BEDTOOLS(
-        merged_beds
+    BED_SCATTER_GROOVY(
+        merged_beds.map {meta, bed -> [meta, bed instanceof Path ? bed : bed[0]]},
+        params.scatter_size
     )
 
-    ch_versions = ch_versions.mix(BED_SCATTER_BEDTOOLS.out.versions)
+    ch_versions = ch_versions.mix(BED_SCATTER_GROOVY.out.versions)
 
-    BED_SCATTER_BEDTOOLS.out.scattered_beds
+    BED_SCATTER_GROOVY.out.scattered
         .dump(tag:'split_beds', pretty:true)
         .set { split_beds }
 
@@ -144,7 +141,7 @@ workflow GERMLINE_VARIANT_CALLING {
         ready_crams
             .join(merged_beds)
             .map(
-                { meta, cram, crai, bed, bed_count ->
+                { meta, cram, crai, bed ->
                     [meta, cram, crai, bed]
                 }
             )

@@ -12,7 +12,8 @@ include { TABIX_BGZIP as BGZIP_GENOTYPED_VCFS        } from '../../modules/nf-co
 include { TABIX_BGZIP as BGZIP_PED_VCFS              } from '../../modules/nf-core/tabix/bgzip/main'
 include { BCFTOOLS_CONCAT                            } from '../../modules/nf-core/bcftools/concat/main'
 
-include { BED_SCATTER_BEDTOOLS                       } from '../../subworkflows/nf-core/bed_scatter_bedtools/main'
+include { BED_SCATTER_GROOVY                         } from '../../subworkflows/local/bed_scatter_groovy'
+
 include { VCF_GATHER_BCFTOOLS                        } from '../../subworkflows/nf-core/vcf_gather_bcftools/main'
 
 workflow JOINT_GENOTYPING {
@@ -86,26 +87,18 @@ workflow JOINT_GENOTYPING {
     // Split the merged BED file
     //
 
-    MERGE_BEDS.out.bed
-        .map(
-            { meta, bed ->
-                [ meta, bed, params.scatter_count]
-            }
-        )
-        .dump(tag:'scatter_input', pretty:true)
-        .set { scatter_input }
-
-    BED_SCATTER_BEDTOOLS(
-        scatter_input
+    BED_SCATTER_GROOVY(
+        MERGE_BEDS.out.bed,
+        params.scatter_size
     )
 
-    ch_versions = ch_versions.mix(BED_SCATTER_BEDTOOLS.out.versions)
+    ch_versions = ch_versions.mix(BED_SCATTER_GROOVY.out.versions)
 
     GENOMICSDBIMPORT.out.genomicsdb
-        .combine(BED_SCATTER_BEDTOOLS.out.scattered_beds, by:0)
+        .combine(BED_SCATTER_GROOVY.out.scattered, by:0)
         .map(
-            { meta, vcf, beds, bed_count ->
-                [ meta, vcf, [], beds, [] ]
+            { meta, genomic_db, bed, bed_count ->
+                [ meta, genomic_db, [], bed, [] ]
             }
         )
         .dump(tag:'genotypegvcfs_input', pretty:true)
@@ -135,7 +128,7 @@ workflow JOINT_GENOTYPING {
 
     VCF_GATHER_BCFTOOLS(
         genotyped_vcfs,
-        BED_SCATTER_BEDTOOLS.out.scattered_beds,
+        BED_SCATTER_GROOVY.out.scattered,
         [],
         true
     )
