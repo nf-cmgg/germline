@@ -46,8 +46,9 @@ process SAMTOOLS_MERGE {
 
     stub:
     prefix = task.ext.suffix ? "${meta.id}${task.ext.suffix}" : "${meta.id}"
+
     """
-    touch ${prefix}.bam
+    touch ${prefix}.${convert_to_cram ? "cram": "bam"}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
