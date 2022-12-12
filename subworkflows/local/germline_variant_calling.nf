@@ -176,7 +176,9 @@ workflow GERMLINE_VARIANT_CALLING {
         .dump(tag:'cram_models', pretty:true)
         .map(
             { meta, cram, crai, bed, bed_count, dragstr_model=[] ->
-                [ meta, cram, crai, bed, dragstr_model ]
+                new_meta = meta.clone()
+                new_meta.id = bed.baseName
+                [ new_meta, cram, crai, bed, dragstr_model ]
             }
         )
         .dump(tag:'cram_intervals', pretty:true)
@@ -207,8 +209,12 @@ workflow GERMLINE_VARIANT_CALLING {
 
     VCF_GATHER_BCFTOOLS(
         haplotypecaller_vcfs,
-        split_beds,
-        [],
+        split_beds.map { meta, bed, scatter_count ->
+            new_meta = meta.clone()
+            new_meta.id = bed.baseName
+            [ new_meta, bed, scatter_count ]
+        },
+        "sample",
         false
     )
 

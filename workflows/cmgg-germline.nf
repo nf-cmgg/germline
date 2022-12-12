@@ -464,16 +464,15 @@ workflow CMGGGERMLINE {
     }
 
     annotation_output
-        .tap { vcf2db_vcfs }
         .dump(tag:'annotation_output', pretty:true)
-        .set { stats_input }
+        .set { annotation_output }
 
     //
     // Perform QC on the final VCFs
     //
 
     BCFTOOLS_STATS_FAMILY(
-        stats_input.map{ it + [[]] },
+        annotation_output.map{ it + [[]] },
         [],
         [],
         []
@@ -487,7 +486,7 @@ workflow CMGGGERMLINE {
 
     if(params.gemini){
 
-        vcf2db_vcfs
+        annotation_output
             .join(VCF_EXTRACT_RELATE_SOMALIER.out.samples_tsv)
             .dump(tag:'vcf2db_input', pretty:true)
             .set { vcf2db_input }
