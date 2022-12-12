@@ -1,10 +1,10 @@
 //
-// This file holds several functions specific to the workflow/centerformedicalgeneticsghent-nf-cmgg-germline.nf in the nf-core/centerformedicalgeneticsghent-nf-cmgg-germline pipeline
+// This file holds several functions specific to the workflow/nf-cmgg-germline.nf in the CenterForMedicalGeneticsGhent/nf-cmgg-germline pipeline
 //
 
 import groovy.text.SimpleTemplateEngine
 
-class WorkflowCenterformedicalgeneticsghent-nf-cmgg-germline {
+class WorkflowNf-cmgg-germline {
 
     //
     // Check and validate parameters

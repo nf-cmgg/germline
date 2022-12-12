@@ -1,12 +1,9 @@
 #!/usr/bin/env nextflow
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    nf-core/centerformedicalgeneticsghent-nf-cmgg-germline
+    CenterForMedicalGeneticsGhent/nf-cmgg-germline
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Github : https://github.com/nf-core/centerformedicalgeneticsghent-nf-cmgg-germline
-
-    Website: https://nf-co.re/centerformedicalgeneticsghent-nf-cmgg-germline
-    Slack  : https://nfcore.slack.com/channels/centerformedicalgeneticsghent-nf-cmgg-germline
+    Github : https://github.com/CenterForMedicalGeneticsGhent/nf-cmgg-germline
 ----------------------------------------------------------------------------------------
 */
 
@@ -34,13 +31,13 @@ WorkflowMain.initialise(workflow, params, log)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { CENTERFORMEDICALGENETICSGHENT-NF-CMGG-GERMLINE } from './workflows/centerformedicalgeneticsghent-nf-cmgg-germline'
+include { NF-CMGG-GERMLINE } from './workflows/nf-cmgg-germline'
 
 //
-// WORKFLOW: Run main nf-core/centerformedicalgeneticsghent-nf-cmgg-germline analysis pipeline
+// WORKFLOW: Run main CenterForMedicalGeneticsGhent/nf-cmgg-germline analysis pipeline
 //
-workflow NFCORE_CENTERFORMEDICALGENETICSGHENT-NF-CMGG-GERMLINE {
-    CENTERFORMEDICALGENETICSGHENT-NF-CMGG-GERMLINE ()
+workflow CENTERFORMEDICALGENETICSGHENT_NF-CMGG-GERMLINE {
+    NF-CMGG-GERMLINE ()
 }
 
 /*
@@ -54,7 +51,7 @@ workflow NFCORE_CENTERFORMEDICALGENETICSGHENT-NF-CMGG-GERMLINE {
 // See: https://github.com/nf-core/rnaseq/issues/619
 //
 workflow {
-    NFCORE_CENTERFORMEDICALGENETICSGHENT-NF-CMGG-GERMLINE ()
+    CENTERFORMEDICALGENETICSGHENT_NF-CMGG-GERMLINE ()
 }
 
 /*
