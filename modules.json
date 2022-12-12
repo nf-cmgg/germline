@@ -10,11 +10,6 @@
                         "git_sha": "ce723d4eac38d1c0bde98e29c503b51a3022bffc",
                         "installed_by": ["modules", "vcf_gather_bcftools"]
                     },
-                    "bcftools/convert": {
-                        "branch": "master",
-                        "git_sha": "78cf39939fbe160a1410c44a6c5946f9a4c56e7e",
-                        "installed_by": ["modules"]
-                    },
                     "bcftools/filter": {
                         "branch": "master",
                         "git_sha": "78cf39939fbe160a1410c44a6c5946f9a4c56e7e",
@@ -26,11 +21,6 @@
                         "installed_by": ["vcf_gather_bcftools"]
                     },
                     "bcftools/stats": {
-                        "branch": "master",
-                        "git_sha": "78cf39939fbe160a1410c44a6c5946f9a4c56e7e",
-                        "installed_by": ["modules"]
-                    },
-                    "bcftools/view": {
                         "branch": "master",
                         "git_sha": "78cf39939fbe160a1410c44a6c5946f9a4c56e7e",
                         "installed_by": ["modules"]
