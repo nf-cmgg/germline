@@ -7,6 +7,7 @@ lint:
     - .github/ISSUE_TEMPLATE/config.yml
     - .github/workflows/awstest.yml
     - .github/workflows/awsfulltest.yml
+    - lib/WorkflowNf-cmgg-germline.groovy
   nextflow_config:
     - manifest.name
     - manifest.homePage
@@ -25,3 +26,4 @@ lint:
     - lib/NfcoreTemplate.groovy
     - .prettierignore
   actions_ci: false
+  pipeline_name_conventions: false
