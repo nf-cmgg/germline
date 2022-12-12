@@ -104,12 +104,12 @@
                     "somalier/extract": {
                         "branch": "master",
                         "git_sha": "c04f08392f34fe300627e1fad5e4066c2c7e30be",
-                        "installed_by": ["modules"]
+                        "installed_by": ["vcf_extract_relate_somalier", "modules"]
                     },
                     "somalier/relate": {
                         "branch": "master",
                         "git_sha": "c04f08392f34fe300627e1fad5e4066c2c7e30be",
-                        "installed_by": ["modules"]
+                        "installed_by": ["vcf_extract_relate_somalier", "modules"]
                     },
                     "tabix/bgzip": {
                         "branch": "master",
@@ -124,7 +124,7 @@
                     "tabix/tabix": {
                         "branch": "master",
                         "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
-                        "installed_by": ["modules", "vcf_gather_bcftools"]
+                        "installed_by": ["vcf_gather_bcftools", "modules", "vcf_extract_relate_somalier"]
                     },
                     "vcf2db": {
                         "branch": "master",
@@ -140,6 +140,11 @@
             },
             "subworkflows": {
                 "nf-core": {
+                    "vcf_extract_relate_somalier": {
+                        "branch": "master",
+                        "git_sha": "4e4d3292cb99b3a7c4a2735b45871a17cd4086a3",
+                        "installed_by": ["subworkflows"]
+                    },
                     "vcf_gather_bcftools": {
                         "branch": "master",
                         "git_sha": "15f5d081b02d899552d13ac908ba82980fb1dfee",

@@ -80,10 +80,11 @@ multiqc_logo        = params.multiqc_logo   ? file(params.multiqc_logo, checkIfE
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
 
-include { GERMLINE_VARIANT_CALLING } from '../subworkflows/local/germline_variant_calling'
-include { JOINT_GENOTYPING         } from '../subworkflows/local/joint_genotyping'
-include { ANNOTATION               } from '../subworkflows/local/annotation'
-include { SOMALIER                 } from '../subworkflows/local/somalier'
+include { GERMLINE_VARIANT_CALLING      } from '../subworkflows/local/germline_variant_calling'
+include { JOINT_GENOTYPING              } from '../subworkflows/local/joint_genotyping'
+include { ANNOTATION                    } from '../subworkflows/local/annotation'
+
+include { VCF_EXTRACT_RELATE_SOMALIER   } from '../subworkflows/nf-core/vcf_extract_relate_somalier/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -428,13 +429,16 @@ workflow CMGGGERMLINE {
     // Somalier
     //
 
-    SOMALIER(
-        filter_output,
+    VCF_EXTRACT_RELATE_SOMALIER(
+        filter_output.map { it + [[]] },
         fasta,
         fasta_fai,
         somalier_sites,
-        peds
+        peds,
+        []
     )
+
+    ch_versions = ch_versions.mix(VCF_EXTRACT_RELATE_SOMALIER.out.versions)
 
     //
     // Annotation of the variants and creation of Gemini-compatible database files
@@ -484,7 +488,7 @@ workflow CMGGGERMLINE {
     if(params.gemini){
 
         vcf2db_vcfs
-            .join(SOMALIER.out.generated_peds)
+            .join(VCF_EXTRACT_RELATE_SOMALIER.out.samples_tsv)
             .dump(tag:'vcf2db_input', pretty:true)
             .set { vcf2db_input }
 
