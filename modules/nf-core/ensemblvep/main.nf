@@ -58,9 +58,6 @@ process ENSEMBLVEP {
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    touch ${prefix}.ann.vcf
-    touch ${prefix}.ann.tab
-    touch ${prefix}.ann.json
     touch ${prefix}.ann.vcf.gz
     touch ${prefix}.ann.tab.gz
     touch ${prefix}.ann.json.gz

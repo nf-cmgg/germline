@@ -42,7 +42,7 @@ workflow VCF_EXTRACT_RELATE_SOMALIER {
     ch_versions = ch_versions.mix(SOMALIER_EXTRACT.out.versions)
 
     ch_somalierrelate_input = SOMALIER_EXTRACT.out.extract
-        .groupTuple()
+        .groupTuple(remainder:true)
         .join(ch_peds ?: Channel.empty(), by:0 , remainder:true)
         .map { meta, extract, ped ->
             extract2 = extract[0] instanceof ArrayList ? extract[0] : extract

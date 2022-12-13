@@ -69,16 +69,6 @@ Changes in module 'nf-core/ensemblvep'
          $reference \\
          --assembly $genome \\
          --species $species \\
-@@ -59,6 +58,9 @@
-     stub:
-     def prefix = task.ext.prefix ?: "${meta.id}"
-     """
-+    touch ${prefix}.ann.vcf
-+    touch ${prefix}.ann.tab
-+    touch ${prefix}.ann.json
-     touch ${prefix}.ann.vcf.gz
-     touch ${prefix}.ann.tab.gz
-     touch ${prefix}.ann.json.gz
 
 --- modules/nf-core/ensemblvep/environment.yml
 +++ modules/nf-core/ensemblvep/environment.yml

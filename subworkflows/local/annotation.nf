@@ -65,14 +65,7 @@ workflow ANNOTATION {
         .combine(all_regions)
         .map(
             { meta, vcf, meta2, chroms ->
-                new_meta = [:]
-                meta.each {
-                    new_meta[it.key] = it.value
-                }
-                new_meta.regions = chroms
-                println(new_meta)
-                println(meta)
-                [ new_meta, vcf ]
+                [ meta.findAll{true}[0] + [regions:chroms], vcf ]
             }
         )
         .dump(tag:'vep_input', pretty:true)
