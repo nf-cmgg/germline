@@ -13,8 +13,7 @@ process SAMTOOLS_MERGE {
     path fai
 
     output:
-    tuple val(meta), path("*.bam") , optional:true, emit: bam
-    tuple val(meta), path("*.cram"), optional:true, emit: cram
+    tuple val(meta), path("*.cram"), emit: cram
     path  "versions.yml"           , emit: versions
 
     when:
@@ -25,8 +24,7 @@ process SAMTOOLS_MERGE {
     def args2           = task.ext.args2   ?: ''
     def prefix          = task.ext.prefix ?: "${meta.id}"
     def reference       = fasta ? "--reference ${fasta}" : ""
-    def convert_to_cram = params.always_use_cram ?
-        "samtools view --threads ${task.cpus} --reference ${fasta} $args2 ${prefix}.bam -C -o ${prefix}.cram && rm ${prefix}.bam" : ""
+
     """
     samtools \\
         merge \\
@@ -36,7 +34,7 @@ process SAMTOOLS_MERGE {
         ${prefix}.bam \\
         $input_files
 
-    $convert_to_cram
+    samtools view --threads ${task.cpus} --reference ${fasta} $args2 ${prefix}.bam -C -o ${prefix}.cram && rm ${prefix}.bam
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -48,7 +46,7 @@ process SAMTOOLS_MERGE {
     prefix = task.ext.suffix ? "${meta.id}${task.ext.suffix}" : "${meta.id}"
 
     """
-    touch ${prefix}.${convert_to_cram ? "cram": "bam"}
+    touch ${prefix}.cram
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

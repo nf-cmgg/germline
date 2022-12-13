@@ -59,7 +59,6 @@ workflow GERMLINE_VARIANT_CALLING {
     )
 
     SAMTOOLS_MERGE.out.cram
-        .mix(SAMTOOLS_MERGE.out.bam)
         .mix(cram_branch.single
             .map(
                 {meta, cram, crai ->
@@ -86,9 +85,6 @@ workflow GERMLINE_VARIANT_CALLING {
 
     merged_crams.not_indexed
         .join(SAMTOOLS_INDEX.out.crai)
-        .mix(merged_crams.not_indexed
-            .join(SAMTOOLS_INDEX.out.bai)
-        )
         .mix(merged_crams.indexed)
         .dump(tag:'ready_crams', pretty:true)
         .set { ready_crams }
@@ -145,6 +141,7 @@ workflow GERMLINE_VARIANT_CALLING {
                     [meta, cram, crai, bed]
                 }
             )
+            .dump(tag:'calibratedragstrmodel_input')
             .set { calibratedragstrmodel_input }
 
         CALIBRATEDRAGSTRMODEL(
