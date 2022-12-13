@@ -486,10 +486,13 @@ workflow CMGGGERMLINE {
 
     if(params.gemini){
 
-        annotation_output
-            .join(VCF_EXTRACT_RELATE_SOMALIER.out.samples_tsv)
-            .dump(tag:'vcf2db_input', pretty:true)
-            .set { vcf2db_input }
+        CustomChannelOperators.joinOnKeys(
+            annotation_output,
+            VCF_EXTRACT_RELATE_SOMALIER.out.samples_tsv,
+            ['id', 'family', 'family_count']
+        )
+        .dump(tag:'vcf2db_input', pretty:true)
+        .set { vcf2db_input }
 
         VCF2DB(
             vcf2db_input

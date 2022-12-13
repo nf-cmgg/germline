@@ -43,7 +43,6 @@ process SOMALIER_EXTRACT {
 
     """
     touch ${prefix}.somalier
-    touch ${prefix}_2.somalier
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

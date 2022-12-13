@@ -73,7 +73,7 @@ def scatter_regions(meta, file, minimum_size) {
 
     // Check for stubs!
     if(!output_regions){
-        println("No BED contents detected when scattering, created some artificial regions for ${meta.id} - ignore this when using stub runs")
+        println("WARNING: No BED contents detected when scattering, created some artificial regions for ${meta.id} - ignore this when using stub runs")
         output_regions = [["chr20\t100\t200"],["chr20\t300\t400"]]
     }
 

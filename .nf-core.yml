@@ -24,6 +24,7 @@ lint:
     - assets/email_template.txt
     - assets/sendmail_template.txt
     - lib/NfcoreTemplate.groovy
+    - lib/WorkflowNf-cmgg-germline.groovy
     - .prettierignore
   actions_ci: false
   pipeline_name_conventions: false

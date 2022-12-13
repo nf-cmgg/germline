@@ -99,9 +99,7 @@ workflow ANNOTATION {
         .combine(count_chromosomes)
         .map(
             { meta, vcf, tbi, count ->
-                new_meta = meta.clone()
-                new_meta.remove("regions")
-                [ groupKey(new_meta, count), vcf, tbi ]
+                [ groupKey(meta.findAll{!(it.key == "regions")}, count), vcf, tbi ]
             }
         )
         .groupTuple()
@@ -117,11 +115,7 @@ workflow ANNOTATION {
     if (params.vcfanno) {
 
         BCFTOOLS_CONCAT.out.vcf
-            .map(
-                { meta, vcf ->
-                    [ meta, vcf, [] ]
-                }
-            )
+            .map { it + [[]]}
             .dump(tag:'vcfanno_input', pretty:true)
             .set { vcfanno_input }
 
