@@ -572,11 +572,11 @@ def parse_input(input_csv) {
             ],
             'cram': [
                 'content': 'file',
-                'pattern': '^.*\\.cram$',
+                'pattern': '^.*\\.cram',
             ],
             'crai': [
                 'content': 'file',
-                'pattern': '^.*\\.crai$',
+                'pattern': '^.*\\.crai',
                 'default': [],
             ],
             'bed': [
