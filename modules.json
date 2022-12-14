@@ -7,118 +7,119 @@
                 "nf-core": {
                     "bcftools/concat": {
                         "branch": "master",
-                        "git_sha": "ce723d4eac38d1c0bde98e29c503b51a3022bffc",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules", "vcf_gather_bcftools"]
                     },
                     "bcftools/filter": {
                         "branch": "master",
-                        "git_sha": "018b3e2c0ac441088e47da033802e8aa32aa1034",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
                     "bcftools/sort": {
                         "branch": "master",
-                        "git_sha": "018b3e2c0ac441088e47da033802e8aa32aa1034",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["vcf_gather_bcftools"]
                     },
                     "bcftools/stats": {
                         "branch": "master",
-                        "git_sha": "018b3e2c0ac441088e47da033802e8aa32aa1034",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
                     "custom/dumpsoftwareversions": {
                         "branch": "master",
-                        "git_sha": "8022c68e7403eecbd8ba9c49496f69f8c49d50f0",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
                     "ensemblvep": {
                         "branch": "master",
-                        "git_sha": "1ec0d59beb1e794a7a4a4351e15138ffa213aa20",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"],
                         "patch": "modules/nf-core/ensemblvep/ensemblvep.diff"
                     },
                     "gatk4/calibratedragstrmodel": {
                         "branch": "master",
-                        "git_sha": "018b3e2c0ac441088e47da033802e8aa32aa1034",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
                     "gatk4/composestrtablefile": {
                         "branch": "master",
-                        "git_sha": "018b3e2c0ac441088e47da033802e8aa32aa1034",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
                     "gatk4/createsequencedictionary": {
                         "branch": "master",
-                        "git_sha": "018b3e2c0ac441088e47da033802e8aa32aa1034",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
                     "gatk4/genomicsdbimport": {
                         "branch": "master",
-                        "git_sha": "018b3e2c0ac441088e47da033802e8aa32aa1034",
-                        "installed_by": ["modules"]
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
+                        "installed_by": ["modules"],
+                        "patch": "modules/nf-core/gatk4/genomicsdbimport/gatk4-genomicsdbimport.diff"
                     },
                     "gatk4/genotypegvcfs": {
                         "branch": "master",
-                        "git_sha": "018b3e2c0ac441088e47da033802e8aa32aa1034",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
                     "gatk4/haplotypecaller": {
                         "branch": "master",
-                        "git_sha": "018b3e2c0ac441088e47da033802e8aa32aa1034",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
                     "gatk4/reblockgvcf": {
                         "branch": "master",
-                        "git_sha": "018b3e2c0ac441088e47da033802e8aa32aa1034",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
                     "gawk": {
                         "branch": "master",
-                        "git_sha": "018b3e2c0ac441088e47da033802e8aa32aa1034",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
                     "multiqc": {
                         "branch": "master",
-                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
                     "samtools/faidx": {
                         "branch": "master",
-                        "git_sha": "cf5b9c30a2adacc581793afb79fae5f5b50bed01",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
                     "samtools/index": {
                         "branch": "master",
-                        "git_sha": "cf5b9c30a2adacc581793afb79fae5f5b50bed01",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
                     "somalier/extract": {
                         "branch": "master",
-                        "git_sha": "018b3e2c0ac441088e47da033802e8aa32aa1034",
-                        "installed_by": ["vcf_extract_relate_somalier", "modules"]
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
+                        "installed_by": ["modules", "vcf_extract_relate_somalier"]
                     },
                     "somalier/relate": {
                         "branch": "master",
-                        "git_sha": "018b3e2c0ac441088e47da033802e8aa32aa1034",
-                        "installed_by": ["vcf_extract_relate_somalier", "modules"]
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
+                        "installed_by": ["modules", "vcf_extract_relate_somalier"]
                     },
                     "tabix/bgzip": {
                         "branch": "master",
-                        "git_sha": "018b3e2c0ac441088e47da033802e8aa32aa1034",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
                     "tabix/tabix": {
                         "branch": "master",
-                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
-                        "installed_by": ["vcf_gather_bcftools", "modules", "vcf_extract_relate_somalier"]
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
+                        "installed_by": ["modules", "vcf_extract_relate_somalier", "vcf_gather_bcftools"]
                     },
                     "vcf2db": {
                         "branch": "master",
-                        "git_sha": "018b3e2c0ac441088e47da033802e8aa32aa1034",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
                     "vcfanno": {
                         "branch": "master",
-                        "git_sha": "2edbd10f12f7d3d681d2196707f15140d0e4d463",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     }
                 }
