@@ -7,13 +7,11 @@
 
 ## Introduction
 
-**nf-cmgg-germline** is a bioinformatics best-practice analysis pipeline for A nextflow pipeline for calling and annotating variants. It uses HaplotypeCaller to call variants and EnsemblVEP to annotate the called variants. By supplying the `--output_mode <seqr|seqplorer>` you can choose for which platform the VCFs should be created.
+**nf-cmgg-germline** is a bioinformatics best-practice analysis pipeline for calling, joint-genotyping and annotating variants. It uses HaplotypeCaller to call variants and EnsemblVEP to annotate the called variants.
 
 The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It uses Docker/Singularity containers making installation trivial and results highly reproducible. The [Nextflow DSL2](https://www.nextflow.io/docs/latest/dsl2.html) implementation of this pipeline uses one container per process which makes it much easier to maintain and update software dependencies. Where possible, these processes have been submitted to and installed from [nf-core/modules](https://github.com/nf-core/modules) in order to make them available to all nf-core pipelines, and to everyone within the Nextflow community!
 
 ## Pipeline summary
-
-//TODO update the metro graph
 ![metro graph](docs/images/nf-cmgg-germline_metro.png)
 
 ## Quick Start
@@ -38,7 +36,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool
 4. Start running your own analysis!
 
    ```bash
-   nextflow run CenterForMedicalGeneticsGhent/nf-cmgg-germline --input <INPUT_CSV> --outdir <OUTDIR> --genome GRCh38 -profile <docker/singularity/podman/shifter/charliecloud/conda/institute> --fasta <PATH/TO/FASTA>
+   nextflow run CenterForMedicalGeneticsGhent/nf-cmgg-germline --input <INPUT_CSV> --outdir <OUTDIR> -profile <docker/singularity/podman/shifter/charliecloud/conda/institute> --fasta <PATH/TO/FASTA>
    ```
 
 An overview of the parameters for this pipeline can be viewed using:
@@ -51,12 +49,10 @@ nextflow run CenterForMedicalGeneticsGhent/nf-cmgg-germline --help
 
 nf-cmgg-germline was originally written by @nvnieuwk.
 
-We thank the following people for their extensive assistance in the development of this pipeline:
-
 ## Contributions and Support
 
 If you would like to contribute to this pipeline, please see the [contributing guidelines](.github/CONTRIBUTING.md).
 
 ## Citations
 
-An extensive list of references for the tools used by the pipeline can be found in the [`CITATIONS.md`](CITATIONS.md) file.
+An extensive list of references can be found in the [`CITATIONS.md`](CITATIONS.md) file.

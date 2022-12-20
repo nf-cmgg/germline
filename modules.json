@@ -58,7 +58,7 @@
                     },
                     "gatk4/genomicsdbimport": {
                         "branch": "master",
-                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
+                        "git_sha": "223432b834d7819707c162c48a83612b785c8796",
                         "installed_by": ["modules"],
                         "patch": "modules/nf-core/gatk4/genomicsdbimport/gatk4-genomicsdbimport.diff"
                     },
@@ -74,7 +74,7 @@
                     },
                     "gatk4/reblockgvcf": {
                         "branch": "master",
-                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
+                        "git_sha": "223432b834d7819707c162c48a83612b785c8796",
                         "installed_by": ["modules"],
                         "patch": "modules/nf-core/gatk4/reblockgvcf/gatk4-reblockgvcf.diff"
                     },
@@ -115,7 +115,7 @@
                     },
                     "tabix/bgzip": {
                         "branch": "master",
-                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
+                        "git_sha": "90294980a903ecebd99ac31d8b6c66af48fa8259",
                         "installed_by": ["modules"]
                     },
                     "tabix/tabix": {

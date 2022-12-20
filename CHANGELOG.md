@@ -5,17 +5,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v1.1.0dev
 
-- Added genomic data support
-  - Added automatic BED file generation from the FASTA index
-- Some minor improvements which could speed up pipeline execution (mainly scatter/gather improvements and additions)
-- Added better support for the family and PED input (also support for samples that have neither input => will use the sample name as family name for a family containing this one sample)
-- Refactored the code for better readability
-- Added `dump` statements for better debugging
-- Updated the minimum Nextflow version to 22.10.1
-- Rewrote the post-processing subworkflow to a joint-genotyping workflow with GenomicsDBImport
-- Added `dbsnp` input to Haplotypecaller
-- Added `somalier` as a new subworkflow
-- Improved `VCFanno`
+### New Features
+1. BED file input is new optional (The regions are created from the FASTA index). Providing a BED file is still preffered for the most optimal runs.
+2. Added support for samples that aren't part of a family. Just leave the `ped` and `family_id` input fields in the samplesheet empty for a sample to be treated like this. This sample will go through exactly the same workflow but will be emitted as a single-sample VCF.
+3. Added `dump` functionality to lots of channels.
+4. Added the `dbsnp` option to `GATK HaplotypeCaller`. use `--dbsnp` and `--dbsnp_tbi` to supply these VCFs.
+5. Added the `vcf_extract_somalier` subworkflow to the pipeline. This also creates PED files inferred from the input multi-sample VCF.
+
+### Improvements
+1. Improved the scatter/gather logic.
+    - `--scatter_count` has been changed to `--scatter_size`. By defining this parameter you set the minimal size of the region to scatter on. The default is `1500000` which is perfect for WES runs on human samples.
+    - The scattering now happens using a `groovy` [function](subworkflows/local/bed_scatter_groovy.nf) which lowers the amount of processes needed.
+    - Genotyping and annotation now also use some form of scattering and gathering
+2. Refactored a lot of the code to maintain the same style over the whole pipeline.
+3. Updated the minimum Nextlow version to `22.10.1`.
+4. The `post_processing` subworklow has been renamed to the better suiting `joint_genotyping` subworkflow. `reblockgvcf` has been moved to `germline_variant_calling` and the `filter` and `reheadering` has been moved to the main workflow.
+5. Merging VCFs of the same family now happens with `GATK GenomicsDBImport` instead of `GATK MergeGVCFs` or `bcftools merge`. This gives more reliable results.
+6. Improved the handling of `vcfanno`
+7. The PED headers are now added to all the output VCFs instead of only those that were given a PED file as input. The PED file used is created using `somalier relate`
+
+### Bug fixes
+1. Fixed some issues when both the `ped` and `family_id` were given for a sample.
 
 ## v1.0.1 - Happy Hollebeke - [Oct 7 2022]
 

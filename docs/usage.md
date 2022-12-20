@@ -19,8 +19,8 @@ The `sample` identifiers have to be the same when you have re-sequenced the same
 ```console
 sample,family,cram,crai,bed,ped
 SAMPLE_1,FAMILY_1,SAMPLE_1.cram,SAMPLE_1.crai,SAMPLE_1.bed,FAMILY_1.ped
-SAMPLE_2,FAMILY_1,SAMPLE_2.cram,SAMPLE_2.crai,SAMPLE_2.bed,FAMILY_1.ped
-SAMPLE_3,FAMILY_2,SAMPLE_3.cram,SAMPLE_3.crai,SAMPLE_3.bed,FAMILY_2.ped
+SAMPLE_2,FAMILY_1,SAMPLE_2.cram,SAMPLE_2.crai,SAMPLE_2.bed,
+SAMPLE_3,,SAMPLE_3.cram,,,
 ```
 
 ### Full samplesheet
@@ -29,12 +29,12 @@ The samplesheet can have as many columns as you desire, however, there is a stri
 
 | Column   | Description                                                                                                                                                                                         |
 | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sample` | Custom sample name. This entry will be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`).              |
-| `family` | The family ID of the specified sample. This field is optional, as the family id can also be extracted from the `ped` file. Spaces in sample names are automatically converted to underscores (`_`). |
-| `cram`   | Full path to CRAM file fetched from the preprocessing pipeline. File has to have the extension ".cram".                                                                                             |
-| `crai`   | Full path to CRAM index file fetched from the preprocessing pipeline. File has to have the extension ".crai" or ".bai".                                                                             |
-| `bed`    | Full path to BED file containing the regions to call on. File has to have the extension ".bed".                                                                                                     |
-| `ped`    | Full path to PED file containing the relational information between samples in the same family to call on. File has to have the extension ".ped".                                                   |
+| `sample` | MANDATORY - Custom sample name. This entry will be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`).              |
+| `family` | OPTIONAL - The family ID of the specified sample. This field is optional, as the family id can also be extracted from the `ped` file. Spaces in sample names are automatically converted to underscores (`_`). |
+| `cram`   | MANDATORY - Full path to CRAM file fetched from the preprocessing pipeline. File has to have the extension ".cram".                                                                                             |
+| `crai`   | OPTIONAL - Full path to CRAM index file fetched from the preprocessing pipeline. File has to have the extension ".crai".                                                                             |
+| `bed`    | OPTIONAL - Full path to BED file containing the regions to call on. File has to have the extension ".bed".                                                                                                     |
+| `ped`    | OPTIONAL - Full path to PED file containing the relational information between samples in the same family to call on. File has to have the extension ".ped".                                                   |
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
@@ -59,7 +59,7 @@ work                # Directory containing the nextflow working files
 
 ### Updating the pipeline
 
-When you run the above command, Nextflow automatically pulls the pipeline code from GitHub and stores it as a cached version. When running the pipeline after this, it will always use the cached version if available - even if the pipeline has been updated since. To make sure that you're running the latest version of the pipeline, make sure that you regularly update the cached version of the pipeline:
+When you run the above command, Nextflow automatically pulls the pipeline code from GitHub and stores it as a cached version. When running the pipeline after this, it will always use the cached version if available - even if the pipeline has been updated since. To make sure that you're running the latest version of the pipeline, make sure that you regularly update the cached version of the pipeline. You can also add the `-latest` argument to your run command to automatically fetch the latest version on every run:
 
 ```bash
 nextflow pull CenterForMedicalGeneticsGhent/nf-cmgg-germline
@@ -95,6 +95,10 @@ If `-profile` is not specified, the pipeline will run locally and expect all sof
 - `test`
   - A profile with a complete configuration for automated testing
   - Includes links to test data so needs no other parameters
+- `test_local`
+  - A profile for local testing by @nvnieuwk. This won't work on other machines
+- `nf_test`
+  - The profile setting the default values for `nf-test`. When running `nf-test` this profile is automatically used.
 - `docker`
   - A generic configuration profile to be used with [Docker](https://docker.com/)
 - `singularity`
