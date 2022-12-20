@@ -87,7 +87,7 @@ def add_ped_to_header(vcf, ped_vcf) {
     String columns_vcf = ""
     String columns_ped = ""
 
-    if(vcf.size() == 0 || ped.size() == 0){
+    if(vcf.size() == 0 || ped_vcf.size() == 0){
         println("WARNING: No VCF contents detected when merging the VCF and PED headers for ${vcf} and/or ${ped_vcf} - ignore this when using stub runs")
         header.add("##STUB")
     }
