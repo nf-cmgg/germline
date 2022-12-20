@@ -87,38 +87,46 @@ def add_ped_to_header(vcf, ped_vcf) {
     String columns_vcf = ""
     String columns_ped = ""
 
-    vcf.withInputStream {
-        InputStream gzipStream = new java.util.zip.GZIPInputStream(it)
-        Reader decoder = new InputStreamReader(gzipStream, 'ASCII')
-        BufferedReader buffered = new BufferedReader(decoder)
-        while( line = buffered.readLine()) {
-            if(line ==~ "^##.*"){
-                header.add(line)
+    if(vcf.size() == 0 || ped.size() == 0){
+        println("WARNING: No VCF contents detected when merging the VCF and PED headers for ${vcf} and/or ${ped_vcf} - ignore this when using stub runs")
+        header.add("##STUB")
+    }
+    else {
+        vcf.withInputStream {
+            InputStream gzipStream = new java.util.zip.GZIPInputStream(it)
+            Reader decoder = new InputStreamReader(gzipStream, 'ASCII')
+            BufferedReader buffered = new BufferedReader(decoder)
+            while( line = buffered.readLine()) {
+                if(line ==~ "^##.*"){
+                    header.add(line)
+                }
+                else if(line ==~ "^#CHROM.*"){
+                    columns_vcf = line
+                }
+                else {
+                    break
+                }
             }
-            else if(line ==~ "^#CHROM.*"){
-                columns_vcf = line
-            }
-            else {
-                break
+        }
+
+        ped_vcf.withInputStream {
+            InputStream gzipStream = new java.util.zip.GZIPInputStream(it)
+            Reader decoder = new InputStreamReader(gzipStream, 'ASCII')
+            BufferedReader buffered = new BufferedReader(decoder)
+            while( line = buffered.readLine()) {
+                if(line ==~ "^##.*"){
+                    if (!(line ==~ "^##file.*")){
+                        header.add(line)
+                    }
+                }
+                else if(line ==~ "^#CHROM.*"){
+                    columns_ped = line
+                }
             }
         }
     }
 
-    ped_vcf.withInputStream {
-        InputStream gzipStream = new java.util.zip.GZIPInputStream(it)
-        Reader decoder = new InputStreamReader(gzipStream, 'ASCII')
-        BufferedReader buffered = new BufferedReader(decoder)
-        while( line = buffered.readLine()) {
-            if(line ==~ "^##.*"){
-                if (!(line ==~ "^##file.*")){
-                    header.add(line)
-                }
-            }
-            else if(line ==~ "^#CHROM.*"){
-                columns_ped = line
-            }
-        }
-    }
+
 
     assert columns_ped == columns_vcf : "The columns in the genotyped VCF and the VCF containing PED headers are different. (${vcf} and ${ped_vcf})"
     header.add(columns_vcf)
