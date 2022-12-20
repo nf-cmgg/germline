@@ -83,6 +83,7 @@ multiqc_logo        = params.multiqc_logo   ? file(params.multiqc_logo, checkIfE
 include { GERMLINE_VARIANT_CALLING      } from '../subworkflows/local/germline_variant_calling'
 include { JOINT_GENOTYPING              } from '../subworkflows/local/joint_genotyping'
 include { ANNOTATION                    } from '../subworkflows/local/annotation'
+include { ADD_PED_HEADER                } from '../subworkflows/local/add_ped_header'
 
 include { VCF_EXTRACT_RELATE_SOMALIER   } from '../subworkflows/nf-core/vcf_extract_relate_somalier/main'
 
@@ -441,12 +442,27 @@ workflow CMGGGERMLINE {
     ch_versions = ch_versions.mix(VCF_EXTRACT_RELATE_SOMALIER.out.versions)
 
     //
+    // Add PED headers to the VCFs
+    //
+
+    ADD_PED_HEADER(
+        filter_output,
+        VCF_EXTRACT_RELATE_SOMALIER.out.samples_tsv
+    )
+
+    ch_versions = ch_versions.mix(ADD_PED_HEADER.out.versions)
+
+    ADD_PED_HEADER.out.ped_vcfs
+        .dump(tag:'ped_vcfs', pretty:true)
+        .set { ped_vcfs }
+
+    //
     // Annotation of the variants and creation of Gemini-compatible database files
     //
     if (params.annotate) {
 
         ANNOTATION(
-            filter_output,
+            ped_vcfs,
             fasta,
             fasta_fai,
             vep_cache,
@@ -460,7 +476,7 @@ workflow CMGGGERMLINE {
 
         ANNOTATION.out.annotated_vcfs.set { annotation_output }
     } else {
-        filter_output.set { annotation_output }
+        ped_vcfs.set { annotation_output }
     }
 
     annotation_output

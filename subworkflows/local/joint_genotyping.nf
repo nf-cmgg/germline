@@ -2,8 +2,6 @@
 // GENOTYPE
 //
 
-include { RTGTOOLS_PEDFILTER as PEDFILTER            } from '../../modules/local/rtgtools/pedfilter/main'
-include { MERGE_VCF_HEADERS                          } from '../../modules/local/merge_vcf_headers'
 include { MERGE_BEDS                                 } from '../../modules/local/merge_beds'
 
 include { GATK4_GENOMICSDBIMPORT as GENOMICSDBIMPORT } from '../../modules/nf-core/gatk4/genomicsdbimport/main'
@@ -135,67 +133,7 @@ workflow JOINT_GENOTYPING {
 
     ch_versions = ch_versions.mix(VCF_GATHER_BCFTOOLS.out.versions)
 
-    VCF_GATHER_BCFTOOLS.out.vcf
-        .dump(tag:'concat_vcfs', pretty:true)
-        .set { concat_vcfs }
-
-    //
-    // Add pedigree information
-    //
-
-    concat_vcfs
-        .join(peds)
-        .branch(
-            { meta, vcf, ped ->
-                has_ped: ped
-                    return [ meta, vcf, ped ]
-                no_ped: !ped
-                    return [ meta, vcf ]
-            }
-        )
-        .set { ped_vcfs }
-
-    ped_vcfs.has_ped
-        .tap { pedfilter_input }
-        .dump(tag:'ped_vcfs_has_ped', pretty:true)
-        .set { merge_header_input }
-    ped_vcfs.no_ped.dump(tag:'ped_vcfs_no_ped', pretty:true)
-
-    PEDFILTER(
-        pedfilter_input.map({ meta, vcf, ped -> [ meta, ped ]})
-    )
-
-    ch_versions = ch_versions.mix(PEDFILTER.out.versions)
-
-    BGZIP_GENOTYPED_VCFS(
-        merge_header_input.map({ meta, vcf, ped -> [ meta, vcf ]})
-    )
-
-    ch_versions = ch_versions.mix(BGZIP_GENOTYPED_VCFS.out.versions)
-
-    MERGE_VCF_HEADERS(
-        BGZIP_GENOTYPED_VCFS.out.output
-            .join(PEDFILTER.out.vcf)
-    )
-
-    ch_versions = ch_versions.mix(MERGE_VCF_HEADERS.out.versions)
-
-    BGZIP_PED_VCFS(
-        MERGE_VCF_HEADERS.out.vcf
-    )
-
-    ch_versions = ch_versions.mix(BGZIP_PED_VCFS.out.versions)
-
-    ped_vcfs.no_ped
-        .mix(BGZIP_PED_VCFS.out.output)
-        .dump(tag:'filter_input', pretty:true)
-        .set { genotyped_vcfs }
-
-    //
-    // Filter the variants
-    //
-
     emit:
-    genotyped_vcfs     // channel: [meta, vcf] => The output channel containing the post processed VCF
+    genotyped_vcfs = VCF_GATHER_BCFTOOLS.out.vcf    // channel: [meta, vcf] => The output channel containing the post processed VCF
     versions = ch_versions
 }

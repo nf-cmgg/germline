@@ -15,6 +15,11 @@
                         "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
+                    "bcftools/reheader": {
+                        "branch": "master",
+                        "git_sha": "c7a9a57433b603b5081bef964dae08f6e9d81085",
+                        "installed_by": ["modules"]
+                    },
                     "bcftools/sort": {
                         "branch": "master",
                         "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
@@ -81,6 +86,11 @@
                     "multiqc": {
                         "branch": "master",
                         "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
+                        "installed_by": ["modules"]
+                    },
+                    "rtgtools/pedfilter": {
+                        "branch": "master",
+                        "git_sha": "807b6f0d92d39daf0deba1dc9786450d3e48efb0",
                         "installed_by": ["modules"]
                     },
                     "samtools/faidx": {
