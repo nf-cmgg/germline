@@ -42,6 +42,7 @@ results/
     ├── execution_trace_2022-10-03_11-56-25.txt
     └── pipeline_dag_2022-10-03_11-56-25.html
 ```
+
 ## Pipeline overview
 
 [Nextflow](https://www.nextflow.io/docs/latest/tracing.html) provides excellent functionality for generating various reports relevant to the running and execution of the pipeline. This will allow you to troubleshoot errors with the running of the pipeline, and also provide you with other information such as launch commands, run times and resource usage.

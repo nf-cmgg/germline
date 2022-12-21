@@ -27,12 +27,12 @@ SAMPLE_3,,SAMPLE_3.cram,,,
 
 The samplesheet can have as many columns as you desire, however, there is a strict requirement for the first 5 columns to match those defined in the table below.
 
-| Column   | Description                                                                                                                                                                                         |
-| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sample` | MANDATORY - Custom sample name. This entry will be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`).              |
+| Column   | Description                                                                                                                                                                                                    |
+| -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sample` | MANDATORY - Custom sample name. This entry will be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`).             |
 | `family` | OPTIONAL - The family ID of the specified sample. This field is optional, as the family id can also be extracted from the `ped` file. Spaces in sample names are automatically converted to underscores (`_`). |
-| `cram`   | MANDATORY - Full path to CRAM file fetched from the preprocessing pipeline. File has to have the extension ".cram".                                                                                             |
-| `crai`   | OPTIONAL - Full path to CRAM index file fetched from the preprocessing pipeline. File has to have the extension ".crai".                                                                             |
+| `cram`   | MANDATORY - Full path to CRAM file fetched from the preprocessing pipeline. File has to have the extension ".cram".                                                                                            |
+| `crai`   | OPTIONAL - Full path to CRAM index file fetched from the preprocessing pipeline. File has to have the extension ".crai".                                                                                       |
 | `bed`    | OPTIONAL - Full path to BED file containing the regions to call on. File has to have the extension ".bed".                                                                                                     |
 | `ped`    | OPTIONAL - Full path to PED file containing the relational information between samples in the same family to call on. File has to have the extension ".ped".                                                   |
 
