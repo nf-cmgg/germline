@@ -61,7 +61,7 @@ jobs:
 
       - name: Run pipeline with test data
         run: |
-          nf-test test tests/${{ matrix.test }}.test --junitxml=default.xml
+          $CONDA/bin/nf-test test tests/${{ matrix.test }}.test --junitxml=default.xml
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v3
