@@ -431,7 +431,7 @@ workflow CMGGGERMLINE {
     //
 
     VCF_EXTRACT_RELATE_SOMALIER(
-        filter_output.map { it + [[]] },
+        filter_output.map { it + [[], 1] },
         fasta,
         fasta_fai,
         somalier_sites,
