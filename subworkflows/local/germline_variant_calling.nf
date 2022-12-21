@@ -207,8 +207,7 @@ workflow GERMLINE_VARIANT_CALLING {
     VCF_GATHER_BCFTOOLS(
         haplotypecaller_vcfs,
         split_beds.map { meta, bed, scatter_count ->
-            new_meta = meta.clone()
-            new_meta.id = bed.baseName
+            new_meta = meta.findAll{true} + [id:bed.baseName]
             [ new_meta, bed, scatter_count ]
         },
         "sample",

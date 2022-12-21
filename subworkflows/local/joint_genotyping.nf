@@ -50,10 +50,11 @@ workflow JOINT_GENOTYPING {
     gvcfs
         .map(
             { meta, gvcf, tbi ->
-                new_meta = [:]
-                new_meta.family = meta.family
-                new_meta.id = meta.family ?: meta.sample
-                new_meta.family_count = meta.family_count
+                new_meta = [
+                    family: meta.family,
+                    id: meta.family ?: meta.sample,
+                    family_count: meta.family_count
+                ]
                 [ groupKey(new_meta, meta.family_count.toInteger()), gvcf, tbi ]
             }
         )
@@ -96,7 +97,8 @@ workflow JOINT_GENOTYPING {
         .combine(BED_SCATTER_GROOVY.out.scattered, by:0)
         .map(
             { meta, genomic_db, bed, bed_count ->
-                [ meta, genomic_db, [], bed, [] ]
+                new_meta = meta.findAll()[0] + [id:bed.baseName]
+                [ new_meta, genomic_db, [], bed, [] ]
             }
         )
         .dump(tag:'genotypegvcfs_input', pretty:true)
@@ -126,8 +128,12 @@ workflow JOINT_GENOTYPING {
 
     VCF_GATHER_BCFTOOLS(
         genotyped_vcfs,
-        BED_SCATTER_GROOVY.out.scattered,
-        [],
+        BED_SCATTER_GROOVY.out.scattered
+            .map { meta, bed, scatter_count ->
+                new_meta = meta.findAll{true}[0] + [id:bed.baseName]
+                [ new_meta, bed, scatter_count ]
+            },
+        "family",
         true
     )
 
