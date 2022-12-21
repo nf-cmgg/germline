@@ -17,7 +17,7 @@
                     },
                     "bcftools/reheader": {
                         "branch": "master",
-                        "git_sha": "c7a9a57433b603b5081bef964dae08f6e9d81085",
+                        "git_sha": "94688be064ebc0fc4d720ba7acb0f1f8eb8d0af0",
                         "installed_by": ["modules"]
                     },
                     "bcftools/sort": {
