@@ -47,10 +47,17 @@ jobs:
         with:
           version: "${{ matrix.NXF_VER }}"
 
+      - name: Set up miniconda
+        if: matrix.profile == 'conda'
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: true
+          channels: conda-forge,bioconda,defaults
+          python-version: 3.10
+
       - name: Install nf-test
         run: |
-          wget -qO- https://code.askimed.com/install/nf-test | bash
-          sudo mv nf-test /usr/local/bin/
+          conda install nf-test
 
       - name: Run pipeline with test data
         run: |
