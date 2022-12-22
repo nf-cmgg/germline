@@ -720,9 +720,6 @@ def get_family_id_from_ped(ped_file){
             exit 1, "[PED file error] ${ped_file} should contain exactly 6 tab-delimited columns (family_id    individual_id    paternal_id    maternal_id    sex    phenotype). This is not the case on line ${line_count}."
         }
     }
-    if (ped =~ /\n$/) {
-        exit 1, "[PED file error] An empty new line has been detected at the end of ${ped_file}, please remove this line."
-    }
 
     // get family_id
     return (ped =~ /\n([^#]\w+)/)[0][1]
