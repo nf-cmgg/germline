@@ -1,12 +1,14 @@
 repository_type: pipeline
 lint:
   files_exist:
-    - assets/nf-core-nfcmggstructural_logo_light.png
-    - docs/images/nf-core-nfcmggstructural_logo_light.png
-    - docs/images/nf-core-nfcmggstructural_logo_dark.png
+    - CODE_OF_CONDUCT.md
+    - assets/nf-core-nf-cmgg-germline_logo_light.png
+    - docs/images/nf-core-nf-cmgg-germline_logo_light.png
+    - docs/images/nf-core-nf-cmgg-germline_logo_dark.png
     - .github/ISSUE_TEMPLATE/config.yml
     - .github/workflows/awstest.yml
     - .github/workflows/awsfulltest.yml
+    - lib/WorkflowNf-cmgg-germline.groovy
   nextflow_config:
     - manifest.name
     - manifest.homePage
@@ -24,4 +26,6 @@ lint:
     - assets/sendmail_template.txt
     - lib/NfcoreTemplate.groovy
     - .prettierignore
+    - LICENSE
   actions_ci: false
+  pipeline_name_conventions: false

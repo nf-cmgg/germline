@@ -50,7 +50,7 @@
             "properties": {
                 "genome": {
                     "type": "string",
-                    "default": "hg38",
+                    "default": "GRCh38",
                     "description": "Reference genome build"
                 },
                 "fasta": {
@@ -60,8 +60,7 @@
                     "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
                     "description": "Path to FASTA genome file.",
                     "help_text": "This parameter is *mandatory* if `--genome` is not specified. The path to the reference genome fasta.",
-                    "fa_icon": "far fa-file-code",
-                    "hidden": true
+                    "fa_icon": "far fa-file-code"
                 },
                 "fai": {
                     "type": "string",
@@ -70,22 +69,19 @@
                     "pattern": "^\\S+\\.fai$",
                     "description": "Path to FASTA genome index file.",
                     "help_text": "This parameter is *mandatory* if `--genome` is not specified.",
-                    "fa_icon": "far fa-file-code",
-                    "hidden": true
+                    "fa_icon": "far fa-file-code"
                 },
                 "dict": {
                     "type": "string",
                     "pattern": "^\\S+\\.dict$",
                     "description": "The sequence dictionary of the FASTA reference",
-                    "fa_icon": "far fa-file-code",
-                    "hidden": true
+                    "fa_icon": "far fa-file-code"
                 },
                 "strtablefile": {
                     "type": "string",
                     "description": "The STR table file generated from the FASTA reference",
                     "fa_icon": "fas fa-folder",
-                    "pattern": "^\\S+\\.zip$",
-                    "hidden": true
+                    "pattern": "^\\S+\\.zip$"
                 },
                 "genomes_base": {
                     "type": "string",
@@ -93,6 +89,13 @@
                     "hidden": true,
                     "description": "Directory base for CMGG reference store",
                     "fa_icon": "fas fa-download"
+                },
+                "cmgg_config_base": {
+                    "type": "string",
+                    "default": "/conf/",
+                    "description": "The base directory for the local config files",
+                    "fa_icon": "fas fa-folder",
+                    "hidden": true
                 },
                 "genomes_ignore": {
                     "type": "boolean",
@@ -123,34 +126,32 @@
             "description": "Parameters that define how the pipeline works",
             "default": "",
             "properties": {
-                "scatter_count": {
+                "scatter_size": {
                     "type": "integer",
-                    "default": 2,
-                    "fa_icon": "fas fa-cut",
-                    "description": "The amount of times the BED file should be split (for parallelization of GATK Haplotypecaller)",
-                    "minimum": 1
+                    "default": 1500000,
+                    "description": "The size of regions the BED files should be split into when scattering"
                 },
                 "species": {
                     "type": "string",
                     "default": "homo_sapiens",
-                    "description": "[Seqplorer mode only] The species of the samples (must be lower case and have underscores as spaces)",
+                    "description": "[Annotate mode only] The species of the samples (must be lower case and have underscores as spaces)",
                     "fa_icon": "fas fa-user-circle",
                     "pattern": "^[a-z_]*$"
                 },
-                "output_mode": {
-                    "type": "string",
-                    "default": "seqr",
-                    "enum": ["seqplorer", "seqr"],
-                    "description": "The filter mode for the VCF outputs (has to be either 'seqr' or 'seqplorer')",
-                    "fa_icon": "fas fa-question-circle"
-                },
-                "always_use_cram": {
+                "filter": {
                     "type": "boolean",
-                    "description": "Whether or not the modules should always return a CRAM file instead of a BAM file",
-                    "fa_icon": "fas fa-question-circle",
-                    "default": true
+                    "description": "Whether to filter the data or not (currently uses the filters needed for Seqplorer)"
+                },
+                "annotate": {
+                    "type": "boolean",
+                    "description": "Whether the samples should be annotated"
+                },
+                "gemini": {
+                    "type": "boolean",
+                    "description": "Whether the samples should be converted to a gemini database"
                 }
-            }
+            },
+            "required": ["scatter_size"]
         },
         "module_specific_parameters": {
             "title": "Module specific parameters",
@@ -163,15 +164,23 @@
                     "description": "Whether or not the DRAGSTR models should be used",
                     "fa_icon": "fas fa-question-circle"
                 },
-                "skip_genotyping": {
-                    "type": "boolean",
-                    "description": "Whether or not the genotyping should be skipped (does GVCF -> VCF conversion using bcftools view and convert instead)",
-                    "fa_icon": "fas fa-question-circle"
+                "dbsnp": {
+                    "type": "string",
+                    "default": "None",
+                    "description": "The DBSNP VCF file",
+                    "fa_icon": "far fa-file-alt"
                 },
-                "use_bcftools_merge": {
-                    "type": "boolean",
-                    "description": "Whether or not to use bcftools merge instead of CombineGVCFs",
-                    "fa_icon": "fas fa-question-circle"
+                "dbsnp_tbi": {
+                    "type": "string",
+                    "default": "None",
+                    "description": "The index of the DBSNP VCF file",
+                    "fa_icon": "far fa-file-alt"
+                },
+                "somalier_sites": {
+                    "type": "string",
+                    "default": "https://github.com/brentp/somalier/files/3412456/sites.hg38.vcf.gz",
+                    "fa_icon": "far fa-file-alt",
+                    "description": "A VCF file with sites for Somalier to use"
                 }
             }
         },
@@ -271,6 +280,12 @@
                     "fa_icon": "fas fa-question-circle",
                     "hidden": true
                 },
+                "version": {
+                    "type": "boolean",
+                    "description": "Display version and exit.",
+                    "fa_icon": "fas fa-question-circle",
+                    "hidden": true
+                },
                 "publish_dir_mode": {
                     "type": "string",
                     "default": "copy",
@@ -312,7 +327,7 @@
                     "type": "string",
                     "description": "Incoming hook URL for messaging service",
                     "fa_icon": "fas fa-people-group",
-                    "help_text": "Incoming hook URL for messaging service. Currently, only MS Teams is supported.",
+                    "help_text": "Incoming hook URL for messaging service. Currently, MS Teams and Slack are supported.",
                     "hidden": true
                 },
                 "multiqc_config": {
@@ -352,12 +367,6 @@
                     "description": "Show all params when using `--help`",
                     "hidden": true,
                     "help_text": "By default, parameters set as _hidden_ in the schema are not shown on the command line when a user runs with `--help`. Specifying this option will tell the pipeline to show all parameters."
-                },
-                "enable_conda": {
-                    "type": "boolean",
-                    "description": "Run this workflow with Conda. You can also use '-profile conda' instead of providing this parameter.",
-                    "hidden": true,
-                    "fa_icon": "fas fa-bacon"
                 }
             }
         },
@@ -367,59 +376,62 @@
             "description": "Parameters to configure Ensembl VEP and VCFanno (only used when \"--output_mode seqplorer\" is used)",
             "default": "",
             "properties": {
+                "vep_merged": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Specify if the VEP cache is a merged cache"
+                },
+                "vep_cache": {
+                    "type": "string",
+                    "default": "None",
+                    "description": "The path to the VEP cache"
+                },
                 "vep_dbnsfp": {
                     "type": "boolean",
-                    "description": "[Seqplorer mode only] Use the dbNSFP plugin with Ensembl VEP. The '--dbnsfp' and '--dbnsfp_tbi' parameters need to be specified when using this plugin.",
+                    "description": "[Annotate mode only] Use the dbNSFP plugin with Ensembl VEP. The '--dbnsfp' and '--dbnsfp_tbi' parameters need to be specified when using this plugin.",
                     "fa_icon": "fas fa-question-circle"
                 },
                 "vep_spliceai": {
                     "type": "boolean",
-                    "description": "[Seqplorer mode only] Use the SpliceAI plugin with Ensembl VEP. The '--spliceai_indel', '--spliceai_indel_tbi', '--spliceai_snv' and '--spliceai_snv_tbi' parameters need to be specified when using this plugin.",
+                    "description": "[Annotate mode only] Use the SpliceAI plugin with Ensembl VEP. The '--spliceai_indel', '--spliceai_indel_tbi', '--spliceai_snv' and '--spliceai_snv_tbi' parameters need to be specified when using this plugin.",
                     "fa_icon": "fas fa-question-circle"
                 },
                 "vep_spliceregion": {
                     "type": "boolean",
-                    "description": "[Seqplorer mode only] Use the SpliceRegion plugin with Ensembl VEP",
+                    "description": "[Annotate mode only] Use the SpliceRegion plugin with Ensembl VEP",
                     "fa_icon": "fas fa-question-circle"
                 },
                 "vep_mastermind": {
                     "type": "boolean",
-                    "description": "[Seqplorer mode only] Use the Mastermind plugin with Ensembl VEP, The '--mastermind' and '--mastermind_tbi' parameters need to be specified when using this plugin.",
+                    "description": "[Annotate mode only] Use the Mastermind plugin with Ensembl VEP, The '--mastermind' and '--mastermind_tbi' parameters need to be specified when using this plugin.",
                     "fa_icon": "fas fa-question-circle"
                 },
                 "vep_maxentscan": {
                     "type": "boolean",
-                    "description": "[Seqplorer mode only] Use the MaxEntScan plugin with Ensembl VEP, The '--maxentscan' parameter need to be specified when using this plugin.",
+                    "description": "[Annotate mode only] Use the MaxEntScan plugin with Ensembl VEP, The '--maxentscan' parameter need to be specified when using this plugin.",
                     "fa_icon": "fas fa-question-circle"
                 },
                 "vep_eog": {
                     "type": "boolean",
-                    "description": "[Seqplorer mode only] Use the custom EOG annotation with Ensembl VEP, The '--eog and '--eog_tbi' parameters need to be specified when using this plugin.",
+                    "description": "[Annotate mode only] Use the custom EOG annotation with Ensembl VEP, The '--eog and '--eog_tbi' parameters need to be specified when using this plugin.",
                     "fa_icon": "fas fa-question-circle"
-                },
-                "vep_merged_cache": {
-                    "type": "string",
-                    "default": "None",
-                    "format": "directory-path",
-                    "description": "[Seqplorer mode only] The path to the folder containing the merged cache",
-                    "fa_icon": "fas fa-folder"
                 },
                 "vep_version": {
                     "type": "string",
                     "default": "105.0",
-                    "description": "[Seqplorer mode only] The version of the VEP tool to be used",
+                    "description": "[Annotate mode only] The version of the VEP tool to be used",
                     "fa_icon": "fas fa-code-branch"
                 },
                 "vep_cache_version": {
                     "type": "string",
                     "default": "105",
-                    "description": "[Seqplorer mode only] The version of the cache to be used",
+                    "description": "[Annotate mode only] The version of the cache to be used",
                     "fa_icon": "fas fa-code-branch"
                 },
                 "dbnsfp": {
                     "type": "string",
                     "default": "None",
-                    "description": "[Seqplorer mode only] The dbSNFP file",
+                    "description": "[Annotate mode only] The dbSNFP file",
                     "format": "directory-path",
                     "fa_icon": "fas fa-folder"
                 },
@@ -427,78 +439,82 @@
                     "type": "string",
                     "default": "None",
                     "format": "file-path",
-                    "description": "[Seqplorer mode only] The index of the dbSNFP file"
+                    "description": "[Annotate mode only] The index of the dbSNFP file"
                 },
                 "spliceai_indel": {
                     "type": "string",
                     "default": "None",
                     "format": "file-path",
-                    "description": "[Seqplorer mode only] The VCF containing indels for spliceAI",
+                    "description": "[Annotate mode only] The VCF containing indels for spliceAI",
                     "fa_icon": "far fa-file-alt"
                 },
                 "spliceai_indel_tbi": {
                     "type": "string",
                     "default": "None",
                     "format": "file-path",
-                    "description": "[Seqplorer mode only] The index of the VCF containing indels for spliceAI"
+                    "description": "[Annotate mode only] The index of the VCF containing indels for spliceAI"
                 },
                 "spliceai_snv": {
                     "type": "string",
                     "default": "None",
                     "format": "file-path",
-                    "description": "[Seqplorer mode only] The VCF containing SNVs for spliceAI"
+                    "description": "[Annotate mode only] The VCF containing SNVs for spliceAI"
                 },
                 "spliceai_snv_tbi": {
                     "type": "string",
                     "default": "None",
                     "format": "file-path",
-                    "description": "[Seqplorer mode only] The index of the VCF containing SNVs for spliceAI"
+                    "description": "[Annotate mode only] The index of the VCF containing SNVs for spliceAI"
                 },
                 "mastermind": {
                     "type": "string",
                     "default": "None",
                     "format": "file-path",
-                    "description": "[Seqplorer mode only] The VCF for Mastermind"
+                    "description": "[Annotate mode only] The VCF for Mastermind"
                 },
                 "mastermind_tbi": {
                     "type": "string",
                     "default": "None",
                     "format": "file-path",
-                    "description": "[Seqplorer mode only] The index of the VCF for Mastermind"
+                    "description": "[Annotate mode only] The index of the VCF for Mastermind"
                 },
                 "maxentscan": {
                     "type": "string",
                     "default": "None",
                     "format": "directory-path",
-                    "description": "[Seqplorer mode only] MaxEntScan executable directory"
+                    "description": "[Annotate mode only] MaxEntScan executable directory"
                 },
                 "eog": {
                     "type": "string",
                     "default": "None",
                     "format": "file-path",
-                    "description": "[Seqplorer mode only] The VCF containing EOG annotations"
+                    "description": "[Annotate mode only] The VCF containing EOG annotations"
                 },
                 "eog_tbi": {
                     "type": "string",
                     "default": "None",
                     "format": "file-path",
-                    "description": "[Seqplorer mode only] The index of the VCF containing EOG annotations"
+                    "description": "[Annotate mode only] The index of the VCF containing EOG annotations"
                 },
                 "vcfanno": {
                     "type": "boolean",
-                    "description": "[Seqplorer mode only] Whether or not an extra annotation step should be performed with VCFanno"
+                    "description": "[Annotate & VCFanno mode only] Whether or not an extra annotation step should be performed with VCFanno"
                 },
-                "vcfanno_toml": {
+                "vcfanno_config": {
                     "type": "string",
                     "default": "None",
-                    "format": "file-path",
-                    "description": "[Seqplorer mode only] The TOML file containing the configuration for VCFanno"
+                    "description": "[Annotate & VCFanno mode only] The path to the VCFanno config TOML"
+                },
+                "vcfanno_lua": {
+                    "type": "string",
+                    "default": "None",
+                    "description": "[Annotate & VCFanno mode only] The path to a Lua script to be used in VCFanno"
                 },
                 "vcfanno_resources": {
                     "type": "string",
                     "default": "None",
                     "format": "directory-path",
-                    "description": "[Seqplorer mode only] The folder containing the reference annotation resources specified in the configuration TOML"
+                    "description": "[Annotate & VCFanno mode only] A comma-seperated list of resource files for VCFanno, please also supply their indices using this parameter"
                 }
             }
         }

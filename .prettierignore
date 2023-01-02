@@ -1,5 +1,6 @@
 email_template.html
 adaptivecard.json
+slackreport.json
 .nextflow*
 .nf-test/
 work/
@@ -11,3 +12,5 @@ testing*
 *.pyc
 samplesheet*
 *.ped
+null
+bin/

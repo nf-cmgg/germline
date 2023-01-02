@@ -2,7 +2,7 @@ process ENSEMBLVEP {
     tag "$meta.id"
     label 'process_medium'
 
-    conda (params.enable_conda ? "bioconda::ensembl-vep=105.0" : null)
+    conda "bioconda::ensembl-vep=105.0"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/ensembl-vep:105.0--pl5321h4a94de4_1' :
         'quay.io/biocontainers/ensembl-vep:105.0--pl5321h4a94de4_1' }"
@@ -17,9 +17,9 @@ process ENSEMBLVEP {
     path  extra_files
 
     output:
-    tuple val(meta), path("*.ann.{vcf,vcf.gz}")     , optional:true, emit: vcf
-    tuple val(meta), path("*.ann.{tab,tab.gz}")     , optional:true, emit: tab
-    tuple val(meta), path("*.ann.{json,json.gz}")   , optional:true, emit: json
+    tuple val(meta), path("*.{vcf,vcf.gz}")     , optional:true, emit: vcf
+    tuple val(meta), path("*.{tab,tab.gz}")     , optional:true, emit: tab
+    tuple val(meta), path("*.{json,json.gz}")   , optional:true, emit: json
     path "*.summary.html"                  , emit: report
     path "versions.yml"                    , emit: versions
 
@@ -37,7 +37,7 @@ process ENSEMBLVEP {
     """
     vep \\
         -i $vcf \\
-        -o ${prefix}.ann.${file_extension}${compress_out} \\
+        -o ${prefix}.${file_extension}${compress_out} \\
         $args \\
         $reference \\
         --assembly $genome \\
@@ -58,9 +58,6 @@ process ENSEMBLVEP {
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    touch ${prefix}.ann.vcf
-    touch ${prefix}.ann.tab
-    touch ${prefix}.ann.json
     touch ${prefix}.ann.vcf.gz
     touch ${prefix}.ann.tab.gz
     touch ${prefix}.ann.json.gz

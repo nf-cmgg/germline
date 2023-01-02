@@ -21,9 +21,12 @@ def checkPathParamList = [
     params.fai,
     params.dict,
     params.strtablefile,
-    params.vep_merged_cache,
-    params.vcfanno_toml,
-    params.vcfanno_resources
+    params.vep_cache,
+    params.vcfanno_config,
+    params.vcfanno_lua,
+    params.dbsnp,
+    params.dbsnp_tbi,
+    params.somalier_sites
 ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
@@ -37,7 +40,11 @@ if (params.input) { ch_input = file(params.input, checkIfExists: true) } else { 
 // Check for dependencies between parameters
 //
 
-if (params.output_mode == "seqplorer") {
+if(params.dbsnp_tbi && !params.dbsnp){
+    exit 1, "Please specify the dbsnp VCF with --dbsnp VCF"
+}
+
+if (params.annotate) {
     // Check if a genome is given
     if (!params.genome) { exit 1, "A genome should be supplied for seqplorer mode (use --genome)"}
 
@@ -49,107 +56,9 @@ if (params.output_mode == "seqplorer") {
     if (!params.species) { exit 1, "A species should be supplied for seqplorer mode (use --species)"}
 
     // Check if all vcfanno files are supplied when vcfanno should be used
-    if (params.vcfanno && (!params.vcfanno_toml || !params.vcfanno_resources)) {
-        exit 1, "A TOML file and resource directory should be supplied when using vcfanno (use --vcfanno_toml and --vcfanno_resources)"
+    if (params.vcfanno && (!params.vcfanno_config || !params.vcfanno_resources)) {
+        exit 1, "A TOML file and resource files should be supplied when using vcfanno (use --vcfanno_config and --vcfanno_resources)"
     }
-}
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    IMPORT THE INPUT PARAMETERS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-//
-// Importing the file pipeline parameters
-//
-
-// Input files
-fasta              = params.fasta               ? Channel.fromPath(params.fasta).collect()              : Channel.empty()
-fasta_fai          = params.fai                 ? Channel.fromPath(params.fai).collect()                : null
-dict               = params.dict                ? Channel.fromPath(params.dict).collect()               : null
-strtablefile       = params.strtablefile        ? Channel.fromPath(params.strtablefile).collect()       : null
-
-// Input values
-output_mode        = params.output_mode         ?: Channel.empty()
-scatter_count      = params.scatter_count       ?: Channel.empty()
-
-// Booleans
-always_use_cram    = params.always_use_cram
-use_dragstr_model  = params.use_dragstr_model
-skip_genotyping    = params.skip_genotyping
-use_bcftools_merge = params.use_bcftools_merge
-
-//
-// Importing the value pipeline parameters
-//
-
-genome             = params.genome              ?: Channel.empty()
-
-//
-// Importing the annotation parameters
-//
-
-vep_cache_version  = params.vep_cache_version   ?: Channel.empty()
-species            = params.species             ?: Channel.empty()
-
-vep_merged_cache   = params.vep_merged_cache    ? Channel.fromPath(params.vep_merged_cache).collect()   : []
-
-vcfanno            = params.vcfanno
-
-vcfanno_toml       = params.vcfanno_toml        ? Channel.fromPath(params.vcfanno_toml).collect()       : Channel.empty()
-vcfanno_res_inp    = params.vcfanno_resources   ? Channel.fromPath(params.vcfanno_resources).collect()  : Channel.empty()
-
-//
-// Check for the presence of EnsemblVEP plugins that use extra files
-//
-
-vep_extra_files = []
-
-// Check if all dbnsfp files are given
-if (params.dbnsfp && params.dbnsfp_tbi && params.vep_dbnsfp) {
-    vep_extra_files.add(file(params.dbnsfp, checkIfExists: true))
-    vep_extra_files.add(file(params.dbnsfp_tbi, checkIfExists: true))
-}
-else if (params.dbnsfp || params.dbnsfp_tbi || params.vep_dbnsfp) {
-    exit 1, "Please specify '--vep_dbsnf true', '--dbnsfp PATH/TO/DBNSFP/FILE' and '--dbnspf_tbi PATH/TO/DBNSFP/INDEX/FILE' to use the dbnsfp VEP plugin."
-}
-
-// Check if all spliceai files are given
-if (params.spliceai_snv && params.spliceai_snv_tbi && params.spliceai_indel && params.spliceai_indel_tbi && params.vep_spliceai) {
-    vep_extra_files.add(file(params.spliceai_snv, checkIfExists: true))
-    vep_extra_files.add(file(params.spliceai_snv_tbi, checkIfExists: true))
-    vep_extra_files.add(file(params.spliceai_indel, checkIfExists: true))
-    vep_extra_files.add(file(params.spliceai_indel_tbi, checkIfExists: true))
-}
-else if (params.spliceai_snv || params.spliceai_snv_tbi || params.spliceai_indel || params.spliceai_indel_tbi || params.vep_spliceai) {
-    exit 1, "Please specify '--vep_spliceai true', '--spliceai_snv PATH/TO/SPLICEAI/SNV/FILE', '--spliceai_snv_tbi PATH/TO/SPLICEAI/SNV/INDEX/FILE', '--spliceai_indel PATH/TO/SPLICEAI/INDEL/FILE' and '--spliceai_indel_tbi PATH/TO/SPLICEAI/INDEL/INDEX/FILE' to use the SpliceAI VEP plugin."
-}
-
-// Check if all mastermind files are given
-if (params.mastermind && params.mastermind_tbi && params.vep_mastermind) {
-    vep_extra_files.add(file(params.mastermind, checkIfExists: true))
-    vep_extra_files.add(file(params.mastermind_tbi, checkIfExists: true))
-}
-else if (params.mastermind || params.mastermind_tbi || params.vep_mastermind) {
-    exit 1, "Please specify '--vep_mastermind true', '--mastermind PATH/TO/MASTERMIND/FILE' and '--mastermind_tbi PATH/TO/MASTERMIND/INDEX/FILE' to use the mastermind VEP plugin."
-}
-
-// Check if all maxentscan files are given
-if (params.maxentscan && params.vep_maxentscan) {
-    vep_extra_files.add(file(params.maxentscan, checkIfExists: true))
-}
-else if (params.maxentscan || params.vep_maxentscan) {
-    exit 1, "Please specify '--vep_maxentscan true', '--maxentscan PATH/TO/MAXENTSCAN/' to use the MaxEntScan VEP plugin."
-}
-
-// Check if all EOG files are given
-if (params.eog && params.eog_tbi && params.vep_eog) {
-    vep_extra_files.add(file(params.eog, checkIfExists: true))
-    vep_extra_files.add(file(params.eog_tbi, checkIfExists: true))
-}
-else if (params.eog || params.eog_tbi || params.vep_eog) {
-    exit 1, "Please specify '--vep_eog true', '--eog PATH/TO/EOG/FILE' and '--eog_tbi PATH/TO/EOG/INDEX/FILE' to use the EOG custom VEP plugin."
 }
 
 /*
@@ -171,10 +80,12 @@ multiqc_logo        = params.multiqc_logo   ? file(params.multiqc_logo, checkIfE
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
 
-include { GERMLINE_VARIANT_CALLING } from '../subworkflows/local/germline_variant_calling'
-include { POST_PROCESS             } from '../subworkflows/local/postprocess'
-include { VCF_QC                   } from '../subworkflows/local/vcf_qc'
-include { ANNOTATION               } from '../subworkflows/local/annotation'
+include { GERMLINE_VARIANT_CALLING      } from '../subworkflows/local/germline_variant_calling'
+include { JOINT_GENOTYPING              } from '../subworkflows/local/joint_genotyping'
+include { ANNOTATION                    } from '../subworkflows/local/annotation'
+include { ADD_PED_HEADER                } from '../subworkflows/local/add_ped_header'
+
+include { VCF_EXTRACT_RELATE_SOMALIER   } from '../subworkflows/nf-core/vcf_extract_relate_somalier/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -190,7 +101,10 @@ include { SAMTOOLS_FAIDX as FAIDX                                    } from '../
 include { GATK4_CREATESEQUENCEDICTIONARY as CREATESEQUENCEDICTIONARY } from '../modules/nf-core/gatk4/createsequencedictionary/main'
 include { GATK4_COMPOSESTRTABLEFILE as COMPOSESTRTABLEFILE           } from '../modules/nf-core/gatk4/composestrtablefile/main'
 include { GAWK as INDEX_TO_BED                                       } from '../modules/nf-core/gawk/main'
-include { UNTAR                                                      } from '../modules/nf-core/untar/main'
+include { TABIX_TABIX as TABIX_DBSNP                                 } from '../modules/nf-core/tabix/tabix/main'
+include { BCFTOOLS_FILTER as FILTER_SNPS                             } from '../modules/nf-core/bcftools/filter/main'
+include { BCFTOOLS_FILTER as FILTER_INDELS                           } from '../modules/nf-core/bcftools/filter/main'
+include { BCFTOOLS_STATS as BCFTOOLS_STATS_FAMILY                    } from '../modules/nf-core/bcftools/stats/main'
 include { VCF2DB                                                     } from '../modules/nf-core/vcf2db/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS                                } from '../modules/nf-core/custom/dumpsoftwareversions/main'
 include { MULTIQC                                                    } from '../modules/nf-core/multiqc/main'
@@ -211,8 +125,97 @@ workflow CMGGGERMLINE {
     ch_reports  = Channel.empty()
 
     //
+    // Importing the input files
+    //
+    fasta              = Channel.fromPath(params.fasta).collect()
+    fasta_fai          = params.fai                 ? Channel.fromPath(params.fai).collect()                : null
+    dict               = params.dict                ? Channel.fromPath(params.dict).collect()               : null
+    strtablefile       = params.strtablefile        ? Channel.fromPath(params.strtablefile).collect()       : null
+
+    dbsnp              = params.dbsnp               ? Channel.fromPath(params.dbsnp).collect()              : []
+    dbsnp_tbi          = params.dbsnp_tbi           ? Channel.fromPath(params.dbsnp_tbi).collect()          : []
+
+    somalier_sites     = params.somalier_sites      ? Channel.fromPath(params.somalier_sites).collect()     : []
+
+    vep_cache          = params.vep_cache           ? Channel.fromPath(params.vep_cache).collect()          : []
+
+    vcfanno_config     = params.vcfanno_config      ? Channel.fromPath(params.vcfanno_config).collect()     : []
+    vcfanno_lua        = params.vcfanno_lua         ? Channel.fromPath(params.vcfanno_lua).collect()        : []
+    vcfanno_resources  = params.vcfanno_resources   ? Channel.of(params.vcfanno_resources.split(",")).map({ file(it, checkIfExists:true) }).collect()   : []
+
+    //
+    // Check for the presence of EnsemblVEP plugins that use extra files
+    //
+
+    if(params.annotate){
+        vep_extra_files = []
+
+        // Check if all dbnsfp files are given
+        if (params.dbnsfp && params.dbnsfp_tbi && params.vep_dbnsfp) {
+            vep_extra_files.add(file(params.dbnsfp, checkIfExists: true))
+            vep_extra_files.add(file(params.dbnsfp_tbi, checkIfExists: true))
+        }
+        else if (params.vep_dbnsfp) {
+            exit 1, "Please specify '--vep_dbsnfp true', '--dbnsfp PATH/TO/DBNSFP/FILE' and '--dbnspf_tbi PATH/TO/DBNSFP/INDEX/FILE' to use the dbnsfp VEP plugin."
+        }
+
+        // Check if all spliceai files are given
+        if (params.spliceai_snv && params.spliceai_snv_tbi && params.spliceai_indel && params.spliceai_indel_tbi && params.vep_spliceai) {
+            vep_extra_files.add(file(params.spliceai_snv, checkIfExists: true))
+            vep_extra_files.add(file(params.spliceai_snv_tbi, checkIfExists: true))
+            vep_extra_files.add(file(params.spliceai_indel, checkIfExists: true))
+            vep_extra_files.add(file(params.spliceai_indel_tbi, checkIfExists: true))
+        }
+        else if (params.vep_spliceai) {
+            exit 1, "Please specify '--vep_spliceai true', '--spliceai_snv PATH/TO/SPLICEAI/SNV/FILE', '--spliceai_snv_tbi PATH/TO/SPLICEAI/SNV/INDEX/FILE', '--spliceai_indel PATH/TO/SPLICEAI/INDEL/FILE' and '--spliceai_indel_tbi PATH/TO/SPLICEAI/INDEL/INDEX/FILE' to use the SpliceAI VEP plugin."
+        }
+
+        // Check if all mastermind files are given
+        if (params.mastermind && params.mastermind_tbi && params.vep_mastermind) {
+            vep_extra_files.add(file(params.mastermind, checkIfExists: true))
+            vep_extra_files.add(file(params.mastermind_tbi, checkIfExists: true))
+        }
+        else if (params.vep_mastermind) {
+            exit 1, "Please specify '--vep_mastermind true', '--mastermind PATH/TO/MASTERMIND/FILE' and '--mastermind_tbi PATH/TO/MASTERMIND/INDEX/FILE' to use the mastermind VEP plugin."
+        }
+
+        // Check if all maxentscan files are given
+        if (params.maxentscan && params.vep_maxentscan) {
+            vep_extra_files.add(file(params.maxentscan, checkIfExists: true))
+        }
+        else if (params.vep_maxentscan) {
+            exit 1, "Please specify '--vep_maxentscan true', '--maxentscan PATH/TO/MAXENTSCAN/' to use the MaxEntScan VEP plugin."
+        }
+
+        // Check if all EOG files are given
+        if (params.eog && params.eog_tbi && params.vep_eog) {
+            vep_extra_files.add(file(params.eog, checkIfExists: true))
+            vep_extra_files.add(file(params.eog_tbi, checkIfExists: true))
+        }
+        else if (params.vep_eog) {
+            exit 1, "Please specify '--vep_eog true', '--eog PATH/TO/EOG/FILE' and '--eog_tbi PATH/TO/EOG/INDEX/FILE' to use the EOG custom VEP plugin."
+        }
+    }
+
+    //
     // Create the optional input files if they are not supplied
     //
+
+    if (dbsnp != [] && dbsnp_tbi == []) {
+        TABIX_DBSNP(
+            [ [id:'dbsnp'], dbsnp ]
+        )
+
+        ch_versions = ch_versions.mix(TABIX_DBSNP.out.versions)
+        TABIX_DBSNP.out.tbi
+            .map(
+                { meta, tbi ->
+                    [ tbi ]
+                }
+            )
+            .collect()
+            .set { dbsnp_tbi }
+    }
 
     if (!fasta_fai) {
         FAIDX(
@@ -239,7 +242,7 @@ workflow CMGGGERMLINE {
             .set { dict }
     }
 
-    if (use_dragstr_model && !strtablefile) {
+    if (params.use_dragstr_model && !strtablefile) {
         COMPOSESTRTABLEFILE(
             fasta,
             fasta_fai,
@@ -251,30 +254,6 @@ workflow CMGGGERMLINE {
             .collect()
             .dump(tag:'strtablefile', pretty:true)
             .set { strtablefile }
-    }
-
-    if (output_mode == "seqplorer" && vcfanno) {
-        if (params.vcfanno_resources.endsWith(".tar.gz")) {
-            UNTAR(
-                vcfanno_res_inp.map({dir -> [ [], dir ]})
-            )
-            ch_versions = ch_versions.mix(UNTAR.out.versions)
-
-            UNTAR.out.untar
-                .map(
-                    { meta, dir ->
-                        dir
-                    }
-                )
-                .collect()
-                .set { vcfanno_resources }
-        } else {
-            Channel.value(vcfanno_res_inp)
-                .set { vcfanno_resources }
-        }
-        vcfanno_resources.dump(tag:'vcfanno_resources', pretty:true)
-    } else {
-        vcfanno_resources = []
     }
 
     //
@@ -312,16 +291,14 @@ workflow CMGGGERMLINE {
         , by:0)
         .multiMap(
             { family, family_count, meta, cram, crai, bed, ped ->
-                ped_family_id = meta.family
-
                 new_meta_ped = [:]
                 new_meta = meta.clone()
 
-                new_meta_ped.id           = meta.family ?: ped_family_id ?: meta.sample
-                new_meta_ped.family       = meta.family ?: ped_family_id
+                new_meta_ped.id           = meta.family ?: meta.sample
+                new_meta_ped.family       = meta.family ?: meta.sample
                 new_meta_ped.family_count = family_count
 
-                new_meta.family           = meta.family ?: ped_family_id
+                new_meta.family           = meta.family ?: meta.sample
                 new_meta.family_count     = family_count
 
                 beds: [new_meta, bed]
@@ -393,87 +370,151 @@ workflow CMGGGERMLINE {
         fasta_fai,
         dict,
         strtablefile,
-        scatter_count,
-        use_dragstr_model,
-        always_use_cram
+        dbsnp,
+        dbsnp_tbi
     )
 
     ch_versions = ch_versions.mix(GERMLINE_VARIANT_CALLING.out.versions)
+    ch_reports  = ch_reports.mix(GERMLINE_VARIANT_CALLING.out.reports)
 
     GERMLINE_VARIANT_CALLING.out.gvcfs
         .dump(tag:'variantcalling_output', pretty:true)
-        .set { postprocess_input }
+        .set { variantcalling_output }
 
     //
     // Joint-genotyping of the families
     //
 
-    POST_PROCESS(
-        postprocess_input,
+    JOINT_GENOTYPING(
+        variantcalling_output,
+        beds.valid.mix(created_beds),
         peds,
         fasta,
         fasta_fai,
-        dict,
-        output_mode,
-        skip_genotyping,
-        use_bcftools_merge
+        dict
     )
 
-    ch_versions = ch_versions.mix(POST_PROCESS.out.versions)
+    ch_versions = ch_versions.mix(JOINT_GENOTYPING.out.versions)
 
-    POST_PROCESS.out.post_processed_vcfs
-        .dump(tag:'postprocess_output', pretty:true)
+    JOINT_GENOTYPING.out.genotyped_vcfs
+        .dump(tag:'joint_genotyping_output', pretty:true)
         .tap { vcf_qc_input }
-        .set { annotation_input }
+        .set { joint_genotyping_output }
 
     //
-    // Quality control of the called variants
+    // Filter the variants
     //
 
-    VCF_QC(
-        vcf_qc_input
+    if (params.filter) {
+        FILTER_SNPS(
+            joint_genotyping_output
+        )
+
+        FILTER_INDELS(
+            FILTER_SNPS.out.vcf
+        )
+
+        ch_versions = ch_versions.mix(FILTER_SNPS.out.versions)
+        ch_versions = ch_versions.mix(FILTER_INDELS.out.versions)
+
+        FILTER_INDELS.out.vcf.set { filter_output }
+
+    }
+    else {
+        joint_genotyping_output.set { filter_output }
+    }
+
+    filter_output.dump(tag:'filter_output', pretty: true)
+
+    //
+    // Somalier
+    //
+
+    VCF_EXTRACT_RELATE_SOMALIER(
+        filter_output.map { it + [[], 1] },
+        fasta,
+        fasta_fai,
+        somalier_sites,
+        peds,
+        []
     )
 
-    ch_versions = ch_versions.mix(VCF_QC.out.versions)
-    ch_reports  = ch_reports.mix(VCF_QC.out.bcftools_stats.collect{it[1]}.ifEmpty([]))
-    ch_reports  = ch_reports.mix(VCF_QC.out.vcftools_tstv_count.collect{it[1]}.ifEmpty([]))
-    ch_reports  = ch_reports.mix(VCF_QC.out.vcftools_tstv_qual.collect{it[1]}.ifEmpty([]))
-    ch_reports  = ch_reports.mix(VCF_QC.out.vcftools_filter_summary.collect{it[1]}.ifEmpty([]))
+    ch_versions = ch_versions.mix(VCF_EXTRACT_RELATE_SOMALIER.out.versions)
+
+    //
+    // Add PED headers to the VCFs
+    //
+
+    ADD_PED_HEADER(
+        filter_output,
+        VCF_EXTRACT_RELATE_SOMALIER.out.samples_tsv
+    )
+
+    ch_versions = ch_versions.mix(ADD_PED_HEADER.out.versions)
+
+    ADD_PED_HEADER.out.ped_vcfs
+        .dump(tag:'ped_vcfs', pretty:true)
+        .set { ped_vcfs }
 
     //
     // Annotation of the variants and creation of Gemini-compatible database files
     //
-    if (output_mode == "seqplorer") {
+    if (params.annotate) {
 
-        // Perform the annotation
         ANNOTATION(
-            annotation_input,
+            ped_vcfs,
             fasta,
-            genome,
-            species,
-            vep_cache_version,
-            vep_merged_cache,
+            fasta_fai,
+            vep_cache,
             vep_extra_files,
-            vcfanno,
-            vcfanno_toml,
+            vcfanno_config,
+            vcfanno_lua,
             vcfanno_resources
         )
         ch_versions = ch_versions.mix(ANNOTATION.out.versions)
         ch_reports  = ch_reports.mix(ANNOTATION.out.reports)
 
+        ANNOTATION.out.annotated_vcfs.set { annotation_output }
+    } else {
+        ped_vcfs.set { annotation_output }
+    }
+
+    annotation_output
+        .dump(tag:'annotation_output', pretty:true)
+        .set { annotation_output }
+
+    //
+    // Perform QC on the final VCFs
+    //
+
+    BCFTOOLS_STATS_FAMILY(
+        annotation_output.map{ it + [[]] },
+        [],
+        [],
+        []
+    )
+    ch_versions = ch_versions.mix(BCFTOOLS_STATS_FAMILY.out.versions)
+    ch_reports  = ch_reports.mix(BCFTOOLS_STATS_FAMILY.out.stats.collect{it[1]})
+
     //
     // Create Gemini-compatible database files
     //
-        // TODO fix issue when PED file is missing
 
-        ANNOTATION.out.annotated_vcfs
-            .dump(tag:'annotation_output', pretty:true)
-            .join(peds)
-            .set { vcf2db_input }
+    if(params.gemini){
+
+        CustomChannelOperators.joinOnKeys(
+            annotation_output,
+            VCF_EXTRACT_RELATE_SOMALIER.out.samples_tsv,
+            ['id', 'family', 'family_count']
+        )
+        .dump(tag:'vcf2db_input', pretty:true)
+        .set { vcf2db_input }
 
         VCF2DB(
             vcf2db_input
         )
+
+        ch_versions = ch_versions.mix(VCF2DB.out.versions)
 
         VCF2DB.out.db
             .dump(tag:'vcf2db_output', pretty:true)
@@ -547,11 +588,11 @@ def parse_input(input_csv) {
             ],
             'cram': [
                 'content': 'file',
-                'pattern': '^.*\\.cram$',
+                'pattern': '',
             ],
             'crai': [
                 'content': 'file',
-                'pattern': '^.*\\.crai$',
+                'pattern': '',
                 'default': [],
             ],
             'bed': [
@@ -678,9 +719,6 @@ def get_family_id_from_ped(ped_file){
         else if ((line ==~ /^(\w+\t){5}\w+$/) == false) {
             exit 1, "[PED file error] ${ped_file} should contain exactly 6 tab-delimited columns (family_id    individual_id    paternal_id    maternal_id    sex    phenotype). This is not the case on line ${line_count}."
         }
-    }
-    if (ped =~ /\n$/) {
-        exit 1, "[PED file error] An empty new line has been detected at the end of ${ped_file}, please remove this line."
     }
 
     // get family_id
