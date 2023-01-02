@@ -17,9 +17,9 @@ process ENSEMBLVEP {
     path  extra_files
 
     output:
-    tuple val(meta), path("*.ann.{vcf,vcf.gz}")     , optional:true, emit: vcf
-    tuple val(meta), path("*.ann.{tab,tab.gz}")     , optional:true, emit: tab
-    tuple val(meta), path("*.ann.{json,json.gz}")   , optional:true, emit: json
+    tuple val(meta), path("*.{vcf,vcf.gz}")     , optional:true, emit: vcf
+    tuple val(meta), path("*.{tab,tab.gz}")     , optional:true, emit: tab
+    tuple val(meta), path("*.{json,json.gz}")   , optional:true, emit: json
     path "*.summary.html"                  , emit: report
     path "versions.yml"                    , emit: versions
 
@@ -37,7 +37,7 @@ process ENSEMBLVEP {
     """
     vep \\
         -i $vcf \\
-        -o ${prefix}.ann.${file_extension}${compress_out} \\
+        -o ${prefix}.${file_extension}${compress_out} \\
         $args \\
         $reference \\
         --assembly $genome \\

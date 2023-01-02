@@ -43,9 +43,9 @@ Changes in module 'nf-core/ensemblvep'
 -    tuple val(meta), path("*.vcf.gz")  , optional:true, emit: vcf
 -    tuple val(meta), path("*.tab.gz")  , optional:true, emit: tab
 -    tuple val(meta), path("*.json.gz") , optional:true, emit: json
-+    tuple val(meta), path("*.ann.{vcf,vcf.gz}")     , optional:true, emit: vcf
-+    tuple val(meta), path("*.ann.{tab,tab.gz}")     , optional:true, emit: tab
-+    tuple val(meta), path("*.ann.{json,json.gz}")   , optional:true, emit: json
++    tuple val(meta), path("*.{vcf,vcf.gz}")     , optional:true, emit: vcf
++    tuple val(meta), path("*.{tab,tab.gz}")     , optional:true, emit: tab
++    tuple val(meta), path("*.{json,json.gz}")   , optional:true, emit: json
      path "*.summary.html"                  , emit: report
      path "versions.yml"                    , emit: versions
  
@@ -63,7 +63,7 @@ Changes in module 'nf-core/ensemblvep'
      vep \\
          -i $vcf \\
 -        -o ${prefix}.${file_extension}.gz \\
-+        -o ${prefix}.ann.${file_extension}${compress_out} \\
++        -o ${prefix}.${file_extension}${compress_out} \\
          $args \\
 -        $compress_cmd \\
          $reference \\
