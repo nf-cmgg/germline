@@ -260,7 +260,7 @@ workflow CMGGGERMLINE {
     // Read in samplesheet, validate and stage input files
     //
 
-    SamplesheetConversion.convert(ch_input, file("assets/schema_input.json", checkIfExists:true))
+    SamplesheetConversion.convert(ch_input, file("${projectDir}/assets/schema_input.json", checkIfExists:true))
         .map(
             { meta, cram, crai, bed, ped ->
                 new_meta = meta.clone()
