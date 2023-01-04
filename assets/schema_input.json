@@ -1,38 +1,42 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
     "$id": "https://raw.githubusercontent.com/CenterForMedicalGeneticsGhent/nf-cmgg-germline/master/assets/schema_input.json",
-    "title": "CenterForMedicalGeneticsGhent/nf-cmgg-germline pipeline - params.input schema",
-    "description": "Schema for the file provided with params.input",
+    "title": "Samplesheet validation schema",
+    "description": "Schema for the samplesheet used in this pipeline",
     "type": "array",
     "items": {
         "type": "object",
-        "properties": {
+        "definitions": {
             "sample": {
                 "type": "string",
-                "pattern": "^\\S+$",
-                "errorMessage": "Sample name must be provided and cannot contain spaces"
+                "meta": "id,sample"
             },
-            "family_id": {
+            "family": {
                 "type": "string",
-                "pattern": "^\\S+$",
-                "errorMessage": "Family ID must be provided and cannot contain spaces"
+                "meta": "family",
+                "default": null
             },
             "cram": {
                 "type": "string",
                 "pattern": "^\\S+\\.cram$",
-                "errorMessage": "CRAM file must be provided, cannot contain spaces and must have extension '.cram'"
+                "format": "file-path"
             },
             "crai": {
                 "type": "string",
-                "pattern": "^\\S+\\.c?[br]ai$",
-                "errorMessage": "CRAM index file must be provided, cannot contain spaces and must have extension '.crai' or '.bai'"
+                "pattern": "^\\S+\\.crai$",
+                "format": "file-path"
             },
             "bed": {
                 "type": "string",
                 "pattern": "^\\S+\\.bed$",
-                "errorMessage": "BED file must be provided, cannot contain spaces and must have extension '.bed'"
+                "format": "file-path"
+            },
+            "ped": {
+                "type": "string",
+                "pattern": "^\\S+\\.ped$",
+                "format": "file-path"
             }
         },
-        "required": ["sample", "family_id", "cram", "crai", "bed"]
+        "required": ["sample", "cram"]
     }
 }
