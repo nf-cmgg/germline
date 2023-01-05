@@ -115,7 +115,7 @@ workflow GERMLINE_VARIANT_CALLING {
     MERGE_BEDS.out.bed
         .mix(bed_branch.single)
         .tap { dragstrmodel_beds }
-        .dump(tag:'merged_beds', pretty:true)
+        .dump(tag:'merged_beds_variant_calling', pretty:true)
         .set { beds_to_scatter }
 
     //

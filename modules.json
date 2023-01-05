@@ -58,9 +58,8 @@
                     },
                     "gatk4/genomicsdbimport": {
                         "branch": "master",
-                        "git_sha": "223432b834d7819707c162c48a83612b785c8796",
-                        "installed_by": ["modules"],
-                        "patch": "modules/nf-core/gatk4/genomicsdbimport/gatk4-genomicsdbimport.diff"
+                        "git_sha": "34c17664b54e3b45faf4e32b52bf4086ca249afe",
+                        "installed_by": ["modules"]
                     },
                     "gatk4/genotypegvcfs": {
                         "branch": "master",
