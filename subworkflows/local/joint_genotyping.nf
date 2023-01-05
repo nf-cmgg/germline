@@ -47,6 +47,11 @@ workflow JOINT_GENOTYPING {
 
     ch_versions = ch_versions.mix(MERGE_BEDS.out.versions)
 
+    MERGE_BEDS.out.bed
+        .tap { genomicsdb_beds }
+        .dump(tag:'merged_beds', pretty:true)
+        .set { beds_to_scatter }
+
     gvcfs
         .map(
             { meta, gvcf, tbi ->
@@ -59,7 +64,7 @@ workflow JOINT_GENOTYPING {
             }
         )
         .groupTuple()
-        .join(MERGE_BEDS.out.bed)
+        .join(genomicsdb_beds)
         .map(
             { meta, gvcfs, tbis, bed ->
                 [ meta, gvcfs, tbis, bed, [], [] ]
@@ -87,14 +92,19 @@ workflow JOINT_GENOTYPING {
     //
 
     BED_SCATTER_GROOVY(
-        MERGE_BEDS.out.bed,
+        beds_to_scatter,
         params.scatter_size
     )
 
     ch_versions = ch_versions.mix(BED_SCATTER_GROOVY.out.versions)
 
+    BED_SCATTER_GROOVY.out.scattered
+        .tap { genotypegvcfs_beds }
+        .dump(tag:'scattered_beds_genotyping', pretty:true)
+        .set { gather_beds }
+
     GENOMICSDBIMPORT.out.genomicsdb
-        .combine(BED_SCATTER_GROOVY.out.scattered, by:0)
+        .combine(genotypegvcfs_beds, by:0)
         .map(
             { meta, genomic_db, bed, bed_count ->
                 new_meta = meta.findAll()[0] + [id:bed.baseName]
@@ -128,7 +138,7 @@ workflow JOINT_GENOTYPING {
 
     VCF_GATHER_BCFTOOLS(
         genotyped_vcfs,
-        BED_SCATTER_GROOVY.out.scattered
+        gather_beds
             .map { meta, bed, scatter_count ->
                 new_meta = meta.findAll{true}[0] + [id:bed.baseName]
                 [ new_meta, bed, scatter_count ]

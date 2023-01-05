@@ -88,13 +88,18 @@ workflow ANNOTATION {
     ch_reports  = ch_reports.mix(ENSEMBLVEP.out.report)
     ch_versions = ch_versions.mix(ENSEMBLVEP.out.versions)
 
+    ENSEMBLVEP.out.vcf
+        .tap { vep_vcfs_to_index }
+        .dump(tag:'vep_output', pretty:true)
+        .set { vep_vcfs }
+
     TABIX_ENSEMBLVEP(
-        ENSEMBLVEP.out.vcf
+        vep_vcfs_to_index
     )
 
     ch_versions = ch_versions.mix(TABIX_ENSEMBLVEP.out.versions)
 
-    ENSEMBLVEP.out.vcf
+    vep_vcfs
         .join(TABIX_ENSEMBLVEP.out.tbi)
         .combine(count_chromosomes)
         .map(
