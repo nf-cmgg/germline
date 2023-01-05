@@ -21,6 +21,7 @@ workflow BED_SCATTER_GROOVY {
     .set { ch_scattered }
 
     ch_scattered.regions
+        .dump(tag:'scatter_regions', pretty:true)
         .transpose()
         .collectFile()
         { meta, regions, number, file_type ->
@@ -30,10 +31,15 @@ workflow BED_SCATTER_GROOVY {
             id = file.baseName.tokenize("_")[0..-2].join("_")
             [ id, file ]
         }
-        .combine(ch_scattered.meta, by:0)
+        .dump(tag:'scatter_beds', pretty:true)
+        .combine(
+            ch_scattered.meta.dump(tag:'scatter_meta', pretty:true),
+            by:0
+        )
         .map { id, file, meta, total ->
             [ meta, file, total ]
         }
+        .dump(tag:'scatter_output', pretty:true)
         .set { ch_regions_files }
 
     emit:
