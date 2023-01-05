@@ -76,14 +76,17 @@ workflow GERMLINE_VARIANT_CALLING {
         )
         .set { merged_crams }
 
-    merged_crams.not_indexed.dump(tag:'merged_crams_not_indexed', pretty:true)
+    merged_crams.not_indexed
+        .tap { crams_to_index }
+        .dump(tag:'merged_crams_not_indexed', pretty:true)
+        .set { crams_without_index }
     merged_crams.indexed.dump(tag:'merged_crams_indexed', pretty:true)
 
     SAMTOOLS_INDEX(
-        merged_crams.not_indexed
+        crams_to_index
     )
 
-    merged_crams.not_indexed
+    crams_without_index
         .join(SAMTOOLS_INDEX.out.crai)
         .mix(merged_crams.indexed)
         .dump(tag:'ready_crams', pretty:true)
@@ -111,23 +114,25 @@ workflow GERMLINE_VARIANT_CALLING {
 
     MERGE_BEDS.out.bed
         .mix(bed_branch.single)
+        .tap { dragstrmodel_beds }
         .dump(tag:'merged_beds', pretty:true)
-        .set { merged_beds }
+        .set { beds_to_scatter }
 
     //
     // Split the BED files into multiple subsets
     //
 
     BED_SCATTER_GROOVY(
-        merged_beds.map {meta, bed -> [meta, bed instanceof Path ? bed : bed[0]]},
+        beds_to_scatter.map {meta, bed -> [meta, bed instanceof Path ? bed : bed[0]]},
         params.scatter_size
     )
 
     ch_versions = ch_versions.mix(BED_SCATTER_GROOVY.out.versions)
 
     BED_SCATTER_GROOVY.out.scattered
+        .tap { gather_beds }
         .dump(tag:'split_beds', pretty:true)
-        .set { split_beds }
+        .set { haplotypecaller_beds }
 
     //
     // Generate DRAGSTR models
@@ -135,7 +140,7 @@ workflow GERMLINE_VARIANT_CALLING {
 
     if (params.use_dragstr_model) {
         ready_crams
-            .join(merged_beds)
+            .join(dragstrmodel_beds)
             .map(
                 { meta, cram, crai, bed ->
                     [meta, cram, crai, bed]
@@ -155,13 +160,13 @@ workflow GERMLINE_VARIANT_CALLING {
         ch_versions = ch_versions.mix(CALIBRATEDRAGSTRMODEL.out.versions)
 
         ready_crams
-            .combine(split_beds, by:0)
+            .combine(haplotypecaller_beds, by:0)
             .combine(CALIBRATEDRAGSTRMODEL.out.dragstr_model, by:0)
             .set { cram_models }
     }
     else {
         ready_crams
-            .combine(split_beds, by:0)
+            .combine(haplotypecaller_beds, by:0)
             .set { cram_models }
     }
 
@@ -206,7 +211,7 @@ workflow GERMLINE_VARIANT_CALLING {
 
     VCF_GATHER_BCFTOOLS(
         haplotypecaller_vcfs,
-        split_beds.map { meta, bed, scatter_count ->
+        gather_beds.map { meta, bed, scatter_count ->
             new_meta = meta.findAll{true} + [id:bed.baseName]
             [ new_meta, bed, scatter_count ]
         },
@@ -216,6 +221,7 @@ workflow GERMLINE_VARIANT_CALLING {
 
     VCF_GATHER_BCFTOOLS.out.vcf
         .join(VCF_GATHER_BCFTOOLS.out.tbi)
+        .tap { stats_input }
         .dump(tag:'reblockgvcf_input', pretty: true)
         .set { reblockgvcf_input }
     ch_versions = ch_versions.mix(VCF_GATHER_BCFTOOLS.out.versions)
@@ -225,7 +231,7 @@ workflow GERMLINE_VARIANT_CALLING {
     //
 
     BCFTOOLS_STATS_INDIVIDUALS(
-        reblockgvcf_input,
+        stats_input,
         [],
         [],
         []

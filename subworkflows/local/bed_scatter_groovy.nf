@@ -8,7 +8,7 @@ workflow BED_SCATTER_GROOVY {
 
     ch_versions = Channel.empty()
 
-    scattered = ch_regions
+    ch_regions
         .multiMap { meta, regions_file ->
             file_type = regions_file.getExtension()
             scattered_regions = scatter_regions(meta, regions_file, minimum_size)
@@ -18,8 +18,9 @@ workflow BED_SCATTER_GROOVY {
             regions: [ meta, scattered_regions, range, file_type ]
             meta:    [ meta.id, meta, total ]
         }
+    .set { ch_scattered }
 
-    ch_regions_files = scattered.regions
+    ch_scattered.regions
         .transpose()
         .collectFile()
         { meta, regions, number, file_type ->
@@ -29,10 +30,11 @@ workflow BED_SCATTER_GROOVY {
             id = file.simpleName.tokenize("_")[0..-2].join("_")
             [ id, file ]
         }
-        .combine(scattered.meta, by:0)
+        .combine(ch_scattered.meta, by:0)
         .map { id, file, meta, total ->
             [ meta, file, total ]
         }
+        .set { ch_regions_files }
 
     emit:
     scattered = ch_regions_files    // channel: [ meta, scattered_region_file, scatter_count]
