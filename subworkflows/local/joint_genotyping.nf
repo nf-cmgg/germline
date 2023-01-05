@@ -49,7 +49,7 @@ workflow JOINT_GENOTYPING {
 
     MERGE_BEDS.out.bed
         .tap { genomicsdb_beds }
-        .dump(tag:'merged_beds', pretty:true)
+        .dump(tag:'merged_beds_genotyping', pretty:true)
         .set { beds_to_scatter }
 
     gvcfs
