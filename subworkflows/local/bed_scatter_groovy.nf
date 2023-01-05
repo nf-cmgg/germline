@@ -27,7 +27,7 @@ workflow BED_SCATTER_GROOVY {
             [ "${meta.id}_${number}.${file_type}", regions.join("\n") ]
         }
         .map { file ->
-            id = file.simpleName.tokenize("_")[0..-2].join("_")
+            id = file.baseName.tokenize("_")[0..-2].join("_")
             [ id, file ]
         }
         .combine(ch_scattered.meta, by:0)
