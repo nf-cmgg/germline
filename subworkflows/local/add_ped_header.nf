@@ -47,7 +47,7 @@ workflow ADD_PED_HEADER {
             [ "${meta.id}.header.txt", header.join("\n") ]
         }
         .map { file ->
-            id = file.baseName.tokenize(".")[0..-1].join(".")
+            id = file.baseName.tokenize(".")[0..-2].join(".")
             [ id, file ]
         }
         .join(headers.files)
