@@ -44,12 +44,12 @@ workflow ADD_PED_HEADER {
     headers.header
         .collectFile()
         { meta, header ->
-            [ "${meta.id}.header.txt", header.join("\n") ]
+            [ "${meta.id}.txt", header.join("\n") ]
         }
         .map { file ->
             id = file.baseName.tokenize(".")[0..-1].join(".")
             [ id, file ]
-        }
+        }.view()
         .join(headers.files)
         .map { id, header, meta, vcf ->
             [ meta, vcf, header ]
