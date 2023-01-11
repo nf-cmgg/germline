@@ -76,9 +76,9 @@
                         "git_sha": "223432b834d7819707c162c48a83612b785c8796",
                         "installed_by": ["modules"]
                     },
-                    "gawk": {
+                    "mosdepth": {
                         "branch": "master",
-                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
+                        "git_sha": "def5f182583df0c20f43ec3d4355e8ebd341aaa9",
                         "installed_by": ["modules"]
                     },
                     "multiqc": {
