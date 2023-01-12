@@ -424,16 +424,22 @@ workflow CMGGGERMLINE {
     // Add PED headers to the VCFs
     //
 
-    ADD_PED_HEADER(
-        filter_output,
-        VCF_EXTRACT_RELATE_SOMALIER.out.samples_tsv
-    )
+    if(params.add_ped){
+        ADD_PED_HEADER(
+            filter_output,
+            VCF_EXTRACT_RELATE_SOMALIER.out.samples_tsv
+        )
 
-    ch_versions = ch_versions.mix(ADD_PED_HEADER.out.versions)
+        ch_versions = ch_versions.mix(ADD_PED_HEADER.out.versions)
 
-    ADD_PED_HEADER.out.ped_vcfs
-        .dump(tag:'ped_vcfs', pretty:true)
-        .set { ped_vcfs }
+        ADD_PED_HEADER.out.ped_vcfs
+            .dump(tag:'ped_vcfs', pretty:true)
+            .set { ped_vcfs }
+    } else {
+        filter_output.set { ped_vcfs }
+    }
+
+
 
     //
     // Annotation of the variants and creation of Gemini-compatible database files
