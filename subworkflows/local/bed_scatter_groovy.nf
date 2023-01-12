@@ -79,10 +79,12 @@ def scatter_regions(meta, file, minimum_size) {
         }
     }
 
-    // Check for stubs!
-    if(!output_regions){
-        println("WARNING: No BED contents detected when scattering, created some artificial regions for ${meta.id} - ignore this when using stub runs")
+    // Check for stubs and exceptions!
+    if(!output_regions && workflow.stubRun){
         output_regions = [["chr20\t100\t200"],["chr20\t300\t400"]]
+    }
+    else if(!output_regions){
+        log.error("No BED contents were found for ${meta.id}. Please contact the pipeline developer to solve this problem.")
     }
 
     return output_regions
