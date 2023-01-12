@@ -84,7 +84,7 @@ workflow JOINT_GENOTYPING {
             }
         )
         .groupTuple()
-        .join(genomicsdb_beds)
+        .combine(genomicsdb_beds, by:0)
         .map(
             { meta, gvcfs, tbis, bed, bed_count ->
                 new_meta = meta.findAll{true}[0] + [id:bed.baseName]
@@ -112,7 +112,7 @@ workflow JOINT_GENOTYPING {
         .join(genotypegvcfs_beds)
         .map(
             { meta, genomic_db, bed, bed_count ->
-                [ new_meta, genomic_db, [], bed, [] ]
+                [ meta, genomic_db, [], bed, [] ]
             }
         )
         .dump(tag:'genotypegvcfs_input', pretty:true)
