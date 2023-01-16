@@ -151,8 +151,7 @@
                     "description": "Whether the samples should be converted to a gemini database"
                 },
                 "add_ped": {
-                    "type": "string",
-                    "default": "false",
+                    "type": "boolean",
                     "description": "Whether the PED header values should be added to the VCF. This is not recommended when no PED files are supplied with the current samples"
                 }
             },
