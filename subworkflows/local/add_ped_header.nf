@@ -20,11 +20,6 @@ workflow ADD_PED_HEADER {
     // Remove extra columns from the samples TSV and convert to a VCF header
     //
 
-    somalier_samples_tsv
-        .map { meta, samples_tsv ->
-            convert_to_ped(samples_tsv)
-        }
-
     RTGTOOLS_PEDFILTER(
         somalier_samples_tsv
     )
@@ -55,17 +50,4 @@ workflow ADD_PED_HEADER {
     emit:
     ped_vcfs = BCFTOOLS_REHEADER.out.vcf
     versions = ch_versions
-}
-
-// TODO add this to RTGTOOLS_PEDFILTER as a patch
-def convert_to_ped(samples_tsv) {
-
-    ArrayList new_lines = []
-
-    for(line : samples_tsv.readLines()){
-        new_line = line.tokenize("\t")[0..5].join("\t")
-        new_lines.add(new_line)
-    }
-
-    samples_tsv.text = new_lines.join("\n")
 }

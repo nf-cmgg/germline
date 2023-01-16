@@ -11,8 +11,8 @@ process RTGTOOLS_PEDFILTER {
     tuple val(meta), path(input)
 
     output:
-    tuple val(meta), path("*.{vcf.gz,ped}") , emit: output
-    path "versions.yml"                     , emit: versions
+    tuple val(meta), path("*.vcf.gz") , emit: output
+    path "versions.yml"               , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -31,9 +31,11 @@ process RTGTOOLS_PEDFILTER {
     def postprocess = extension == "vcf.gz" ? "| rtg bgzip ${args2} -" : ""
 
     """
+    cut -f1-6 ${input} > ${prefix}.ped
+
     rtg pedfilter \\
         ${args} \\
-        ${input} \\
+        ${prefix}.ped \\
     ${postprocess} > ${prefix}.${extension}
 
 
