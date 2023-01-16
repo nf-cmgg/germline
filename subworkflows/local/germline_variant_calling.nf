@@ -34,96 +34,15 @@ workflow GERMLINE_VARIANT_CALLING {
     ch_reports   = Channel.empty()
 
     //
-    // Merge the CRAM files if there are multiple per sample
-    //
-
-    crams
-        .groupTuple()
-        .branch(
-            { meta, cram, crai ->
-                multiple: cram.size() > 1
-                    return [meta, cram]
-                single:   cram.size() == 1
-                    return [meta, cram, crai]
-            }
-        )
-        .set { cram_branch }
-
-    cram_branch.multiple.dump(tag:'cram_branch_multiple', pretty:true)
-    cram_branch.single.dump(tag:'cram_branch_single', pretty:true)
-
-    SAMTOOLS_MERGE(
-        cram_branch.multiple,
-        fasta,
-        fasta_fai
-    )
-
-    SAMTOOLS_MERGE.out.cram
-        .mix(cram_branch.single
-            .map(
-                {meta, cram, crai ->
-                    [ meta, cram[0], crai[0]]
-                }
-            )
-        )
-        .branch(
-            { meta, cram, crai=[] ->
-                not_indexed: crai == []
-                    return [ meta, cram ]
-                indexed: crai != []
-                    return [ meta, cram, crai ]
-            }
-        )
-        .set { merged_crams }
-
-    merged_crams.not_indexed
-        .tap { crams_to_index }
-        .dump(tag:'merged_crams_not_indexed', pretty:true)
-        .set { crams_without_index }
-    merged_crams.indexed.dump(tag:'merged_crams_indexed', pretty:true)
-
-    SAMTOOLS_INDEX(
-        crams_to_index
-    )
-
-    crams_without_index
-        .join(SAMTOOLS_INDEX.out.crai)
-        .mix(merged_crams.indexed)
-        .dump(tag:'ready_crams', pretty:true)
-        .set { ready_crams }
-
-    //
-    // Merge the BED files if there are multiple per sample
-    //
-
-    beds
-        .groupTuple()
-        .branch(
-            { meta, bed ->
-                multiple: bed.size() > 1
-                    return [meta, bed]
-                single:   bed.size() == 1
-                    return [meta, bed]
-            }
-        )
-        .set { bed_branch }
-
-    MERGE_BEDS(
-        bed_branch.multiple
-    )
-
-    MERGE_BEDS.out.bed
-        .mix(bed_branch.single)
-        .tap { dragstrmodel_beds }
-        .dump(tag:'merged_beds_variant_calling', pretty:true)
-        .set { beds_to_scatter }
-
-    //
     // Split the BED files into multiple subsets
     //
 
+    beds
+        .tap { dragstrmodel_beds }
+        .set { beds_to_scatter }
+
     BED_SCATTER_GROOVY(
-        beds_to_scatter.map {meta, bed -> [meta, bed instanceof Path ? bed : bed[0]]},
+        beds_to_scatter.map {meta, bed -> [meta, bed]},
         params.scatter_size
     )
 
@@ -139,7 +58,7 @@ workflow GERMLINE_VARIANT_CALLING {
     //
 
     if (params.use_dragstr_model) {
-        ready_crams
+        crams
             .join(dragstrmodel_beds)
             .map(
                 { meta, cram, crai, bed ->
@@ -159,13 +78,13 @@ workflow GERMLINE_VARIANT_CALLING {
 
         ch_versions = ch_versions.mix(CALIBRATEDRAGSTRMODEL.out.versions)
 
-        ready_crams
+        crams
             .combine(haplotypecaller_beds, by:0)
             .combine(CALIBRATEDRAGSTRMODEL.out.dragstr_model, by:0)
             .set { cram_models }
     }
     else {
-        ready_crams
+        crams
             .combine(haplotypecaller_beds, by:0)
             .set { cram_models }
     }

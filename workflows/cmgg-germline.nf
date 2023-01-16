@@ -80,6 +80,7 @@ multiqc_logo        = params.multiqc_logo   ? file(params.multiqc_logo, checkIfE
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
 
+include { PREPROCESSING                 } from '../subworkflows/local/preprocessing'
 include { GERMLINE_VARIANT_CALLING      } from '../subworkflows/local/germline_variant_calling'
 include { JOINT_GENOTYPING              } from '../subworkflows/local/joint_genotyping'
 include { ANNOTATION                    } from '../subworkflows/local/annotation'
@@ -100,7 +101,6 @@ include { VCF_EXTRACT_RELATE_SOMALIER   } from '../subworkflows/nf-core/vcf_extr
 include { SAMTOOLS_FAIDX as FAIDX                                    } from '../modules/nf-core/samtools/faidx/main'
 include { GATK4_CREATESEQUENCEDICTIONARY as CREATESEQUENCEDICTIONARY } from '../modules/nf-core/gatk4/createsequencedictionary/main'
 include { GATK4_COMPOSESTRTABLEFILE as COMPOSESTRTABLEFILE           } from '../modules/nf-core/gatk4/composestrtablefile/main'
-include { GAWK as INDEX_TO_BED                                       } from '../modules/nf-core/gawk/main'
 include { TABIX_TABIX as TABIX_DBSNP                                 } from '../modules/nf-core/tabix/tabix/main'
 include { BCFTOOLS_FILTER as FILTER_SNPS                             } from '../modules/nf-core/bcftools/filter/main'
 include { BCFTOOLS_FILTER as FILTER_INDELS                           } from '../modules/nf-core/bcftools/filter/main'
@@ -201,9 +201,9 @@ workflow CMGGGERMLINE {
     // Create the optional input files if they are not supplied
     //
 
-    if (dbsnp != [] && dbsnp_tbi == []) {
+    if (dbsnp != [] && !dbsnp_tbi == []) {
         TABIX_DBSNP(
-            [ [id:'dbsnp'], dbsnp ]
+            dbsnp.map { [[id:'dbsnp'], it] }
         )
 
         ch_versions = ch_versions.mix(TABIX_DBSNP.out.versions)
@@ -313,40 +313,18 @@ workflow CMGGGERMLINE {
     ch_parsed_inputs.cram.dump(tag:'input_crams', pretty:true)
     ch_parsed_inputs.peds.dump(tag:'input_peds', pretty:true)
 
-    ch_parsed_inputs.beds
-        .branch(
-            { meta, bed ->
-                valid: bed
-                invalid: !bed
-            }
-        )
-        .set { beds }
-
-    beds.valid.dump(tag:'valid_beds', pretty:true)
-    beds.invalid.dump(tag:'invalid_beds', pretty:true)
-
     //
-    // Create a BED file from the FASTA index to paralellize genome calls
+    // Run sample preprocessing
     //
 
-    INDEX_TO_BED(
-        fasta_fai.map({ fasta_fai -> [ [id:'fasta_bed'], fasta_fai ] }),
-        []
+    PREPROCESSING(
+        ch_parsed_inputs.cram,
+        ch_parsed_inputs.beds,
+        fasta,
+        fasta_fai
     )
 
-    beds.invalid
-        .combine(
-            INDEX_TO_BED.out.output
-            .map({ meta, fasta_fai -> fasta_fai })
-            .collect()
-        )
-        .map(
-            { meta, empty_bed, created_bed ->
-                [ meta, created_bed ]
-            }
-        )
-        .dump(tag:'created_beds', pretty:true)
-        .set { created_beds }
+    ch_versions = ch_versions.mix(PREPROCESSING.out.versions)
 
     ch_parsed_inputs.peds
         .distinct()
@@ -365,8 +343,8 @@ workflow CMGGGERMLINE {
     //
 
     GERMLINE_VARIANT_CALLING(
-        ch_parsed_inputs.cram,
-        beds.valid.mix(created_beds),
+        PREPROCESSING.out.ready_crams,
+        PREPROCESSING.out.ready_beds,
         fasta,
         fasta_fai,
         dict,
@@ -388,7 +366,7 @@ workflow CMGGGERMLINE {
 
     JOINT_GENOTYPING(
         variantcalling_output,
-        beds.valid.mix(created_beds),
+        PREPROCESSING.out.ready_beds,
         peds,
         fasta,
         fasta_fai,
@@ -446,16 +424,22 @@ workflow CMGGGERMLINE {
     // Add PED headers to the VCFs
     //
 
-    ADD_PED_HEADER(
-        filter_output,
-        VCF_EXTRACT_RELATE_SOMALIER.out.samples_tsv
-    )
+    if(params.add_ped){
+        ADD_PED_HEADER(
+            filter_output,
+            VCF_EXTRACT_RELATE_SOMALIER.out.samples_tsv
+        )
 
-    ch_versions = ch_versions.mix(ADD_PED_HEADER.out.versions)
+        ch_versions = ch_versions.mix(ADD_PED_HEADER.out.versions)
 
-    ADD_PED_HEADER.out.ped_vcfs
-        .dump(tag:'ped_vcfs', pretty:true)
-        .set { ped_vcfs }
+        ADD_PED_HEADER.out.ped_vcfs
+            .dump(tag:'ped_vcfs', pretty:true)
+            .set { ped_vcfs }
+    } else {
+        filter_output.set { ped_vcfs }
+    }
+
+
 
     //
     // Annotation of the variants and creation of Gemini-compatible database files

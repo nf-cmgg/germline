@@ -128,7 +128,7 @@
             "properties": {
                 "scatter_size": {
                     "type": "integer",
-                    "default": 1500000,
+                    "default": 40000000,
                     "description": "The size of regions the BED files should be split into when scattering"
                 },
                 "species": {
@@ -149,6 +149,10 @@
                 "gemini": {
                     "type": "boolean",
                     "description": "Whether the samples should be converted to a gemini database"
+                },
+                "add_ped": {
+                    "type": "boolean",
+                    "description": "Whether the PED header values should be added to the VCF. This is not recommended when no PED files are supplied with the current samples"
                 }
             },
             "required": ["scatter_size"]

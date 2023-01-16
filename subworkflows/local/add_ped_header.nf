@@ -87,9 +87,12 @@ def add_ped_to_header(vcf, ped_vcf) {
     String columns_vcf = ""
     String columns_ped = ""
 
-    if(vcf.size() == 0 || ped_vcf.size() == 0){
-        println("WARNING: No VCF contents detected when merging the VCF and PED headers for ${vcf} and/or ${ped_vcf} - ignore this when using stub runs")
+    if((vcf.size() == 0 || ped_vcf.size() == 0) && workflow.stubRun){
+        println()
         header.add("##STUB")
+    }
+    else if(vcf.size() == 0 || ped_vcf.size() == 0){
+        log.error("No VCF contents detected when merging the VCF and PED headers for ${vcf} and/or ${ped_vcf}. Please contact the pipeline developer to fix this.")
     }
     else {
         vcf.withInputStream {
@@ -125,8 +128,6 @@ def add_ped_to_header(vcf, ped_vcf) {
             }
         }
     }
-
-
 
     assert columns_ped == columns_vcf : "The columns in the genotyped VCF and the VCF containing PED headers are different. (${vcf} and ${ped_vcf})"
     header.add(columns_vcf)
