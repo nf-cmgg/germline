@@ -10,6 +10,7 @@ nextflow_pipeline {
                 filter   = true
                 annotate = true
                 gemini   = true
+                add_ped  = true
 
                 vcfanno           = true
                 vcfanno_config    = "https://github.com/nf-core/test-datasets/raw/modules/data/genomics/homo_sapiens/genome/vcf/vcfanno/vcfanno.toml"
