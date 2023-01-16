@@ -133,7 +133,7 @@ workflow CMGGGERMLINE {
     strtablefile       = params.strtablefile        ? Channel.fromPath(params.strtablefile).collect()       : null
 
     dbsnp              = params.dbsnp               ? Channel.fromPath(params.dbsnp).collect()              : []
-    dbsnp_tbi          = params.dbsnp_tbi           ? Channel.fromPath(params.dbsnp_tbi).collect()          : []
+    dbsnp_tbi          = params.dbsnp_tbi           ? Channel.fromPath(params.dbsnp_tbi).collect()          : null
 
     somalier_sites     = params.somalier_sites      ? Channel.fromPath(params.somalier_sites).collect()     : []
 
@@ -201,9 +201,9 @@ workflow CMGGGERMLINE {
     // Create the optional input files if they are not supplied
     //
 
-    if (dbsnp != [] && dbsnp_tbi == []) {
+    if (dbsnp != [] && !dbsnp_tbi) {
         TABIX_DBSNP(
-            [ [id:'dbsnp'], dbsnp ]
+            dbsnp.map { [[id:'dbsnp'], it] }
         )
 
         ch_versions = ch_versions.mix(TABIX_DBSNP.out.versions)
