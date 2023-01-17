@@ -6,7 +6,7 @@
 
 ## Samplesheet input
 
-You will need to create a samplesheet with information about the samples you would like to analyse before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 5 columns, and a header row as shown in the examples below.
+You will need to create a samplesheet with information about the samples you would like to analyse before running the pipeline. Use this parameter to specify its location. It can be either a CSV, TSV or YAML file.
 
 ```bash
 --input '[path to samplesheet file]'
@@ -14,29 +14,60 @@ You will need to create a samplesheet with information about the samples you wou
 
 ### Example of the samplesheet
 
-The `sample` identifiers have to be the same when you have re-sequenced the same sample more than once e.g. to increase sequencing depth. Either the `ped` or `family` field can be used to specify the family name. The pipeline automatically extracts the family id from the `ped` file if the `family` field is empty. The `family` is used to specify on which samples the joint-genotyping should be performed. Below is an example of how the samplesheet could look like.
+The `sample` identifiers have to be the same when you have re-sequenced the same sample more than once e.g. to increase sequencing depth. Either the `ped` or `family` field can be used to specify the family name. The pipeline automatically extracts the family id from the `ped` file if the `family` field is empty. The `family` is used to specify on which samples the joint-genotyping should be performed. If neither the `ped` or `family` fields are used, the pipeline will default to a single-sample family with the sample name as its ID. Below is an example of how the samplesheet could look like in the three formats.
 
-```console
-sample,family,cram,crai,bed,ped
-SAMPLE_1,FAMILY_1,SAMPLE_1.cram,SAMPLE_1.crai,SAMPLE_1.bed,FAMILY_1.ped
-SAMPLE_2,FAMILY_1,SAMPLE_2.cram,SAMPLE_2.crai,SAMPLE_2.bed,
-SAMPLE_3,,SAMPLE_3.cram,,,
+#### CSV
+
+```csv
+sample,family,cram,crai,roi,callable,ped
+SAMPLE_1,FAMILY_1,SAMPLE_1.cram,SAMPLE_1.crai,SAMPLE_1_roi.bed,SAMPLE_1_callable.bed,FAMILY_1.ped
+SAMPLE_2,FAMILY_1,SAMPLE_2.cram,SAMPLE_2.crai,SAMPLE_2_roi.bed,SAMPLE_2_callable.bed,
+SAMPLE_3,,SAMPLE_3.cram,,,,
+```
+
+#### TSV
+```tsv
+sample  family  cram  crai  roi callable  ped
+SAMPLE_1  FAMILY_1  SAMPLE_1.cram SAMPLE_1.crai SAMPLE_1_roi.bed  SAMPLE_1_callable.bed FAMILY_1.ped
+SAMPLE_2  FAMILY_1  SAMPLE_2.cram SAMPLE_2.crai SAMPLE_2_roi.bed  SAMPLE_2_callable.bed
+SAMPLE_3    SAMPLE_3.cram
+```
+
+#### YAML/YML
+```yaml
+- sample: SAMPLE_1
+  family: FAMILY_1
+  cram: SAMPLE_1.cram
+  crai: SAMPLE_1.crai
+  roi: SAMPLE_1_roi.bed
+  callable: SAMPLE_1_callable.bed
+  ped: FAMILY_1.ped
+- sample: SAMPLE_2
+  family: FAMILY_1
+  cram: SAMPLE_2.cram
+  crai: SAMPLE_2.crai
+  roi: SAMPLE_2_roi.bed
+  callable: SAMPLE_2_callable.bed
+  ped: FAMILY_1.ped
+- sample: SAMPLE_3
+  cram: SAMPLE_3.cram
 ```
 
 ### Full samplesheet
 
-The samplesheet can have as many columns as you desire, however, there is a strict requirement for the first 5 columns to match those defined in the table below.
+The samplesheet can have following columns:
 
 | Column   | Description                                                                                                                                                                                                    |
 | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sample` | MANDATORY - Custom sample name. This entry will be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`).             |
-| `family` | OPTIONAL - The family ID of the specified sample. This field is optional, as the family id can also be extracted from the `ped` file. Spaces in sample names are automatically converted to underscores (`_`). |
-| `cram`   | MANDATORY - Full path to CRAM file fetched from the preprocessing pipeline. File has to have the extension ".cram".                                                                                            |
-| `crai`   | OPTIONAL - Full path to CRAM index file fetched from the preprocessing pipeline. File has to have the extension ".crai".                                                                                       |
-| `bed`    | OPTIONAL - Full path to BED file containing the regions to call on. File has to have the extension ".bed".                                                                                                     |
-| `ped`    | OPTIONAL - Full path to PED file containing the relational information between samples in the same family to call on. File has to have the extension ".ped".                                                   |
+| `sample`  | MANDATORY - Custom sample name. This entry has to be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`).             |
+| `family`  | OPTIONAL - The family ID of the specified sample. This field is optional, as the family id can also be extracted from the `ped` file. If no `ped` file and `family` ID are supplied, the `family` ID defaults to the `sample` ID. Spaces in sample names are automatically converted to underscores (`_`). |
+| `cram`    | MANDATORY - Full path to CRAM file fetched from the preprocessing pipeline. File has to have the extension `.cram`|
+| `crai`    | OPTIONAL - Full path to CRAM index file fetched from the preprocessing pipeline. File has to have the extension `.crai`.|
+| `roi`     | OPTIONAL - Full path to a BED file containing the regions of interest for the current sample to call on. When this or the `--roi` argument aren't given, the pipeline will call all callable regions for the current sample. File has to have the extension `.bed` or `.bed.gz`.|
+| `callable`| OPTIONAL - Full path to a BED file containing the callable regions for the current sample to call on. This will be automatically generated with `mosdepth` if it isn't supplied. File has to have the extension `.bed` or `.bed.gz`.|
+| `ped`    | OPTIONAL - Full path to PED file containing the relational information between samples in the same family to call on. File has to have the extension `.ped`.|
 
-An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
+An [example samplesheet](../assets/samplesheet_template.csv) has been provided with the pipeline.
 
 ## Running the pipeline
 

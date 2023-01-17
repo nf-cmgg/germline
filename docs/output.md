@@ -6,7 +6,7 @@ This document describes the output produced by the pipeline.
 
 The directories listed below will be created in the results directory after the pipeline has finished. All paths are relative to the top-level results directory. This is an example output when the pipeline has been run with the test data provided in the [samplesheet](../assets/samplesheet.csv). The output consists of 4 directories: `ready`, `individuals`, `multiqc_reports` and `pipeline_info`.
 
-- The folder `ready` contains the joint-genotyped VCFs of every family along with the output from `bcftools stats` and the somalier plots generated from these files
+- The folder `ready` contains the joint-genotyped VCFs of every family along with the output from `bcftools stats` and the somalier plots generated from these files. It also contains a PED file (automatically generated if it wasn't supplied in the samplesheet) and the extended version of the PED file as a `.samples.tsv` file.
 - The folder `individuals` contains the GVCF and index of every individual along with the output of `bcftools stats` generated from these files.
 - The folder `multiqc_reports` contains all the MultiQC report files
 - The folder `pipeline_info` contains reports on the execution of the pipeline
@@ -19,6 +19,8 @@ results/
 │   └── FAMILY_1
 │       ├── FAMILY_1.vcf.gz
 │       ├── FAMILY_1.vcf.gz.tbi
+|       ├── FAMILY_1.ped
+|       ├── FAMILY_1.samples.tsv
 │       └── reports
 │           └── FAMILY_1.bcftools_stats.txt
 ├── individuals

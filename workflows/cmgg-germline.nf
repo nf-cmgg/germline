@@ -132,6 +132,8 @@ workflow CMGGGERMLINE {
     dict               = params.dict                ? Channel.fromPath(params.dict).collect()               : null
     strtablefile       = params.strtablefile        ? Channel.fromPath(params.strtablefile).collect()       : null
 
+    default_roi        = params.roi                 ? Channel.fromPath(params.roi)                          : Channel.value([[]])
+
     dbsnp              = params.dbsnp               ? Channel.fromPath(params.dbsnp).collect()              : []
     dbsnp_tbi          = params.dbsnp_tbi           ? Channel.fromPath(params.dbsnp_tbi).collect()          : []
 
@@ -262,16 +264,16 @@ workflow CMGGGERMLINE {
 
     SamplesheetConversion.convert(ch_input, file("${projectDir}/assets/schema_input.json", checkIfExists:true))
         .map(
-            { meta, cram, crai, bed, ped ->
+            { meta, cram, crai, roi, callable, ped ->
                 new_meta = meta.clone()
                 new_meta.family = meta.family ?: get_family_id_from_ped(ped)
-                [ new_meta, cram, crai, bed, ped ]
+                [ new_meta, cram, crai, roi, callable, ped ]
             }
         )
         .tap { ch_raw_inputs }
         .distinct()
         .map(
-            { meta, cram, crai, bed, ped ->
+            { meta, cram, crai, roi, callable, ped ->
                 [ meta.family, 1 ]
             }
         )
@@ -285,13 +287,13 @@ workflow CMGGGERMLINE {
         .combine(
             ch_raw_inputs
                 .map(
-                    { meta, cram, crai, bed, ped ->
-                        [ meta.family, meta, cram, crai, bed, ped ]
+                    { meta, cram, crai, roi, callable, ped ->
+                        [ meta.family, meta, cram, crai, roi, callable, ped ]
                     }
                 )
         , by:0)
         .multiMap(
-            { family, family_count, meta, cram, crai, bed, ped ->
+            { family, family_count, meta, cram, crai, roi, callable, ped ->
                 new_meta_ped = [:]
                 new_meta = meta.clone()
 
@@ -302,14 +304,16 @@ workflow CMGGGERMLINE {
                 new_meta.family           = meta.family ?: meta.sample
                 new_meta.family_count     = family_count
 
-                beds: [new_meta, bed]
-                cram: [new_meta, cram, crai]
-                peds: [new_meta_ped, ped]
+                roi:        [new_meta, roi]
+                callable:   [new_meta, callable]
+                cram:       [new_meta, cram, crai]
+                peds:       [new_meta_ped, ped]
             }
         )
         .set { ch_parsed_inputs }
 
-    ch_parsed_inputs.beds.dump(tag:'input_beds', pretty:true)
+    ch_parsed_inputs.roi.dump(tag:'input_roi', pretty:true)
+    ch_parsed_inputs.callable.dump(tag:'input_callable', pretty:true)
     ch_parsed_inputs.cram.dump(tag:'input_crams', pretty:true)
     ch_parsed_inputs.peds.dump(tag:'input_peds', pretty:true)
 
@@ -319,9 +323,11 @@ workflow CMGGGERMLINE {
 
     PREPROCESSING(
         ch_parsed_inputs.cram,
-        ch_parsed_inputs.beds,
+        ch_parsed_inputs.roi,
+        ch_parsed_inputs.callable,
         fasta,
-        fasta_fai
+        fasta_fai,
+        default_roi
     )
 
     ch_versions = ch_versions.mix(PREPROCESSING.out.versions)

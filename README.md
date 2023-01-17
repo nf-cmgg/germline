@@ -36,7 +36,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool
 4. Start running your own analysis!
 
    ```bash
-   nextflow run CenterForMedicalGeneticsGhent/nf-cmgg-germline --input <INPUT_CSV> --outdir <OUTDIR> -profile <docker/singularity/podman/shifter/charliecloud/conda/institute> --fasta <PATH/TO/FASTA>
+   nextflow run CenterForMedicalGeneticsGhent/nf-cmgg-germline --input <INPUT_CSV/TSV/YAML> --outdir <OUTDIR> -profile <docker/singularity/podman/shifter/charliecloud/conda/institute> --fasta <PATH/TO/FASTA>
    ```
 
 An overview of the parameters for this pipeline can be viewed using:

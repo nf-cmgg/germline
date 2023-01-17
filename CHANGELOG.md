@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 3. Added `dump` functionality to lots of channels.
 4. Added the `dbsnp` option to `GATK HaplotypeCaller`. use `--dbsnp` and `--dbsnp_tbi` to supply these VCFs.
 5. Added the `vcf_extract_somalier` subworkflow to the pipeline. This also creates PED files inferred from the input multi-sample VCF.
+6. Added support for regions of interest (ROI) and callable regions BED files. The ROI BEDs can be specified on a sample level in the samplesheet, while a default ROI BED can also be specified using the `--roi` argument. The analysis will run on an intersect between the ROI and callable regions if the ROI is supplied, otherwise it will run on all callable regions (supplied or determined in the pipeline)
 
 ### Improvements
 

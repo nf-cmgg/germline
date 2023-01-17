@@ -153,6 +153,10 @@
                 "add_ped": {
                     "type": "boolean",
                     "description": "Whether the PED header values should be added to the VCF. This is not recommended when no PED files are supplied with the current samples"
+                },
+                "roi": {
+                    "type": "string",
+                    "default": null
                 }
             },
             "required": ["scatter_size"]
