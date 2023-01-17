@@ -197,9 +197,9 @@ workflow PREPROCESSING {
     // Intersect the ROI BEDs and CALLABLE BEDs
     //
 
-ready_roi
-    .join(ready_callable)
-    .combine(default_roi)
+    ready_roi
+        .join(ready_callable)
+        .combine(default_roi)
         .branch { meta, roi, callable, default_roi ->
             out_roi = roi ?: default_roi ?: []
             intersect: out_roi != []
