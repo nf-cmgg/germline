@@ -57,7 +57,7 @@ workflow JOINT_GENOTYPING {
 
     BED_SCATTER_GROOVY(
         beds_to_scatter,
-        params.scatter_size * 10
+        params.scatter_size * 5
     )
 
     ch_versions = ch_versions.mix(BED_SCATTER_GROOVY.out.versions)

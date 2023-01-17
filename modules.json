@@ -89,7 +89,8 @@
                     "rtgtools/pedfilter": {
                         "branch": "master",
                         "git_sha": "807b6f0d92d39daf0deba1dc9786450d3e48efb0",
-                        "installed_by": ["modules"]
+                        "installed_by": ["modules"],
+                        "patch": "modules/nf-core/rtgtools/pedfilter/rtgtools-pedfilter.diff"
                     },
                     "samtools/faidx": {
                         "branch": "master",
@@ -109,7 +110,8 @@
                     "somalier/relate": {
                         "branch": "master",
                         "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
-                        "installed_by": ["modules", "vcf_extract_relate_somalier"]
+                        "installed_by": ["modules", "vcf_extract_relate_somalier"],
+                        "patch": "modules/nf-core/somalier/relate/somalier-relate.diff"
                     },
                     "tabix/bgzip": {
                         "branch": "master",

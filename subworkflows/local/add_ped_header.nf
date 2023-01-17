@@ -2,8 +2,10 @@
 // ADD PED HEADER
 //
 
-include { RTGTOOLS_PEDFILTER                  } from '../../modules/nf-core/rtgtools/pedfilter/main'
-include { BCFTOOLS_REHEADER                   } from '../../modules/nf-core/bcftools/reheader/main'
+include { RTGTOOLS_PEDFILTER    } from '../../modules/nf-core/rtgtools/pedfilter/main'
+include { BCFTOOLS_REHEADER     } from '../../modules/nf-core/bcftools/reheader/main'
+
+include { MERGE_HEADERS         } from '../../modules/local/merge_headers'
 
 workflow ADD_PED_HEADER {
     take:
@@ -18,11 +20,6 @@ workflow ADD_PED_HEADER {
     // Remove extra columns from the samples TSV and convert to a VCF header
     //
 
-    somalier_samples_tsv
-        .map { meta, samples_tsv ->
-            convert_to_ped(samples_tsv)
-        }
-
     RTGTOOLS_PEDFILTER(
         somalier_samples_tsv
     )
@@ -33,28 +30,14 @@ workflow ADD_PED_HEADER {
     // Create the new headers
     //
 
-    vcfs
-        .join(RTGTOOLS_PEDFILTER.out.output)
-        .multiMap { meta, vcf, ped_vcf ->
-            header: [ meta, add_ped_to_header(vcf, ped_vcf) ]
-            files: [ meta.id, meta, vcf]
-        }
-        .set { headers }
+    MERGE_HEADERS(
+        vcfs.join(RTGTOOLS_PEDFILTER.out.output)
+    )
 
-    headers.header
-        .collectFile()
-        { meta, header ->
-            [ "${meta.id}.header.txt", header.join("\n") ]
-        }
-        .map { file ->
-            id = file.baseName.tokenize(".")[0..-2].join(".")
-            [ id, file ]
-        }
-        .join(headers.files)
-        .map { id, header, meta, vcf ->
-            [ meta, vcf, header ]
-        }
-        .dump(tag:'bcftools_reheader_input', pretty:true)
+    ch_versions = ch_versions.mix(MERGE_HEADERS.out.versions)
+
+    vcfs
+        .join(MERGE_HEADERS.out.header)
         .set { bcftools_reheader_input }
 
     BCFTOOLS_REHEADER(
@@ -67,70 +50,4 @@ workflow ADD_PED_HEADER {
     emit:
     ped_vcfs = BCFTOOLS_REHEADER.out.vcf
     versions = ch_versions
-}
-
-def convert_to_ped(samples_tsv) {
-
-    ArrayList new_lines = []
-
-    for(line : samples_tsv.readLines()){
-        new_line = line.tokenize("\t")[0..5].join("\t")
-        new_lines.add(new_line)
-    }
-
-    samples_tsv.text = new_lines.join("\n")
-}
-
-def add_ped_to_header(vcf, ped_vcf) {
-
-    ArrayList header = []
-    String columns_vcf = ""
-    String columns_ped = ""
-
-    if((vcf.size() == 0 || ped_vcf.size() == 0) && workflow.stubRun){
-        println()
-        header.add("##STUB")
-    }
-    else if(vcf.size() == 0 || ped_vcf.size() == 0){
-        log.error("No VCF contents detected when merging the VCF and PED headers for ${vcf} and/or ${ped_vcf}. Please contact the pipeline developer to fix this.")
-    }
-    else {
-        vcf.withInputStream {
-            InputStream gzipStream = new java.util.zip.GZIPInputStream(it)
-            Reader decoder = new InputStreamReader(gzipStream, 'ASCII')
-            BufferedReader buffered = new BufferedReader(decoder)
-            while( line = buffered.readLine()) {
-                if(line ==~ "^##.*"){
-                    header.add(line)
-                }
-                else if(line ==~ "^#CHROM.*"){
-                    columns_vcf = line
-                }
-                else {
-                    break
-                }
-            }
-        }
-
-        ped_vcf.withInputStream {
-            InputStream gzipStream = new java.util.zip.GZIPInputStream(it)
-            Reader decoder = new InputStreamReader(gzipStream, 'ASCII')
-            BufferedReader buffered = new BufferedReader(decoder)
-            while( line = buffered.readLine()) {
-                if(line ==~ "^##.*"){
-                    if (!(line ==~ "^##file.*")){
-                        header.add(line)
-                    }
-                }
-                else if(line ==~ "^#CHROM.*"){
-                    columns_ped = line
-                }
-            }
-        }
-    }
-
-    assert columns_ped == columns_vcf : "The columns in the genotyped VCF and the VCF containing PED headers are different. (${vcf} and ${ped_vcf})"
-    header.add(columns_vcf)
-    return header
-
 }
