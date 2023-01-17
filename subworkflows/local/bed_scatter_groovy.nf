@@ -15,6 +15,8 @@ workflow BED_SCATTER_GROOVY {
         minimum_size
     )
 
+    ch_versions = ch_versions.mix(SCATTER_BEDS.out.versions)
+
     SCATTER_BEDS.out.scatter
         .map { meta, beds ->
             [ meta, beds, beds instanceof ArrayList ? beds.size() : 1 ]
