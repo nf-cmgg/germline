@@ -37,7 +37,7 @@ workflow GERMLINE_VARIANT_CALLING {
     // Split the BED files into multiple subsets
     //
 
-    beds.view()
+    beds
         .tap { dragstrmodel_beds }
         .set { beds_to_scatter }
 
@@ -58,7 +58,7 @@ workflow GERMLINE_VARIANT_CALLING {
     //
 
     if (params.use_dragstr_model) {
-        crams.view()
+        crams
             .join(dragstrmodel_beds)
             .map(
                 { meta, cram, crai, bed ->
