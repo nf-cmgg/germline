@@ -2,19 +2,25 @@
 // PREPROCESSING
 //
 
-include { MERGE_BEDS                } from '../../modules/local/merge_beds'
-include { SAMTOOLS_MERGE            } from '../../modules/local/samtools_merge'
+include { MERGE_BEDS as MERGE_ROI       } from '../../modules/local/merge_beds'
+include { MERGE_BEDS as MERGE_CALLABLE  } from '../../modules/local/merge_beds'
+include { SAMTOOLS_MERGE                } from '../../modules/local/samtools_merge'
 
-include { SAMTOOLS_INDEX            } from '../../modules/nf-core/samtools/index/main'
-include { MOSDEPTH                  } from '../../modules/nf-core/mosdepth/main'
-include { TABIX_BGZIP as UNZIP_BEDS } from '../../modules/nf-core/tabix/bgzip/main'
+include { SAMTOOLS_INDEX                } from '../../modules/nf-core/samtools/index/main'
+include { MOSDEPTH                      } from '../../modules/nf-core/mosdepth/main'
+include { TABIX_BGZIP as UNZIP_BEDS     } from '../../modules/nf-core/tabix/bgzip/main'
+include { TABIX_BGZIP as UNZIP_ROI      } from '../../modules/nf-core/tabix/bgzip/main'
+include { TABIX_BGZIP as UNZIP_CALLABLE } from '../../modules/nf-core/tabix/bgzip/main'
+include { BEDTOOLS_INTERSECT            } from '../../modules/nf-core/bedtools/intersect/main'
 
 workflow PREPROCESSING {
     take:
         crams             // channel: [mandatory] [ meta, cram, crai ] => sample CRAM files and their optional indices
-        beds              // channel: [mandatory] [ meta, bed ] => bed files
+        roi               // channel: [mandatory] [ meta, bed ] => bed files containing regions of interest
+        callable          // channel: [mandatory] [ meta, bed ] => bed files containing callable regions
         fasta             // channel: [mandatory] [ fasta ] => fasta reference
         fasta_fai         // channel: [mandatory] [ fasta_fai ] => fasta reference index
+        default_roi       // channel: [optional]  [ roi ] => bed containing regions of interest to be used as default
 
     main:
 
@@ -77,59 +83,140 @@ workflow PREPROCESSING {
     crams_without_index
         .join(SAMTOOLS_INDEX.out.crai)
         .mix(merged_crams.indexed)
-        .tap { mosdept_crams }
+        .tap { mosdepth_crams }
         .dump(tag:'ready_crams', pretty:true)
         .set { ready_crams }
+
+    //
+    // Unzip the Gzipped beds
+    //
+
+    roi
+        .branch { meta, bed ->
+            gunzipped: bed == [] || bed.getExtension() == "bed"
+            gzipped: bed.getExtension() == "gz"
+        }
+        .set { roi_branch }
+
+    UNZIP_ROI(
+        roi_branch.gzipped
+    )
+
+    ch_versions = ch_versions.mix(UNZIP_ROI.out.versions)
+
+    callable
+        .branch { meta, bed ->
+            gunzipped: bed == [] || bed.getExtension() == "bed"
+            gzipped: bed.getExtension() == "gz"
+        }
+        .set { callable_branch }
+
+    UNZIP_CALLABLE(
+        callable_branch.gzipped
+    )
+
+    ch_versions = ch_versions.mix(UNZIP_CALLABLE.out.versions)
 
     //
     // Merge the BED files if there are multiple per sample
     //
 
-    beds
+    roi_branch.gunzipped
+        .mix(UNZIP_ROI.out.output)
         .groupTuple()
         .branch(
             { meta, bed ->
                 multiple: bed.size() > 1
                     return [meta, bed]
-                single:   bed.size() == 1 && bed != [[]]
+                single:   bed.size() == 1
                     return [meta, bed[0]]
-                no_bed: bed == [[]]
-                    return [meta, []]
             }
         )
-        .set { bed_branch }
+        .set { merge_roi_branch }
 
-    MERGE_BEDS(
-        bed_branch.multiple
+    MERGE_ROI(
+        merge_roi_branch.multiple
     )
 
-    bed_branch.no_bed
-        .join(mosdept_crams)
-        .map { meta, bed, cram, crai ->
-            [ meta, cram, crai ]
+    ch_versions = ch_versions.mix(MERGE_ROI.out.versions)
+
+    merge_roi_branch.single
+        .mix(MERGE_ROI.out.bed)
+        .set { ready_roi }
+
+    callable_branch.gunzipped
+        .mix(UNZIP_CALLABLE.out.output)
+        .groupTuple()
+        .branch(
+            { meta, bed ->
+                multiple: bed.size() > 1
+                    return [meta, bed]
+                single:   bed.size() == 1
+                    return [meta, bed[0]]
+            }
+        )
+        .set { merge_callable_branch }
+
+    MERGE_CALLABLE(
+        merge_callable_branch.multiple
+    )
+
+    ch_versions = ch_versions.mix(MERGE_CALLABLE.out.versions)
+
+    //
+    // Create callable BED files if none are supplied
+    //
+
+    merge_callable_branch.single
+        .mix(MERGE_CALLABLE.out.bed)
+        .join(mosdepth_crams)
+        .branch { meta, bed, cram, crai ->
+            no_bed: !bed
+                return [ meta, cram, crai ]
+            bed: bed
+                return [ meta, bed ]
         }
         .set { mosdepth_input }
 
-    //
-    // Create BED files if none are supplied
-    //
-
     MOSDEPTH(
-        mosdepth_input,
+        mosdepth_input.no_bed,
         [[],[]],
-        fasta.map { [[],it]}
+        fasta.map { [[],it] }
     )
 
     UNZIP_BEDS(
         MOSDEPTH.out.quantized_bed
     )
 
-    MERGE_BEDS.out.bed
+    mosdepth_input.bed
         .mix(UNZIP_BEDS.out.output)
-        .mix(bed_branch.single)
         .dump(tag:'merged_beds_preprocessing', pretty:true)
-        .set { ready_beds }
+        .set { ready_callable }
 
+    //
+    // Intersect the ROI BEDs and CALLABLE BEDs
+    //
+
+    ready_roi
+        .join(ready_callable)
+        .combine(default_roi)
+        .branch { meta, roi, callable, default_roi ->
+            out_roi = roi ?: default_roi ?: []
+            intersect: out_roi != []
+                return [ meta, out_roi, callable ]
+            no_intersect: out_roi == []
+                return [ meta, callable ]
+        }
+        .set { intersect_branch }
+
+    BEDTOOLS_INTERSECT(
+        intersect_branch.intersect,
+        "bed"
+    )
+
+    intersect_branch.no_intersect
+        .mix(BEDTOOLS_INTERSECT.out.intersect)
+        .set { ready_beds }
 
     emit:
     ready_crams

@@ -52,6 +52,7 @@ process SOMALIER_RELATE {
     touch ${prefix}.html
     touch ${prefix}.pairs.tsv
     touch ${prefix}.samples.tsv
+    touch ${prefix}.ped
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
