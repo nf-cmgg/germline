@@ -2,7 +2,10 @@ process SCATTER_BEDS {
     tag "$meta.id"
     label 'process_single'
 
-    container 'groovy:3.0.14-jdk8'
+    conda "anaconda::gawk=5.1.0"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/gawk:5.1.0' :
+        'quay.io/biocontainers/gawk:5.1.0' }"
 
     input:
     tuple val(meta), path(bed)
@@ -10,19 +13,25 @@ process SCATTER_BEDS {
 
     output:
     tuple val(meta), path("*.bed")  , emit: scatter
-    path("versions.yml")            , emit: versions
-
-    when:
-    task.ext.when == null || task.ext.when
+    path('versions.yml')            , emit: versions
 
     script:
     def prefix = task.ext.prefix ?: meta.id
     """
-    scatter_beds.groovy --prefix ${prefix} --bed ${bed} --size ${scatter_size}
+    awk -vFS="\t" '{
+        if (\$0 ~ /^[^#].*\$/) {
+            if (name == "" || size >= ${scatter_size}) {
+                name = sprintf("${prefix}_%d.bed", count++)
+                size = 0
+            }
+            size += \$3-\$2+1
+            print \$0 > name
+        }
+    }' ${bed}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        groovy: \$(echo \$(groovy --version 2>&1) | sed 's/^Groovy Version: //; s/ JVM:.*\$//' )
+        gawk: \$(awk -Wversion | sed '1!d; s/.*Awk //; s/,.*//')
     END_VERSIONS
     """
 
@@ -35,7 +44,7 @@ process SCATTER_BEDS {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        groovy: \$(echo \$(groovy --version 2>&1) | sed 's/^Groovy Version: //; s/ JVM:.*\$//' )
+        gawk: \$(awk -Wversion | sed '1!d; s/.*Awk //; s/,.*//')
     END_VERSIONS
     """
 }
