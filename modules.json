@@ -82,6 +82,11 @@
                         "git_sha": "223432b834d7819707c162c48a83612b785c8796",
                         "installed_by": ["modules"]
                     },
+                    "happy/happy": {
+                        "branch": "master",
+                        "git_sha": "bf78e7d93f5d08ed464f74ba85a03b2ad6112f04",
+                        "installed_by": ["modules"]
+                    },
                     "mosdepth": {
                         "branch": "master",
                         "git_sha": "def5f182583df0c20f43ec3d4355e8ebd341aaa9",
@@ -97,6 +102,16 @@
                         "git_sha": "807b6f0d92d39daf0deba1dc9786450d3e48efb0",
                         "installed_by": ["modules"],
                         "patch": "modules/nf-core/rtgtools/pedfilter/rtgtools-pedfilter.diff"
+                    },
+                    "rtgtools/rocplot": {
+                        "branch": "master",
+                        "git_sha": "94db1a531781edffada2cd3ea0913937a605eb48",
+                        "installed_by": ["modules"]
+                    },
+                    "rtgtools/vcfeval": {
+                        "branch": "master",
+                        "git_sha": "1274846bc23f0a07cc7e2bce8c6030923143da00",
+                        "installed_by": ["modules"]
                     },
                     "samtools/faidx": {
                         "branch": "master",
