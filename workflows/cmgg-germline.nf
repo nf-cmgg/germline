@@ -103,6 +103,7 @@ include { SAMTOOLS_FAIDX as FAIDX                                    } from '../
 include { GATK4_CREATESEQUENCEDICTIONARY as CREATESEQUENCEDICTIONARY } from '../modules/nf-core/gatk4/createsequencedictionary/main'
 include { GATK4_COMPOSESTRTABLEFILE as COMPOSESTRTABLEFILE           } from '../modules/nf-core/gatk4/composestrtablefile/main'
 include { RTGTOOLS_FORMAT                                            } from '../modules/nf-core/rtgtools/format/main'
+include { UNTAR                                                      } from '../modules/nf-core/untar/main'
 include { TABIX_TABIX as TABIX_DBSNP                                 } from '../modules/nf-core/tabix/tabix/main'
 include { TABIX_TABIX as TABIX_TRUTH                                 } from '../modules/nf-core/tabix/tabix/main'
 include { BCFTOOLS_FILTER as FILTER_SNPS                             } from '../modules/nf-core/bcftools/filter/main'
@@ -270,6 +271,24 @@ workflow CMGGGERMLINE {
 
         RTGTOOLS_FORMAT.out.sdf
             .collect()
+            .dump(tag:'sdf', pretty:true)
+            .set { sdf }
+    }
+    else if (params.validate) {
+        sdf.branch { meta, sdf ->
+            zip = sdf ==~ /^.*\\.tar\\.gz\$/
+            tarzipped: zip
+            untarred: !zip
+        }
+        .set { sdf_branch }
+
+        UNTAR(
+            sdf_branch.tarzipped
+        )
+        ch_versions = ch_versions.mix(UNTAR.out.versions)
+
+        UNTAR.out.untar
+            .mix(sdf_branch.untarred)
             .dump(tag:'sdf', pretty:true)
             .set { sdf }
     }
