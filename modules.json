@@ -84,7 +84,7 @@
                     },
                     "happy/happy": {
                         "branch": "master",
-                        "git_sha": "bf78e7d93f5d08ed464f74ba85a03b2ad6112f04",
+                        "git_sha": "2c19f0b56b5fdb34eb7f9cae6fce513dfa375334",
                         "installed_by": ["modules"]
                     },
                     "mosdepth": {
@@ -115,7 +115,7 @@
                     },
                     "rtgtools/vcfeval": {
                         "branch": "master",
-                        "git_sha": "1274846bc23f0a07cc7e2bce8c6030923143da00",
+                        "git_sha": "2c19f0b56b5fdb34eb7f9cae6fce513dfa375334",
                         "installed_by": ["modules"]
                     },
                     "samtools/faidx": {
