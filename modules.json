@@ -41,11 +41,11 @@
                         "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
-                    "ensemblvep": {
+                    "ensemblvep/vep": {
                         "branch": "master",
-                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
+                        "git_sha": "bea3ca998816a7f812b1bbbcb27c3a9ffbac0706",
                         "installed_by": ["modules"],
-                        "patch": "modules/nf-core/ensemblvep/ensemblvep.diff"
+                        "patch": "modules/nf-core/ensemblvep/vep/ensemblvep-vep.diff"
                     },
                     "gatk4/calibratedragstrmodel": {
                         "branch": "master",

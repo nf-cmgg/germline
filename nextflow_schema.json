@@ -83,6 +83,11 @@
                     "fa_icon": "fas fa-folder",
                     "pattern": "^\\S+\\.zip$"
                 },
+                "sdf": {
+                    "type": "string",
+                    "default": null,
+                    "description": "The SDF folder generated from the reference FASTA file"
+                },
                 "genomes_base": {
                     "type": "string",
                     "default": "/references/",
@@ -153,6 +158,10 @@
                 "add_ped": {
                     "type": "boolean",
                     "description": "Whether the PED header values should be added to the VCF. This is not recommended when no PED files are supplied with the current samples"
+                },
+                "validate": {
+                    "type": "boolean",
+                    "description": "Perform validation with the `truth_vcf` given in the samplesheet"
                 },
                 "roi": {
                     "type": "string",

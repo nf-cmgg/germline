@@ -15,6 +15,9 @@ process SCATTER_BEDS {
     tuple val(meta), path("*.bed")  , emit: scatter
     path('versions.yml')            , emit: versions
 
+    when:
+    task.ext.when == null || task.ext.when
+
     script:
     def prefix = task.ext.prefix ?: meta.id
     """

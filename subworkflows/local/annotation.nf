@@ -2,7 +2,7 @@
 // ANNOTATION
 //
 
-include { ENSEMBLVEP                          } from '../../modules/nf-core/ensemblvep/main'
+include { ENSEMBLVEP_VEP                      } from '../../modules/nf-core/ensemblvep/vep/main'
 include { VCFANNO                             } from '../../modules/nf-core/vcfanno/main'
 include { TABIX_BGZIP as BGZIP_ANNOTATED_VCFS } from '../../modules/nf-core/tabix/bgzip/main'
 include { TABIX_TABIX as TABIX_ENSEMBLVEP     } from '../../modules/nf-core/tabix/tabix/main'
@@ -75,7 +75,7 @@ workflow ANNOTATION {
     // Annotate using Ensembl VEP
     //
 
-    ENSEMBLVEP(
+    ENSEMBLVEP_VEP(
         vep_input,
         params.genome,
         params.species,
