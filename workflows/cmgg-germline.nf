@@ -412,8 +412,7 @@ workflow CMGGGERMLINE {
             .mix(validation_branch.tbi)
             .set { validation_input }
 
-        // TODO: wait for the update of happy with vcfeval as dependency
-        // TODO: add support for truth regions
+        // TODO: add support for truth regions when happy works
         VCF_VALIDATE_SMALL_VARIANTS(
             validation_input,
             PREPROCESSING.out.ready_beds.map { meta, bed -> [meta, [], bed] },
@@ -423,7 +422,7 @@ workflow CMGGGERMLINE {
             [[],[]],
             [[],[]],
             [[],[]],
-            "happy,vcfeval"
+            "vcfeval" //Only VCFeval for now, awaiting the conda fix for happy (https://github.com/bioconda/bioconda-recipes/pull/39267)
         )
 
         ch_versions = ch_versions.mix(VCF_VALIDATE_SMALL_VARIANTS.out.versions)
