@@ -97,6 +97,11 @@
                         "git_sha": "ee80d14721e76e2e079103b8dcd5d57129e584ba",
                         "installed_by": ["modules"]
                     },
+                    "rtgtools/format": {
+                        "branch": "master",
+                        "git_sha": "3a1919641c75a83d8b12a43d907b318f694f04b0",
+                        "installed_by": ["modules"]
+                    },
                     "rtgtools/pedfilter": {
                         "branch": "master",
                         "git_sha": "807b6f0d92d39daf0deba1dc9786450d3e48efb0",

@@ -102,6 +102,7 @@ include { VCF_EXTRACT_RELATE_SOMALIER   } from '../subworkflows/nf-core/vcf_extr
 include { SAMTOOLS_FAIDX as FAIDX                                    } from '../modules/nf-core/samtools/faidx/main'
 include { GATK4_CREATESEQUENCEDICTIONARY as CREATESEQUENCEDICTIONARY } from '../modules/nf-core/gatk4/createsequencedictionary/main'
 include { GATK4_COMPOSESTRTABLEFILE as COMPOSESTRTABLEFILE           } from '../modules/nf-core/gatk4/composestrtablefile/main'
+include { RTGTOOLS_FORMAT                                            } from '../modules/nf-core/rtgtools/format/main'
 include { TABIX_TABIX as TABIX_DBSNP                                 } from '../modules/nf-core/tabix/tabix/main'
 include { TABIX_TABIX as TABIX_TRUTH                                 } from '../modules/nf-core/tabix/tabix/main'
 include { BCFTOOLS_FILTER as FILTER_SNPS                             } from '../modules/nf-core/bcftools/filter/main'
@@ -130,9 +131,10 @@ workflow CMGGGERMLINE {
     // Importing the input files
     //
     fasta              = Channel.fromPath(params.fasta).collect()
-    fasta_fai          = params.fai                 ? Channel.fromPath(params.fai).collect()                : null
-    dict               = params.dict                ? Channel.fromPath(params.dict).collect()               : null
-    strtablefile       = params.strtablefile        ? Channel.fromPath(params.strtablefile).collect()       : null
+    fasta_fai          = params.fai                 ? Channel.fromPath(params.fai).collect()                                        : null
+    dict               = params.dict                ? Channel.fromPath(params.dict).collect()                                       : null
+    strtablefile       = params.strtablefile        ? Channel.fromPath(params.strtablefile).collect()                               : null
+    sdf                = params.sdf                 ? Channel.fromPath(params.sdf).map {sdf -> [[id:'reference'], sdf]}.collect()   : null
 
     default_roi        = params.roi                 ? Channel.fromPath(params.roi)                          : Channel.value([[]])
 
@@ -260,8 +262,20 @@ workflow CMGGGERMLINE {
             .set { strtablefile }
     }
 
+    if (params.validate && !sdf) {
+        RTGTOOLS_FORMAT(
+            fasta.map { fasta -> [[id:'reference'], fasta, [], []]}
+        )
+        ch_versions  = ch_versions.mix(RTGTOOLS_FORMAT.out.versions)
+
+        RTGTOOLS_FORMAT.out.sdf
+            .collect()
+            .dump(tag:'sdf', pretty:true)
+            .set { sdf }
+    }
+
     //
-    // Read in samplesheet, validate and stage input files
+    // Read in samplesheet, validate and convert to a channel
     //
 
     SamplesheetConversion.convert(ch_input, file("${projectDir}/assets/schema_input.json", checkIfExists:true))
@@ -383,34 +397,37 @@ workflow CMGGGERMLINE {
     // Validate the found variants
     //
 
-    TABIX_TRUTH(
-        validation_branch.no_tbi.map { meta, vcf, tbi, truth_vcf, truth_tbi -> [ meta, truth_vcf ]}
-    )
+    if (params.validate){
+        TABIX_TRUTH(
+            validation_branch.no_tbi.map { meta, vcf, tbi, truth_vcf, truth_tbi -> [ meta, truth_vcf ]}
+        )
 
-    ch_versions = ch_versions.mix(TABIX_TRUTH.out.versions)
+        ch_versions = ch_versions.mix(TABIX_TRUTH.out.versions)
 
-    validation_branch.no_tbi
-        .join(TABIX_TRUTH.out.tbi)
-        .map { meta, vcf, tbi, truth_vcf, empty_tbi, truth_tbi ->
-            [ meta, vcf, tbi, truth_vcf, truth_tbi ]
-        }
-        .mix(validation_branch.tbi)
-        .set { validation_input }
+        validation_branch.no_tbi
+            .join(TABIX_TRUTH.out.tbi)
+            .map { meta, vcf, tbi, truth_vcf, empty_tbi, truth_tbi ->
+                [ meta, vcf, tbi, truth_vcf, truth_tbi ]
+            }
+            .mix(validation_branch.tbi)
+            .set { validation_input }
 
-    // TODO: add SDF files for rtgtools
-    VCF_VALIDATE_SMALL_VARIANTS(
-        validation_input,
-        PREPROCESSING.out.ready_beds.map { meta, bed -> [meta, [], bed] },
-        fasta.map { [[], it] },
-        fasta_fai.map { [[], it] },
-        [[],[]],
-        [[],[]],
-        [[],[]],
-        [[],[]],
-        "happy"
-    )
+        // TODO: wait for the update of happy with vcfeval as dependency
+        // TODO: add support for truth regions
+        VCF_VALIDATE_SMALL_VARIANTS(
+            validation_input,
+            PREPROCESSING.out.ready_beds.map { meta, bed -> [meta, [], bed] },
+            fasta.map { [[], it] },
+            fasta_fai.map { [[], it] },
+            sdf,
+            [[],[]],
+            [[],[]],
+            [[],[]],
+            "happy,vcfeval"
+        )
 
-    ch_versions = ch_versions.mix(VCF_VALIDATE_SMALL_VARIANTS.out.versions)
+        ch_versions = ch_versions.mix(VCF_VALIDATE_SMALL_VARIANTS.out.versions)
+    }
 
     //
     // Joint-genotyping of the families
