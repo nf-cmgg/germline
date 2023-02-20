@@ -85,10 +85,10 @@ workflow ANNOTATION {
         vep_extra_files
     )
 
-    ch_reports  = ch_reports.mix(ENSEMBLVEP.out.report)
-    ch_versions = ch_versions.mix(ENSEMBLVEP.out.versions)
+    ch_reports  = ch_reports.mix(ENSEMBLVEP_VEP.out.report)
+    ch_versions = ch_versions.mix(ENSEMBLVEP_VEP.out.versions)
 
-    ENSEMBLVEP.out.vcf
+    ENSEMBLVEP_VEP.out.vcf
         .tap { vep_vcfs_to_index }
         .dump(tag:'vep_output', pretty:true)
         .set { vep_vcfs }
