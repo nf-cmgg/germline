@@ -41,11 +41,11 @@
                         "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
-                    "ensemblvep": {
+                    "ensemblvep/vep": {
                         "branch": "master",
-                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
+                        "git_sha": "bea3ca998816a7f812b1bbbcb27c3a9ffbac0706",
                         "installed_by": ["modules"],
-                        "patch": "modules/nf-core/ensemblvep/ensemblvep.diff"
+                        "patch": "modules/nf-core/ensemblvep/vep/ensemblvep-vep.diff"
                     },
                     "gatk4/calibratedragstrmodel": {
                         "branch": "master",
@@ -82,6 +82,11 @@
                         "git_sha": "223432b834d7819707c162c48a83612b785c8796",
                         "installed_by": ["modules"]
                     },
+                    "happy/happy": {
+                        "branch": "master",
+                        "git_sha": "2c19f0b56b5fdb34eb7f9cae6fce513dfa375334",
+                        "installed_by": ["modules"]
+                    },
                     "mosdepth": {
                         "branch": "master",
                         "git_sha": "def5f182583df0c20f43ec3d4355e8ebd341aaa9",
@@ -92,11 +97,26 @@
                         "git_sha": "ee80d14721e76e2e079103b8dcd5d57129e584ba",
                         "installed_by": ["modules"]
                     },
+                    "rtgtools/format": {
+                        "branch": "master",
+                        "git_sha": "3a1919641c75a83d8b12a43d907b318f694f04b0",
+                        "installed_by": ["modules"]
+                    },
                     "rtgtools/pedfilter": {
                         "branch": "master",
                         "git_sha": "807b6f0d92d39daf0deba1dc9786450d3e48efb0",
                         "installed_by": ["modules"],
                         "patch": "modules/nf-core/rtgtools/pedfilter/rtgtools-pedfilter.diff"
+                    },
+                    "rtgtools/rocplot": {
+                        "branch": "master",
+                        "git_sha": "94db1a531781edffada2cd3ea0913937a605eb48",
+                        "installed_by": ["modules"]
+                    },
+                    "rtgtools/vcfeval": {
+                        "branch": "master",
+                        "git_sha": "2c19f0b56b5fdb34eb7f9cae6fce513dfa375334",
+                        "installed_by": ["modules"]
                     },
                     "samtools/faidx": {
                         "branch": "master",
@@ -128,6 +148,11 @@
                         "branch": "master",
                         "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules", "vcf_extract_relate_somalier", "vcf_gather_bcftools"]
+                    },
+                    "untar": {
+                        "branch": "master",
+                        "git_sha": "cc1f997fab6d8fde5dc0e6e2a310814df5b53ce7",
+                        "installed_by": ["modules"]
                     },
                     "vcf2db": {
                         "branch": "master",

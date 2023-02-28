@@ -85,6 +85,7 @@ include { GERMLINE_VARIANT_CALLING      } from '../subworkflows/local/germline_v
 include { JOINT_GENOTYPING              } from '../subworkflows/local/joint_genotyping'
 include { ANNOTATION                    } from '../subworkflows/local/annotation'
 include { ADD_PED_HEADER                } from '../subworkflows/local/add_ped_header'
+include { VCF_VALIDATE_SMALL_VARIANTS   } from '../subworkflows/local/vcf_validate_small_variants/main'
 
 include { VCF_EXTRACT_RELATE_SOMALIER   } from '../subworkflows/nf-core/vcf_extract_relate_somalier/main'
 
@@ -101,7 +102,10 @@ include { VCF_EXTRACT_RELATE_SOMALIER   } from '../subworkflows/nf-core/vcf_extr
 include { SAMTOOLS_FAIDX as FAIDX                                    } from '../modules/nf-core/samtools/faidx/main'
 include { GATK4_CREATESEQUENCEDICTIONARY as CREATESEQUENCEDICTIONARY } from '../modules/nf-core/gatk4/createsequencedictionary/main'
 include { GATK4_COMPOSESTRTABLEFILE as COMPOSESTRTABLEFILE           } from '../modules/nf-core/gatk4/composestrtablefile/main'
+include { RTGTOOLS_FORMAT                                            } from '../modules/nf-core/rtgtools/format/main'
+include { UNTAR                                                      } from '../modules/nf-core/untar/main'
 include { TABIX_TABIX as TABIX_DBSNP                                 } from '../modules/nf-core/tabix/tabix/main'
+include { TABIX_TABIX as TABIX_TRUTH                                 } from '../modules/nf-core/tabix/tabix/main'
 include { BCFTOOLS_FILTER as FILTER_SNPS                             } from '../modules/nf-core/bcftools/filter/main'
 include { BCFTOOLS_FILTER as FILTER_INDELS                           } from '../modules/nf-core/bcftools/filter/main'
 include { BCFTOOLS_STATS as BCFTOOLS_STATS_FAMILY                    } from '../modules/nf-core/bcftools/stats/main'
@@ -128,9 +132,10 @@ workflow CMGGGERMLINE {
     // Importing the input files
     //
     fasta              = Channel.fromPath(params.fasta).collect()
-    fasta_fai          = params.fai                 ? Channel.fromPath(params.fai).collect()                : null
-    dict               = params.dict                ? Channel.fromPath(params.dict).collect()               : null
-    strtablefile       = params.strtablefile        ? Channel.fromPath(params.strtablefile).collect()       : null
+    fasta_fai          = params.fai                 ? Channel.fromPath(params.fai).collect()                                        : null
+    dict               = params.dict                ? Channel.fromPath(params.dict).collect()                                       : null
+    strtablefile       = params.strtablefile        ? Channel.fromPath(params.strtablefile).collect()                               : null
+    sdf                = params.sdf                 ? Channel.fromPath(params.sdf).map {sdf -> [[id:'reference'], sdf]}.collect()   : null
 
     default_roi        = params.roi                 ? Channel.fromPath(params.roi)                          : Channel.value([[]])
 
@@ -258,22 +263,52 @@ workflow CMGGGERMLINE {
             .set { strtablefile }
     }
 
+    if (params.validate && !sdf) {
+        RTGTOOLS_FORMAT(
+            fasta.map { fasta -> [[id:'reference'], fasta, [], []]}
+        )
+        ch_versions  = ch_versions.mix(RTGTOOLS_FORMAT.out.versions)
+
+        RTGTOOLS_FORMAT.out.sdf
+            .collect()
+            .dump(tag:'sdf', pretty:true)
+            .set { sdf }
+    }
+    else if (params.validate) {
+        sdf.branch { meta, sdf ->
+            zip = sdf ==~ /^.*\\.tar\\.gz\$/
+            tarzipped: zip
+            untarred: !zip
+        }
+        .set { sdf_branch }
+
+        UNTAR(
+            sdf_branch.tarzipped
+        )
+        ch_versions = ch_versions.mix(UNTAR.out.versions)
+
+        UNTAR.out.untar
+            .mix(sdf_branch.untarred)
+            .dump(tag:'sdf', pretty:true)
+            .set { sdf }
+    }
+
     //
-    // Read in samplesheet, validate and stage input files
+    // Read in samplesheet, validate and convert to a channel
     //
 
     SamplesheetConversion.convert(ch_input, file("${projectDir}/assets/schema_input.json", checkIfExists:true))
         .map(
-            { meta, cram, crai, roi, callable, ped ->
+            { meta, cram, crai, roi, callable, ped, truth_vcf, truth_tbi ->
                 new_meta = meta.clone()
                 new_meta.family = meta.family ?: get_family_id_from_ped(ped)
-                [ new_meta, cram, crai, roi, callable, ped ]
+                [ new_meta, cram, crai, roi, callable, ped, truth_vcf, truth_tbi ]
             }
         )
         .tap { ch_raw_inputs }
         .distinct()
         .map(
-            { meta, cram, crai, roi, callable, ped ->
+            { meta, cram, crai, roi, callable, ped, truth_vcf, truth_tbi ->
                 [ meta.family, 1 ]
             }
         )
@@ -287,13 +322,13 @@ workflow CMGGGERMLINE {
         .combine(
             ch_raw_inputs
                 .map(
-                    { meta, cram, crai, roi, callable, ped ->
-                        [ meta.family, meta, cram, crai, roi, callable, ped ]
+                    { meta, cram, crai, roi, callable, ped, truth_vcf, truth_tbi ->
+                        [ meta.family, meta, cram, crai, roi, callable, ped, truth_vcf, truth_tbi ]
                     }
                 )
         , by:0)
         .multiMap(
-            { family, family_count, meta, cram, crai, roi, callable, ped ->
+            { family, family_count, meta, cram, crai, roi, callable, ped, truth_vcf, truth_tbi ->
                 new_meta_ped = [:]
                 new_meta = meta.clone()
 
@@ -304,16 +339,18 @@ workflow CMGGGERMLINE {
                 new_meta.family           = meta.family ?: meta.sample
                 new_meta.family_count     = family_count
 
-                roi:        [new_meta, roi]
-                callable:   [new_meta, callable]
-                cram:       [new_meta, cram, crai]
-                peds:       [new_meta_ped, ped]
+                roi:            [new_meta, roi]
+                callable:       [new_meta, callable]
+                truth_variants: [new_meta, truth_vcf, truth_tbi]
+                cram:           [new_meta, cram, crai]
+                peds:           [new_meta_ped, ped]
             }
         )
         .set { ch_parsed_inputs }
 
     ch_parsed_inputs.roi.dump(tag:'input_roi', pretty:true)
     ch_parsed_inputs.callable.dump(tag:'input_callable', pretty:true)
+    ch_parsed_inputs.truth_variants.dump(tag:'truth_variants', pretty:true)
     ch_parsed_inputs.cram.dump(tag:'input_crams', pretty:true)
     ch_parsed_inputs.peds.dump(tag:'input_peds', pretty:true)
 
@@ -363,8 +400,52 @@ workflow CMGGGERMLINE {
     ch_reports  = ch_reports.mix(GERMLINE_VARIANT_CALLING.out.reports)
 
     GERMLINE_VARIANT_CALLING.out.gvcfs
+        .tap { variantcalling_output }
         .dump(tag:'variantcalling_output', pretty:true)
-        .set { variantcalling_output }
+        .join(ch_parsed_inputs.truth_variants)
+        .filter { meta, vcf, tbi, truth_vcf, truth_tbi ->
+            truth_vcf != []
+        }
+        .branch { meta, vcf, tbi, truth_vcf, truth_tbi ->
+            tbi: truth_tbi != []
+            no_tbi: truth_tbi == []
+        }
+        .set { validation_branch }
+
+    //
+    // Validate the found variants
+    //
+
+    if (params.validate){
+        TABIX_TRUTH(
+            validation_branch.no_tbi.map { meta, vcf, tbi, truth_vcf, truth_tbi -> [ meta, truth_vcf ]}
+        )
+
+        ch_versions = ch_versions.mix(TABIX_TRUTH.out.versions)
+
+        validation_branch.no_tbi
+            .join(TABIX_TRUTH.out.tbi)
+            .map { meta, vcf, tbi, truth_vcf, empty_tbi, truth_tbi ->
+                [ meta, vcf, tbi, truth_vcf, truth_tbi ]
+            }
+            .mix(validation_branch.tbi)
+            .set { validation_input }
+
+        // TODO: add support for truth regions when happy works
+        VCF_VALIDATE_SMALL_VARIANTS(
+            validation_input,
+            PREPROCESSING.out.ready_beds.map { meta, bed -> [meta, [], bed] },
+            fasta.map { [[], it] },
+            fasta_fai.map { [[], it] },
+            sdf,
+            [[],[]],
+            [[],[]],
+            [[],[]],
+            "vcfeval" //Only VCFeval for now, awaiting the conda fix for happy (https://github.com/bioconda/bioconda-recipes/pull/39267)
+        )
+
+        ch_versions = ch_versions.mix(VCF_VALIDATE_SMALL_VARIANTS.out.versions)
+    }
 
     //
     // Joint-genotyping of the families

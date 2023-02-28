@@ -11,6 +11,7 @@ nextflow_pipeline {
                 annotate = true
                 gemini   = true
                 add_ped  = true
+                validate = true
 
                 vcfanno           = true
                 vcfanno_config    = "https://github.com/nf-core/test-datasets/raw/modules/data/genomics/homo_sapiens/genome/vcf/vcfanno/vcfanno.toml"
@@ -33,6 +34,21 @@ nextflow_pipeline {
             assert file("${outputDir}/individuals/DNA049572/DNA049572.g.vcf.gz").exists()
             assert file("${outputDir}/individuals/DNA049572/DNA049572.g.vcf.gz.tbi").exists()
             assert file("${outputDir}/multiqc_reports/multiqc_report.html").exists()
+            assert file("${outputDir}/individuals/DNA049572/validation/DNA049572.fn.vcf.gz").exists()
+            assert file("${outputDir}/individuals/DNA049572/validation/DNA049572.fn.vcf.gz.tbi").exists()
+            assert file("${outputDir}/individuals/DNA049572/validation/DNA049572.fp.vcf.gz").exists()
+            assert file("${outputDir}/individuals/DNA049572/validation/DNA049572.fp.vcf.gz.tbi").exists()
+            assert file("${outputDir}/individuals/DNA049572/validation/DNA049572.non_snp_roc.tsv.gz").exists()
+            assert file("${outputDir}/individuals/DNA049572/validation/DNA049572.phasing.txt").exists()
+            assert file("${outputDir}/individuals/DNA049572/validation/DNA049572.png").exists()
+            assert file("${outputDir}/individuals/DNA049572/validation/DNA049572.snp_roc.tsv.gz").exists()
+            assert file("${outputDir}/individuals/DNA049572/validation/DNA049572.summary.txt").exists()
+            assert file("${outputDir}/individuals/DNA049572/validation/DNA049572.svg").exists()
+            assert file("${outputDir}/individuals/DNA049572/validation/DNA049572.tp-baseline.vcf.gz").exists()
+            assert file("${outputDir}/individuals/DNA049572/validation/DNA049572.tp-baseline.vcf.gz.tbi").exists()
+            assert file("${outputDir}/individuals/DNA049572/validation/DNA049572.tp.vcf.gz").exists()
+            assert file("${outputDir}/individuals/DNA049572/validation/DNA049572.tp.vcf.gz.tbi").exists()
+            assert file("${outputDir}/individuals/DNA049572/validation/DNA049572.weighted_roc.tsv.gz").exists()
         }
     }
 }
