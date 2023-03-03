@@ -424,7 +424,7 @@ workflow CMGGGERMLINE {
         ch_versions = ch_versions.mix(TABIX_TRUTH.out.versions)
 
         validation_branch.no_tbi
-            .join(TABIX_TRUTH.out.tbi, failOnDuplicate: true, failOnMismatch: true)
+            .join(TABIX_TRUTH.out.tbi, failOnDuplicate: true, failOnMismatch: true) 
             .map { meta, vcf, tbi, truth_vcf, empty_tbi, truth_tbi ->
                 [ meta, vcf, tbi, truth_vcf, truth_tbi ]
             }
