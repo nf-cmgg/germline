@@ -29,7 +29,7 @@ workflow VCF_EXTRACT_RELATE_SOMALIER {
     ch_versions = ch_versions.mix(TABIX_TABIX.out.versions)
 
     ch_somalierextract_input = ch_input.no_tbi
-        .join(TABIX_TABIX.out.tbi)
+        .join(TABIX_TABIX.out.tbi, failOnDuplicate: true, failOnMismatch: true)
         .mix(ch_input.tbi)
 
     SOMALIER_EXTRACT(
@@ -42,12 +42,12 @@ workflow VCF_EXTRACT_RELATE_SOMALIER {
     ch_versions = ch_versions.mix(SOMALIER_EXTRACT.out.versions)
 
     ch_somalierrelate_input = SOMALIER_EXTRACT.out.extract
-        .join(ch_vcfs)
+        .join(ch_vcfs, failOnDuplicate: true, failOnMismatch: true)
         .map { meta, extract, vcf, tbi, count ->
             [ count ? groupKey(meta, count): meta, extract ]
         }
         .groupTuple()
-        .join(ch_peds)
+        .join(ch_peds, failOnDuplicate: true, failOnMismatch: true)
         .map { meta, extract, ped ->
             extract2 = extract[0] instanceof ArrayList ? extract[0] : extract
             [ meta, extract2, ped ]

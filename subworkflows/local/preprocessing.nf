@@ -81,7 +81,7 @@ workflow PREPROCESSING {
     )
 
     crams_without_index
-        .join(SAMTOOLS_INDEX.out.crai)
+        .join(SAMTOOLS_INDEX.out.crai, failOnDuplicate: true, failOnMismatch: true)
         .mix(merged_crams.indexed)
         .tap { mosdepth_crams }
         .dump(tag:'ready_crams', pretty:true)
@@ -169,7 +169,7 @@ workflow PREPROCESSING {
 
     merge_callable_branch.single
         .mix(MERGE_CALLABLE.out.bed)
-        .join(mosdepth_crams)
+        .join(mosdepth_crams, failOnDuplicate: true, failOnMismatch: true)
         .branch { meta, bed, cram, crai ->
             no_bed: !bed
                 return [ meta, cram, crai ]
@@ -198,7 +198,7 @@ workflow PREPROCESSING {
     //
 
     ready_roi
-        .join(ready_callable)
+        .join(ready_callable, failOnDuplicate: true, failOnMismatch: true)
         .combine(default_roi)
         .branch { meta, roi, callable, default_roi ->
             out_roi = roi ?: default_roi ?: []

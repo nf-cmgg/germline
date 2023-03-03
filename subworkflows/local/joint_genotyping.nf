@@ -109,7 +109,7 @@ workflow JOINT_GENOTYPING {
     ch_versions = ch_versions.mix(GENOMICSDBIMPORT.out.versions)
 
     GENOMICSDBIMPORT.out.genomicsdb
-        .join(genotypegvcfs_beds)
+        .join(genotypegvcfs_beds, failOnDuplicate: true, failOnMismatch: true)
         .map(
             { meta, genomic_db, bed, bed_count ->
                 [ meta, genomic_db, [], bed, [] ]
@@ -136,7 +136,7 @@ workflow JOINT_GENOTYPING {
     ch_versions = ch_versions.mix(GENOTYPE_GVCFS.out.versions)
 
     GENOTYPE_GVCFS.out.vcf
-        .join(GENOTYPE_GVCFS.out.tbi)
+        .join(GENOTYPE_GVCFS.out.tbi, failOnDuplicate: true, failOnMismatch: true)
         .dump(tag:'genotyped_vcfs', pretty:true)
         .set { genotyped_vcfs }
 

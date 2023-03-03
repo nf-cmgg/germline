@@ -53,7 +53,7 @@ workflow VCF_VALIDATE_SMALL_VARIANTS {
 
     list_tools = tools.tokenize(",")
 
-    ch_input = ch_vcf.join(ch_beds)
+    ch_input = ch_vcf.join(ch_beds, failOnDuplicate: true, failOnMismatch: true)
 
     if("happy" in list_tools){
         happy_input = ch_input

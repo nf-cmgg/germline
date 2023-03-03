@@ -402,7 +402,7 @@ workflow CMGGGERMLINE {
     GERMLINE_VARIANT_CALLING.out.gvcfs
         .tap { variantcalling_output }
         .dump(tag:'variantcalling_output', pretty:true)
-        .join(ch_parsed_inputs.truth_variants)
+        .join(ch_parsed_inputs.truth_variants, failOnDuplicate: true, failOnMismatch: true)
         .filter { meta, vcf, tbi, truth_vcf, truth_tbi ->
             truth_vcf != []
         }
@@ -424,7 +424,7 @@ workflow CMGGGERMLINE {
         ch_versions = ch_versions.mix(TABIX_TRUTH.out.versions)
 
         validation_branch.no_tbi
-            .join(TABIX_TRUTH.out.tbi)
+            .join(TABIX_TRUTH.out.tbi, failOnDuplicate: true, failOnMismatch: true)
             .map { meta, vcf, tbi, truth_vcf, empty_tbi, truth_tbi ->
                 [ meta, vcf, tbi, truth_vcf, truth_tbi ]
             }
