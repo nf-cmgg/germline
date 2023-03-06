@@ -1,0 +1,13 @@
+Changes in module 'nf-core/gatk4/haplotypecaller'
+--- modules/nf-core/gatk4/haplotypecaller/main.nf
++++ modules/nf-core/gatk4/haplotypecaller/main.nf
+@@ -1,6 +1,6 @@
+ process GATK4_HAPLOTYPECALLER {
+     tag "$meta.id"
+-    label 'process_medium'
++    label 'process_single'
+ 
+     conda "bioconda::gatk4=4.3.0.0"
+     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+
+************************************************************
