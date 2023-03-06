@@ -59,7 +59,7 @@ workflow GERMLINE_VARIANT_CALLING {
 
     if (params.use_dragstr_model) {
         crams
-            .join(dragstrmodel_beds)
+            .join(dragstrmodel_beds, failOnDuplicate: true, failOnMismatch: true)
             .map(
                 { meta, cram, crai, bed ->
                     [meta, cram, crai, bed]
@@ -119,7 +119,7 @@ workflow GERMLINE_VARIANT_CALLING {
     )
 
     HAPLOTYPECALLER.out.vcf
-        .join(HAPLOTYPECALLER.out.tbi)
+        .join(HAPLOTYPECALLER.out.tbi, failOnDuplicate: true, failOnMismatch: true)
         .dump(tag:'haplotypecaller_vcfs', pretty:true)
         .set { haplotypecaller_vcfs }
     ch_versions = ch_versions.mix(HAPLOTYPECALLER.out.versions)
@@ -139,7 +139,7 @@ workflow GERMLINE_VARIANT_CALLING {
     )
 
     VCF_GATHER_BCFTOOLS.out.vcf
-        .join(VCF_GATHER_BCFTOOLS.out.tbi)
+        .join(VCF_GATHER_BCFTOOLS.out.tbi, failOnDuplicate: true, failOnMismatch: true)
         .tap { stats_input }
         .dump(tag:'reblockgvcf_input', pretty: true)
         .set { reblockgvcf_input }

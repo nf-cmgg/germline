@@ -100,7 +100,7 @@ workflow ANNOTATION {
     ch_versions = ch_versions.mix(TABIX_ENSEMBLVEP.out.versions)
 
     vep_vcfs
-        .join(TABIX_ENSEMBLVEP.out.tbi)
+        .join(TABIX_ENSEMBLVEP.out.tbi, failOnDuplicate: true, failOnMismatch: true)
         .combine(count_chromosomes)
         .map(
             { meta, vcf, tbi, count ->

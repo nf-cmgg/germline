@@ -31,13 +31,13 @@ workflow ADD_PED_HEADER {
     //
 
     MERGE_HEADERS(
-        vcfs.join(RTGTOOLS_PEDFILTER.out.output)
+        vcfs.join(RTGTOOLS_PEDFILTER.out.output, failOnDuplicate: true, failOnMismatch: true)
     )
 
     ch_versions = ch_versions.mix(MERGE_HEADERS.out.versions)
 
     vcfs
-        .join(MERGE_HEADERS.out.header)
+        .join(MERGE_HEADERS.out.header, failOnDuplicate: true, failOnMismatch: true)
         .set { bcftools_reheader_input }
 
     BCFTOOLS_REHEADER(
