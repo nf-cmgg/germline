@@ -34,32 +34,12 @@ workflow GERMLINE_VARIANT_CALLING {
     ch_reports   = Channel.empty()
 
     //
-    // Split the BED files into multiple subsets
-    //
-
-    beds
-        .tap { dragstrmodel_beds }
-        .set { beds_to_scatter }
-
-    BED_SCATTER_GROOVY(
-        beds_to_scatter.map {meta, bed -> [meta, bed]},
-        params.scatter_size
-    )
-
-    ch_versions = ch_versions.mix(BED_SCATTER_GROOVY.out.versions)
-
-    BED_SCATTER_GROOVY.out.scattered
-        .tap { gather_beds }
-        .dump(tag:'split_beds', pretty:true)
-        .set { haplotypecaller_beds }
-
-    //
     // Generate DRAGSTR models
     //
 
     if (params.use_dragstr_model) {
         crams
-            .join(dragstrmodel_beds)
+            .join(beds, failOnDuplicate: true, failOnMismatch: true)
             .map(
                 { meta, cram, crai, bed ->
                     [meta, cram, crai, bed]
@@ -79,13 +59,13 @@ workflow GERMLINE_VARIANT_CALLING {
         ch_versions = ch_versions.mix(CALIBRATEDRAGSTRMODEL.out.versions)
 
         crams
-            .combine(haplotypecaller_beds, by:0)
-            .combine(CALIBRATEDRAGSTRMODEL.out.dragstr_model, by:0)
+            .join(beds, failOnDuplicate: true, failOnMismatch: true)
+            .join(CALIBRATEDRAGSTRMODEL.out.dragstr_model, failOnDuplicate: true, failOnMismatch: true)
             .set { cram_models }
     }
     else {
         crams
-            .combine(haplotypecaller_beds, by:0)
+            .join(beds, failOnDuplicate: true, failOnMismatch: true)
             .set { cram_models }
     }
 
@@ -93,13 +73,23 @@ workflow GERMLINE_VARIANT_CALLING {
     // Remap CRAM channel to fit the haplotypecaller input format
     //
 
+    // TODO improve ROI handling => look at bedtools intersect being able to remove reads from bam/cram
     cram_models
         .dump(tag:'cram_models', pretty:true)
+        .splitText(elem:3)
         .map(
-            { meta, cram, crai, bed, bed_count, dragstr_model=[] ->
-                new_meta = meta.clone()
-                new_meta.id = bed.baseName
-                [ new_meta, cram, crai, bed, dragstr_model ]
+            { meta, cram, crai, regions, dragstr_model=[] ->
+                new_meta = meta + [region_count:regions.size()]
+                [ new_meta, cram, crai, regions, dragstr_model ]
+            }
+        )
+        .transpose()
+        .map(
+            { meta, cram, crai, region, dragstr_model ->
+                region_split = region[0..-2].split("\t")
+                region_string = "${region_split[0]}:${region_split[1]}-${region_split[2] as int + 1}"
+                new_meta = meta + [id:"${meta.id}-${region_string.replace(":","_").replace("-":"_")}", region:region_string]
+                [ new_meta, cram, crai, [], dragstr_model ]
             }
         )
         .dump(tag:'cram_intervals', pretty:true)
@@ -130,9 +120,8 @@ workflow GERMLINE_VARIANT_CALLING {
 
     VCF_GATHER_BCFTOOLS(
         haplotypecaller_vcfs,
-        gather_beds.map { meta, bed, scatter_count ->
-            new_meta = meta.findAll{true} + [id:bed.baseName]
-            [ new_meta, bed, scatter_count ]
+        haplotypecaller_vcfs.map { meta, vcf ->
+            [ meta, meta.region_count]
         },
         "sample",
         false

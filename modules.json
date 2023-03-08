@@ -36,6 +36,11 @@
                         "installed_by": ["modules"],
                         "patch": "modules/nf-core/bedtools/intersect/bedtools-intersect.diff"
                     },
+                    "bedtools/merge": {
+                        "branch": "master",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
+                        "installed_by": ["modules"]
+                    },
                     "custom/dumpsoftwareversions": {
                         "branch": "master",
                         "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
@@ -80,6 +85,11 @@
                     "gatk4/reblockgvcf": {
                         "branch": "master",
                         "git_sha": "223432b834d7819707c162c48a83612b785c8796",
+                        "installed_by": ["modules"]
+                    },
+                    "goleft/indexsplit": {
+                        "branch": "master",
+                        "git_sha": "a6893515b913526e18261612a3ac0e61d6b89bae",
                         "installed_by": ["modules"]
                     },
                     "mosdepth": {

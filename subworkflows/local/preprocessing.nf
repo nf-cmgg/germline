@@ -3,21 +3,19 @@
 //
 
 include { MERGE_BEDS as MERGE_ROI       } from '../../modules/local/merge_beds'
-include { MERGE_BEDS as MERGE_CALLABLE  } from '../../modules/local/merge_beds'
 include { SAMTOOLS_MERGE                } from '../../modules/local/samtools_merge'
 
 include { SAMTOOLS_INDEX                } from '../../modules/nf-core/samtools/index/main'
-include { MOSDEPTH                      } from '../../modules/nf-core/mosdepth/main'
+include { GOLEFT_INDEXSPLIT             } from '../../modules/nf-core/goleft/indexsplit/main'
 include { TABIX_BGZIP as UNZIP_BEDS     } from '../../modules/nf-core/tabix/bgzip/main'
 include { TABIX_BGZIP as UNZIP_ROI      } from '../../modules/nf-core/tabix/bgzip/main'
-include { TABIX_BGZIP as UNZIP_CALLABLE } from '../../modules/nf-core/tabix/bgzip/main'
 include { BEDTOOLS_INTERSECT            } from '../../modules/nf-core/bedtools/intersect/main'
+include { BEDTOOLS_MERGE                } from '../../modules/nf-core/bedtools/merge/main'
 
 workflow PREPROCESSING {
     take:
         crams             // channel: [mandatory] [ meta, cram, crai ] => sample CRAM files and their optional indices
         roi               // channel: [mandatory] [ meta, bed ] => bed files containing regions of interest
-        callable          // channel: [mandatory] [ meta, bed ] => bed files containing callable regions
         fasta             // channel: [mandatory] [ fasta ] => fasta reference
         fasta_fai         // channel: [mandatory] [ fasta_fai ] => fasta reference index
         default_roi       // channel: [optional]  [ roi ] => bed containing regions of interest to be used as default
@@ -104,26 +102,13 @@ workflow PREPROCESSING {
 
     ch_versions = ch_versions.mix(UNZIP_ROI.out.versions)
 
-    callable
-        .branch { meta, bed ->
-            gunzipped: bed == [] || bed.getExtension() == "bed"
-            gzipped: bed.getExtension() == "gz"
-        }
-        .set { callable_branch }
-
-    UNZIP_CALLABLE(
-        callable_branch.gzipped
-    )
-
-    ch_versions = ch_versions.mix(UNZIP_CALLABLE.out.versions)
-
     //
     // Merge the BED files if there are multiple per sample
     //
 
     roi_branch.gunzipped
         .mix(UNZIP_ROI.out.output)
-        .groupTuple()
+        .groupTuple() //TODO add a size here
         .branch(
             { meta, bed ->
                 multiple: bed.size() > 1
@@ -144,68 +129,37 @@ workflow PREPROCESSING {
         .mix(MERGE_ROI.out.bed)
         .set { ready_roi }
 
-    callable_branch.gunzipped
-        .mix(UNZIP_CALLABLE.out.output)
-        .groupTuple()
-        .branch(
-            { meta, bed ->
-                multiple: bed.size() > 1
-                    return [meta, bed]
-                single:   bed.size() == 1
-                    return [meta, bed[0]]
-            }
-        )
-        .set { merge_callable_branch }
-
-    MERGE_CALLABLE(
-        merge_callable_branch.multiple
-    )
-
-    ch_versions = ch_versions.mix(MERGE_CALLABLE.out.versions)
-
     //
-    // Create callable BED files if none are supplied
+    // Create BED files with bins containing equal amounts of reads
     //
 
-    merge_callable_branch.single
-        .mix(MERGE_CALLABLE.out.bed)
-        .join(mosdepth_crams)
-        .branch { meta, bed, cram, crai ->
-            no_bed: !bed
-                return [ meta, cram, crai ]
-            bed: bed
-                return [ meta, bed ]
+    ready_crams
+        .map { meta, cram, crai ->
+            [ meta, crai ]
         }
-        .set { mosdepth_input }
+        .set { indexsplit_input }
 
-    MOSDEPTH(
-        mosdepth_input.no_bed,
-        [[],[]],
-        fasta.map { [[],it] }
+    GOLEFT_INDEXSPLIT(
+        indexsplit_input,
+        fasta_fai.map { [[], it] },
+        params.scatter_count
     )
 
-    UNZIP_BEDS(
-        MOSDEPTH.out.quantized_bed
-    )
-
-    mosdepth_input.bed
-        .mix(UNZIP_BEDS.out.output)
-        .dump(tag:'merged_beds_preprocessing', pretty:true)
-        .set { ready_callable }
+    ch_versions = ch_versions.mix(GOLEFT_INDEXSPLIT.out.versions)
 
     //
-    // Intersect the ROI BEDs and CALLABLE BEDs
+    // Intersect the ROI BEDs and binned region BEDs
     //
 
     ready_roi
-        .join(ready_callable)
+        .join(GOLEFT_INDEXSPLIT.out.bed)
         .combine(default_roi)
-        .branch { meta, roi, callable, default_roi ->
+        .branch { meta, roi, bed, default_roi ->
             out_roi = roi ?: default_roi ?: []
             intersect: out_roi != []
-                return [ meta, out_roi, callable ]
+                return [ meta, out_roi, bed ]
             no_intersect: out_roi == []
-                return [ meta, callable ]
+                return [ meta, bed ]
         }
         .set { intersect_branch }
 
@@ -213,9 +167,15 @@ workflow PREPROCESSING {
         intersect_branch.intersect,
         "bed"
     )
+    ch_versions = ch_versions.mix(BEDTOOLS_INTERSECT.out.versions)
+
+    BEDTOOLS_MERGE(
+        BEDTOOLS_INTERSECT.out.intersect
+    )
+    ch_versions = ch_versions.mix(BEDTOOLS_MERGE.out.versions)
 
     intersect_branch.no_intersect
-        .mix(BEDTOOLS_INTERSECT.out.intersect)
+        .mix(BEDTOOLS_MERGE.out.bed)
         .set { ready_beds }
 
     emit:

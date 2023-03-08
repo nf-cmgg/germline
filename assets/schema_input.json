@@ -28,11 +28,6 @@
             "pattern": "^\\S+\\.bed(\\.gz)?$",
             "format": "file-path"
         },
-        "callable": {
-            "type": "string",
-            "pattern": "^\\S+\\.bed(\\.gz)?$",
-            "format": "file-path"
-        },
         "ped": {
             "type": "string",
             "pattern": "^\\S+\\.ped$",

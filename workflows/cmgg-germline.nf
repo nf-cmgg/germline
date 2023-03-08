@@ -264,16 +264,16 @@ workflow CMGGGERMLINE {
 
     SamplesheetConversion.convert(ch_input, file("${projectDir}/assets/schema_input.json", checkIfExists:true))
         .map(
-            { meta, cram, crai, roi, callable, ped ->
+            { meta, cram, crai, roi, ped ->
                 new_meta = meta.clone()
                 new_meta.family = meta.family ?: get_family_id_from_ped(ped)
-                [ new_meta, cram, crai, roi, callable, ped ]
+                [ new_meta, cram, crai, roi, ped ]
             }
         )
         .tap { ch_raw_inputs }
         .distinct()
         .map(
-            { meta, cram, crai, roi, callable, ped ->
+            { meta, cram, crai, roi, ped ->
                 [ meta.family, 1 ]
             }
         )
@@ -287,13 +287,13 @@ workflow CMGGGERMLINE {
         .combine(
             ch_raw_inputs
                 .map(
-                    { meta, cram, crai, roi, callable, ped ->
-                        [ meta.family, meta, cram, crai, roi, callable, ped ]
+                    { meta, cram, crai, roi, ped ->
+                        [ meta.family, meta, cram, crai, roi, ped ]
                     }
                 )
         , by:0)
         .multiMap(
-            { family, family_count, meta, cram, crai, roi, callable, ped ->
+            { family, family_count, meta, cram, crai, roi, ped ->
                 new_meta_ped = [:]
                 new_meta = meta.clone()
 
@@ -305,7 +305,6 @@ workflow CMGGGERMLINE {
                 new_meta.family_count     = family_count
 
                 roi:        [new_meta, roi]
-                callable:   [new_meta, callable]
                 cram:       [new_meta, cram, crai]
                 peds:       [new_meta_ped, ped]
             }
@@ -313,7 +312,6 @@ workflow CMGGGERMLINE {
         .set { ch_parsed_inputs }
 
     ch_parsed_inputs.roi.dump(tag:'input_roi', pretty:true)
-    ch_parsed_inputs.callable.dump(tag:'input_callable', pretty:true)
     ch_parsed_inputs.cram.dump(tag:'input_crams', pretty:true)
     ch_parsed_inputs.peds.dump(tag:'input_peds', pretty:true)
 
@@ -324,7 +322,6 @@ workflow CMGGGERMLINE {
     PREPROCESSING(
         ch_parsed_inputs.cram,
         ch_parsed_inputs.roi,
-        ch_parsed_inputs.callable,
         fasta,
         fasta_fai,
         default_roi
