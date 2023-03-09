@@ -7,7 +7,6 @@ include { SAMTOOLS_MERGE                } from '../../modules/local/samtools_mer
 
 include { SAMTOOLS_INDEX                } from '../../modules/nf-core/samtools/index/main'
 include { GOLEFT_INDEXSPLIT             } from '../../modules/nf-core/goleft/indexsplit/main'
-include { TABIX_BGZIP as UNZIP_BEDS     } from '../../modules/nf-core/tabix/bgzip/main'
 include { TABIX_BGZIP as UNZIP_ROI      } from '../../modules/nf-core/tabix/bgzip/main'
 include { BEDTOOLS_INTERSECT            } from '../../modules/nf-core/bedtools/intersect/main'
 include { BEDTOOLS_MERGE                } from '../../modules/nf-core/bedtools/merge/main'

@@ -14,7 +14,7 @@ workflow VCF_GATHER_BCFTOOLS {
 
     ch_versions = Channel.empty()
 
-    ch_concat_input = ch_vcfs.join(ch_scatter_output)
+    ch_concat_input = ch_vcfs.join(ch_scatter_output, failOnDuplicate: true, failOnMismatch: true)
         .map{ meta, vcf, tbi, bed, gather_count ->
             meta = val_common_meta ? meta + [id:meta[val_common_meta]] : meta
             [ groupKey(meta, gather_count), vcf, tbi ]

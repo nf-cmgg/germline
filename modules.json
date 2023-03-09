@@ -92,11 +92,6 @@
                         "git_sha": "a6893515b913526e18261612a3ac0e61d6b89bae",
                         "installed_by": ["modules"]
                     },
-                    "mosdepth": {
-                        "branch": "master",
-                        "git_sha": "def5f182583df0c20f43ec3d4355e8ebd341aaa9",
-                        "installed_by": ["modules"]
-                    },
                     "multiqc": {
                         "branch": "master",
                         "git_sha": "ee80d14721e76e2e079103b8dcd5d57129e584ba",

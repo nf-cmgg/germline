@@ -2,17 +2,10 @@
 // GERMLINE VARIANT CALLING
 //
 
-include { MERGE_BEDS                                            } from '../../modules/local/merge_beds'
-include { SAMTOOLS_MERGE                                        } from '../../modules/local/samtools_merge'
-
 include { GATK4_HAPLOTYPECALLER as HAPLOTYPECALLER              } from '../../modules/nf-core/gatk4/haplotypecaller/main'
 include { GATK4_CALIBRATEDRAGSTRMODEL as CALIBRATEDRAGSTRMODEL  } from '../../modules/nf-core/gatk4/calibratedragstrmodel/main'
 include { GATK4_REBLOCKGVCF as REBLOCKGVCF                      } from '../../modules/nf-core/gatk4/reblockgvcf/main'
-include { SAMTOOLS_INDEX                                        } from '../../modules/nf-core/samtools/index/main'
 include { BCFTOOLS_STATS as BCFTOOLS_STATS_INDIVIDUALS          } from '../../modules/nf-core/bcftools/stats/main'
-include { TABIX_TABIX as TABIX_GVCFS                            } from '../../modules/nf-core/tabix/tabix/main'
-
-include { BED_SCATTER_GROOVY                                    } from '../../subworkflows/local/bed_scatter_groovy'
 
 include { VCF_GATHER_BCFTOOLS                                   } from '../../subworkflows/nf-core/vcf_gather_bcftools/main'
 
@@ -106,6 +99,10 @@ workflow GERMLINE_VARIANT_CALLING {
 
     HAPLOTYPECALLER.out.vcf
         .join(HAPLOTYPECALLER.out.tbi)
+        .map { meta, vcf, tbi ->
+            new_meta = meta - meta.subMap("region")
+            [ new_meta, vcf, tbi ]
+        }
         .dump(tag:'haplotypecaller_vcfs', pretty:true)
         .set { haplotypecaller_vcfs }
     ch_versions = ch_versions.mix(HAPLOTYPECALLER.out.versions)
