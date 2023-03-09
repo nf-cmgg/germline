@@ -15,10 +15,10 @@ include { BEDTOOLS_MERGE                } from '../../modules/nf-core/bedtools/m
 workflow PREPROCESSING {
     take:
         crams             // channel: [mandatory] [ meta, cram, crai ] => sample CRAM files and their optional indices
-        roi               // channel: [mandatory] [ meta, bed ] => bed files containing regions of interest
+        // roi               // channel: [mandatory] [ meta, bed ] => bed files containing regions of interest
         fasta             // channel: [mandatory] [ fasta ] => fasta reference
         fasta_fai         // channel: [mandatory] [ fasta_fai ] => fasta reference index
-        default_roi       // channel: [optional]  [ roi ] => bed containing regions of interest to be used as default
+        // default_roi       // channel: [optional]  [ roi ] => bed containing regions of interest to be used as default
 
     main:
 
@@ -85,49 +85,49 @@ workflow PREPROCESSING {
         .dump(tag:'ready_crams', pretty:true)
         .set { ready_crams }
 
-    //
-    // Unzip the Gzipped beds
-    //
+    // //
+    // // Unzip the Gzipped beds
+    // //
 
-    roi
-        .branch { meta, bed ->
-            gunzipped: bed == [] || bed.getExtension() == "bed"
-            gzipped: bed.getExtension() == "gz"
-        }
-        .set { roi_branch }
+    // roi
+    //     .branch { meta, bed ->
+    //         gunzipped: bed == [] || bed.getExtension() == "bed"
+    //         gzipped: bed.getExtension() == "gz"
+    //     }
+    //     .set { roi_branch }
 
-    UNZIP_ROI(
-        roi_branch.gzipped
-    )
+    // UNZIP_ROI(
+    //     roi_branch.gzipped
+    // )
 
-    ch_versions = ch_versions.mix(UNZIP_ROI.out.versions)
+    // ch_versions = ch_versions.mix(UNZIP_ROI.out.versions)
 
-    //
-    // Merge the BED files if there are multiple per sample
-    //
+    // //
+    // // Merge the BED files if there are multiple per sample
+    // //
 
-    roi_branch.gunzipped
-        .mix(UNZIP_ROI.out.output)
-        .groupTuple() //TODO add a size here
-        .branch(
-            { meta, bed ->
-                multiple: bed.size() > 1
-                    return [meta, bed]
-                single:   bed.size() == 1
-                    return [meta, bed[0]]
-            }
-        )
-        .set { merge_roi_branch }
+    // roi_branch.gunzipped
+    //     .mix(UNZIP_ROI.out.output)
+    //     .groupTuple() //TODO add a size here
+    //     .branch(
+    //         { meta, bed ->
+    //             multiple: bed.size() > 1
+    //                 return [meta, bed]
+    //             single:   bed.size() == 1
+    //                 return [meta, bed[0]]
+    //         }
+    //     )
+    //     .set { merge_roi_branch }
 
-    MERGE_ROI(
-        merge_roi_branch.multiple
-    )
+    // MERGE_ROI(
+    //     merge_roi_branch.multiple
+    // )
 
-    ch_versions = ch_versions.mix(MERGE_ROI.out.versions)
+    // ch_versions = ch_versions.mix(MERGE_ROI.out.versions)
 
-    merge_roi_branch.single
-        .mix(MERGE_ROI.out.bed)
-        .set { ready_roi }
+    // merge_roi_branch.single
+    //     .mix(MERGE_ROI.out.bed)
+    //     .set { ready_roi }
 
     //
     // Create BED files with bins containing equal amounts of reads
@@ -146,37 +146,38 @@ workflow PREPROCESSING {
     )
 
     ch_versions = ch_versions.mix(GOLEFT_INDEXSPLIT.out.versions)
+    GOLEFT_INDEXSPLIT.out.bed.set { ready_beds }
 
-    //
-    // Intersect the ROI BEDs and binned region BEDs
-    //
+    // //
+    // // Intersect the ROI BEDs and binned region BEDs
+    // //
 
-    ready_roi
-        .join(GOLEFT_INDEXSPLIT.out.bed)
-        .combine(default_roi)
-        .branch { meta, roi, bed, default_roi ->
-            out_roi = roi ?: default_roi ?: []
-            intersect: out_roi != []
-                return [ meta, out_roi, bed ]
-            no_intersect: out_roi == []
-                return [ meta, bed ]
-        }
-        .set { intersect_branch }
+    // ready_roi
+    //     .join(GOLEFT_INDEXSPLIT.out.bed)
+    //     .combine(default_roi)
+    //     .branch { meta, roi, bed, default_roi ->
+    //         out_roi = roi ?: default_roi ?: []
+    //         intersect: out_roi != []
+    //             return [ meta, out_roi, bed ]
+    //         no_intersect: out_roi == []
+    //             return [ meta, bed ]
+    //     }
+    //     .set { intersect_branch }
 
-    BEDTOOLS_INTERSECT(
-        intersect_branch.intersect,
-        "bed"
-    )
-    ch_versions = ch_versions.mix(BEDTOOLS_INTERSECT.out.versions)
+    // BEDTOOLS_INTERSECT(
+    //     intersect_branch.intersect,
+    //     "bed"
+    // )
+    // ch_versions = ch_versions.mix(BEDTOOLS_INTERSECT.out.versions)
 
-    BEDTOOLS_MERGE(
-        BEDTOOLS_INTERSECT.out.intersect
-    )
-    ch_versions = ch_versions.mix(BEDTOOLS_MERGE.out.versions)
+    // BEDTOOLS_MERGE(
+    //     BEDTOOLS_INTERSECT.out.intersect
+    // )
+    // ch_versions = ch_versions.mix(BEDTOOLS_MERGE.out.versions)
 
-    intersect_branch.no_intersect
-        .mix(BEDTOOLS_MERGE.out.bed)
-        .set { ready_beds }
+    // intersect_branch.no_intersect
+    //     .mix(BEDTOOLS_MERGE.out.bed)
+    //     .set { ready_beds }
 
     emit:
     ready_crams

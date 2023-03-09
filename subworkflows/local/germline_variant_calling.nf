@@ -73,22 +73,18 @@ workflow GERMLINE_VARIANT_CALLING {
     // Remap CRAM channel to fit the haplotypecaller input format
     //
 
-    // TODO improve ROI handling => look at bedtools intersect being able to remove reads from bam/cram
     cram_models
         .dump(tag:'cram_models', pretty:true)
+        .map { meta, cram, crai, bed, dragstr_model = [] ->
+            new_meta = meta + [region_count:bed.readLines().size()]
+            [ new_meta, cram, crai, bed, dragstr_model ]
+        }
         .splitText(elem:3)
-        .map(
-            { meta, cram, crai, regions, dragstr_model=[] ->
-                new_meta = meta + [region_count:regions.size()]
-                [ new_meta, cram, crai, regions, dragstr_model ]
-            }
-        )
-        .transpose()
         .map(
             { meta, cram, crai, region, dragstr_model ->
                 region_split = region[0..-2].split("\t")
-                region_string = "${region_split[0]}:${region_split[1]}-${region_split[2] as int + 1}"
-                new_meta = meta + [id:"${meta.id}-${region_string.replace(":","_").replace("-":"_")}", region:region_string]
+                region_string = "${region_split[0]}:${region_split[1] as int + 1}-${region_split[2]}"
+                new_meta = meta + [id:"${meta.id}_${region_string.replace(":","_").replace("-":"_")}", region:region_string]
                 [ new_meta, cram, crai, [], dragstr_model ]
             }
         )
@@ -120,8 +116,8 @@ workflow GERMLINE_VARIANT_CALLING {
 
     VCF_GATHER_BCFTOOLS(
         haplotypecaller_vcfs,
-        haplotypecaller_vcfs.map { meta, vcf ->
-            [ meta, meta.region_count]
+        haplotypecaller_vcfs.map { meta, vcf, tbi ->
+            [ meta, [], meta.region_count ]
         },
         "sample",
         false

@@ -304,14 +304,14 @@ workflow CMGGGERMLINE {
                 new_meta.family           = meta.family ?: meta.sample
                 new_meta.family_count     = family_count
 
-                roi:        [new_meta, roi]
+                // roi:        [new_meta, roi]
                 cram:       [new_meta, cram, crai]
                 peds:       [new_meta_ped, ped]
             }
         )
         .set { ch_parsed_inputs }
 
-    ch_parsed_inputs.roi.dump(tag:'input_roi', pretty:true)
+    // ch_parsed_inputs.roi.dump(tag:'input_roi', pretty:true)
     ch_parsed_inputs.cram.dump(tag:'input_crams', pretty:true)
     ch_parsed_inputs.peds.dump(tag:'input_peds', pretty:true)
 
@@ -321,10 +321,10 @@ workflow CMGGGERMLINE {
 
     PREPROCESSING(
         ch_parsed_inputs.cram,
-        ch_parsed_inputs.roi,
+        // ch_parsed_inputs.roi,
         fasta,
         fasta_fai,
-        default_roi
+        // default_roi
     )
 
     ch_versions = ch_versions.mix(PREPROCESSING.out.versions)
