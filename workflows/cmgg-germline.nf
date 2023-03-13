@@ -418,6 +418,7 @@ workflow CMGGGERMLINE {
         fasta_fai,
         somalier_sites,
         peds,
+        [],
         []
     )
 

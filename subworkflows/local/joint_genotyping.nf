@@ -137,7 +137,14 @@ workflow JOINT_GENOTYPING {
 
     ch_versions = ch_versions.mix(VCF_GATHER_BCFTOOLS.out.versions)
 
+    VCF_GATHER_BCFTOOLS.out.vcf
+        .map { meta, vcf ->
+            new_meta = meta - meta.subMap("region_count")
+            [ new_meta, vcf ]
+        }
+        .set { genotyped_vcfs }
+
     emit:
-    genotyped_vcfs = VCF_GATHER_BCFTOOLS.out.vcf    // channel: [meta, vcf] => The output channel containing the post processed VCF
+    genotyped_vcfs              // channel: [meta, vcf] => The output channel containing the post processed VCF
     versions = ch_versions
 }
