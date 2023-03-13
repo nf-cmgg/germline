@@ -124,7 +124,7 @@ workflow VCF_VALIDATE_SMALL_VARIANTS {
         rocplot_out_png = RTGTOOLS_ROCPLOT.out.png
             .branch { meta, png ->
                 roc_type = meta.roc_type
-                new_meta = meta.findAll { !(it.key == "roc_type") }
+                new_meta = meta - meta.subMap("roc_type")
 
                 snp:        roc_type == "snp"
                 non_snp:    roc_type == "non_snp"
@@ -134,7 +134,7 @@ workflow VCF_VALIDATE_SMALL_VARIANTS {
         rocplot_out_svg = RTGTOOLS_ROCPLOT.out.svg
             .branch { meta, svg ->
                 roc_type = meta.roc_type
-                new_meta = meta.findAll { !(it.key == "roc_type") }
+                new_meta = meta - meta.subMap("roc_type")
 
                 snp:        roc_type == "snp"
                 non_snp:    roc_type == "non_snp"
