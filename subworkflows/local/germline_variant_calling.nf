@@ -122,6 +122,10 @@ workflow GERMLINE_VARIANT_CALLING {
 
     VCF_GATHER_BCFTOOLS.out.vcf
         .join(VCF_GATHER_BCFTOOLS.out.tbi, failOnDuplicate: true, failOnMismatch: true)
+        .map { meta, vcf, tbi ->
+            new_meta = meta - meta.subMap("region_count")
+            [ new_meta, vcf, tbi ]
+        }
         .tap { stats_input }
         .dump(tag:'reblockgvcf_input', pretty: true)
         .set { reblockgvcf_input }
