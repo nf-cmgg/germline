@@ -276,7 +276,7 @@ workflow CMGGGERMLINE {
     }
     else if (params.validate) {
         sdf.branch { meta, sdf ->
-            zip = sdf ==~ /^.*\\.tar\\.gz\$/
+            zip = sdf.name.endsWith(".tar.gz")
             tarzipped: zip
             untarred: !zip
         }
