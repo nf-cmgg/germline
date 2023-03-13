@@ -16,16 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Improvements
 
-1. Improved the scatter/gather logic.
-   - `--scatter_count` has been changed to `--scatter_size`. By defining this parameter you set the minimal size of the region to scatter on. The default is `40000000` which is perfect for WGS runs on human samples.
-   - The scattering now happens using a `groovy` process and [subworkflow](subworkflows/local/bed_scatter_groovy.nf)
-   - Genotyping and annotation now also use some form of scattering and gathering
+1. Improved the scatter/gather logic. This is now done with `goleft indexsplit` to define chunks of even coverage. The genotyping scattering now happens with `bedtools makewindows`. This creates chunks of even regions from the merged BED files for the family. By passing a padding of about 20 bps to the genotype tools, we make sure all variants on the edges of these regions are also genotyped. Duplicates are removed later when running `bcftools concat`
 2. Refactored a lot of the code to maintain the same style over the whole pipeline.
 3. Updated the minimum Nextlow version to `22.10.1`.
 4. The `post_processing` subworklow has been renamed to the better suiting `joint_genotyping` subworkflow. `reblockgvcf` has been moved to `germline_variant_calling` and the `filter` and `reheadering` has been moved to the main workflow.
 5. Merging VCFs of the same family now happens with `GATK GenomicsDBImport` instead of `GATK MergeGVCFs` or `bcftools merge`. This gives more reliable results.
 6. Improved the handling of `vcfanno`
-7. The PED headers can now be added to all the output VCFs instead of only those that were given a PED file as input. The PED file used is created using `somalier relate`. This feature can be turned on using the `--add_ped true` argument. This doesn't happen by default
+7. The PED headers can now be added to all the output VCFs instead of only those that were given a PED file as input. The PED file used is created using `somalier relate`. This feature can be turned on using the `--add_ped true` argument. This doesn't happen by default.
 
 ### Bug fixes
 
