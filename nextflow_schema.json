@@ -85,7 +85,7 @@
                 },
                 "sdf": {
                     "type": "string",
-                    "default": null,
+                    "default": "None",
                     "description": "The SDF folder generated from the reference FASTA file"
                 },
                 "genomes_base": {
@@ -168,7 +168,8 @@
                     "default": "None",
                     "description": "The file to use as a default regions of interest BED file for the sample that don't have one."
                 }
-            }
+            },
+            "required": ["scatter_count"]
         },
         "module_specific_parameters": {
             "title": "Module specific parameters",

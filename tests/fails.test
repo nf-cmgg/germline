@@ -22,7 +22,7 @@ nextflow_pipeline {
 
         when {
             params {
-                scatter_size = null
+                scatter_count = null
             }
         }
 
