@@ -33,11 +33,6 @@ workflow GERMLINE_VARIANT_CALLING {
     if (params.use_dragstr_model) {
         crams
             .join(beds, failOnDuplicate: true, failOnMismatch: true)
-            .map(
-                { meta, cram, crai, bed ->
-                    [meta, cram, crai, bed]
-                }
-            )
             .dump(tag:'calibratedragstrmodel_input')
             .set { calibratedragstrmodel_input }
 
@@ -68,8 +63,8 @@ workflow GERMLINE_VARIANT_CALLING {
 
     cram_models
         .dump(tag:'cram_models', pretty:true)
-        .map { meta, cram, crai, bed, dragstr_model = [] ->
-            new_meta = meta + [region_count:bed.readLines().size()]
+        .map { meta, cram, crai, bed, dragstr_model=[] ->
+            new_meta = meta + [region_count: bed.readLines().size()]
             [ new_meta, cram, crai, bed, dragstr_model ]
         }
         .splitText(elem:3)

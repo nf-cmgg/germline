@@ -145,7 +145,17 @@ workflow PREPROCESSING {
     )
 
     ch_versions = ch_versions.mix(GOLEFT_INDEXSPLIT.out.versions)
-    GOLEFT_INDEXSPLIT.out.bed.set { ready_beds }
+    GOLEFT_INDEXSPLIT.out.bed
+        .map { meta, bed ->
+            if(workflow.stubRun){
+                regions = (1..params.scatter_count).each {
+                    start = 100*it
+                    bed << "chr22\t${start}\t${start+50}\t0.5\t200\n"
+                }
+            }
+            [ meta, bed ]
+        }
+        .set { ready_beds }
 
     // //
     // // Intersect the ROI BEDs and binned region BEDs

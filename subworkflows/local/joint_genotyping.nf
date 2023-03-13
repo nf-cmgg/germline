@@ -27,9 +27,9 @@ workflow JOINT_GENOTYPING {
         .map(
             { meta, bed ->
                 new_meta = [
-                    family: meta.family,
-                    id: meta.family ?: meta.sample,
-                    family_count: meta.family_count
+                    family:         meta.family,
+                    id:             meta.family,
+                    family_count:   meta.family_count
                 ]
                 [ groupKey(new_meta, meta.family_count.toInteger()), bed ]
             }
@@ -52,9 +52,9 @@ workflow JOINT_GENOTYPING {
         .map(
             { meta, gvcf, tbi ->
                 new_meta = [
-                    family: meta.family,
-                    id: meta.family ?: meta.sample,
-                    family_count: meta.family_count
+                    family:         meta.family,
+                    id:             meta.family,
+                    family_count:   meta.family_count
                 ]
                 [ groupKey(new_meta, meta.family_count.toInteger()), gvcf, tbi ]
             }
@@ -63,6 +63,12 @@ workflow JOINT_GENOTYPING {
         .join(BEDTOOLS_MAKEWINDOWS.out.bed, failOnDuplicate: true, failOnMismatch: true)
         .map(
             { meta, gvcfs, tbis, bed ->
+                if(workflow.stubRun){
+                    regions = (1..params.scatter_count).each {
+                        start = 100*it
+                        bed << "chr22\t${start}\t${start+50}\t0.5\t1\n"
+                    }
+                }
                 new_meta = meta + [region_count:bed.readLines().size()]
                 [ new_meta, gvcfs, tbis, bed ]
             }
