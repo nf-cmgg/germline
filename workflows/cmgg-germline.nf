@@ -396,23 +396,34 @@ workflow CMGGGERMLINE {
     ch_reports  = ch_reports.mix(GERMLINE_VARIANT_CALLING.out.reports)
 
     GERMLINE_VARIANT_CALLING.out.gvcfs
-        .tap { variantcalling_output }
         .dump(tag:'variantcalling_output', pretty:true)
-        .join(ch_parsed_inputs.truth_variants, failOnDuplicate: true, failOnMismatch: true)
-        .filter { meta, vcf, tbi, truth_vcf, truth_tbi ->
-            truth_vcf != []
-        }
-        .branch { meta, vcf, tbi, truth_vcf, truth_tbi ->
-            tbi: truth_tbi != []
-            no_tbi: truth_tbi == []
-        }
-        .set { validation_branch }
+        .set { variantcalling_output }
 
     //
     // Validate the found variants
     //
 
     if (params.validate){
+
+        variantcalling_output
+            .join(PREPROCESSING.out.ready_beds, failOnDuplicate: true, failOnMismatch: true)
+            .join(ch_parsed_inputs.truth_variants, failOnDuplicate: true, failOnMismatch: true)
+            .filter { meta, vcf, tbi, bed, truth_vcf, truth_tbi ->
+                truth_vcf != []
+            }
+            .multiMap { meta, vcf, tbi, bed, truth_vcf, truth_tbi ->
+                vcf: [ meta, vcf, tbi, truth_vcf, truth_tbi ]
+                bed: [ meta, [], bed ]
+            }
+            .set { validation_input }
+
+        validation_input.vcf
+            .branch { meta, vcf, tbi, truth_vcf, truth_tbi ->
+                tbi: truth_tbi != []
+                no_tbi: truth_tbi == []
+            }
+            .set { validation_branch }
+
         TABIX_TRUTH(
             validation_branch.no_tbi.map { meta, vcf, tbi, truth_vcf, truth_tbi -> [ meta, truth_vcf ]}
         )
@@ -425,12 +436,12 @@ workflow CMGGGERMLINE {
                 [ meta, vcf, tbi, truth_vcf, truth_tbi ]
             }
             .mix(validation_branch.tbi)
-            .set { validation_input }
+            .set { validation_vcfs }
 
         // TODO: add support for truth regions when happy works
         VCF_VALIDATE_SMALL_VARIANTS(
-            validation_input,
-            PREPROCESSING.out.ready_beds.map { meta, bed -> [meta, [], bed] },
+            validation_vcfs,
+            validation_input.bed,
             fasta.map { [[], it] },
             fasta_fai.map { [[], it] },
             sdf,
