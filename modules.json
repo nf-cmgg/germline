@@ -84,7 +84,7 @@
                     },
                     "gatk4/haplotypecaller": {
                         "branch": "master",
-                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
+                        "git_sha": "0f8a77ff00e65eaeebc509b8156eaa983192474b",
                         "installed_by": ["modules"],
                         "patch": "modules/nf-core/gatk4/haplotypecaller/gatk4-haplotypecaller.diff"
                     },
@@ -93,14 +93,14 @@
                         "git_sha": "0f8a77ff00e65eaeebc509b8156eaa983192474b",
                         "installed_by": ["modules"]
                     },
-                    "happy/happy": {
-                        "branch": "master",
-                        "git_sha": "2c19f0b56b5fdb34eb7f9cae6fce513dfa375334",
-                        "installed_by": ["modules"]
-                    },
                     "goleft/indexsplit": {
                         "branch": "master",
                         "git_sha": "a6893515b913526e18261612a3ac0e61d6b89bae",
+                        "installed_by": ["modules"]
+                    },
+                    "happy/happy": {
+                        "branch": "master",
+                        "git_sha": "0f8a77ff00e65eaeebc509b8156eaa983192474b",
                         "installed_by": ["modules"]
                     },
                     "multiqc": {
@@ -115,7 +115,7 @@
                     },
                     "rtgtools/pedfilter": {
                         "branch": "master",
-                        "git_sha": "807b6f0d92d39daf0deba1dc9786450d3e48efb0",
+                        "git_sha": "0f8a77ff00e65eaeebc509b8156eaa983192474b",
                         "installed_by": ["modules"],
                         "patch": "modules/nf-core/rtgtools/pedfilter/rtgtools-pedfilter.diff"
                     },
@@ -126,7 +126,7 @@
                     },
                     "rtgtools/vcfeval": {
                         "branch": "master",
-                        "git_sha": "2c19f0b56b5fdb34eb7f9cae6fce513dfa375334",
+                        "git_sha": "0f8a77ff00e65eaeebc509b8156eaa983192474b",
                         "installed_by": ["modules"]
                     },
                     "samtools/faidx": {
@@ -136,7 +136,7 @@
                     },
                     "samtools/index": {
                         "branch": "master",
-                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
+                        "git_sha": "0f8a77ff00e65eaeebc509b8156eaa983192474b",
                         "installed_by": ["modules"]
                     },
                     "somalier/extract": {
@@ -167,12 +167,12 @@
                     },
                     "vcf2db": {
                         "branch": "master",
-                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
+                        "git_sha": "0f8a77ff00e65eaeebc509b8156eaa983192474b",
                         "installed_by": ["modules"]
                     },
                     "vcfanno": {
                         "branch": "master",
-                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
+                        "git_sha": "0f8a77ff00e65eaeebc509b8156eaa983192474b",
                         "installed_by": ["modules"]
                     }
                 }
