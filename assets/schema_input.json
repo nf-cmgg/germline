@@ -32,6 +32,16 @@
             "type": "string",
             "pattern": "^\\S+\\.ped$",
             "format": "file-path"
+        },
+        "truth_vcf": {
+            "type": "string",
+            "pattern": "^\\S+\\.vcf\\.gz$",
+            "format": "file-path"
+        },
+        "truth_tbi": {
+            "type": "string",
+            "pattern": "^\\S+\\.tbi$",
+            "format": "file-path"
         }
     },
     "required": ["sample", "cram"]

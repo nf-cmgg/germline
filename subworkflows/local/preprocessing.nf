@@ -78,7 +78,7 @@ workflow PREPROCESSING {
     )
 
     crams_without_index
-        .join(SAMTOOLS_INDEX.out.crai)
+        .join(SAMTOOLS_INDEX.out.crai, failOnDuplicate: true, failOnMismatch: true)
         .mix(merged_crams.indexed)
         .tap { mosdepth_crams }
         .dump(tag:'ready_crams', pretty:true)

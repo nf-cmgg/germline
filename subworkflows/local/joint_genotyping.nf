@@ -118,7 +118,7 @@ workflow JOINT_GENOTYPING {
     ch_versions = ch_versions.mix(GENOTYPE_GVCFS.out.versions)
 
     GENOTYPE_GVCFS.out.vcf
-        .join(GENOTYPE_GVCFS.out.tbi)
+        .join(GENOTYPE_GVCFS.out.tbi, failOnDuplicate: true, failOnMismatch: true)
         .map { meta, vcf, tbi ->
             new_meta = meta - meta.subMap("region")
             [ new_meta, vcf, tbi ]

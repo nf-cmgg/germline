@@ -1,6 +1,6 @@
 process GATK4_HAPLOTYPECALLER {
     tag "$meta.id"
-    label 'process_medium'
+    label 'process_single'
 
     conda "bioconda::gatk4=4.3.0.0"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -36,7 +36,7 @@ process GATK4_HAPLOTYPECALLER {
     if (!task.memory) {
         log.info '[GATK HaplotypeCaller] Available memory not known - defaulting to 3GB. Specify process memory requirements to change this.'
     } else {
-        avail_mem = task.memory.giga
+        avail_mem = task.memory.giga - 1
     }
     """
     gatk --java-options "-Xmx${avail_mem}g" HaplotypeCaller \\
