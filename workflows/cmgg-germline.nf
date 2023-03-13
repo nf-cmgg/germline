@@ -276,7 +276,7 @@ workflow CMGGGERMLINE {
     }
     else if (params.validate) {
         sdf.branch { meta, sdf ->
-            zip = sdf ==~ /^.*\\.tar\\.gz\$/
+            zip = sdf.name.endsWith(".tar.gz")
             tarzipped: zip
             untarred: !zip
         }
@@ -299,16 +299,16 @@ workflow CMGGGERMLINE {
 
     SamplesheetConversion.convert(ch_input, file("${projectDir}/assets/schema_input.json", checkIfExists:true))
         .map(
-            { meta, cram, crai, roi, callable, ped, truth_vcf, truth_tbi ->
+            { meta, cram, crai, roi, ped, truth_vcf, truth_tbi ->
                 new_meta = meta.clone()
                 new_meta.family = meta.family ?: get_family_id_from_ped(ped)
-                [ new_meta, cram, crai, roi, callable, ped, truth_vcf, truth_tbi ]
+                [ new_meta, cram, crai, roi, ped, truth_vcf, truth_tbi ]
             }
         )
         .tap { ch_raw_inputs }
         .distinct()
         .map(
-            { meta, cram, crai, roi, callable, ped, truth_vcf, truth_tbi ->
+            { meta, cram, crai, roi, ped, truth_vcf, truth_tbi ->
                 [ meta.family, 1 ]
             }
         )
@@ -322,13 +322,13 @@ workflow CMGGGERMLINE {
         .combine(
             ch_raw_inputs
                 .map(
-                    { meta, cram, crai, roi, callable, ped, truth_vcf, truth_tbi ->
-                        [ meta.family, meta, cram, crai, roi, callable, ped, truth_vcf, truth_tbi ]
+                    { meta, cram, crai, roi, ped, truth_vcf, truth_tbi ->
+                        [ meta.family, meta, cram, crai, roi, ped, truth_vcf, truth_tbi ]
                     }
                 )
         , by:0)
         .multiMap(
-            { family, family_count, meta, cram, crai, roi, callable, ped, truth_vcf, truth_tbi ->
+            { family, family_count, meta, cram, crai, roi, ped, truth_vcf, truth_tbi ->
                 new_meta_ped = [:]
                 new_meta = meta.clone()
 
@@ -339,8 +339,6 @@ workflow CMGGGERMLINE {
                 new_meta.family           = meta.family ?: meta.sample
                 new_meta.family_count     = family_count
 
-                roi:            [new_meta, roi]
-                callable:       [new_meta, callable]
                 truth_variants: [new_meta, truth_vcf, truth_tbi]
                 cram:           [new_meta, cram, crai]
                 peds:           [new_meta_ped, ped]
@@ -348,8 +346,7 @@ workflow CMGGGERMLINE {
         )
         .set { ch_parsed_inputs }
 
-    ch_parsed_inputs.roi.dump(tag:'input_roi', pretty:true)
-    ch_parsed_inputs.callable.dump(tag:'input_callable', pretty:true)
+    // ch_parsed_inputs.roi.dump(tag:'input_roi', pretty:true)
     ch_parsed_inputs.truth_variants.dump(tag:'truth_variants', pretty:true)
     ch_parsed_inputs.cram.dump(tag:'input_crams', pretty:true)
     ch_parsed_inputs.peds.dump(tag:'input_peds', pretty:true)
@@ -360,11 +357,10 @@ workflow CMGGGERMLINE {
 
     PREPROCESSING(
         ch_parsed_inputs.cram,
-        ch_parsed_inputs.roi,
-        ch_parsed_inputs.callable,
+        // ch_parsed_inputs.roi,
         fasta,
         fasta_fai,
-        default_roi
+        // default_roi
     )
 
     ch_versions = ch_versions.mix(PREPROCESSING.out.versions)
@@ -400,23 +396,34 @@ workflow CMGGGERMLINE {
     ch_reports  = ch_reports.mix(GERMLINE_VARIANT_CALLING.out.reports)
 
     GERMLINE_VARIANT_CALLING.out.gvcfs
-        .tap { variantcalling_output }
         .dump(tag:'variantcalling_output', pretty:true)
-        .join(ch_parsed_inputs.truth_variants, failOnDuplicate: true, failOnMismatch: true)
-        .filter { meta, vcf, tbi, truth_vcf, truth_tbi ->
-            truth_vcf != []
-        }
-        .branch { meta, vcf, tbi, truth_vcf, truth_tbi ->
-            tbi: truth_tbi != []
-            no_tbi: truth_tbi == []
-        }
-        .set { validation_branch }
+        .set { variantcalling_output }
 
     //
     // Validate the found variants
     //
 
     if (params.validate){
+
+        variantcalling_output
+            .join(PREPROCESSING.out.ready_beds, failOnDuplicate: true, failOnMismatch: true)
+            .join(ch_parsed_inputs.truth_variants, failOnDuplicate: true, failOnMismatch: true)
+            .filter { meta, vcf, tbi, bed, truth_vcf, truth_tbi ->
+                truth_vcf != []
+            }
+            .multiMap { meta, vcf, tbi, bed, truth_vcf, truth_tbi ->
+                vcf: [ meta, vcf, tbi, truth_vcf, truth_tbi ]
+                bed: [ meta, [], bed ]
+            }
+            .set { validation_input }
+
+        validation_input.vcf
+            .branch { meta, vcf, tbi, truth_vcf, truth_tbi ->
+                tbi: truth_tbi != []
+                no_tbi: truth_tbi == []
+            }
+            .set { validation_branch }
+
         TABIX_TRUTH(
             validation_branch.no_tbi.map { meta, vcf, tbi, truth_vcf, truth_tbi -> [ meta, truth_vcf ]}
         )
@@ -429,12 +436,12 @@ workflow CMGGGERMLINE {
                 [ meta, vcf, tbi, truth_vcf, truth_tbi ]
             }
             .mix(validation_branch.tbi)
-            .set { validation_input }
+            .set { validation_vcfs }
 
         // TODO: add support for truth regions when happy works
         VCF_VALIDATE_SMALL_VARIANTS(
-            validation_input,
-            PREPROCESSING.out.ready_beds.map { meta, bed -> [meta, [], bed] },
+            validation_vcfs,
+            validation_input.bed,
             fasta.map { [[], it] },
             fasta_fai.map { [[], it] },
             sdf,
@@ -502,6 +509,7 @@ workflow CMGGGERMLINE {
         fasta_fai,
         somalier_sites,
         peds,
+        [],
         []
     )
 

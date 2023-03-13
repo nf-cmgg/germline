@@ -22,13 +22,13 @@ nextflow_pipeline {
 
         when {
             params {
-                scatter_size = null
+                scatter_count = null
             }
         }
 
         then {
             assert workflow.failed
-            assert workflow.stdout.contains("* Missing required parameter: --scatter_size")
+            assert workflow.stdout.contains("* Missing required parameter: --scatter_count")
         }
 
     }

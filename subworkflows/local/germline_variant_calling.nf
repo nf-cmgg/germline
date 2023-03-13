@@ -2,17 +2,10 @@
 // GERMLINE VARIANT CALLING
 //
 
-include { MERGE_BEDS                                            } from '../../modules/local/merge_beds'
-include { SAMTOOLS_MERGE                                        } from '../../modules/local/samtools_merge'
-
 include { GATK4_HAPLOTYPECALLER as HAPLOTYPECALLER              } from '../../modules/nf-core/gatk4/haplotypecaller/main'
 include { GATK4_CALIBRATEDRAGSTRMODEL as CALIBRATEDRAGSTRMODEL  } from '../../modules/nf-core/gatk4/calibratedragstrmodel/main'
 include { GATK4_REBLOCKGVCF as REBLOCKGVCF                      } from '../../modules/nf-core/gatk4/reblockgvcf/main'
-include { SAMTOOLS_INDEX                                        } from '../../modules/nf-core/samtools/index/main'
 include { BCFTOOLS_STATS as BCFTOOLS_STATS_INDIVIDUALS          } from '../../modules/nf-core/bcftools/stats/main'
-include { TABIX_TABIX as TABIX_GVCFS                            } from '../../modules/nf-core/tabix/tabix/main'
-
-include { BED_SCATTER_GROOVY                                    } from '../../subworkflows/local/bed_scatter_groovy'
 
 include { VCF_GATHER_BCFTOOLS                                   } from '../../subworkflows/nf-core/vcf_gather_bcftools/main'
 
@@ -34,37 +27,12 @@ workflow GERMLINE_VARIANT_CALLING {
     ch_reports   = Channel.empty()
 
     //
-    // Split the BED files into multiple subsets
-    //
-
-    beds
-        .tap { dragstrmodel_beds }
-        .set { beds_to_scatter }
-
-    BED_SCATTER_GROOVY(
-        beds_to_scatter.map {meta, bed -> [meta, bed]},
-        params.scatter_size
-    )
-
-    ch_versions = ch_versions.mix(BED_SCATTER_GROOVY.out.versions)
-
-    BED_SCATTER_GROOVY.out.scattered
-        .tap { gather_beds }
-        .dump(tag:'split_beds', pretty:true)
-        .set { haplotypecaller_beds }
-
-    //
     // Generate DRAGSTR models
     //
 
     if (params.use_dragstr_model) {
         crams
-            .join(dragstrmodel_beds, failOnDuplicate: true, failOnMismatch: true)
-            .map(
-                { meta, cram, crai, bed ->
-                    [meta, cram, crai, bed]
-                }
-            )
+            .join(beds, failOnDuplicate: true, failOnMismatch: true)
             .dump(tag:'calibratedragstrmodel_input')
             .set { calibratedragstrmodel_input }
 
@@ -79,13 +47,13 @@ workflow GERMLINE_VARIANT_CALLING {
         ch_versions = ch_versions.mix(CALIBRATEDRAGSTRMODEL.out.versions)
 
         crams
-            .combine(haplotypecaller_beds, by:0)
-            .combine(CALIBRATEDRAGSTRMODEL.out.dragstr_model, by:0)
+            .join(beds, failOnDuplicate: true, failOnMismatch: true)
+            .join(CALIBRATEDRAGSTRMODEL.out.dragstr_model, failOnDuplicate: true, failOnMismatch: true)
             .set { cram_models }
     }
     else {
         crams
-            .combine(haplotypecaller_beds, by:0)
+            .join(beds, failOnDuplicate: true, failOnMismatch: true)
             .set { cram_models }
     }
 
@@ -95,11 +63,17 @@ workflow GERMLINE_VARIANT_CALLING {
 
     cram_models
         .dump(tag:'cram_models', pretty:true)
+        .map { meta, cram, crai, bed, dragstr_model=[] ->
+            new_meta = meta + [region_count: bed.readLines().size()]
+            [ new_meta, cram, crai, bed, dragstr_model ]
+        }
+        .splitText(elem:3)
         .map(
-            { meta, cram, crai, bed, bed_count, dragstr_model=[] ->
-                new_meta = meta.clone()
-                new_meta.id = bed.baseName
-                [ new_meta, cram, crai, bed, dragstr_model ]
+            { meta, cram, crai, region, dragstr_model ->
+                region_split = region[0..-2].split("\t")
+                region_string = "${region_split[0]}:${region_split[1] as int + 1}-${region_split[2]}"
+                new_meta = meta + [id:"${meta.id}_${region_string.replace(":","_").replace("-":"_")}", region:region_string]
+                [ new_meta, cram, crai, [], dragstr_model ]
             }
         )
         .dump(tag:'cram_intervals', pretty:true)
@@ -120,6 +94,10 @@ workflow GERMLINE_VARIANT_CALLING {
 
     HAPLOTYPECALLER.out.vcf
         .join(HAPLOTYPECALLER.out.tbi, failOnDuplicate: true, failOnMismatch: true)
+        .map { meta, vcf, tbi ->
+            new_meta = meta - meta.subMap("region")
+            [ new_meta, vcf, tbi ]
+        }
         .dump(tag:'haplotypecaller_vcfs', pretty:true)
         .set { haplotypecaller_vcfs }
     ch_versions = ch_versions.mix(HAPLOTYPECALLER.out.versions)
@@ -130,9 +108,8 @@ workflow GERMLINE_VARIANT_CALLING {
 
     VCF_GATHER_BCFTOOLS(
         haplotypecaller_vcfs,
-        gather_beds.map { meta, bed, scatter_count ->
-            new_meta = meta.findAll{true} + [id:bed.baseName]
-            [ new_meta, bed, scatter_count ]
+        haplotypecaller_vcfs.map { meta, vcf, tbi ->
+            [ meta, [], meta.region_count ]
         },
         "sample",
         false
@@ -140,6 +117,10 @@ workflow GERMLINE_VARIANT_CALLING {
 
     VCF_GATHER_BCFTOOLS.out.vcf
         .join(VCF_GATHER_BCFTOOLS.out.tbi, failOnDuplicate: true, failOnMismatch: true)
+        .map { meta, vcf, tbi ->
+            new_meta = meta - meta.subMap("region_count")
+            [ new_meta, vcf, tbi ]
+        }
         .tap { stats_input }
         .dump(tag:'reblockgvcf_input', pretty: true)
         .set { reblockgvcf_input }

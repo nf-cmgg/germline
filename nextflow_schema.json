@@ -85,7 +85,7 @@
                 },
                 "sdf": {
                     "type": "string",
-                    "default": null,
+                    "default": "None",
                     "description": "The SDF folder generated from the reference FASTA file"
                 },
                 "genomes_base": {
@@ -131,10 +131,10 @@
             "description": "Parameters that define how the pipeline works",
             "default": "",
             "properties": {
-                "scatter_size": {
+                "scatter_count": {
                     "type": "integer",
-                    "default": 40000000,
-                    "description": "The size of regions the BED files should be split into when scattering"
+                    "default": 40,
+                    "description": "The amount of scattering that should happen per sample. Increase this number to increase the pipeline run speed, but at the tradeoff of using more IO and disk space"
                 },
                 "species": {
                     "type": "string",
@@ -169,7 +169,7 @@
                     "description": "The file to use as a default regions of interest BED file for the sample that don't have one."
                 }
             },
-            "required": ["scatter_size"]
+            "required": ["scatter_count"]
         },
         "module_specific_parameters": {
             "title": "Module specific parameters",

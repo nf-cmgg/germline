@@ -6,11 +6,7 @@ include { MERGE_BEDS                                 } from '../../modules/local
 
 include { GATK4_GENOMICSDBIMPORT as GENOMICSDBIMPORT } from '../../modules/nf-core/gatk4/genomicsdbimport/main'
 include { GATK4_GENOTYPEGVCFS as GENOTYPE_GVCFS      } from '../../modules/nf-core/gatk4/genotypegvcfs/main'
-include { TABIX_BGZIP as BGZIP_GENOTYPED_VCFS        } from '../../modules/nf-core/tabix/bgzip/main'
-include { TABIX_BGZIP as BGZIP_PED_VCFS              } from '../../modules/nf-core/tabix/bgzip/main'
-include { BCFTOOLS_CONCAT                            } from '../../modules/nf-core/bcftools/concat/main'
-
-include { BED_SCATTER_GROOVY                         } from '../../subworkflows/local/bed_scatter_groovy'
+include { BEDTOOLS_MAKEWINDOWS                       } from '../../modules/nf-core/bedtools/makewindows/main'
 
 include { VCF_GATHER_BCFTOOLS                        } from '../../subworkflows/nf-core/vcf_gather_bcftools/main'
 
@@ -30,10 +26,11 @@ workflow JOINT_GENOTYPING {
     beds
         .map(
             { meta, bed ->
-                new_meta = [:]
-                new_meta.family = meta.family
-                new_meta.id = meta.family ?: meta.sample
-                new_meta.family_count = meta.family_count
+                new_meta = [
+                    family:         meta.family,
+                    id:             meta.family,
+                    family_count:   meta.family_count
+                ]
                 [ groupKey(new_meta, meta.family_count.toInteger()), bed ]
             }
         )
@@ -44,53 +41,45 @@ workflow JOINT_GENOTYPING {
     MERGE_BEDS(
         bedmerge_input
     )
-
     ch_versions = ch_versions.mix(MERGE_BEDS.out.versions)
 
-    MERGE_BEDS.out.bed
-        .dump(tag:'merged_beds_genotyping', pretty:true)
-        .set { beds_to_scatter }
-
-    //
-    // Split the merged BED file
-    //
-
-    BED_SCATTER_GROOVY(
-        beds_to_scatter,
-        params.scatter_size
+    BEDTOOLS_MAKEWINDOWS(
+        MERGE_BEDS.out.bed
     )
-
-    ch_versions = ch_versions.mix(BED_SCATTER_GROOVY.out.versions)
-
-    BED_SCATTER_GROOVY.out.scattered
-        .tap { genomicsdb_beds }
-        .map { meta, bed, bed_count ->
-            new_meta = meta.findAll{true}[0] + [id:bed.baseName]
-            [ new_meta, bed, bed_count ]
-        }
-        .tap { genotypegvcfs_beds }
-        .dump(tag:'scattered_beds_genotyping', pretty:true)
-        .set { gather_beds }
+    ch_versions = ch_versions.mix(BEDTOOLS_MAKEWINDOWS.out.versions)
 
     gvcfs
         .map(
             { meta, gvcf, tbi ->
                 new_meta = [
-                    family: meta.family,
-                    id: meta.family ?: meta.sample,
-                    family_count: meta.family_count
+                    family:         meta.family,
+                    id:             meta.family,
+                    family_count:   meta.family_count
                 ]
                 [ groupKey(new_meta, meta.family_count.toInteger()), gvcf, tbi ]
             }
         )
         .groupTuple()
-        .combine(genomicsdb_beds, by:0)
+        .join(BEDTOOLS_MAKEWINDOWS.out.bed, failOnDuplicate: true, failOnMismatch: true)
         .map(
-            { meta, gvcfs, tbis, bed, bed_count ->
-                new_meta = meta.findAll{true}[0] + [id:bed.baseName]
-                [ new_meta, gvcfs, tbis, bed, [], [] ]
+            { meta, gvcfs, tbis, bed ->
+                if(workflow.stubRun){
+                    regions = (1..params.scatter_count).each {
+                        start = 100*it
+                        bed << "chr22\t${start}\t${start+50}\t0.5\t1\n"
+                    }
+                }
+                new_meta = meta + [region_count:bed.readLines().size()]
+                [ new_meta, gvcfs, tbis, bed ]
             }
         )
+        .splitText(elem:3)
+        .map { meta, gvcfs, tbis, region ->
+            region_split = region[0..-2].split("\t")
+            region_string = "${region_split[0]}:${region_split[1] as int + 1}-${region_split[2]}"
+            new_meta = meta + [id:"${meta.id}_${region_string.replace(":","_").replace("-":"_")}", region:region_string]
+            [ new_meta, gvcfs, tbis, [], region_string, [] ]
+        }
         .set { genomicsdbimport_input }
 
     genomicsdbimport_input.dump(tag:'genomicsdbimport_input', pretty:true)
@@ -109,10 +98,9 @@ workflow JOINT_GENOTYPING {
     ch_versions = ch_versions.mix(GENOMICSDBIMPORT.out.versions)
 
     GENOMICSDBIMPORT.out.genomicsdb
-        .join(genotypegvcfs_beds, failOnDuplicate: true, failOnMismatch: true)
         .map(
-            { meta, genomic_db, bed, bed_count ->
-                [ meta, genomic_db, [], bed, [] ]
+            { meta, genomic_db ->
+                [ meta, genomic_db, [], [], [] ]
             }
         )
         .dump(tag:'genotypegvcfs_input', pretty:true)
@@ -137,19 +125,32 @@ workflow JOINT_GENOTYPING {
 
     GENOTYPE_GVCFS.out.vcf
         .join(GENOTYPE_GVCFS.out.tbi, failOnDuplicate: true, failOnMismatch: true)
+        .map { meta, vcf, tbi ->
+            new_meta = meta - meta.subMap("region")
+            [ new_meta, vcf, tbi ]
+        }
         .dump(tag:'genotyped_vcfs', pretty:true)
         .set { genotyped_vcfs }
 
     VCF_GATHER_BCFTOOLS(
         genotyped_vcfs,
-        gather_beds,
+        genotyped_vcfs.map { meta, vcf, tbi ->
+            [ meta, [], meta.region_count ]
+        },
         "family",
         true
     )
 
     ch_versions = ch_versions.mix(VCF_GATHER_BCFTOOLS.out.versions)
 
+    VCF_GATHER_BCFTOOLS.out.vcf
+        .map { meta, vcf ->
+            new_meta = meta - meta.subMap("region_count")
+            [ new_meta, vcf ]
+        }
+        .set { genotyped_vcfs }
+
     emit:
-    genotyped_vcfs = VCF_GATHER_BCFTOOLS.out.vcf    // channel: [meta, vcf] => The output channel containing the post processed VCF
+    genotyped_vcfs              // channel: [meta, vcf] => The output channel containing the post processed VCF
     versions = ch_versions
 }
