@@ -1,3 +1,3 @@
-sample,cram,crai,bed,ped
-NA12878K12_NVQ_034,data/GIAB/NA12878K12_NVQ_034/NA12878K12_NVQ_034-subset.cram,data/GIAB/NA12878K12_NVQ_034/NA12878K12_NVQ_034-subset.cram.bai,data/GIAB/NA12878K12_NVQ_034/NA12878K12_NVQ_034-callable.bed,/kyukon/data/gent/vo/000/gvo00082/vsc44804/nf-cmgg-germline/hpc_input/NA12878.ped
-NA24385D2_NVQ_034,data/GIAB/NA24385D2_NVQ_034/NA24385D2_NVQ_034-subset.cram,data/GIAB/NA24385D2_NVQ_034/NA24385D2_NVQ_034-subset.cram.bai,data/GIAB/NA24385D2_NVQ_034/NA24385D2_NVQ_034-callable.bed,/kyukon/data/gent/vo/000/gvo00082/vsc44804/nf-cmgg-germline/hpc_input/NA12878.ped
+sample,family,cram,crai,bed,ped
+NA12878K12_NVQ_034,,data/GIAB/NA12878K12_NVQ_034/NA12878K12_NVQ_034-subset.cram,data/GIAB/NA12878K12_NVQ_034/NA12878K12_NVQ_034-subset.cram.crai,data/GIAB/NA12878K12_NVQ_034/NA12878K12_NVQ_034-subset.bed,https://github.com/CenterForMedicalGeneticsGhent/nf-cmgg-germline/blob/master/hpc_input/NA12878.ped
+NA24385D2_NVQ_034,,data/GIAB/NA24385D2_NVQ_034/NA24385D2_NVQ_034-subset.cram,data/GIAB/NA24385D2_NVQ_034/NA24385D2_NVQ_034-subset.cram.crai,data/GIAB/NA24385D2_NVQ_034/NA24385D2_NVQ_034-subset.bed,https://github.com/CenterForMedicalGeneticsGhent/nf-cmgg-germline/blob/master/hpc_input/NA12878.ped

@@ -2,7 +2,7 @@ process MERGE_BEDS {
     tag "$meta.id"
     label 'process_medium'
 
-    conda (params.enable_conda ? "bioconda::bedtools=2.30.0" : null)
+    conda "bioconda::bedtools=2.30.0"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/bedtools:2.30.0--hc088bd4_0' :
         'quay.io/biocontainers/bedtools:2.30.0--hc088bd4_0' }"
@@ -29,7 +29,17 @@ process MERGE_BEDS {
         fi
     done;
 
-    awk 'FNR==1{print ""}1' */*.bed | sort -k 1,1 -k2,2n | bedtools merge > ${meta.id}.bed
+    awk '{print \$1"\\t"\$2"\\t"\$3 }' */*.bed | sort -k 1,1 -k2,2n | bedtools merge > ${meta.id}.bed
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        bedtools: \$(bedtools --version | sed -e "s/bedtools v//g")
+    END_VERSIONS
+    """
+
+    stub:
+    """
+    touch ${meta.id}.bed
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

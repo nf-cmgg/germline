@@ -11,22 +11,28 @@ on:
 env:
   NXF_ANSI_LOG: false
 
+concurrency:
+  group: "${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}"
+  cancel-in-progress: true
+
 jobs:
   test_all:
-    name: Run pipeline with test data (complete)
+    name: Run nf-test with ${{ matrix.test }}-${{ matrix.NXF_VER }}
     # Only run on push if this is the nf-core dev branch (merged PRs)
     if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'CenterForMedicalGeneticsGhent/nf-cmgg-germline') }}"
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        nxf_ver: ["21.10.3", ""]
+        NXF_VER:
+          - "22.10.5"
+          - "latest-everything"
         test:
           - "default"
           - "fails"
-          - "seqplorer_min"
-          - "seqplorer_vcfanno"
-          - "seqr_full"
-          - "seqr_no_genotyping"
+          - "annotate_test"
+          - "filter_test"
+          - "gemini_test"
+          - "full"
     steps:
       - name: Free some space
         run: |
@@ -34,36 +40,23 @@ jobs:
           sudo rm -rf "$AGENT_TOOLSDIRECTORY"
 
       - name: Check out pipeline code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install Nextflow
         uses: nf-core/setup-nextflow@v1
         with:
-          version: "${{ matrix.nxf_ver }}"
+          version: "${{ matrix.NXF_VER }}"
 
       - name: Install nf-test
         run: |
-          sudo bash; mkdir /opt/nf-test; cd /opt/nf-test; wget https://github.com/askimed/nf-test/releases/download/v0.6.0/nf-test-0.6.0.tar.gz; tar xvfz nf-test-0.6.0.tar.gz; chmod +x nf-test;
-          echo "/opt/nf-test" >> $GITHUB_PATH;
+          conda install -c bioconda nf-test
 
       - name: Run pipeline with test data
         run: |
-          nf-test test tests/${{ matrix.test }}.test
+          $CONDA/bin/nf-test test tests/${{ matrix.test }}.test --junitxml=default.xml
 
-      - name: Output log on failure
-        if: failure()
-        run: |
-          sudo apt install bat > /dev/null
-          batcat --decorations=always --color=always .nf-test/tests/*/meta/std.{out,err}
-      - name: Upload logs on failure
-        if: failure()
-        uses: actions/upload-artifact@v2
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v3
+        if: always() # always run even if the previous step fails
         with:
-          name: nf-test-logs
-          path: |
-            .nf-test/tests/*/meta/nextflow.log
-            .nf-test/tests/*/meta/std.out
-            .nf-test/tests/*/meta/std.err
-            .nf-test/tests/*/meta/trace.csv
-            .nf-test/tests/*/work
-            .nf-test/*/output
+          report_paths: "default.xml"

@@ -1,13 +1,13 @@
 # CenterForMedicalGeneticsGhent/nf-cmgg-germline
 
-[![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-%E2%89%A521.10.3-23aa62.svg)](https://www.nextflow.io/)
+[![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-%E2%89%A522.10.5-23aa62.svg)](https://www.nextflow.io/)
 [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?logo=docker)](https://www.docker.com/)
 [![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg)](https://sylabs.io/docs/)
 [![nf-test](https://img.shields.io/badge/tested_with-nf--test-337ab7.svg)](https://github.com/askimed/nf-test)
 
 ## Introduction
 
-**nf-cmgg-germline** is a bioinformatics best-practice analysis pipeline for A nextflow pipeline for calling and annotating variants. It uses HaplotypeCaller to call variants and EnsemblVEP to annotate the called variants. By supplying the `--output_mode <seqr|seqplorer>` you can choose for which platform the VCFs should be created.
+**nf-cmgg-germline** is a bioinformatics best-practice analysis pipeline for calling, joint-genotyping and annotating variants for WGS data. It uses HaplotypeCaller to call variants and EnsemblVEP to annotate the called variants.
 
 The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It uses Docker/Singularity containers making installation trivial and results highly reproducible. The [Nextflow DSL2](https://www.nextflow.io/docs/latest/dsl2.html) implementation of this pipeline uses one container per process which makes it much easier to maintain and update software dependencies. Where possible, these processes have been submitted to and installed from [nf-core/modules](https://github.com/nf-core/modules) in order to make them available to all nf-core pipelines, and to everyone within the Nextflow community!
 
@@ -17,13 +17,12 @@ The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool
 
 ## Quick Start
 
-1. Install [`Nextflow`](https://www.nextflow.io/docs/latest/getstarted.html#installation) (`>=21.10.3`)
-
+1. Install [`Nextflow`](https://www.nextflow.io/docs/latest/getstarted.html#installation) (`>=22.10.5`)
 2. Install any of [`Docker`](https://docs.docker.com/engine/installation/), [`Singularity`](https://www.sylabs.io/guides/3.0/user-guide/) (you can follow [this tutorial](https://singularity-tutorial.github.io/01-installation/)), [`Podman`](https://podman.io/), [`Shifter`](https://nersc.gitlab.io/development/shifter/how-to-use/) or [`Charliecloud`](https://hpc.github.io/charliecloud/) for full pipeline reproducibility _(you can use [`Conda`](https://conda.io/miniconda.html) both to install Nextflow itself and also to manage software within pipelines. Please only use it within pipelines as a last resort; see [docs](https://nf-co.re/usage/configuration#basic-configuration-profiles))_.
 
 3. Download the pipeline and test it on a minimal dataset with a single command:
 
-   ```console
+   ```bash
    nextflow run CenterForMedicalGeneticsGhent/nf-cmgg-germline -profile test,YOURPROFILE --outdir <OUTDIR>
    ```
 
@@ -36,8 +35,8 @@ The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool
 
 4. Start running your own analysis!
 
-   ```console
-   nextflow run CenterForMedicalGeneticsGhent/nf-cmgg-germline --input <INPUT_CSV> --outdir <OUTDIR> --genome GRCh38 -profile <docker/singularity/podman/shifter/charliecloud/conda/institute> --fasta <PATH/TO/FASTA>
+   ```bash
+   nextflow run CenterForMedicalGeneticsGhent/nf-cmgg-germline --input <INPUT_CSV/TSV/YAML> --outdir <OUTDIR> -profile <docker/singularity/podman/shifter/charliecloud/conda/institute> --fasta <PATH/TO/FASTA>
    ```
 
 An overview of the parameters for this pipeline can be viewed using:
@@ -50,12 +49,10 @@ nextflow run CenterForMedicalGeneticsGhent/nf-cmgg-germline --help
 
 nf-cmgg-germline was originally written by @nvnieuwk.
 
-We thank the following people for their extensive assistance in the development of this pipeline:
-
 ## Contributions and Support
 
 If you would like to contribute to this pipeline, please see the [contributing guidelines](.github/CONTRIBUTING.md).
 
 ## Citations
 
-An extensive list of references for the tools used by the pipeline can be found in the [`CITATIONS.md`](CITATIONS.md) file.
+An extensive list of references can be found in the [`CITATIONS.md`](CITATIONS.md) file.
