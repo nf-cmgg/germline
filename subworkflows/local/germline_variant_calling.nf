@@ -159,3 +159,4 @@ workflow GERMLINE_VARIANT_CALLING {
     versions = ch_versions
     reports  = ch_reports
 }
+
