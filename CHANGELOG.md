@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 3. Added `dump` functionality to lots of channels.
 4. Added the `dbsnp` option to `GATK HaplotypeCaller`. use `--dbsnp` and `--dbsnp_tbi` to supply these VCFs.
 5. Added the `vcf_extract_somalier` subworkflow to the pipeline. This also creates PED files inferred from the input multi-sample VCF.
-6. Added a validation subworkflow. All files that have a VCF in the `truth_vcf` column of the input samplesheet will be validated against this VCF. This can be turned by supplying the `--validate false` flag to the pipeline run.
+6. Added a validation subworkflow. All files that have a VCF in the `truth_vcf` column of the input samplesheet will be validated against this VCF. This can be turned off by supplying the `--validate false` flag to the pipeline run.
 
 ### Improvements
 
