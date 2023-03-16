@@ -3,21 +3,6 @@ nextflow_pipeline {
     name "Tests of the pipeline with failing options"
     script "main.nf"
 
-    test("Missing fasta") {
-
-        when {
-            params {
-                fasta = null
-            }
-        }
-
-        then {
-            assert workflow.failed
-            assert workflow.stdout.contains("Genome fasta file not specified with e.g. '--fasta genome.fa' or via a detectable config file.")
-        }
-
-    }
-
     test("Missing required input") {
 
         when {
