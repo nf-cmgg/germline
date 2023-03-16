@@ -6,9 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## v1.1.1dev
 
 ### Changes
+
 1. Set the default of `--validate` to `false`
 
 ### Bug fixes
+
 1. Fixed a bug with ensembl VEP. Filenames of the alt contigs should now have a `_alt` suffix instead of all alt contigs.
 2. Added file-exist check to the `sdf` file
 3. Fixed the scattering when using alt contigs
