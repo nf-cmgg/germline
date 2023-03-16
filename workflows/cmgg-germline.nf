@@ -26,7 +26,8 @@ def checkPathParamList = [
     params.vcfanno_lua,
     params.dbsnp,
     params.dbsnp_tbi,
-    params.somalier_sites
+    params.somalier_sites,
+    params.sdf
 ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 

@@ -8,9 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### New Features
 
 ### Improvements
+1. Set the default of `--validate` to `false`
 
 ### Bug fixes
 1. Fixed a bug with ensembl VEP. Filenames of the alt contigs should now have a `_alt` suffix instead of all alt contigs.
+2. Added file-exist check to the `sdf` file
 
 ## v1.1.0 - Glorious Ghent - [Mar 14 2023]
 
