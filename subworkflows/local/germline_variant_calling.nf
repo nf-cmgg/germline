@@ -32,7 +32,7 @@ workflow GERMLINE_VARIANT_CALLING {
     //
 
     SPLIT_BEDS(
-        beds
+        beds.map { it + [1] }
     )
     ch_versions = ch_versions.mix(SPLIT_BEDS.out.versions.first())
 
@@ -74,8 +74,9 @@ workflow GERMLINE_VARIANT_CALLING {
     cram_models
         .dump(tag:'cram_models', pretty:true)
         .map { meta, cram, crai, beds, dragstr_model=[] ->
-            new_meta = meta + [region_count: beds instanceof ArrayList ? beds.size() : 1]
-            [ new_meta, cram, crai, beds, dragstr_model ]
+            bed_is_list = beds instanceof ArrayList
+            new_meta = meta + [region_count: bed_is_list ? beds.size() : 1]
+            [ new_meta, cram, crai, bed_is_list ? beds : [beds], dragstr_model ]
         }
         .transpose(by:3)
         .map(

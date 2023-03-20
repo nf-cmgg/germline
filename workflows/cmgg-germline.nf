@@ -461,7 +461,7 @@ workflow CMGGGERMLINE {
 
     JOINT_GENOTYPING(
         variantcalling_output,
-        PREPROCESSING.out.ready_beds,
+        PREPROCESSING.out.ready_crams,
         peds,
         fasta,
         fasta_fai,
