@@ -72,8 +72,9 @@ workflow JOINT_GENOTYPING {
         .groupTuple()
         .join(SPLIT_BEDS.out.beds, failOnDuplicate: true, failOnMismatch: true)
         .map { meta, gvcfs, tbis, beds ->
-            new_meta = meta + [region_count: beds instanceof ArrayList ? beds.size() : 1]
-            [ new_meta, gvcfs, tbis, beds ]
+            bed_is_list = beds instanceof ArrayList
+            new_meta = meta + [region_count: bed_is_list ? beds.size() : 1]
+            [ new_meta, gvcfs, tbis, bed_is_list ? beds : [beds] ]
         }
         .transpose(by:3)
         .map { meta, gvcfs, tbis, bed ->
