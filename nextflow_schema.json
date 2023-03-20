@@ -123,7 +123,8 @@
                     "hidden": true,
                     "help_text": "Do not load `igenomes.config` when running the pipeline. You may choose this option if you observe clashes between custom parameters and those supplied in `igenomes.config`."
                 }
-            }
+            },
+            "required": ["fasta"]
         },
         "pipeline_specific_parameters": {
             "title": "Pipeline specific parameters",
@@ -134,7 +135,7 @@
                 "scatter_count": {
                     "type": "integer",
                     "default": 40,
-                    "description": "The amount of scattering that should happen per sample. Increase this number to increase the pipeline run speed, but at the tradeoff of using more IO and disk space"
+                    "description": "The amount of scattering that should happen per sample. Increase this number to increase the pipeline run speed, but at the tradeoff of using more IO and disk space. The actual scatter value can differ a bit (usually not a bigger difference than 1) when using alt contigs in the reference."
                 },
                 "species": {
                     "type": "string",
@@ -180,7 +181,8 @@
                 "use_dragstr_model": {
                     "type": "boolean",
                     "description": "Whether or not the DRAGSTR models should be used",
-                    "fa_icon": "fas fa-question-circle"
+                    "fa_icon": "fas fa-question-circle",
+                    "default": true
                 },
                 "dbsnp": {
                     "type": "string",

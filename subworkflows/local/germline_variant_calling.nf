@@ -1,6 +1,7 @@
 //
 // GERMLINE VARIANT CALLING
 //
+include { SPLIT_BEDS                                            } from '../../modules/local/split_beds/main'
 
 include { GATK4_HAPLOTYPECALLER as HAPLOTYPECALLER              } from '../../modules/nf-core/gatk4/haplotypecaller/main'
 include { GATK4_CALIBRATEDRAGSTRMODEL as CALIBRATEDRAGSTRMODEL  } from '../../modules/nf-core/gatk4/calibratedragstrmodel/main'
@@ -27,6 +28,15 @@ workflow GERMLINE_VARIANT_CALLING {
     ch_reports   = Channel.empty()
 
     //
+    // Split BED file into correct regions
+    //
+
+    SPLIT_BEDS(
+        beds.map { it + [1] }
+    )
+    ch_versions = ch_versions.mix(SPLIT_BEDS.out.versions.first())
+
+    //
     // Generate DRAGSTR models
     //
 
@@ -47,13 +57,13 @@ workflow GERMLINE_VARIANT_CALLING {
         ch_versions = ch_versions.mix(CALIBRATEDRAGSTRMODEL.out.versions)
 
         crams
-            .join(beds, failOnDuplicate: true, failOnMismatch: true)
+            .join(SPLIT_BEDS.out.beds, failOnDuplicate: true, failOnMismatch: true)
             .join(CALIBRATEDRAGSTRMODEL.out.dragstr_model, failOnDuplicate: true, failOnMismatch: true)
             .set { cram_models }
     }
     else {
         crams
-            .join(beds, failOnDuplicate: true, failOnMismatch: true)
+            .join(SPLIT_BEDS.out.beds, failOnDuplicate: true, failOnMismatch: true)
             .set { cram_models }
     }
 
@@ -63,17 +73,16 @@ workflow GERMLINE_VARIANT_CALLING {
 
     cram_models
         .dump(tag:'cram_models', pretty:true)
-        .map { meta, cram, crai, bed, dragstr_model=[] ->
-            new_meta = meta + [region_count: bed.readLines().size()]
-            [ new_meta, cram, crai, bed, dragstr_model ]
+        .map { meta, cram, crai, beds, dragstr_model=[] ->
+            bed_is_list = beds instanceof ArrayList
+            new_meta = meta + [region_count: bed_is_list ? beds.size() : 1]
+            [ new_meta, cram, crai, bed_is_list ? beds : [beds], dragstr_model ]
         }
-        .splitText(elem:3)
+        .transpose(by:3)
         .map(
-            { meta, cram, crai, region, dragstr_model ->
-                region_split = region[0..-2].split("\t")
-                region_string = "${region_split[0]}:${region_split[1] as int + 1}-${region_split[2]}"
-                new_meta = meta + [id:"${meta.id}_${region_string.replace(":","_").replace("-":"_")}", region:region_string]
-                [ new_meta, cram, crai, [], dragstr_model ]
+            { meta, cram, crai, bed, dragstr_model ->
+                new_meta = meta + [id:bed.baseName]
+                [ new_meta, cram, crai, bed, dragstr_model ]
             }
         )
         .dump(tag:'cram_intervals', pretty:true)
@@ -159,4 +168,3 @@ workflow GERMLINE_VARIANT_CALLING {
     versions = ch_versions
     reports  = ch_reports
 }
-

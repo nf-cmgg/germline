@@ -3,17 +3,18 @@
 //
 
 include { MERGE_BEDS                                 } from '../../modules/local/merge_beds'
+include { SPLIT_BEDS                                 } from '../../modules/local/split_beds/main'
 
 include { GATK4_GENOMICSDBIMPORT as GENOMICSDBIMPORT } from '../../modules/nf-core/gatk4/genomicsdbimport/main'
 include { GATK4_GENOTYPEGVCFS as GENOTYPE_GVCFS      } from '../../modules/nf-core/gatk4/genotypegvcfs/main'
-include { BEDTOOLS_MAKEWINDOWS                       } from '../../modules/nf-core/bedtools/makewindows/main'
+include { GOLEFT_INDEXSPLIT                          } from '../../modules/nf-core/goleft/indexsplit/main'
 
 include { VCF_GATHER_BCFTOOLS                        } from '../../subworkflows/nf-core/vcf_gather_bcftools/main'
 
 workflow JOINT_GENOTYPING {
     take:
         gvcfs               // channel: [mandatory] [ meta, gvcf, tbi ] => The fresh GVCFs called with HaplotypeCaller
-        beds                // channel: [mandatory] [ meta, bed ] => The BED files of the individuals
+        crams               // channel: [mandatory] [ meta, cram, crai ] => The CRAM files of the individuals
         peds                // channel: [mandatory] [ meta, peds ] => The pedigree files for the samples
         fasta               // channel: [mandatory] [ fasta ] => fasta reference
         fasta_fai           // channel: [mandatory] [ fasta_fai ] => fasta reference index
@@ -23,30 +24,38 @@ workflow JOINT_GENOTYPING {
 
     ch_versions         = Channel.empty()
 
-    beds
-        .map(
-            { meta, bed ->
+    crams
+        .map { meta, cram, crai ->
                 new_meta = [
                     family:         meta.family,
                     id:             meta.family,
                     family_count:   meta.family_count
                 ]
-                [ groupKey(new_meta, meta.family_count.toInteger()), bed ]
+                [ groupKey(new_meta, meta.family_count.toInteger()), crai ]
             }
-        )
         .groupTuple()
-        .dump(tag:'bedmerge_input', pretty: true)
-        .set { bedmerge_input }
+        .dump(tag:'genotype_goleft_input', pretty: true)
+        .set { goleft_input }
 
-    MERGE_BEDS(
-        bedmerge_input
+    GOLEFT_INDEXSPLIT(
+        goleft_input,
+        fasta_fai.map { [ [], it ]},
+        params.scatter_count
     )
-    ch_versions = ch_versions.mix(MERGE_BEDS.out.versions)
+    ch_versions = ch_versions.mix(GOLEFT_INDEXSPLIT.out.versions)
 
-    BEDTOOLS_MAKEWINDOWS(
-        MERGE_BEDS.out.bed
+    SPLIT_BEDS(
+        GOLEFT_INDEXSPLIT.out.bed.map { meta, bed ->
+            if(workflow.stubRun){
+                (1..params.scatter_count).each {
+                    start = 100*it
+                    bed << "chr22\t${start}\t${start+50}\t0.5\t1\n"
+                }
+            }
+            [ meta, bed, meta.family_count ]
+        }
     )
-    ch_versions = ch_versions.mix(BEDTOOLS_MAKEWINDOWS.out.versions)
+    ch_versions = ch_versions.mix(SPLIT_BEDS.out.versions.first())
 
     gvcfs
         .map(
@@ -60,25 +69,16 @@ workflow JOINT_GENOTYPING {
             }
         )
         .groupTuple()
-        .join(BEDTOOLS_MAKEWINDOWS.out.bed, failOnDuplicate: true, failOnMismatch: true)
-        .map(
-            { meta, gvcfs, tbis, bed ->
-                if(workflow.stubRun){
-                    regions = (1..params.scatter_count).each {
-                        start = 100*it
-                        bed << "chr22\t${start}\t${start+50}\t0.5\t1\n"
-                    }
-                }
-                new_meta = meta + [region_count:bed.readLines().size()]
-                [ new_meta, gvcfs, tbis, bed ]
-            }
-        )
-        .splitText(elem:3)
-        .map { meta, gvcfs, tbis, region ->
-            region_split = region[0..-2].split("\t")
-            region_string = "${region_split[0]}:${region_split[1] as int + 1}-${region_split[2]}"
-            new_meta = meta + [id:"${meta.id}_${region_string.replace(":","_").replace("-":"_")}", region:region_string]
-            [ new_meta, gvcfs, tbis, [], region_string, [] ]
+        .join(SPLIT_BEDS.out.beds, failOnDuplicate: true, failOnMismatch: true)
+        .map { meta, gvcfs, tbis, beds ->
+            bed_is_list = beds instanceof ArrayList
+            new_meta = meta + [region_count: bed_is_list ? beds.size() : 1]
+            [ new_meta, gvcfs, tbis, bed_is_list ? beds : [beds] ]
+        }
+        .transpose(by:3)
+        .map { meta, gvcfs, tbis, bed ->
+            new_meta = meta + [id:bed.baseName]
+            [ new_meta, gvcfs, tbis, bed, [], [] ]
         }
         .set { genomicsdbimport_input }
 
