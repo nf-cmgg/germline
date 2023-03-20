@@ -13,6 +13,10 @@
             "type": "string",
             "meta": "family"
         },
+        "type": {
+            "type": "string",
+            "meta": "type"
+        },
         "cram": {
             "type": "string",
             "pattern": "^\\S+\\.cram$",
@@ -21,6 +25,11 @@
         "crai": {
             "type": "string",
             "pattern": "^\\S+\\.crai$",
+            "format": "file-path"
+        },
+        "callable": {
+            "type": "string",
+            "pattern": "^\\S+\\.bed(\\.gz)?$",
             "format": "file-path"
         },
         "roi": {

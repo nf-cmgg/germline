@@ -138,7 +138,7 @@ workflow CMGGGERMLINE {
     strtablefile       = params.strtablefile        ? Channel.fromPath(params.strtablefile).collect()                               : null
     sdf                = params.sdf                 ? Channel.fromPath(params.sdf).map {sdf -> [[id:'reference'], sdf]}.collect()   : null
 
-    default_roi        = params.roi                 ? Channel.fromPath(params.roi)                          : Channel.value([[]])
+    default_roi        = params.roi                 ? Channel.fromPath(params.roi).collect()                : Channel.value([[]])
 
     dbsnp              = params.dbsnp               ? Channel.fromPath(params.dbsnp).collect()              : []
     dbsnp_tbi          = params.dbsnp_tbi           ? Channel.fromPath(params.dbsnp_tbi).collect()          : []
@@ -299,55 +299,51 @@ workflow CMGGGERMLINE {
     //
 
     SamplesheetConversion.convert(ch_input, file("${projectDir}/assets/schema_input.json", checkIfExists:true))
-        .map(
-            { meta, cram, crai, roi, ped, truth_vcf, truth_tbi ->
-                new_meta = meta.clone()
-                new_meta.family = meta.family ?: get_family_id_from_ped(ped)
-                [ new_meta, cram, crai, roi, ped, truth_vcf, truth_tbi ]
-            }
-        )
+        .map { meta, cram, crai, callable, roi, ped, truth_vcf, truth_tbi ->
+            // Infer the family ID from the PED file if no family ID was given, if no PED is given use the sample ID as family ID
+            // Infer the type of data if none is given. When an ROI BED has been given through params or the samplesheet, the type will be WES, otherwise it will be WGS
+            type = meta.type ?: ""
+            new_meta = meta + [
+                family: meta.family ?: ped ? get_family_id_from_ped(ped) : meta.sample, 
+                type: type.toLowerCase() in ["wgs","wes"] ? type.toLowerCase() : (params.roi || roi) ? "wes" : "wgs" 
+            ]
+            [ new_meta, cram, crai, callable, roi, ped, truth_vcf, truth_tbi ]
+        }
         .tap { ch_raw_inputs }
         .distinct()
-        .map(
-            { meta, cram, crai, roi, ped, truth_vcf, truth_tbi ->
-                [ meta.family, 1 ]
-            }
-        )
+        .map { meta, cram, crai, callable, roi, ped, truth_vcf, truth_tbi ->
+            [ meta.family, 1 ]
+        }
         .groupTuple()
-        .map(
-            { family, count ->
-                counts = family ? count.sum() : 1
-                [ family, counts ]
-            }
-        )
+        .map { family, count ->
+            counts = family ? count.sum() : 1
+            [ family, counts ]
+        }
         .combine(
             ch_raw_inputs
-                .map(
-                    { meta, cram, crai, roi, ped, truth_vcf, truth_tbi ->
-                        [ meta.family, meta, cram, crai, roi, ped, truth_vcf, truth_tbi ]
-                    }
-                )
+                .map { meta, cram, crai, callable, roi, ped, truth_vcf, truth_tbi ->
+                    [ meta.family, meta, cram, crai, callable, roi, ped, truth_vcf, truth_tbi ]
+                }
         , by:0)
         .multiMap(
-            { family, family_count, meta, cram, crai, roi, ped, truth_vcf, truth_tbi ->
-                new_meta_ped = [:]
-                new_meta = meta.clone()
+            { family, family_count, meta, cram, crai, callable, roi, ped, truth_vcf, truth_tbi ->
+                new_meta_ped = [
+                    id:             meta.family,
+                    family:         meta.family,
+                    family_count:   family_count
+                ]
 
-                new_meta_ped.id           = meta.family ?: meta.sample
-                new_meta_ped.family       = meta.family ?: meta.sample
-                new_meta_ped.family_count = family_count
-
-                new_meta.family           = meta.family ?: meta.sample
-                new_meta.family_count     = family_count
+                new_meta = meta + [family_count:family_count]
 
                 truth_variants: [new_meta, truth_vcf, truth_tbi]
                 cram:           [new_meta, cram, crai]
                 peds:           [new_meta_ped, ped]
+                beds:           [new_meta, callable, roi]
             }
         )
         .set { ch_parsed_inputs }
 
-    // ch_parsed_inputs.roi.dump(tag:'input_roi', pretty:true)
+    ch_parsed_inputs.beds.dump(tag:'input_beds', pretty:true)
     ch_parsed_inputs.truth_variants.dump(tag:'truth_variants', pretty:true)
     ch_parsed_inputs.cram.dump(tag:'input_crams', pretty:true)
     ch_parsed_inputs.peds.dump(tag:'input_peds', pretty:true)
@@ -358,10 +354,10 @@ workflow CMGGGERMLINE {
 
     PREPROCESSING(
         ch_parsed_inputs.cram,
-        // ch_parsed_inputs.roi,
+        ch_parsed_inputs.beds,
         fasta,
         fasta_fai,
-        // default_roi
+        default_roi
     )
 
     ch_versions = ch_versions.mix(PREPROCESSING.out.versions)

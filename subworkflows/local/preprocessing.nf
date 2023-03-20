@@ -14,10 +14,10 @@ include { BEDTOOLS_MERGE                } from '../../modules/nf-core/bedtools/m
 workflow PREPROCESSING {
     take:
         crams             // channel: [mandatory] [ meta, cram, crai ] => sample CRAM files and their optional indices
-        // roi               // channel: [mandatory] [ meta, bed ] => bed files containing regions of interest
+        beds              // channel: [mandatory] [ meta, callable, roi ] => bed files for callable regions and ROI for WES analysis
         fasta             // channel: [mandatory] [ fasta ] => fasta reference
         fasta_fai         // channel: [mandatory] [ fasta_fai ] => fasta reference index
-        // default_roi       // channel: [optional]  [ roi ] => bed containing regions of interest to be used as default
+        default_roi       // channel: [optional]  [ roi ] => bed containing regions of interest to be used as default
 
     main:
 
