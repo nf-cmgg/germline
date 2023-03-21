@@ -32,7 +32,8 @@ workflow GERMLINE_VARIANT_CALLING {
     //
 
     SPLIT_BEDS(
-        beds.map { it + [1] }
+        beds.map { it + [1] },
+        params.split_threshold.toFloat()
     )
     ch_versions = ch_versions.mix(SPLIT_BEDS.out.versions.first())
 
