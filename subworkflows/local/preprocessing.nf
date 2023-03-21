@@ -2,19 +2,22 @@
 // PREPROCESSING
 //
 
-include { MERGE_BEDS as MERGE_ROI       } from '../../modules/local/merge_beds'
-include { SAMTOOLS_MERGE                } from '../../modules/local/samtools_merge'
+include { MERGE_BEDS as MERGE_ROI_PARAMS    } from '../../modules/local/merge_beds'
+include { MERGE_BEDS as MERGE_ROI_SAMPLE    } from '../../modules/local/merge_beds'
+include { SAMTOOLS_MERGE                    } from '../../modules/local/samtools_merge'
 
-include { SAMTOOLS_INDEX                } from '../../modules/nf-core/samtools/index/main'
-include { GOLEFT_INDEXSPLIT             } from '../../modules/nf-core/goleft/indexsplit/main'
-include { TABIX_BGZIP as UNZIP_ROI      } from '../../modules/nf-core/tabix/bgzip/main'
-include { BEDTOOLS_INTERSECT            } from '../../modules/nf-core/bedtools/intersect/main'
-include { BEDTOOLS_MERGE                } from '../../modules/nf-core/bedtools/merge/main'
+include { SAMTOOLS_INDEX                    } from '../../modules/nf-core/samtools/index/main'
+include { GOLEFT_INDEXSPLIT                 } from '../../modules/nf-core/goleft/indexsplit/main'
+include { TABIX_BGZIP as UNZIP_ROI          } from '../../modules/nf-core/tabix/bgzip/main'
+include { TABIX_BGZIP as UNZIP_CALLABLE     } from '../../modules/nf-core/tabix/bgzip/main'
+include { BEDTOOLS_INTERSECT                } from '../../modules/nf-core/bedtools/intersect/main'
+include { BEDTOOLS_MERGE                    } from '../../modules/nf-core/bedtools/merge/main'
 
 workflow PREPROCESSING {
     take:
         crams             // channel: [mandatory] [ meta, cram, crai ] => sample CRAM files and their optional indices
-        beds              // channel: [mandatory] [ meta, callable, roi ] => bed files for callable regions and ROI for WES analysis
+        roi               // channel: [mandatory] [ meta, roi ] => ROI bed files for WES analysis
+        callable          // channel: [mandatory] [ meta, callable ] => callable regions bed files for WES analysis
         fasta             // channel: [mandatory] [ fasta ] => fasta reference
         fasta_fai         // channel: [mandatory] [ fasta_fai ] => fasta reference index
         default_roi       // channel: [optional]  [ roi ] => bed containing regions of interest to be used as default
@@ -84,52 +87,34 @@ workflow PREPROCESSING {
         .dump(tag:'ready_crams', pretty:true)
         .set { ready_crams }
 
-    // //
-    // // Unzip the Gzipped beds
-    // //
+    //
+    // Merge the ROI BED files if there are multiple per sample and merge all overlapping regions
+    //
 
-    // roi
-    //     .branch { meta, bed ->
-    //         gunzipped: bed == [] || bed.getExtension() == "bed"
-    //         gzipped: bed.getExtension() == "gz"
-    //     }
-    //     .set { roi_branch }
+    roi
+        .branch { meta, roi ->
+            is_roi = roi != []
+            found:      is_roi
+            missing:    !is_roi
+        }
+        .set { roi_branch }
 
-    // UNZIP_ROI(
-    //     roi_branch.gzipped
-    // )
+    
+    MERGE_ROI(
+        roi_branch.found.groupTuple() // A specified size isn't needed here since this runs before any process using ROI files is executed
+    )
 
-    // ch_versions = ch_versions.mix(UNZIP_ROI.out.versions)
+    if (default_roi != []) {
+        MERGE_ROI_PARAMS(
 
-    // //
-    // // Merge the BED files if there are multiple per sample
-    // //
+        )
+    }
 
-    // roi_branch.gunzipped
-    //     .mix(UNZIP_ROI.out.output)
-    //     .groupTuple() //TODO add a size here
-    //     .branch(
-    //         { meta, bed ->
-    //             multiple: bed.size() > 1
-    //                 return [meta, bed]
-    //             single:   bed.size() == 1
-    //                 return [meta, bed[0]]
-    //         }
-    //     )
-    //     .set { merge_roi_branch }
 
-    // MERGE_ROI(
-    //     merge_roi_branch.multiple
-    // )
-
-    // ch_versions = ch_versions.mix(MERGE_ROI.out.versions)
-
-    // merge_roi_branch.single
-    //     .mix(MERGE_ROI.out.bed)
-    //     .set { ready_roi }
+    ch_versions = ch_versions.mix(MERGE_ROI.out.versions)
 
     //
-    // Create BED files with bins containing equal amounts of reads
+    // Create BED files with bins containing equal amounts of reads for WGS
     //
 
     ready_crams

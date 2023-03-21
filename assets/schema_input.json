@@ -13,10 +13,6 @@
             "type": "string",
             "meta": "family"
         },
-        "type": {
-            "type": "string",
-            "meta": "type"
-        },
         "cram": {
             "type": "string",
             "pattern": "^\\S+\\.cram$",

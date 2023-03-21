@@ -301,11 +301,10 @@ workflow CMGGGERMLINE {
     SamplesheetConversion.convert(ch_input, file("${projectDir}/assets/schema_input.json", checkIfExists:true))
         .map { meta, cram, crai, callable, roi, ped, truth_vcf, truth_tbi ->
             // Infer the family ID from the PED file if no family ID was given, if no PED is given use the sample ID as family ID
-            // Infer the type of data if none is given. When an ROI BED has been given through params or the samplesheet, the type will be WES, otherwise it will be WGS
-            type = meta.type ?: ""
+            // Infer the type of data (WES or WGS). When a ROI is given through the params or samplesheet, the sample is marked as WES, otherwise it is WGS
             new_meta = meta + [
                 family: meta.family ?: ped ? get_family_id_from_ped(ped) : meta.sample, 
-                type: type.toLowerCase() in ["wgs","wes"] ? type.toLowerCase() : (params.roi || roi) ? "wes" : "wgs" 
+                type: (params.roi || roi) ? "wes" : "wgs" 
             ]
             [ new_meta, cram, crai, callable, roi, ped, truth_vcf, truth_tbi ]
         }
@@ -338,12 +337,14 @@ workflow CMGGGERMLINE {
                 truth_variants: [new_meta, truth_vcf, truth_tbi]
                 cram:           [new_meta, cram, crai]
                 peds:           [new_meta_ped, ped]
-                beds:           [new_meta, callable, roi]
+                roi:            [new_meta, roi]
+                callable:       [new_meta, callable]
             }
         )
         .set { ch_parsed_inputs }
 
-    ch_parsed_inputs.beds.dump(tag:'input_beds', pretty:true)
+    ch_parsed_inputs.roi.dump(tag:'input_roi', pretty:true)
+    ch_parsed_inputs.callable.dump(tag:'input_callable', pretty:true)
     ch_parsed_inputs.truth_variants.dump(tag:'truth_variants', pretty:true)
     ch_parsed_inputs.cram.dump(tag:'input_crams', pretty:true)
     ch_parsed_inputs.peds.dump(tag:'input_peds', pretty:true)
@@ -354,7 +355,8 @@ workflow CMGGGERMLINE {
 
     PREPROCESSING(
         ch_parsed_inputs.cram,
-        ch_parsed_inputs.beds,
+        ch_parsed_inputs.roi,
+        ch_parsed_inputs.callable,
         fasta,
         fasta_fai,
         default_roi
