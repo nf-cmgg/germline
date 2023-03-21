@@ -9,6 +9,7 @@ process SPLIT_BEDS {
 
     input:
     tuple val(meta), path(bed), val(sample_count)
+    val(single_threshold)
 
     output:
     tuple val(meta), path("*.bed")  , emit: beds
@@ -19,15 +20,15 @@ process SPLIT_BEDS {
 
     script:
     def prefix = task.ext.prefix ?: meta.id
-    def threshold = sample_count * 0.3
+    def threshold = sample_count * single_threshold
     // This module will split a BED file created with goleft/indexsplit into 
-    // multiple BED files. All regions that have a scaled data size lower than 0.3 * amount of samples
+    // multiple BED files. All regions that have a scaled data size lower than single_threshold * amount of samples
     // will be merged into one BED file. All regions that have a higher scaled data size
     // will be put into their own BED file. Also all regions with no reads are removed.
     """
     awk -vFS="\t" '{
         if (\$0 ~ /^[^#].*\$/ && \$5 >= 1) {
-            if (\$4 >= ${threshold}) {
+            if (\$4 > ${threshold}) {
                 print \$0 > sprintf("${prefix}_%s_%s_%s.bed", \$1, \$2, \$3)
             } else {
                 print \$0 > "${prefix}_others.bed"

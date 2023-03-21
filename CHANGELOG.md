@@ -11,6 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Bug fixes
 
+## v1.1.2 - Groovy Ghent - [Mar 21 2023]
+
+### New features
+
+1. Added a parameter for setting the splitting depth threshold `--split_threshold FLOAT`
+
+### Changes
+
+1. Change the default splitting threshold to 0.2 instead of 0.3
+
 ## v1.1.1 - Golden Ghent - [Mar 20 2023]
 
 ### Changes

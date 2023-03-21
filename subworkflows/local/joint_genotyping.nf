@@ -53,7 +53,8 @@ workflow JOINT_GENOTYPING {
                 }
             }
             [ meta, bed, meta.family_count ]
-        }
+        },
+        params.split_threshold.toFloat()
     )
     ch_versions = ch_versions.mix(SPLIT_BEDS.out.versions.first())
 
