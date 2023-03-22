@@ -10,14 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Improvements
 
 1. Updated the scattering again: it now follows this workflow:
-    - Sort and merge overlapping intervals of given ROI BED files (WES only)
-    - Create a BED file with callable regions using mosdepth (unless one has been given)
-    - Intersect the callable regions BED with the ROI BED (WES only)
-    - Split the resulting BED file (or the callable regions BED for WGS) into evenly sized BED files (amount is specified with `--scatter_count`)
-    - Run HaplotypeCaller in parallel using these regions
-    - Merge and sort the BED files of all individuals in a family
-    - Split the merged BED file into evenly sized BED files (amount is again specified with `--scatter_count`)
-    - Run GenomicsDBImport and GenotypeGVCFs in parallel using these regions
+   - Sort and merge overlapping intervals of given ROI BED files (WES only)
+   - Create a BED file with callable regions using mosdepth (unless one has been given)
+   - Intersect the callable regions BED with the ROI BED (WES only)
+   - Split the resulting BED file (or the callable regions BED for WGS) into evenly sized BED files (amount is specified with `--scatter_count`)
+   - Run HaplotypeCaller in parallel using these regions
+   - Merge and sort the BED files of all individuals in a family
+   - Split the merged BED file into evenly sized BED files (amount is again specified with `--scatter_count`)
+   - Run GenomicsDBImport and GenotypeGVCFs in parallel using these regions
+
 ### Bug fixes
 
 ## v1.1.2 - Groovy Ghent - [Mar 21 2023]
