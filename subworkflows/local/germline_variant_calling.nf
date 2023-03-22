@@ -7,7 +7,6 @@ include { GATK4_HAPLOTYPECALLER as HAPLOTYPECALLER              } from '../../mo
 include { GATK4_CALIBRATEDRAGSTRMODEL as CALIBRATEDRAGSTRMODEL  } from '../../modules/nf-core/gatk4/calibratedragstrmodel/main'
 include { GATK4_REBLOCKGVCF as REBLOCKGVCF                      } from '../../modules/nf-core/gatk4/reblockgvcf/main'
 include { BCFTOOLS_STATS as BCFTOOLS_STATS_INDIVIDUALS          } from '../../modules/nf-core/bcftools/stats/main'
-include { TABIX_TABIX                                           } from '../../modules/nf-core/tabix/tabix/main'
 
 include { VCF_GATHER_BCFTOOLS                                   } from '../../subworkflows/nf-core/vcf_gather_bcftools/main'
 
@@ -45,27 +44,11 @@ workflow GERMLINE_VARIANT_CALLING {
     //
 
     if (params.use_dragstr_model) {
-        beds
-            .branch { meta, bed ->
-                zip = bed.toString().endsWith(".gz")
-                gunzipped: !zip
-                    return [ meta, bed, [] ]
-                zipped:    zip
-            }
-            .set { beds_branch }
-
-        TABIX_TABIX(
-            beds_branch.zipped
-        )
-        ch_versions = ch_versions.mix(TABIX_TABIX.out.versions.first())
-
-        beds_branch.zipped
-            .join(TABIX_TABIX.out.tbi, failOnDuplicate:true, failOnMismatch:true)
-            .mix(beds_branch.gunzipped)
-            .set { dragstr_beds }
 
         crams
-            .join(dragstr_beds, failOnDuplicate: true, failOnMismatch: true)
+            .map { meta, cram, crai ->
+                [ meta, cram, crai, [], [] ]
+            }
             .dump(tag:'calibratedragstrmodel_input')
             .set { calibratedragstrmodel_input }
 
