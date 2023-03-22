@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Run HaplotypeCaller in parallel using these regions
     - Merge and sort the BED files of all individuals in a family
     - Split the merged BED file into evenly sized BED files (amount is again specified with `--scatter_count`)
-    - Run GenomicsDBImport and GenotypeGVCFs in paralleer using these regions
+    - Run GenomicsDBImport and GenotypeGVCFs in parallel using these regions
 ### Bug fixes
 
 ## v1.1.2 - Groovy Ghent - [Mar 21 2023]
