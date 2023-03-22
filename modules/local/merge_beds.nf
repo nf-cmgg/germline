@@ -29,7 +29,7 @@ process MERGE_BEDS {
         fi
     done;
 
-    awk '{print \$1"\\t"\$2"\\t"\$3 }' */*.bed | sort -k 1,1 -k2,2n | bedtools merge > ${meta.id}.bed
+    awk '{print \$1"\\t"\$2"\\t"\$3 }' */*.bed | sort -k 1,1 -k2,2n | bedtools merge > ${prefix}.bed
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

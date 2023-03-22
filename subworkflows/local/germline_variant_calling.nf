@@ -1,8 +1,8 @@
 //
 // GERMLINE VARIANT CALLING
 //
-include { SPLIT_BEDS                                            } from '../../modules/local/split_beds/main'
 
+include { BEDTOOLS_SPLIT                                        } from '../../modules/nf-core/bedtools/split/main'
 include { GATK4_HAPLOTYPECALLER as HAPLOTYPECALLER              } from '../../modules/nf-core/gatk4/haplotypecaller/main'
 include { GATK4_CALIBRATEDRAGSTRMODEL as CALIBRATEDRAGSTRMODEL  } from '../../modules/nf-core/gatk4/calibratedragstrmodel/main'
 include { GATK4_REBLOCKGVCF as REBLOCKGVCF                      } from '../../modules/nf-core/gatk4/reblockgvcf/main'
@@ -31,24 +31,22 @@ workflow GERMLINE_VARIANT_CALLING {
     // Split BED file into correct regions
     //
 
-    SPLIT_BEDS(
-        beds.map { it + [1] },
-        params.split_threshold.toFloat()
+    BEDTOOLS_SPLIT(
+        beds.map { it + [params.scatter_count]}
     )
-    ch_versions = ch_versions.mix(SPLIT_BEDS.out.versions.first())
+    ch_versions = ch_versions.mix(BEDTOOLS_SPLIT.out.versions.first())
+
+    BEDTOOLS_SPLIT.out.beds
+        .set { split_beds }
 
     //
     // Generate DRAGSTR models
     //
 
     if (params.use_dragstr_model) {
-        crams
-            .join(beds, failOnDuplicate: true, failOnMismatch: true)
-            .dump(tag:'calibratedragstrmodel_input')
-            .set { calibratedragstrmodel_input }
 
         CALIBRATEDRAGSTRMODEL(
-            calibratedragstrmodel_input,
+            crams,
             fasta,
             fasta_fai,
             dict,
@@ -58,13 +56,13 @@ workflow GERMLINE_VARIANT_CALLING {
         ch_versions = ch_versions.mix(CALIBRATEDRAGSTRMODEL.out.versions)
 
         crams
-            .join(SPLIT_BEDS.out.beds, failOnDuplicate: true, failOnMismatch: true)
+            .join(split_beds, failOnDuplicate: true, failOnMismatch: true)
             .join(CALIBRATEDRAGSTRMODEL.out.dragstr_model, failOnDuplicate: true, failOnMismatch: true)
             .set { cram_models }
     }
     else {
         crams
-            .join(SPLIT_BEDS.out.beds, failOnDuplicate: true, failOnMismatch: true)
+            .join(split_beds, failOnDuplicate: true, failOnMismatch: true)
             .set { cram_models }
     }
 
