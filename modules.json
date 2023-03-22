@@ -58,38 +58,38 @@
                     },
                     "gatk4/calibratedragstrmodel": {
                         "branch": "master",
-                        "git_sha": "a252064ec62dc690a59760f7be482d37a02ecd99",
+                        "git_sha": "e73f327f6ef9f77a8e23dcf90340caa01f02954e",
                         "installed_by": ["modules"]
                     },
                     "gatk4/composestrtablefile": {
                         "branch": "master",
-                        "git_sha": "a252064ec62dc690a59760f7be482d37a02ecd99",
+                        "git_sha": "643756685546fa61f5c8fba439af746c090b9180",
                         "installed_by": ["modules"]
                     },
                     "gatk4/createsequencedictionary": {
                         "branch": "master",
-                        "git_sha": "a252064ec62dc690a59760f7be482d37a02ecd99",
+                        "git_sha": "643756685546fa61f5c8fba439af746c090b9180",
                         "installed_by": ["modules"]
                     },
                     "gatk4/genomicsdbimport": {
                         "branch": "master",
-                        "git_sha": "a252064ec62dc690a59760f7be482d37a02ecd99",
+                        "git_sha": "643756685546fa61f5c8fba439af746c090b9180",
                         "installed_by": ["modules"]
                     },
                     "gatk4/genotypegvcfs": {
                         "branch": "master",
-                        "git_sha": "a252064ec62dc690a59760f7be482d37a02ecd99",
+                        "git_sha": "643756685546fa61f5c8fba439af746c090b9180",
                         "installed_by": ["modules"]
                     },
                     "gatk4/haplotypecaller": {
                         "branch": "master",
-                        "git_sha": "a252064ec62dc690a59760f7be482d37a02ecd99",
+                        "git_sha": "643756685546fa61f5c8fba439af746c090b9180",
                         "installed_by": ["modules"],
                         "patch": "modules/nf-core/gatk4/haplotypecaller/gatk4-haplotypecaller.diff"
                     },
                     "gatk4/reblockgvcf": {
                         "branch": "master",
-                        "git_sha": "a252064ec62dc690a59760f7be482d37a02ecd99",
+                        "git_sha": "643756685546fa61f5c8fba439af746c090b9180",
                         "installed_by": ["modules"]
                     },
                     "goleft/indexsplit": {
@@ -114,7 +114,7 @@
                     },
                     "rtgtools/format": {
                         "branch": "master",
-                        "git_sha": "3a1919641c75a83d8b12a43d907b318f694f04b0",
+                        "git_sha": "75027bf77472b1f4fd2cdd7e46f83119dfb0f2c6",
                         "installed_by": ["modules"]
                     },
                     "rtgtools/pedfilter": {

@@ -33,7 +33,7 @@ workflow GERMLINE_VARIANT_CALLING {
     //
 
     BEDTOOLS_SPLIT(
-        beds
+        beds.map { it + [params.scatter_count]}
     )
     ch_versions = ch_versions.mix(BEDTOOLS_SPLIT.out.versions.first())
 
