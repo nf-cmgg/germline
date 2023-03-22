@@ -33,7 +33,8 @@
                     "bedtools/intersect": {
                         "branch": "master",
                         "git_sha": "fc44faec1d7e18da6517a255f82545e368dc2af6",
-                        "installed_by": ["modules"]
+                        "installed_by": ["modules"],
+                        "patch": "modules/nf-core/bedtools/intersect/bedtools-intersect.diff"
                     },
                     "bedtools/merge": {
                         "branch": "master",
@@ -42,7 +43,7 @@
                     },
                     "bedtools/split": {
                         "branch": "master",
-                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
+                        "git_sha": "34402bfb81bf7252a1b1bb1a25b379fbc4c2a9bd",
                         "installed_by": ["modules"]
                     },
                     "custom/dumpsoftwareversions": {
@@ -58,7 +59,7 @@
                     },
                     "gatk4/calibratedragstrmodel": {
                         "branch": "master",
-                        "git_sha": "e73f327f6ef9f77a8e23dcf90340caa01f02954e",
+                        "git_sha": "050f8ebc6403a92db784120a4dd549a090fc1730",
                         "installed_by": ["modules"]
                     },
                     "gatk4/composestrtablefile": {

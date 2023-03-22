@@ -45,15 +45,8 @@ workflow GERMLINE_VARIANT_CALLING {
 
     if (params.use_dragstr_model) {
 
-        crams
-            .map { meta, cram, crai ->
-                [ meta, cram, crai, [], [] ]
-            }
-            .dump(tag:'calibratedragstrmodel_input')
-            .set { calibratedragstrmodel_input }
-
         CALIBRATEDRAGSTRMODEL(
-            calibratedragstrmodel_input,
+            crams,
             fasta,
             fasta_fai,
             dict,
