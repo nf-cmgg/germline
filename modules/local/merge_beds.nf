@@ -25,7 +25,7 @@ process MERGE_BEDS {
     do
         if [[ \$FILE != '*/*.bed.gz' ]]
         then
-            bunzip2 \$FILE
+            gunzip \$FILE
         fi
     done;
 

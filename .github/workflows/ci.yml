@@ -32,7 +32,8 @@ jobs:
           - "annotate_test"
           - "filter_test"
           - "gemini_test"
-          - "full"
+          - "full_wes"
+          - "full_wgs"
     steps:
       - name: Free some space
         run: |

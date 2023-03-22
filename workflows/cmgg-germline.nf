@@ -138,7 +138,7 @@ workflow CMGGGERMLINE {
     strtablefile       = params.strtablefile        ? Channel.fromPath(params.strtablefile).collect()                               : null
     sdf                = params.sdf                 ? Channel.fromPath(params.sdf).map {sdf -> [[id:'reference'], sdf]}.collect()   : null
 
-    default_roi        = params.roi                 ? Channel.fromPath(params.roi).collect()                : Channel.value([[]])
+    default_roi        = params.roi                 ? Channel.fromPath(params.roi).collect()                : []
 
     dbsnp              = params.dbsnp               ? Channel.fromPath(params.dbsnp).collect()              : []
     dbsnp_tbi          = params.dbsnp_tbi           ? Channel.fromPath(params.dbsnp_tbi).collect()          : []
@@ -304,13 +304,13 @@ workflow CMGGGERMLINE {
             // Infer the type of data (WES or WGS). When a ROI is given through the params or samplesheet, the sample is marked as WES, otherwise it is WGS
             new_meta = meta + [
                 family: meta.family ?: ped ? get_family_id_from_ped(ped) : meta.sample, 
-                type: (params.roi || roi) ? "wes" : "wgs" 
             ]
             [ new_meta, cram, crai, callable, roi, ped, truth_vcf, truth_tbi ]
         }
         .tap { ch_raw_inputs }
+        .map { it[0] }
         .distinct()
-        .map { meta, cram, crai, callable, roi, ped, truth_vcf, truth_tbi ->
+        .map { meta ->
             [ meta.family, 1 ]
         }
         .groupTuple()
@@ -460,6 +460,7 @@ workflow CMGGGERMLINE {
     JOINT_GENOTYPING(
         variantcalling_output,
         PREPROCESSING.out.ready_crams,
+        PREPROCESSING.out.ready_beds,
         peds,
         fasta,
         fasta_fai,

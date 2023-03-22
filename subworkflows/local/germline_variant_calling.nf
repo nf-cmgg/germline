@@ -1,12 +1,13 @@
 //
 // GERMLINE VARIANT CALLING
 //
-include { SPLIT_BEDS                                            } from '../../modules/local/split_beds/main'
 
+include { BEDTOOLS_SPLIT                                        } from '../../modules/nf-core/bedtools/split/main'
 include { GATK4_HAPLOTYPECALLER as HAPLOTYPECALLER              } from '../../modules/nf-core/gatk4/haplotypecaller/main'
 include { GATK4_CALIBRATEDRAGSTRMODEL as CALIBRATEDRAGSTRMODEL  } from '../../modules/nf-core/gatk4/calibratedragstrmodel/main'
 include { GATK4_REBLOCKGVCF as REBLOCKGVCF                      } from '../../modules/nf-core/gatk4/reblockgvcf/main'
 include { BCFTOOLS_STATS as BCFTOOLS_STATS_INDIVIDUALS          } from '../../modules/nf-core/bcftools/stats/main'
+include { TABIX_TABIX                                           } from '../../modules/nf-core/tabix/tabix/main'
 
 include { VCF_GATHER_BCFTOOLS                                   } from '../../subworkflows/nf-core/vcf_gather_bcftools/main'
 
@@ -31,19 +32,40 @@ workflow GERMLINE_VARIANT_CALLING {
     // Split BED file into correct regions
     //
 
-    SPLIT_BEDS(
-        beds.map { it + [1] },
-        params.split_threshold.toFloat()
+    BEDTOOLS_SPLIT(
+        beds
     )
-    ch_versions = ch_versions.mix(SPLIT_BEDS.out.versions.first())
+    ch_versions = ch_versions.mix(BEDTOOLS_SPLIT.out.versions.first())
+
+    BEDTOOLS_SPLIT.out.beds
+        .set { split_beds }
 
     //
     // Generate DRAGSTR models
     //
 
     if (params.use_dragstr_model) {
+        beds
+            .branch { meta, bed ->
+                zip = bed.toString().endsWith(".gz")
+                gunzipped: !zip
+                    return [ meta, bed, [] ]
+                zipped:    zip
+            }
+            .set { beds_branch }
+
+        TABIX_TABIX(
+            beds_branch.zipped
+        )
+        ch_versions = ch_versions.mix(TABIX_TABIX.out.versions.first())
+
+        beds_branch.zipped
+            .join(TABIX_TABIX.out.tbi, failOnDuplicate:true, failOnMismatch:true)
+            .mix(beds_branch.gunzipped)
+            .set { dragstr_beds }
+
         crams
-            .join(beds, failOnDuplicate: true, failOnMismatch: true)
+            .join(dragstr_beds, failOnDuplicate: true, failOnMismatch: true)
             .dump(tag:'calibratedragstrmodel_input')
             .set { calibratedragstrmodel_input }
 
@@ -58,13 +80,13 @@ workflow GERMLINE_VARIANT_CALLING {
         ch_versions = ch_versions.mix(CALIBRATEDRAGSTRMODEL.out.versions)
 
         crams
-            .join(SPLIT_BEDS.out.beds, failOnDuplicate: true, failOnMismatch: true)
+            .join(split_beds, failOnDuplicate: true, failOnMismatch: true)
             .join(CALIBRATEDRAGSTRMODEL.out.dragstr_model, failOnDuplicate: true, failOnMismatch: true)
             .set { cram_models }
     }
     else {
         crams
-            .join(SPLIT_BEDS.out.beds, failOnDuplicate: true, failOnMismatch: true)
+            .join(split_beds, failOnDuplicate: true, failOnMismatch: true)
             .set { cram_models }
     }
 

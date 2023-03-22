@@ -32,11 +32,15 @@
                     },
                     "bedtools/intersect": {
                         "branch": "master",
-                        "git_sha": "e576ba52f6babb06cd7946c286e5bb4f494ee02c",
-                        "installed_by": ["modules"],
-                        "patch": "modules/nf-core/bedtools/intersect/bedtools-intersect.diff"
+                        "git_sha": "fc44faec1d7e18da6517a255f82545e368dc2af6",
+                        "installed_by": ["modules"]
                     },
                     "bedtools/merge": {
+                        "branch": "master",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
+                        "installed_by": ["modules"]
+                    },
+                    "bedtools/split": {
                         "branch": "master",
                         "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
@@ -96,6 +100,11 @@
                     "happy/happy": {
                         "branch": "master",
                         "git_sha": "0f8a77ff00e65eaeebc509b8156eaa983192474b",
+                        "installed_by": ["modules"]
+                    },
+                    "mosdepth": {
+                        "branch": "master",
+                        "git_sha": "783cc040350dbee673fd57f6a6300aea3d085b7c",
                         "installed_by": ["modules"]
                     },
                     "multiqc": {

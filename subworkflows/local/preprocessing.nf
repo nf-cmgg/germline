@@ -7,11 +7,10 @@ include { MERGE_BEDS as MERGE_ROI_SAMPLE    } from '../../modules/local/merge_be
 include { SAMTOOLS_MERGE                    } from '../../modules/local/samtools_merge'
 
 include { SAMTOOLS_INDEX                    } from '../../modules/nf-core/samtools/index/main'
-include { GOLEFT_INDEXSPLIT                 } from '../../modules/nf-core/goleft/indexsplit/main'
+include { TABIX_TABIX                       } from '../../modules/nf-core/tabix/tabix/main'
 include { TABIX_BGZIP as UNZIP_ROI          } from '../../modules/nf-core/tabix/bgzip/main'
-include { TABIX_BGZIP as UNZIP_CALLABLE     } from '../../modules/nf-core/tabix/bgzip/main'
 include { BEDTOOLS_INTERSECT                } from '../../modules/nf-core/bedtools/intersect/main'
-include { BEDTOOLS_MERGE                    } from '../../modules/nf-core/bedtools/merge/main'
+include { MOSDEPTH                          } from '../../modules/nf-core/mosdepth/main'
 
 workflow PREPROCESSING {
     take:
@@ -88,90 +87,114 @@ workflow PREPROCESSING {
         .set { ready_crams }
 
     //
-    // Merge the ROI BED files if there are multiple per sample and merge all overlapping regions
+    // Preprocess the ROI BED files => merge overlapping 
     //
 
     roi
+        .groupTuple() // A specified size isn't needed here since this runs before any process using ROI files is executed
         .branch { meta, roi ->
-            is_roi = roi != []
+            // Determine whether or not there is an ROI file given to the current sample
+            // It's possible that a sample is given multiple times in the samplesheet, in which
+            // case they have been merged earlier. This code checks if at least one entry of the same
+            // sample contains an ROI file
+            is_roi = false
+            output_roi = []
+            for( entry : roi) {
+                if(entry != []){
+                    output_roi.add(entry)
+                    is_roi = true
+                }
+            }
             found:      is_roi
+                return [ meta, output_roi ]
             missing:    !is_roi
+                return [ meta, [] ]
         }
         .set { roi_branch }
 
-    
-    MERGE_ROI(
-        roi_branch.found.groupTuple() // A specified size isn't needed here since this runs before any process using ROI files is executed
+    // Merge the ROI BED files if multiple samples are given, also merges overlapping regions in the BED files
+    MERGE_ROI_SAMPLE(
+        roi_branch.found
     )
+    ch_versions = ch_versions.mix(MERGE_ROI_SAMPLE.out.versions.first())
 
-    if (default_roi != []) {
+    // Add the default ROI file to all samples without an ROI file 
+    // if an ROI BED file has been given through the --roi parameter
+    if (default_roi) {
         MERGE_ROI_PARAMS(
-
+            default_roi.map { [[id:"default_roi"], it]}
         )
+        ch_versions = ch_versions.mix(MERGE_ROI_PARAMS.out.versions)
+
+        roi_branch.missing
+            .groupTuple() // A specified size isn't needed here since this runs before any process using the default ROI file is executed
+            .combine(MERGE_ROI_PARAMS.out.bed.map { it[1] })
+            .map { meta, missing, default_roi ->
+                [ meta, default_roi ]
+            }
+            .set { missing_rois }
+    } else {
+        roi_branch.missing.set { missing_rois }
     }
 
-
-    ch_versions = ch_versions.mix(MERGE_ROI.out.versions)
+    // Mix the default ROI with the sample-specific ROI files
+    // and determine whether the sample is WES or WGS (aka whether they 
+    // have an ROI file or not)
+    missing_rois
+        .mix(MERGE_ROI_SAMPLE.out.bed)
+        .join(callable, failOnMismatch:true, failOnDuplicate:true)
+        .set { ready_rois }
 
     //
-    // Create BED files with bins containing equal amounts of reads for WGS
+    // Create callable regions if they don't exist
     //
 
-    ready_crams
-        .map { meta, cram, crai ->
-            [ meta, crai ]
+    // Check if a BED with callable regions has been given for each sample
+    ready_rois
+        .branch { meta, roi, callable ->
+            present:        callable
+            not_present:    !callable
         }
-        .set { indexsplit_input }
+        .set { callable_branch }
 
-    GOLEFT_INDEXSPLIT(
-        indexsplit_input,
-        fasta_fai.map { [[], it] },
-        params.scatter_count
+    // Create BEDs with callable regions using Mosdepth
+    callable_branch.not_present
+        .join(ready_crams, failOnDuplicate:true, failOnMismatch:true)
+        .map { meta, roi, callable, cram, crai ->
+            [ meta, cram, crai, roi ]
+        }
+        .set { mosdepth_input }
+
+    MOSDEPTH(
+        mosdepth_input,
+        fasta.map { [[], it] }
     )
+    ch_versions = ch_versions.mix(MOSDEPTH.out.versions.first())
 
-    ch_versions = ch_versions.mix(GOLEFT_INDEXSPLIT.out.versions)
-    GOLEFT_INDEXSPLIT.out.bed
-        .map { meta, bed ->
-            if(workflow.stubRun){
-                regions = (1..params.scatter_count).each {
-                    start = 100*it
-                    bed << "chr22\t${start}\t${start+50}\t0.5\t200\n"
-                }
-            }
-            [ meta, bed ]
+    // Join all channels back together
+    MOSDEPTH.out.quantized_bed
+        .join(callable_branch.not_present, failOnDuplicate:true, failOnMismatch:true)
+        .map { meta, new_callable, roi, callable ->
+            [ meta, roi, new_callable ]
         }
+        .mix(callable_branch.present)
+        .branch { meta, roi, callable ->
+            roi:    roi
+            no_roi: !roi
+                return [ meta, callable ]
+        }
+        .set { beds_to_intersect }
+
+    // Intersect the ROI with the callable regions
+    BEDTOOLS_INTERSECT(
+        beds_to_intersect.roi,
+        fasta_fai.map { [[], it] }
+    )
+    ch_versions = ch_versions.mix(BEDTOOLS_INTERSECT.out.versions)
+
+    beds_to_intersect.no_roi
+        .mix(BEDTOOLS_INTERSECT.out.intersect)
         .set { ready_beds }
-
-    // //
-    // // Intersect the ROI BEDs and binned region BEDs
-    // //
-
-    // ready_roi
-    //     .join(GOLEFT_INDEXSPLIT.out.bed)
-    //     .combine(default_roi)
-    //     .branch { meta, roi, bed, default_roi ->
-    //         out_roi = roi ?: default_roi ?: []
-    //         intersect: out_roi != []
-    //             return [ meta, out_roi, bed ]
-    //         no_intersect: out_roi == []
-    //             return [ meta, bed ]
-    //     }
-    //     .set { intersect_branch }
-
-    // BEDTOOLS_INTERSECT(
-    //     intersect_branch.intersect,
-    //     "bed"
-    // )
-    // ch_versions = ch_versions.mix(BEDTOOLS_INTERSECT.out.versions)
-
-    // BEDTOOLS_MERGE(
-    //     BEDTOOLS_INTERSECT.out.intersect
-    // )
-    // ch_versions = ch_versions.mix(BEDTOOLS_MERGE.out.versions)
-
-    // intersect_branch.no_intersect
-    //     .mix(BEDTOOLS_MERGE.out.bed)
-    //     .set { ready_beds }
 
     emit:
     ready_crams

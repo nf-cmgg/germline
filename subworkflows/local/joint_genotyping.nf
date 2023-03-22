@@ -3,11 +3,10 @@
 //
 
 include { MERGE_BEDS                                 } from '../../modules/local/merge_beds'
-include { SPLIT_BEDS                                 } from '../../modules/local/split_beds/main'
 
 include { GATK4_GENOMICSDBIMPORT as GENOMICSDBIMPORT } from '../../modules/nf-core/gatk4/genomicsdbimport/main'
 include { GATK4_GENOTYPEGVCFS as GENOTYPE_GVCFS      } from '../../modules/nf-core/gatk4/genotypegvcfs/main'
-include { GOLEFT_INDEXSPLIT                          } from '../../modules/nf-core/goleft/indexsplit/main'
+include { BEDTOOLS_SPLIT                             } from '../../modules/nf-core/bedtools/split/main'
 
 include { VCF_GATHER_BCFTOOLS                        } from '../../subworkflows/nf-core/vcf_gather_bcftools/main'
 
@@ -15,6 +14,7 @@ workflow JOINT_GENOTYPING {
     take:
         gvcfs               // channel: [mandatory] [ meta, gvcf, tbi ] => The fresh GVCFs called with HaplotypeCaller
         crams               // channel: [mandatory] [ meta, cram, crai ] => The CRAM files of the individuals
+        beds                // channel: [mandatory] [ meta, bed ] => The BED files of the individuals
         peds                // channel: [mandatory] [ meta, peds ] => The pedigree files for the samples
         fasta               // channel: [mandatory] [ fasta ] => fasta reference
         fasta_fai           // channel: [mandatory] [ fasta_fai ] => fasta reference index
@@ -24,39 +24,28 @@ workflow JOINT_GENOTYPING {
 
     ch_versions         = Channel.empty()
 
-    crams
-        .map { meta, cram, crai ->
+    beds
+        .map { meta, bed ->
                 new_meta = [
                     family:         meta.family,
                     id:             meta.family,
                     family_count:   meta.family_count
                 ]
-                [ groupKey(new_meta, meta.family_count.toInteger()), crai ]
+                [ groupKey(new_meta, meta.family_count.toInteger()), bed ]
             }
         .groupTuple()
-        .dump(tag:'genotype_goleft_input', pretty: true)
-        .set { goleft_input }
+        .dump(tag:'merge_beds_input', pretty: true)
+        .set { merge_beds_input }
 
-    GOLEFT_INDEXSPLIT(
-        goleft_input,
-        fasta_fai.map { [ [], it ]},
-        params.scatter_count
+    MERGE_BEDS(
+        merge_beds_input,
     )
-    ch_versions = ch_versions.mix(GOLEFT_INDEXSPLIT.out.versions)
+    ch_versions = ch_versions.mix(MERGE_BEDS.out.versions.first())
 
-    SPLIT_BEDS(
-        GOLEFT_INDEXSPLIT.out.bed.map { meta, bed ->
-            if(workflow.stubRun){
-                (1..params.scatter_count).each {
-                    start = 100*it
-                    bed << "chr22\t${start}\t${start+50}\t0.5\t1\n"
-                }
-            }
-            [ meta, bed, meta.family_count ]
-        },
-        params.split_threshold.toFloat()
+    BEDTOOLS_SPLIT(
+        MERGE_BEDS.out.bed
     )
-    ch_versions = ch_versions.mix(SPLIT_BEDS.out.versions.first())
+    ch_versions = ch_versions.mix(BEDTOOLS_SPLIT.out.versions.first())
 
     gvcfs
         .map(
@@ -70,7 +59,7 @@ workflow JOINT_GENOTYPING {
             }
         )
         .groupTuple()
-        .join(SPLIT_BEDS.out.beds, failOnDuplicate: true, failOnMismatch: true)
+        .join(BEDTOOLS_SPLIT.out.beds, failOnDuplicate: true, failOnMismatch: true)
         .map { meta, gvcfs, tbis, beds ->
             bed_is_list = beds instanceof ArrayList
             new_meta = meta + [region_count: bed_is_list ? beds.size() : 1]
