@@ -47,6 +47,11 @@
             "type": "string",
             "pattern": "^\\S+\\.tbi$",
             "format": "file-path"
+        },
+        "truth_bed": {
+            "type": "string",
+            "pattern": "^\\S+\\.bed$",
+            "format": "file-path"
         }
     },
     "required": ["sample", "cram"]

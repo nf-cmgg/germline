@@ -299,13 +299,13 @@ workflow CMGGGERMLINE {
     //
 
     SamplesheetConversion.convert(ch_input, file("${projectDir}/assets/schema_input.json", checkIfExists:true))
-        .map { meta, cram, crai, callable, roi, ped, truth_vcf, truth_tbi ->
+        .map { meta, cram, crai, callable, roi, ped, truth_vcf, truth_tbi, truth_bed ->
             // Infer the family ID from the PED file if no family ID was given, if no PED is given use the sample ID as family ID
             // Infer the type of data (WES or WGS). When a ROI is given through the params or samplesheet, the sample is marked as WES, otherwise it is WGS
             new_meta = meta + [
                 family: meta.family ?: ped ? get_family_id_from_ped(ped) : meta.sample, 
             ]
-            [ new_meta, cram, crai, callable, roi, ped, truth_vcf, truth_tbi ]
+            [ new_meta, cram, crai, callable, roi, ped, truth_vcf, truth_tbi, truth_bed ]
         }
         .tap { ch_raw_inputs }
         .map { it[0] }
@@ -320,12 +320,12 @@ workflow CMGGGERMLINE {
         }
         .combine(
             ch_raw_inputs
-                .map { meta, cram, crai, callable, roi, ped, truth_vcf, truth_tbi ->
-                    [ meta.family, meta, cram, crai, callable, roi, ped, truth_vcf, truth_tbi ]
+                .map { meta, cram, crai, callable, roi, ped, truth_vcf, truth_tbi, truth_bed ->
+                    [ meta.family, meta, cram, crai, callable, roi, ped, truth_vcf, truth_tbi, truth_bed ]
                 }
         , by:0)
         .multiMap(
-            { family, family_count, meta, cram, crai, callable, roi, ped, truth_vcf, truth_tbi ->
+            { family, family_count, meta, cram, crai, callable, roi, ped, truth_vcf, truth_tbi, truth_bed ->
                 new_meta_ped = [
                     id:             meta.family,
                     family:         meta.family,
@@ -334,7 +334,7 @@ workflow CMGGGERMLINE {
 
                 new_meta = meta + [family_count:family_count]
 
-                truth_variants: [new_meta, truth_vcf, truth_tbi]
+                truth_variants: [new_meta, truth_vcf, truth_tbi, truth_bed]
                 cram:           [new_meta, cram, crai]
                 peds:           [new_meta_ped, ped]
                 roi:            [new_meta, roi]
@@ -405,41 +405,39 @@ workflow CMGGGERMLINE {
     if (params.validate){
 
         variantcalling_output
-            .join(PREPROCESSING.out.ready_beds, failOnDuplicate: true, failOnMismatch: true)
             .join(ch_parsed_inputs.truth_variants, failOnDuplicate: true, failOnMismatch: true)
-            .filter { meta, vcf, tbi, bed, truth_vcf, truth_tbi ->
+            .filter { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ->
                 truth_vcf != []
             }
-            .multiMap { meta, vcf, tbi, bed, truth_vcf, truth_tbi ->
-                vcf: [ meta, vcf, tbi, truth_vcf, truth_tbi ]
-                bed: [ meta, [], bed ]
-            }
-            .set { validation_input }
-
-        validation_input.vcf
-            .branch { meta, vcf, tbi, truth_vcf, truth_tbi ->
+            .branch { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ->
                 tbi: truth_tbi != []
                 no_tbi: truth_tbi == []
             }
             .set { validation_branch }
 
         TABIX_TRUTH(
-            validation_branch.no_tbi.map { meta, vcf, tbi, truth_vcf, truth_tbi -> [ meta, truth_vcf ]}
+            validation_branch.no_tbi.map { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed -> 
+                [ meta, truth_vcf ]
+            }
         )
 
         ch_versions = ch_versions.mix(TABIX_TRUTH.out.versions)
 
         validation_branch.no_tbi
             .join(TABIX_TRUTH.out.tbi, failOnDuplicate: true, failOnMismatch: true) 
-            .map { meta, vcf, tbi, truth_vcf, empty_tbi, truth_tbi ->
-                [ meta, vcf, tbi, truth_vcf, truth_tbi ]
+            .map { meta, vcf, tbi, truth_vcf, empty_tbi, truth_bed, truth_tbi ->
+                [ meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ]
             }
             .mix(validation_branch.tbi)
-            .set { validation_vcfs }
+            .multiMap { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ->
+                vcfs: [meta, vcf, tbi, truth_vcf, truth_tbi]
+                bed:  [meta, truth_bed, []]
+            }
+            .set { validation_input }
 
         // TODO: add support for truth regions when happy works
         VCF_VALIDATE_SMALL_VARIANTS(
-            validation_vcfs,
+            validation_input.vcfs,
             validation_input.bed,
             fasta.map { [[], it] },
             fasta_fai.map { [[], it] },
