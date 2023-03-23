@@ -425,7 +425,7 @@ workflow CMGGGERMLINE {
 
         validation_branch.no_tbi
             .join(TABIX_TRUTH.out.tbi, failOnDuplicate: true, failOnMismatch: true) 
-            .map { meta, vcf, tbi, truth_vcf, empty_tbi, truth_tbi, truth_bed ->
+            .map { meta, vcf, tbi, truth_vcf, empty_tbi, truth_bed, truth_tbi ->
                 [ meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ]
             }
             .mix(validation_branch.tbi)
