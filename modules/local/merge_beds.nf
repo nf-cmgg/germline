@@ -39,7 +39,7 @@ process MERGE_BEDS {
 
     stub:
     """
-    touch ${meta.id}.bed
+    touch ${prefix}.bed
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

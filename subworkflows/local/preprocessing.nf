@@ -5,6 +5,7 @@
 include { MERGE_BEDS as MERGE_ROI_PARAMS    } from '../../modules/local/merge_beds'
 include { MERGE_BEDS as MERGE_ROI_SAMPLE    } from '../../modules/local/merge_beds'
 include { SAMTOOLS_MERGE                    } from '../../modules/local/samtools_merge'
+include { FILTER_BEDS                       } from '../../modules/local/filter_beds/main'
 
 include { SAMTOOLS_INDEX                    } from '../../modules/nf-core/samtools/index/main'
 include { TABIX_TABIX                       } from '../../modules/nf-core/tabix/tabix/main'
@@ -178,10 +179,21 @@ workflow PREPROCESSING {
             [ meta, roi, new_callable ]
         }
         .mix(callable_branch.present)
-        .branch { meta, roi, callable ->
+        .set { beds_to_filter }
+
+    // Filter out the regions with no coverage
+    FILTER_BEDS(
+        beds_to_filter.map { meta, roi, callable -> [ meta, callable ]}
+    )
+    ch_versions = ch_versions.mix(FILTER_BEDS.out.versions)
+
+    FILTER_BEDS.out.bed
+        .join(beds_to_filter, failOnDuplicate:true, failOnMismatch:true)
+        .branch { meta, filtered_callable, roi, callable ->
             roi:    roi
+                return [ meta, roi, filtered_callable]
             no_roi: !roi
-                return [ meta, callable ]
+                return [ meta, filtered_callable ]
         }
         .set { beds_to_intersect }
 
