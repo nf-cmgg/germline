@@ -23,6 +23,16 @@
             "pattern": "^\\S+\\.crai$",
             "format": "file-path"
         },
+        "gvcf": {
+            "type": "string",
+            "pattern": "^\\S+vcf(.gz)?$",
+            "format": "file-path"
+        },
+        "tbi": {
+            "type": "string",
+            "pattern": "^\\S+\\.tbi$",
+            "format": "file-path"
+        },
         "callable": {
             "type": "string",
             "pattern": "^\\S+\\.bed(\\.gz)?$",
@@ -54,5 +64,5 @@
             "format": "file-path"
         }
     },
-    "required": ["sample", "cram"]
+    "required": ["sample"]
 }
