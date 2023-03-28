@@ -13,7 +13,6 @@ include { VCF_GATHER_BCFTOOLS                        } from '../../subworkflows/
 workflow JOINT_GENOTYPING {
     take:
         gvcfs               // channel: [mandatory] [ meta, gvcf, tbi ] => The fresh GVCFs called with HaplotypeCaller
-        crams               // channel: [mandatory] [ meta, cram, crai ] => The CRAM files of the individuals
         beds                // channel: [mandatory] [ meta, bed ] => The BED files of the individuals
         peds                // channel: [mandatory] [ meta, peds ] => The pedigree files for the samples
         fasta               // channel: [mandatory] [ fasta ] => fasta reference
