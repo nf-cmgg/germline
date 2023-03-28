@@ -441,7 +441,7 @@ workflow CMGGGERMLINE {
             validation_input.bed,
             fasta.map { [[], it] },
             fasta_fai.map { [[], it] },
-            sdf,
+            sdf.collect(),
             [[],[]],
             [[],[]],
             [[],[]],
