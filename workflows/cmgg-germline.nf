@@ -133,6 +133,7 @@ workflow CMGGGERMLINE {
     //
     // Importing the input files
     //
+
     fasta              = Channel.fromPath(params.fasta).collect()
     fasta_fai          = params.fai                 ? Channel.fromPath(params.fai).collect()                                        : null
     dict               = params.dict                ? Channel.fromPath(params.dict).collect()                                       : null
