@@ -105,6 +105,7 @@ include { GATK4_CREATESEQUENCEDICTIONARY as CREATESEQUENCEDICTIONARY } from '../
 include { GATK4_COMPOSESTRTABLEFILE as COMPOSESTRTABLEFILE           } from '../modules/nf-core/gatk4/composestrtablefile/main'
 include { RTGTOOLS_FORMAT                                            } from '../modules/nf-core/rtgtools/format/main'
 include { UNTAR                                                      } from '../modules/nf-core/untar/main'
+include { GATK4_REBLOCKGVCF as REBLOCKGVCF                           } from '../modules/nf-core/gatk4/reblockgvcf/main'
 include { TABIX_TABIX as TABIX_DBSNP                                 } from '../modules/nf-core/tabix/tabix/main'
 include { TABIX_TABIX as TABIX_TRUTH                                 } from '../modules/nf-core/tabix/tabix/main'
 include { TABIX_TABIX as TABIX_GVCF                                  } from '../modules/nf-core/tabix/tabix/main'
@@ -424,8 +425,25 @@ workflow CMGGGERMLINE {
     ch_reports  = ch_reports.mix(GERMLINE_VARIANT_CALLING.out.reports)
 
     GERMLINE_VARIANT_CALLING.out.gvcfs
-        .dump(tag:'variantcalling_output', pretty:true)
         .mix(ready_gvcfs)
+        .set { reblockgvcf_input }
+
+    //
+    // Reblock the single sample GVCF files
+    //
+
+    REBLOCKGVCF(
+        reblockgvcf_input.map { it + [[]] },
+        fasta,
+        fasta_fai,
+        dict,
+        dbsnp,
+        dbsnp_tbi
+    )
+
+    ch_versions = ch_versions.mix(REBLOCKGVCF.out.versions)
+    REBLOCKGVCF.out.vcf
+        .dump(tag:'variantcalling_output', pretty:true)
         .set { variantcalling_output }
 
     //
