@@ -32,7 +32,7 @@
                     },
                     "bedtools/intersect": {
                         "branch": "master",
-                        "git_sha": "fc44faec1d7e18da6517a255f82545e368dc2af6",
+                        "git_sha": "da46ad4dfd38229e1514a81d3128ec7c30206f5c",
                         "installed_by": ["modules"],
                         "patch": "modules/nf-core/bedtools/intersect/bedtools-intersect.diff"
                     },
