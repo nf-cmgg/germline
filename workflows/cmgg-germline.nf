@@ -81,7 +81,7 @@ multiqc_logo        = params.multiqc_logo   ? file(params.multiqc_logo, checkIfE
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
 
-include { PREPROCESSING                 } from '../subworkflows/local/preprocessing'
+include { SAMPLE_PREPARATION            } from '../subworkflows/local/sample_preparation'
 include { GERMLINE_VARIANT_CALLING      } from '../subworkflows/local/germline_variant_calling'
 include { JOINT_GENOTYPING              } from '../subworkflows/local/joint_genotyping'
 include { ANNOTATION                    } from '../subworkflows/local/annotation'
@@ -107,6 +107,7 @@ include { RTGTOOLS_FORMAT                                            } from '../
 include { UNTAR                                                      } from '../modules/nf-core/untar/main'
 include { TABIX_TABIX as TABIX_DBSNP                                 } from '../modules/nf-core/tabix/tabix/main'
 include { TABIX_TABIX as TABIX_TRUTH                                 } from '../modules/nf-core/tabix/tabix/main'
+include { TABIX_TABIX as TABIX_GVCF                                  } from '../modules/nf-core/tabix/tabix/main'
 include { BCFTOOLS_FILTER as FILTER_SNPS                             } from '../modules/nf-core/bcftools/filter/main'
 include { BCFTOOLS_FILTER as FILTER_INDELS                           } from '../modules/nf-core/bcftools/filter/main'
 include { BCFTOOLS_STATS as BCFTOOLS_STATS_FAMILY                    } from '../modules/nf-core/bcftools/stats/main'
@@ -132,6 +133,7 @@ workflow CMGGGERMLINE {
     //
     // Importing the input files
     //
+
     fasta              = Channel.fromPath(params.fasta).collect()
     fasta_fai          = params.fai                 ? Channel.fromPath(params.fai).collect()                                        : null
     dict               = params.dict                ? Channel.fromPath(params.dict).collect()                                       : null
@@ -299,13 +301,17 @@ workflow CMGGGERMLINE {
     //
 
     SamplesheetConversion.convert(ch_input, file("${projectDir}/assets/schema_input.json", checkIfExists:true))
-        .map { meta, cram, crai, callable, roi, ped, truth_vcf, truth_tbi, truth_bed ->
+        .map { meta, cram, crai, gvcf, tbi, callable, roi, ped, truth_vcf, truth_tbi, truth_bed ->
             // Infer the family ID from the PED file if no family ID was given, if no PED is given use the sample ID as family ID
             // Infer the type of data (WES or WGS). When a ROI is given through the params or samplesheet, the sample is marked as WES, otherwise it is WGS
+            if( gvcf && !(cram || callable)) {
+                error("[Samplesheet Error] Sample ${meta.id}: When providing a GVCF as input you should also provide the CRAM file or callable regions BED file.")
+            }
+            
             new_meta = meta + [
                 family: meta.family ?: ped ? get_family_id_from_ped(ped) : meta.sample, 
             ]
-            [ new_meta, cram, crai, callable, roi, ped, truth_vcf, truth_tbi, truth_bed ]
+            [ new_meta, cram, crai, gvcf, tbi, callable, roi, ped, truth_vcf, truth_tbi, truth_bed ]
         }
         .tap { ch_raw_inputs }
         .map { it[0] }
@@ -320,21 +326,25 @@ workflow CMGGGERMLINE {
         }
         .combine(
             ch_raw_inputs
-                .map { meta, cram, crai, callable, roi, ped, truth_vcf, truth_tbi, truth_bed ->
-                    [ meta.family, meta, cram, crai, callable, roi, ped, truth_vcf, truth_tbi, truth_bed ]
+                .map { meta, cram, crai, gvcf, tbi, callable, roi, ped, truth_vcf, truth_tbi, truth_bed ->
+                    [ meta.family, meta, cram, crai, gvcf, tbi, callable, roi, ped, truth_vcf, truth_tbi, truth_bed ]
                 }
         , by:0)
         .multiMap(
-            { family, family_count, meta, cram, crai, callable, roi, ped, truth_vcf, truth_tbi, truth_bed ->
+            { family, family_count, meta, cram, crai, gvcf, tbi, callable, roi, ped, truth_vcf, truth_tbi, truth_bed ->
                 new_meta_ped = [
                     id:             meta.family,
                     family:         meta.family,
-                    family_count:   family_count
+                    family_count:   family_count,
                 ]
 
-                new_meta = meta + [family_count:family_count]
+                new_meta = meta + [
+                    family_count:   family_count,
+                    type:           gvcf ? "gvcf" : "cram"
+                ]
 
                 truth_variants: [new_meta, truth_vcf, truth_tbi, truth_bed]
+                gvcf:           [new_meta, gvcf, tbi]
                 cram:           [new_meta, cram, crai]
                 peds:           [new_meta_ped, ped]
                 roi:            [new_meta, roi]
@@ -343,17 +353,37 @@ workflow CMGGGERMLINE {
         )
         .set { ch_parsed_inputs }
 
+    ch_parsed_inputs.gvcf.dump(tag:'input_gvcf', pretty:true)
     ch_parsed_inputs.roi.dump(tag:'input_roi', pretty:true)
     ch_parsed_inputs.callable.dump(tag:'input_callable', pretty:true)
     ch_parsed_inputs.truth_variants.dump(tag:'truth_variants', pretty:true)
     ch_parsed_inputs.cram.dump(tag:'input_crams', pretty:true)
     ch_parsed_inputs.peds.dump(tag:'input_peds', pretty:true)
 
+    ch_parsed_inputs.gvcf
+        .filter { it[0].type == "gvcf" }
+        .branch { meta, gvcf, tbi ->
+            no_tbi: !tbi
+                return [ meta, gvcf ]
+            tbi:    tbi
+                return [ meta, gvcf, tbi ]
+        }
+        .set { gvcf_branch }
+
+    TABIX_GVCF(
+        gvcf_branch.no_tbi
+    )
+
+    gvcf_branch.no_tbi
+        .join(TABIX_GVCF.out.tbi, failOnDuplicate:true, failOnMismatch:true)
+        .mix(gvcf_branch.tbi)
+        .set { ready_gvcfs }
+
     //
-    // Run sample preprocessing
+    // Run sample preparation
     //
 
-    PREPROCESSING(
+    SAMPLE_PREPARATION(
         ch_parsed_inputs.cram,
         ch_parsed_inputs.roi,
         ch_parsed_inputs.callable,
@@ -362,7 +392,7 @@ workflow CMGGGERMLINE {
         default_roi
     )
 
-    ch_versions = ch_versions.mix(PREPROCESSING.out.versions)
+    ch_versions = ch_versions.mix(SAMPLE_PREPARATION.out.versions)
 
     ch_parsed_inputs.peds
         .distinct()
@@ -381,8 +411,8 @@ workflow CMGGGERMLINE {
     //
 
     GERMLINE_VARIANT_CALLING(
-        PREPROCESSING.out.ready_crams,
-        PREPROCESSING.out.ready_beds,
+        SAMPLE_PREPARATION.out.ready_crams.filter { it[0].type == "cram" },
+        SAMPLE_PREPARATION.out.ready_beds.filter { it[0].type == "cram" },
         fasta,
         fasta_fai,
         dict,
@@ -395,6 +425,7 @@ workflow CMGGGERMLINE {
     ch_reports  = ch_reports.mix(GERMLINE_VARIANT_CALLING.out.reports)
 
     GERMLINE_VARIANT_CALLING.out.gvcfs
+        .mix(ready_gvcfs)
         .dump(tag:'variantcalling_output', pretty:true)
         .set { variantcalling_output }
 
@@ -457,8 +488,7 @@ workflow CMGGGERMLINE {
 
     JOINT_GENOTYPING(
         variantcalling_output,
-        PREPROCESSING.out.ready_crams,
-        PREPROCESSING.out.ready_beds,
+        SAMPLE_PREPARATION.out.ready_beds,
         peds,
         fasta,
         fasta_fai,

@@ -137,11 +137,6 @@
                     "default": 40,
                     "description": "The amount of scattering that should happen per sample. Increase this number to increase the pipeline run speed, but at the tradeoff of using more IO and disk space. The actual scatter value can differ a bit (usually not a bigger difference than 1) when using alt contigs in the reference."
                 },
-                "split_threshold": {
-                    "type": "number",
-                    "default": 0.2,
-                    "description": "The exclusive threshold to use when defining whether a region has very low depth. This value is used to concatenate all small, low depth regions for WGS"
-                },
                 "species": {
                     "type": "string",
                     "default": "homo_sapiens",
@@ -187,7 +182,7 @@
                     "type": "boolean",
                     "description": "Whether or not the DRAGSTR models should be used",
                     "fa_icon": "fas fa-question-circle",
-                    "default": true
+                    "default": false
                 },
                 "dbsnp": {
                     "type": "string",

@@ -1,5 +1,5 @@
 //
-// PREPROCESSING
+// SAMPLE_PREPARATION
 //
 
 include { MERGE_BEDS as MERGE_ROI_PARAMS    } from '../../modules/local/merge_beds'
@@ -13,7 +13,7 @@ include { TABIX_BGZIP as UNZIP_ROI          } from '../../modules/nf-core/tabix/
 include { BEDTOOLS_INTERSECT                } from '../../modules/nf-core/bedtools/intersect/main'
 include { MOSDEPTH                          } from '../../modules/nf-core/mosdepth/main'
 
-workflow PREPROCESSING {
+workflow SAMPLE_PREPARATION {
     take:
         crams             // channel: [mandatory] [ meta, cram, crai ] => sample CRAM files and their optional indices
         roi               // channel: [mandatory] [ meta, roi ] => ROI bed files for WES analysis
@@ -32,6 +32,9 @@ workflow PREPROCESSING {
     //
 
     crams
+        .filter { meta, cram, crai ->
+            cram != []
+        }
         .groupTuple()
         .branch(
             { meta, cram, crai ->

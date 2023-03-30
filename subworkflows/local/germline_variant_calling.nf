@@ -5,7 +5,6 @@
 include { BEDTOOLS_SPLIT                                        } from '../../modules/nf-core/bedtools/split/main'
 include { GATK4_HAPLOTYPECALLER as HAPLOTYPECALLER              } from '../../modules/nf-core/gatk4/haplotypecaller/main'
 include { GATK4_CALIBRATEDRAGSTRMODEL as CALIBRATEDRAGSTRMODEL  } from '../../modules/nf-core/gatk4/calibratedragstrmodel/main'
-include { GATK4_REBLOCKGVCF as REBLOCKGVCF                      } from '../../modules/nf-core/gatk4/reblockgvcf/main'
 include { BCFTOOLS_STATS as BCFTOOLS_STATS_INDIVIDUALS          } from '../../modules/nf-core/bcftools/stats/main'
 
 include { VCF_GATHER_BCFTOOLS                                   } from '../../subworkflows/nf-core/vcf_gather_bcftools/main'
@@ -130,8 +129,8 @@ workflow GERMLINE_VARIANT_CALLING {
             [ new_meta, vcf, tbi ]
         }
         .tap { stats_input }
-        .dump(tag:'reblockgvcf_input', pretty: true)
-        .set { reblockgvcf_input }
+        .dump(tag:'gvcfs', pretty: true)
+        .set { gvcfs }
     ch_versions = ch_versions.mix(VCF_GATHER_BCFTOOLS.out.versions)
 
     //
@@ -147,23 +146,8 @@ workflow GERMLINE_VARIANT_CALLING {
     ch_versions = ch_versions.mix(BCFTOOLS_STATS_INDIVIDUALS.out.versions)
     ch_reports  = ch_reports.mix(BCFTOOLS_STATS_INDIVIDUALS.out.stats.collect{it[1]})
 
-    //
-    // Reblock the single sample GVCF files
-    //
-
-    REBLOCKGVCF(
-        reblockgvcf_input.map{ it + [[]] },
-        fasta,
-        fasta_fai,
-        dict,
-        dbsnp,
-        dbsnp_tbi
-    )
-
-    ch_versions = ch_versions.mix(REBLOCKGVCF.out.versions)
-
     emit:
-    gvcfs    = REBLOCKGVCF.out.vcf
+    gvcfs
     versions = ch_versions
     reports  = ch_reports
 }

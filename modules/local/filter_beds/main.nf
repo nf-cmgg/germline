@@ -21,8 +21,10 @@ process FILTER_BEDS {
     // Remove regions with no coverage from the callable regions BED file
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
+
+    def unzip = bed.extension == "gz" ? "zcat" : "cat"
     """
-    zcat ${bed} | grep -v NO_COVERAGE | bgzip --threads ${task.cpus} --stdout > ${prefix}.bed.gz
+    ${unzip} ${bed} | grep -v NO_COVERAGE | bgzip --threads ${task.cpus} --stdout > ${prefix}.bed.gz
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
