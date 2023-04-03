@@ -4,6 +4,7 @@
 
 include { MERGE_BEDS as MERGE_ROI_PARAMS    } from '../../modules/local/merge_beds'
 include { MERGE_BEDS as MERGE_ROI_SAMPLE    } from '../../modules/local/merge_beds'
+include { MERGE_BEDS as MERGE_CALLABLE      } from '../../modules/local/merge_beds'
 include { SAMTOOLS_MERGE                    } from '../../modules/local/samtools_merge'
 include { FILTER_BEDS                       } from '../../modules/local/filter_beds/main'
 
@@ -101,17 +102,17 @@ workflow SAMPLE_PREPARATION {
             // It's possible that a sample is given multiple times in the samplesheet, in which
             // case they have been merged earlier. This code checks if at least one entry of the same
             // sample contains an ROI file
-            is_roi = false
-            output_roi = []
+            def is_present = false
+            def output_roi = []
             for( entry : roi) {
                 if(entry != []){
                     output_roi.add(entry)
-                    is_roi = true
+                    is_present = true
                 }
             }
-            found:      is_roi
+            found:      is_present
                 return [ meta, output_roi ]
-            missing:    !is_roi
+            missing:    !is_present
                 return [ meta, [] ]
         }
         .set { roi_branch }
@@ -141,25 +142,60 @@ workflow SAMPLE_PREPARATION {
         roi_branch.missing.set { missing_rois }
     }
 
+    missing_rois
+        .mix(MERGE_ROI_SAMPLE.out.bed)
+        .set { ready_rois }
+
+    // Merge callable BED files
+    callable
+        .groupTuple() // A specified size isn't needed here since this runs before any process using the callable BED files is executed
+        .branch { meta, callable ->
+            // Determine whether or not there is a callable file given to the current sample
+            def is_present = false
+            def output_callable = []
+            for( entry : callable ) {
+                if(entry != []){
+                    output_callable.add(entry)
+                    is_present = true
+                }
+            }
+            found:      output_callable.size() >= 2
+                return [ meta, output_callable ]
+            missing:    output_callable.size() < 2
+                return [ meta, [] ]
+        }
+        .set { callable_branch }
+
+    MERGE_CALLABLE(
+        callable_branch.found
+    )
+    ch_versions = ch_versions.mix(MERGE_CALLABLE.out.versions)
+
+    callable_branch.missing
+        .mix(MERGE_CALLABLE.out.bed)
+        .set { ready_callable }
+
     // Mix the default ROI with the sample-specific ROI files
     // and determine whether the sample is WES or WGS (aka whether they 
     // have an ROI file or not)
     missing_rois
         .mix(MERGE_ROI_SAMPLE.out.bed)
-        .join(callable, failOnMismatch:true, failOnDuplicate:true)
-        .set { ready_rois }
+        .join(ready_callable, failOnMismatch:true, failOnDuplicate:true)
+        .set { ready_regions }
 
     //
     // Create callable regions if they don't exist
     //
 
     // Check if a BED with callable regions has been given for each sample
-    ready_rois
+    ready_regions
         .branch { meta, roi, callable ->
             present:        callable
             not_present:    !callable
         }
         .set { callable_branch }
+
+    callable_branch.present.view()
 
     // Create BEDs with callable regions using Mosdepth
     callable_branch.not_present
