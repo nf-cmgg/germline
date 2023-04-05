@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 1. Added a `--coverage <true/false>` flag which can be used to run mosdepth in normal mode instead of fast-mode. This flag will also make sure all output from mosdepth is present in the output directory for each individual
 2. Added the possibility to give GVCF files as inputs and immediately go to the joint-genotyping. This is especially useful for the cases where several samples should be combined. This way the variant calling doesn't need to be re-run. Beware though that a CRAM file should still be given to generate the BED files used for the scatter/gathering. The new header names are `gvcf` and `tbi` where `gvcf` is used to give the GVCF and `tbi` is used to give its index.
+
 ### Improvements
 
 1. Updated the scattering again: it now follows this workflow:
@@ -24,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 3. Removed ReblockGVCFs (this wasn't worth it and we save the raw GVCFs)
 
 ### Bug fixes
+
 1. Fixed a warning showing up when running with `--use_dragstr_model false`
 
 ## v1.1.2 - Groovy Ghent - [Mar 21 2023]
