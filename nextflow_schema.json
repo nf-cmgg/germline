@@ -181,8 +181,7 @@
                 "use_dragstr_model": {
                     "type": "boolean",
                     "description": "Whether or not the DRAGSTR models should be used",
-                    "fa_icon": "fas fa-question-circle",
-                    "default": false
+                    "fa_icon": "fas fa-question-circle"
                 },
                 "dbsnp": {
                     "type": "string",
@@ -201,6 +200,10 @@
                     "default": "https://github.com/brentp/somalier/files/3412456/sites.hg38.vcf.gz",
                     "fa_icon": "far fa-file-alt",
                     "description": "A VCF file with sites for Somalier to use"
+                },
+                "coverage": {
+                    "type": "boolean",
+                    "description": "If true, mosdepth won't be run in fast-mode and will output all coverage files in the output directory for each individual"
                 }
             }
         },

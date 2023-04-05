@@ -177,7 +177,7 @@ workflow SAMPLE_PREPARATION {
         .join(beds_to_filter, failOnDuplicate:true, failOnMismatch:true)
         .branch { meta, filtered_callable, roi, callable ->
             roi:    roi
-                return [ meta, roi, filtered_callable]
+                return [ meta, roi, filtered_callable ]
             no_roi: !roi
                 return [ meta, filtered_callable ]
         }
