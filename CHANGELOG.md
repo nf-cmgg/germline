@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### New Features
 
-1. Added a `--coverage <true/false>` flag which can be used to run mosdepth in normal mode instead of fast-mode. This flag will also make sure all output from mosdepth is present in the output directory for each individual
+1. Added a `--coverage_fast <true/false>` flag which can be used to run mosdepth in fast mode. This flag will also make sure that only the quantized bed from mosdepth is present in the output directory for each WGS individual, otherwise it will output everything
 2. Added the possibility to give GVCF files as inputs and immediately go to the joint-genotyping. This is especially useful for the cases where several samples should be combined. This way the variant calling doesn't need to be re-run. Beware though that a CRAM file should still be given to generate the BED files used for the scatter/gathering. The new header names are `gvcf` and `tbi` where `gvcf` is used to give the GVCF and `tbi` is used to give its index.
 
 ### Improvements

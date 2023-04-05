@@ -201,9 +201,9 @@
                     "fa_icon": "far fa-file-alt",
                     "description": "A VCF file with sites for Somalier to use"
                 },
-                "coverage": {
+                "coverage_fast": {
                     "type": "boolean",
-                    "description": "If true, mosdepth won't be run in fast-mode and will output all coverage files in the output directory for each individual"
+                    "description": "If true, mosdepth will be run in fast-mode and will only output quantized BED files in the output directory for each WGS individual. If false, it will run in normal mode and output everything"
                 }
             }
         },
