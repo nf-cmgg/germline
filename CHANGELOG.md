@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Bug fixes
 
 1. Fixed a warning showing up when running with `--use_dragstr_model false`
+2. Add `--infer` flag to `somalier relate` when no PED file is given
 
 ## v1.1.2 - Groovy Ghent - [Mar 21 2023]
 
