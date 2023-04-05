@@ -4,7 +4,6 @@
 
 include { MERGE_BEDS as MERGE_ROI_PARAMS    } from '../../modules/local/merge_beds'
 include { MERGE_BEDS as MERGE_ROI_SAMPLE    } from '../../modules/local/merge_beds'
-include { MERGE_BEDS as MERGE_CALLABLE      } from '../../modules/local/merge_beds'
 include { SAMTOOLS_MERGE                    } from '../../modules/local/samtools_merge'
 include { FILTER_BEDS                       } from '../../modules/local/filter_beds/main'
 
@@ -18,7 +17,6 @@ workflow SAMPLE_PREPARATION {
     take:
         crams             // channel: [mandatory] [ meta, cram, crai ] => sample CRAM files and their optional indices
         roi               // channel: [mandatory] [ meta, roi ] => ROI bed files for WES analysis
-        callable          // channel: [mandatory] [ meta, callable ] => callable regions bed files for WES analysis
         fasta             // channel: [mandatory] [ fasta ] => fasta reference
         fasta_fai         // channel: [mandatory] [ fasta_fai ] => fasta reference index
         default_roi       // channel: [optional]  [ roi ] => bed containing regions of interest to be used as default
@@ -146,63 +144,13 @@ workflow SAMPLE_PREPARATION {
         .mix(MERGE_ROI_SAMPLE.out.bed)
         .set { ready_rois }
 
-    // Merge callable BED files
-    callable
-        .groupTuple() // A specified size isn't needed here since this runs before any process using the callable BED files is executed
-        .branch { meta, callable ->
-            // Determine whether or not there is a callable file given to the current sample
-            def is_present = false
-            def output_callable = []
-            for( entry : callable ) {
-                if(entry != []){
-                    output_callable.add(entry)
-                    is_present = true
-                }
-            }
-            found:      output_callable.size() >= 2
-                return [ meta, output_callable ]
-            missing:    output_callable.size() < 2
-                return [ meta, [] ]
-        }
-        .set { callable_branch }
-
-    MERGE_CALLABLE(
-        callable_branch.found
-    )
-    ch_versions = ch_versions.mix(MERGE_CALLABLE.out.versions)
-
-    callable_branch.missing
-        .mix(MERGE_CALLABLE.out.bed)
-        .set { ready_callable }
-
-    // Mix the default ROI with the sample-specific ROI files
-    // and determine whether the sample is WES or WGS (aka whether they 
-    // have an ROI file or not)
-    missing_rois
-        .mix(MERGE_ROI_SAMPLE.out.bed)
-        .join(ready_callable, failOnMismatch:true, failOnDuplicate:true)
-        .set { ready_regions }
-
     //
-    // Create callable regions if they don't exist
+    // Create callable regions
     //
-
-    // Check if a BED with callable regions has been given for each sample
-    ready_regions
-        .branch { meta, roi, callable ->
-            present:        callable
-            not_present:    !callable
-        }
-        .set { callable_branch }
-
-    callable_branch.present.view()
 
     // Create BEDs with callable regions using Mosdepth
-    callable_branch.not_present
-        .join(ready_crams, failOnDuplicate:true, failOnMismatch:true)
-        .map { meta, roi, callable, cram, crai ->
-            [ meta, cram, crai, roi ]
-        }
+    ready_crams
+        .join(ready_rois, failOnDuplicate:true, failOnMismatch:true)
         .set { mosdepth_input }
 
     MOSDEPTH(
@@ -213,11 +161,10 @@ workflow SAMPLE_PREPARATION {
 
     // Join all channels back together
     MOSDEPTH.out.quantized_bed
-        .join(callable_branch.not_present, failOnDuplicate:true, failOnMismatch:true)
-        .map { meta, new_callable, roi, callable ->
-            [ meta, roi, new_callable ]
+        .join(ready_rois, failOnDuplicate:true, failOnMismatch:true)
+        .map { meta, callable, roi ->
+            [ meta, roi, callable ]
         }
-        .mix(callable_branch.present)
         .set { beds_to_filter }
 
     // Filter out the regions with no coverage

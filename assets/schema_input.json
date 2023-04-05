@@ -33,11 +33,6 @@
             "pattern": "^\\S+\\.tbi$",
             "format": "file-path"
         },
-        "callable": {
-            "type": "string",
-            "pattern": "^\\S+\\.bed(\\.gz)?$",
-            "format": "file-path"
-        },
         "roi": {
             "type": "string",
             "pattern": "^\\S+\\.bed(\\.gz)?$",
