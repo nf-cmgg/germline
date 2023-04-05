@@ -43,7 +43,7 @@ workflow JOINT_GENOTYPING {
 
     BEDTOOLS_SPLIT(
         MERGE_BEDS.out.bed.map { meta, bed ->
-            it + [params.scatter_count * meta.family_count]
+            [meta, bed, (params.scatter_count * meta.family_count) ]
         }
     )
     ch_versions = ch_versions.mix(BEDTOOLS_SPLIT.out.versions.first())
