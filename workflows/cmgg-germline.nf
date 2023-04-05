@@ -301,17 +301,17 @@ workflow CMGGGERMLINE {
     //
 
     SamplesheetConversion.convert(ch_input, file("${projectDir}/assets/schema_input.json", checkIfExists:true))
-        .map { meta, cram, crai, gvcf, tbi, callable, roi, ped, truth_vcf, truth_tbi, truth_bed ->
+        .map { meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ->
             // Infer the family ID from the PED file if no family ID was given, if no PED is given use the sample ID as family ID
             // Infer the type of data (WES or WGS). When a ROI is given through the params or samplesheet, the sample is marked as WES, otherwise it is WGS
-            if( gvcf && !(cram || callable)) {
-                error("[Samplesheet Error] Sample ${meta.id}: When providing a GVCF as input you should also provide the CRAM file or callable regions BED file.")
+            if( gvcf && !cram) {
+                error("[Samplesheet Error] Sample ${meta.id}: When providing a GVCF as input you should also provide the CRAM file.")
             }
             
             new_meta = meta + [
                 family: meta.family ?: ped ? get_family_id_from_ped(ped) : meta.sample, 
             ]
-            [ new_meta, cram, crai, gvcf, tbi, callable, roi, ped, truth_vcf, truth_tbi, truth_bed ]
+            [ new_meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ]
         }
         .tap { ch_raw_inputs }
         .map { it[0] }
@@ -326,12 +326,12 @@ workflow CMGGGERMLINE {
         }
         .combine(
             ch_raw_inputs
-                .map { meta, cram, crai, gvcf, tbi, callable, roi, ped, truth_vcf, truth_tbi, truth_bed ->
-                    [ meta.family, meta, cram, crai, gvcf, tbi, callable, roi, ped, truth_vcf, truth_tbi, truth_bed ]
+                .map { meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ->
+                    [ meta.family, meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ]
                 }
         , by:0)
         .multiMap(
-            { family, family_count, meta, cram, crai, gvcf, tbi, callable, roi, ped, truth_vcf, truth_tbi, truth_bed ->
+            { family, family_count, meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ->
                 new_meta_ped = [
                     id:             meta.family,
                     family:         meta.family,
@@ -348,14 +348,12 @@ workflow CMGGGERMLINE {
                 cram:           [new_meta, cram, crai]
                 peds:           [new_meta_ped, ped]
                 roi:            [new_meta, roi]
-                callable:       [new_meta, callable]
             }
         )
         .set { ch_parsed_inputs }
 
     ch_parsed_inputs.gvcf.dump(tag:'input_gvcf', pretty:true)
     ch_parsed_inputs.roi.dump(tag:'input_roi', pretty:true)
-    ch_parsed_inputs.callable.dump(tag:'input_callable', pretty:true)
     ch_parsed_inputs.truth_variants.dump(tag:'truth_variants', pretty:true)
     ch_parsed_inputs.cram.dump(tag:'input_crams', pretty:true)
     ch_parsed_inputs.peds.dump(tag:'input_peds', pretty:true)
@@ -386,7 +384,6 @@ workflow CMGGGERMLINE {
     SAMPLE_PREPARATION(
         ch_parsed_inputs.cram,
         ch_parsed_inputs.roi,
-        ch_parsed_inputs.callable,
         fasta,
         fasta_fai,
         default_roi

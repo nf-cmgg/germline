@@ -17,7 +17,6 @@ workflow SAMPLE_PREPARATION {
     take:
         crams             // channel: [mandatory] [ meta, cram, crai ] => sample CRAM files and their optional indices
         roi               // channel: [mandatory] [ meta, roi ] => ROI bed files for WES analysis
-        callable          // channel: [mandatory] [ meta, callable ] => callable regions bed files for WES analysis
         fasta             // channel: [mandatory] [ fasta ] => fasta reference
         fasta_fai         // channel: [mandatory] [ fasta_fai ] => fasta reference index
         default_roi       // channel: [optional]  [ roi ] => bed containing regions of interest to be used as default
@@ -101,17 +100,17 @@ workflow SAMPLE_PREPARATION {
             // It's possible that a sample is given multiple times in the samplesheet, in which
             // case they have been merged earlier. This code checks if at least one entry of the same
             // sample contains an ROI file
-            is_roi = false
-            output_roi = []
+            def is_present = false
+            def output_roi = []
             for( entry : roi) {
                 if(entry != []){
                     output_roi.add(entry)
-                    is_roi = true
+                    is_present = true
                 }
             }
-            found:      is_roi
+            found:      is_present
                 return [ meta, output_roi ]
-            missing:    !is_roi
+            missing:    !is_present
                 return [ meta, [] ]
         }
         .set { roi_branch }
@@ -141,32 +140,17 @@ workflow SAMPLE_PREPARATION {
         roi_branch.missing.set { missing_rois }
     }
 
-    // Mix the default ROI with the sample-specific ROI files
-    // and determine whether the sample is WES or WGS (aka whether they 
-    // have an ROI file or not)
     missing_rois
         .mix(MERGE_ROI_SAMPLE.out.bed)
-        .join(callable, failOnMismatch:true, failOnDuplicate:true)
         .set { ready_rois }
 
     //
-    // Create callable regions if they don't exist
+    // Create callable regions
     //
 
-    // Check if a BED with callable regions has been given for each sample
-    ready_rois
-        .branch { meta, roi, callable ->
-            present:        callable
-            not_present:    !callable
-        }
-        .set { callable_branch }
-
     // Create BEDs with callable regions using Mosdepth
-    callable_branch.not_present
-        .join(ready_crams, failOnDuplicate:true, failOnMismatch:true)
-        .map { meta, roi, callable, cram, crai ->
-            [ meta, cram, crai, roi ]
-        }
+    ready_crams
+        .join(ready_rois, failOnDuplicate:true, failOnMismatch:true)
         .set { mosdepth_input }
 
     MOSDEPTH(
@@ -177,11 +161,10 @@ workflow SAMPLE_PREPARATION {
 
     // Join all channels back together
     MOSDEPTH.out.quantized_bed
-        .join(callable_branch.not_present, failOnDuplicate:true, failOnMismatch:true)
-        .map { meta, new_callable, roi, callable ->
-            [ meta, roi, new_callable ]
+        .join(ready_rois, failOnDuplicate:true, failOnMismatch:true)
+        .map { meta, callable, roi ->
+            [ meta, roi, callable ]
         }
-        .mix(callable_branch.present)
         .set { beds_to_filter }
 
     // Filter out the regions with no coverage
@@ -194,7 +177,7 @@ workflow SAMPLE_PREPARATION {
         .join(beds_to_filter, failOnDuplicate:true, failOnMismatch:true)
         .branch { meta, filtered_callable, roi, callable ->
             roi:    roi
-                return [ meta, roi, filtered_callable]
+                return [ meta, roi, filtered_callable ]
             no_roi: !roi
                 return [ meta, filtered_callable ]
         }

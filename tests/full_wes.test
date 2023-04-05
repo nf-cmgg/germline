@@ -13,8 +13,6 @@ nextflow_pipeline {
                 add_ped  = true
                 validate = true
 
-                roi      = "https://raw.githubusercontent.com/CenterForMedicalGeneticsGhent/nf-cmgg-test-datasets/main/data/genomics/homo_sapiens/illumina/regions/roi.bed"
-
                 vcfanno           = true
                 vcfanno_config    = "https://github.com/nf-core/test-datasets/raw/modules/data/genomics/homo_sapiens/genome/vcf/vcfanno/vcfanno.toml"
                 vcfanno_resources = "https://github.com/brentp/vcfanno/raw/master/example/exac.vcf.gz,https://github.com/brentp/vcfanno/raw/master/example/exac.vcf.gz.tbi"
@@ -33,12 +31,12 @@ nextflow_pipeline {
             assert file("${outputDir}/individuals/NA24385D2_NVQ_034/reports/NA24385D2_NVQ_034.bcftools_stats.txt").exists()
             assert file("${outputDir}/individuals/NA24385D2_NVQ_034/NA24385D2_NVQ_034.g.vcf.gz").exists()
             assert file("${outputDir}/individuals/NA24385D2_NVQ_034/NA24385D2_NVQ_034.g.vcf.gz.tbi").exists()
-            assert file("${outputDir}/individuals/NA24385D2_NVQ_034/NA24385D2_NVQ_034_intersect.bed").exists()
+            assert file("${outputDir}/individuals/NA24385D2_NVQ_034/NA24385D2_NVQ_034.bed").exists()
             assert file("${outputDir}/individuals/NA24385D2_NVQ_034/NA24385D2_NVQ_034.quantized.bed.gz").exists()
             assert file("${outputDir}/individuals/DNA049572/reports/DNA049572.bcftools_stats.txt").exists()
             assert file("${outputDir}/individuals/DNA049572/DNA049572.g.vcf.gz").exists()
             assert file("${outputDir}/individuals/DNA049572/DNA049572.g.vcf.gz.tbi").exists()
-            assert file("${outputDir}/individuals/DNA049572/DNA049572_intersect.bed").exists()
+            assert file("${outputDir}/individuals/DNA049572/DNA049572.bed").exists()
             assert file("${outputDir}/individuals/DNA049572/DNA049572.quantized.bed.gz").exists()
             assert file("${outputDir}/multiqc_reports/multiqc_report.html").exists()
             assert file("${outputDir}/individuals/DNA049572/validation/DNA049572.fn.vcf.gz").exists()

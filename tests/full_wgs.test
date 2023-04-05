@@ -13,6 +13,8 @@ nextflow_pipeline {
                 add_ped  = true
                 validate = true
 
+                roi      = null
+
                 vcfanno           = true
                 vcfanno_config    = "https://github.com/nf-core/test-datasets/raw/modules/data/genomics/homo_sapiens/genome/vcf/vcfanno/vcfanno.toml"
                 vcfanno_resources = "https://github.com/brentp/vcfanno/raw/master/example/exac.vcf.gz,https://github.com/brentp/vcfanno/raw/master/example/exac.vcf.gz.tbi"
