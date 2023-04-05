@@ -75,12 +75,14 @@
                     "gatk4/genomicsdbimport": {
                         "branch": "master",
                         "git_sha": "643756685546fa61f5c8fba439af746c090b9180",
-                        "installed_by": ["modules"]
+                        "installed_by": ["modules"],
+                        "patch": "modules/nf-core/gatk4/genomicsdbimport/gatk4-genomicsdbimport.diff"
                     },
                     "gatk4/genotypegvcfs": {
                         "branch": "master",
                         "git_sha": "643756685546fa61f5c8fba439af746c090b9180",
-                        "installed_by": ["modules"]
+                        "installed_by": ["modules"],
+                        "patch": "modules/nf-core/gatk4/genotypegvcfs/gatk4-genotypegvcfs.diff"
                     },
                     "gatk4/haplotypecaller": {
                         "branch": "master",
