@@ -204,6 +204,11 @@
                 "coverage_fast": {
                     "type": "boolean",
                     "description": "If true, mosdepth will be run in fast-mode and will only output quantized BED files in the output directory for each WGS individual. If false, it will run in normal mode and output everything"
+                },
+                "merge_distance": {
+                    "type": "integer",
+                    "default": 10000,
+                    "description": "Define the merge distance for the family BED files. Increase this value if you get disk space issues with GenomicsDBImport."
                 }
             }
         },
