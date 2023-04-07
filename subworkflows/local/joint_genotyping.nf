@@ -38,6 +38,7 @@ workflow JOINT_GENOTYPING {
 
     MERGE_BEDS(
         merge_beds_input,
+        fasta_fai
     )
     ch_versions = ch_versions.mix(MERGE_BEDS.out.versions.first())
 

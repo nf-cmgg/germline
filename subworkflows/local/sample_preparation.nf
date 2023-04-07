@@ -117,7 +117,8 @@ workflow SAMPLE_PREPARATION {
 
     // Merge the ROI BED files if multiple samples are given, also merges overlapping regions in the BED files
     MERGE_ROI_SAMPLE(
-        roi_branch.found
+        roi_branch.found,
+        fasta_fai
     )
     ch_versions = ch_versions.mix(MERGE_ROI_SAMPLE.out.versions.first())
 
@@ -125,7 +126,8 @@ workflow SAMPLE_PREPARATION {
     // if an ROI BED file has been given through the --roi parameter
     if (default_roi) {
         MERGE_ROI_PARAMS(
-            default_roi.map { [[id:"default_roi"], it]}
+            default_roi.map { [[id:"default_roi"], it]},
+            fasta_fai
         )
         ch_versions = ch_versions.mix(MERGE_ROI_PARAMS.out.versions)
 
