@@ -69,7 +69,7 @@ if (params.annotate) {
 */
 
 ch_multiqc_config   = params.multiqc_config ? file(params.multiqc_config, checkIfExists: true) : file("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
-multiqc_logo        = params.multiqc_logo   ? file(params.multiqc_logo, checkIfExists: true)   : file("$projectDir/assets/CMGG_logo.png", checkIfExists: true)
+ch_multiqc_logo     = params.multiqc_logo   ? file(params.multiqc_logo, checkIfExists: true)   : file("$projectDir/assets/CMGG_logo.png", checkIfExists: true)
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -131,39 +131,39 @@ workflow CMGGGERMLINE {
     ch_reports  = Channel.empty()
 
     //
-    // Importing the input files
+    // Importing and convert the input files passed through the parameters to channels
     //
 
-    fasta              = Channel.fromPath(params.fasta).collect()
-    fasta_fai          = params.fai                 ? Channel.fromPath(params.fai).collect()                                        : null
-    dict               = params.dict                ? Channel.fromPath(params.dict).collect()                                       : null
-    strtablefile       = params.strtablefile        ? Channel.fromPath(params.strtablefile).collect()                               : null
-    sdf                = params.sdf                 ? Channel.fromPath(params.sdf).map {sdf -> [[id:'reference'], sdf]}.collect()   : null
+    ch_fasta_ready        = Channel.fromPath(params.fasta).collect()
+    ch_fai                = params.fai                 ? Channel.fromPath(params.fai).collect()                                        : null
+    ch_dict               = params.dict                ? Channel.fromPath(params.dict).collect()                                       : null
+    ch_strtablefile       = params.strtablefile        ? Channel.fromPath(params.strtablefile).collect()                               : null
+    ch_sdf                = params.sdf                 ? Channel.fromPath(params.sdf).map {sdf -> [[id:'reference'], sdf]}.collect()   : null
 
-    default_roi        = params.roi                 ? Channel.fromPath(params.roi).collect()                : []
+    ch_default_roi        = params.roi                 ? Channel.fromPath(params.roi).collect()                : []
 
-    dbsnp              = params.dbsnp               ? Channel.fromPath(params.dbsnp).collect()              : []
-    dbsnp_tbi          = params.dbsnp_tbi           ? Channel.fromPath(params.dbsnp_tbi).collect()          : []
+    ch_dbsnp              = params.dbsnp               ? Channel.fromPath(params.dbsnp).collect()              : []
+    ch_dbsnp_tbi          = params.dbsnp_tbi           ? Channel.fromPath(params.dbsnp_tbi).collect()          : []
 
-    somalier_sites     = params.somalier_sites      ? Channel.fromPath(params.somalier_sites).collect()     : []
+    ch_somalier_sites     = params.somalier_sites      ? Channel.fromPath(params.somalier_sites).collect()     : []
 
-    vep_cache          = params.vep_cache           ? Channel.fromPath(params.vep_cache).collect()          : []
+    ch_vep_cache          = params.vep_cache           ? Channel.fromPath(params.vep_cache).collect()          : []
 
-    vcfanno_config     = params.vcfanno_config      ? Channel.fromPath(params.vcfanno_config).collect()     : []
-    vcfanno_lua        = params.vcfanno_lua         ? Channel.fromPath(params.vcfanno_lua).collect()        : []
-    vcfanno_resources  = params.vcfanno_resources   ? Channel.of(params.vcfanno_resources.split(",")).map({ file(it, checkIfExists:true) }).collect()   : []
+    ch_vcfanno_config     = params.vcfanno_config      ? Channel.fromPath(params.vcfanno_config).collect()     : []
+    ch_vcfanno_lua        = params.vcfanno_lua         ? Channel.fromPath(params.vcfanno_lua).collect()        : []
+    ch_vcfanno_resources  = params.vcfanno_resources   ? Channel.of(params.vcfanno_resources.split(",")).map({ file(it, checkIfExists:true) }).collect()   : []
 
     //
     // Check for the presence of EnsemblVEP plugins that use extra files
     //
 
-    if(params.annotate){
-        vep_extra_files = []
+    ch_vep_extra_files = []
 
+    if(params.annotate){
         // Check if all dbnsfp files are given
         if (params.dbnsfp && params.dbnsfp_tbi && params.vep_dbnsfp) {
-            vep_extra_files.add(file(params.dbnsfp, checkIfExists: true))
-            vep_extra_files.add(file(params.dbnsfp_tbi, checkIfExists: true))
+            ch_vep_extra_files.add(file(params.dbnsfp, checkIfExists: true))
+            ch_vep_extra_files.add(file(params.dbnsfp_tbi, checkIfExists: true))
         }
         else if (params.vep_dbnsfp) {
             exit 1, "Please specify '--vep_dbsnfp true', '--dbnsfp PATH/TO/DBNSFP/FILE' and '--dbnspf_tbi PATH/TO/DBNSFP/INDEX/FILE' to use the dbnsfp VEP plugin."
@@ -171,10 +171,10 @@ workflow CMGGGERMLINE {
 
         // Check if all spliceai files are given
         if (params.spliceai_snv && params.spliceai_snv_tbi && params.spliceai_indel && params.spliceai_indel_tbi && params.vep_spliceai) {
-            vep_extra_files.add(file(params.spliceai_snv, checkIfExists: true))
-            vep_extra_files.add(file(params.spliceai_snv_tbi, checkIfExists: true))
-            vep_extra_files.add(file(params.spliceai_indel, checkIfExists: true))
-            vep_extra_files.add(file(params.spliceai_indel_tbi, checkIfExists: true))
+            ch_vep_extra_files.add(file(params.spliceai_snv, checkIfExists: true))
+            ch_vep_extra_files.add(file(params.spliceai_snv_tbi, checkIfExists: true))
+            ch_vep_extra_files.add(file(params.spliceai_indel, checkIfExists: true))
+            ch_vep_extra_files.add(file(params.spliceai_indel_tbi, checkIfExists: true))
         }
         else if (params.vep_spliceai) {
             exit 1, "Please specify '--vep_spliceai true', '--spliceai_snv PATH/TO/SPLICEAI/SNV/FILE', '--spliceai_snv_tbi PATH/TO/SPLICEAI/SNV/INDEX/FILE', '--spliceai_indel PATH/TO/SPLICEAI/INDEL/FILE' and '--spliceai_indel_tbi PATH/TO/SPLICEAI/INDEL/INDEX/FILE' to use the SpliceAI VEP plugin."
@@ -182,8 +182,8 @@ workflow CMGGGERMLINE {
 
         // Check if all mastermind files are given
         if (params.mastermind && params.mastermind_tbi && params.vep_mastermind) {
-            vep_extra_files.add(file(params.mastermind, checkIfExists: true))
-            vep_extra_files.add(file(params.mastermind_tbi, checkIfExists: true))
+            ch_vep_extra_files.add(file(params.mastermind, checkIfExists: true))
+            ch_vep_extra_files.add(file(params.mastermind_tbi, checkIfExists: true))
         }
         else if (params.vep_mastermind) {
             exit 1, "Please specify '--vep_mastermind true', '--mastermind PATH/TO/MASTERMIND/FILE' and '--mastermind_tbi PATH/TO/MASTERMIND/INDEX/FILE' to use the mastermind VEP plugin."
@@ -191,7 +191,7 @@ workflow CMGGGERMLINE {
 
         // Check if all maxentscan files are given
         if (params.maxentscan && params.vep_maxentscan) {
-            vep_extra_files.add(file(params.maxentscan, checkIfExists: true))
+            ch_vep_extra_files.add(file(params.maxentscan, checkIfExists: true))
         }
         else if (params.vep_maxentscan) {
             exit 1, "Please specify '--vep_maxentscan true', '--maxentscan PATH/TO/MAXENTSCAN/' to use the MaxEntScan VEP plugin."
@@ -199,8 +199,8 @@ workflow CMGGGERMLINE {
 
         // Check if all EOG files are given
         if (params.eog && params.eog_tbi && params.vep_eog) {
-            vep_extra_files.add(file(params.eog, checkIfExists: true))
-            vep_extra_files.add(file(params.eog_tbi, checkIfExists: true))
+            ch_vep_extra_files.add(file(params.eog, checkIfExists: true))
+            ch_vep_extra_files.add(file(params.eog_tbi, checkIfExists: true))
         }
         else if (params.vep_eog) {
             exit 1, "Please specify '--vep_eog true', '--eog PATH/TO/EOG/FILE' and '--eog_tbi PATH/TO/EOG/INDEX/FILE' to use the EOG custom VEP plugin."
@@ -211,12 +211,13 @@ workflow CMGGGERMLINE {
     // Create the optional input files if they are not supplied
     //
 
-    if (dbsnp != [] && !dbsnp_tbi == []) {
+    // DBSNP index
+    if (ch_dbsnp && !ch_dbsnp_tbi) {
         TABIX_DBSNP(
-            dbsnp.map { [[id:'dbsnp'], it] }
+            ch_dbsnp.map { [[id:'dbsnp'], it] }
         )
-
         ch_versions = ch_versions.mix(TABIX_DBSNP.out.versions)
+
         TABIX_DBSNP.out.tbi
             .map(
                 { meta, tbi ->
@@ -224,77 +225,90 @@ workflow CMGGGERMLINE {
                 }
             )
             .collect()
-            .set { dbsnp_tbi }
+            .set { ch_dbsnp_tbi_ready }
+    } else if (ch_dbsnp) {
+        ch_dbsnp_tbi.set { ch_dbsnp_tbi_ready }
+    } else {
+        ch_dbsnp_tbi_ready = []
     }
 
-    if (!fasta_fai) {
+    // Reference fasta index
+    if (!ch_fai) {
         FAIDX(
-            fasta.map({ fasta -> [ [id:"fasta_fai"], fasta ]})
+            ch_fasta_ready.map({ fasta -> [ [id:"fasta_fai"], fasta ]})
         )
         ch_versions = ch_versions.mix(FAIDX.out.versions)
 
         FAIDX.out.fai
-            .map({ meta, fasta_fai -> [ fasta_fai ]})
+            .map({ meta, fai -> [ fai ]})
             .collect()
             .dump(tag:'fasta_fai', pretty:true)
-            .set { fasta_fai }
+            .set { ch_fai_ready }
+    } else {
+        ch_fai.set { ch_fai_ready }
     }
 
-    if (!dict) {
+    // Reference sequence dictionary
+    if (!ch_dict) {
         CREATESEQUENCEDICTIONARY(
-            fasta
+            ch_fasta_ready
         )
         ch_versions = ch_versions.mix(CREATESEQUENCEDICTIONARY.out.versions)
 
         CREATESEQUENCEDICTIONARY.out.dict
             .collect()
             .dump(tag:'dict', pretty:true)
-            .set { dict }
+            .set { ch_dict_ready }
+    } else {
+        ch_dict.set { ch_dict_ready }
     }
 
-    if (params.use_dragstr_model && !strtablefile) {
+    // Reference STR table file
+    if (params.use_dragstr_model && !ch_strtablefile) {
         COMPOSESTRTABLEFILE(
-            fasta,
-            fasta_fai,
-            dict
+            ch_fasta_ready,
+            ch_fai_ready,
+            ch_dict_ready
         )
         ch_versions  = ch_versions.mix(COMPOSESTRTABLEFILE.out.versions)
 
         COMPOSESTRTABLEFILE.out.str_table
             .collect()
             .dump(tag:'strtablefile', pretty:true)
-            .set { strtablefile }
+            .set { ch_strtablefile_ready }
+    } else if (params.use_dragstr_model) {
+        ch_strtablefile.set { ch_strtablefile_ready }
+    } else {
+        ch_strtablefile_ready = []
     }
 
-    if (params.validate && !sdf) {
+    // Reference validation SDF
+    if (params.validate && !ch_sdf) {
         RTGTOOLS_FORMAT(
-            fasta.map { fasta -> [[id:'reference'], fasta, [], []]}
+            ch_fasta_ready.map { fasta -> [[id:'reference'], fasta, [], []]}
         )
         ch_versions  = ch_versions.mix(RTGTOOLS_FORMAT.out.versions)
 
         RTGTOOLS_FORMAT.out.sdf
             .collect()
             .dump(tag:'sdf', pretty:true)
-            .set { sdf }
+            .set { ch_sdf_ready }
     }
-    else if (params.validate) {
-        sdf.branch { meta, sdf ->
-            zip = sdf.name.endsWith(".tar.gz")
-            tarzipped: zip
-            untarred: !zip
-        }
-        .set { sdf_branch }
-
+    else if (params.validate && params.sdf.endsWith(".tar.gz")) {
         UNTAR(
-            sdf_branch.tarzipped
+            ch_sdf
         )
         ch_versions = ch_versions.mix(UNTAR.out.versions)
 
         UNTAR.out.untar
-            .mix(sdf_branch.untarred)
             .dump(tag:'sdf', pretty:true)
-            .set { sdf }
+            .set { ch_sdf_ready }
+    } else if(params.validate) {
+        ch_sdf.set { ch_sdf_ready }
+    } else {
+        ch_sdf_ready = [[],[]]
     }
+
 
     //
     // Read in samplesheet, validate and convert to a channel
@@ -302,12 +316,7 @@ workflow CMGGGERMLINE {
 
     SamplesheetConversion.convert(ch_input, file("${projectDir}/assets/schema_input.json", checkIfExists:true))
         .map { meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ->
-            // Infer the family ID from the PED file if no family ID was given, if no PED is given use the sample ID as family ID
-            // Infer the type of data (WES or WGS). When a ROI is given through the params or samplesheet, the sample is marked as WES, otherwise it is WGS
-            if( gvcf && !cram) {
-                error("[Samplesheet Error] Sample ${meta.id}: When providing a GVCF as input you should also provide the CRAM file.")
-            }
-            
+            // Infer the family ID from the PED file if no family ID was given, if no PED is given use the sample ID as family ID            
             new_meta = meta + [
                 family: meta.family ?: ped ? get_family_id_from_ped(ped) : meta.sample, 
             ]
@@ -315,31 +324,26 @@ workflow CMGGGERMLINE {
         }
         .tap { ch_raw_inputs }
         .map { it[0] }
-        .distinct()
+        .distinct() // Make sure the same sample isn't counted twice when given multiple times
         .map { meta ->
-            [ meta.family, 1 ]
+            meta.family
         }
-        .groupTuple()
-        .map { family, count ->
-            counts = family ? count.sum() : 1
-            [ family, counts ]
+        .reduce([:]) { counts, v ->
+            // Count the amount of samples in one family
+            counts[v] = (counts[v] ?: 0) + 1
+            counts
         }
-        .combine(
-            ch_raw_inputs
-                .map { meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ->
-                    [ meta.family, meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ]
-                }
-        , by:0)
+        .combine(ch_raw_inputs)
         .multiMap(
-            { family, family_count, meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ->
+            { counts, meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ->
                 new_meta_ped = [
                     id:             meta.family,
                     family:         meta.family,
-                    family_count:   family_count,
+                    family_count:   counts[meta.family],
                 ]
 
                 new_meta = meta + [
-                    family_count:   family_count,
+                    family_count:   counts[meta.family],
                     type:           gvcf ? "gvcf" : "cram"
                 ]
 
@@ -350,58 +354,63 @@ workflow CMGGGERMLINE {
                 roi:            [new_meta, roi]
             }
         )
-        .set { ch_parsed_inputs }
+        .set { ch_input }
 
-    ch_parsed_inputs.gvcf.dump(tag:'input_gvcf', pretty:true)
-    ch_parsed_inputs.roi.dump(tag:'input_roi', pretty:true)
-    ch_parsed_inputs.truth_variants.dump(tag:'truth_variants', pretty:true)
-    ch_parsed_inputs.cram.dump(tag:'input_crams', pretty:true)
-    ch_parsed_inputs.peds.dump(tag:'input_peds', pretty:true)
+    ch_input.gvcf.dump(tag:'input_gvcf', pretty:true)
+    ch_input.roi.dump(tag:'input_roi', pretty:true)
+    ch_input.truth_variants.dump(tag:'truth_variants', pretty:true)
+    ch_input.cram.dump(tag:'input_crams', pretty:true)
+    ch_input.peds.dump(tag:'input_peds', pretty:true)
 
-    ch_parsed_inputs.gvcf
-        .filter { it[0].type == "gvcf" }
+    //
+    // Create the GVCF index if it's missing
+    //
+
+    ch_input.gvcf
+        .filter { it[0].type == "gvcf" } // Filter out samples which have no GVCF
         .branch { meta, gvcf, tbi ->
             no_tbi: !tbi
                 return [ meta, gvcf ]
             tbi:    tbi
                 return [ meta, gvcf, tbi ]
         }
-        .set { gvcf_branch }
+        .set { ch_gvcf_branch }
 
     TABIX_GVCF(
-        gvcf_branch.no_tbi
+        ch_gvcf_branch.no_tbi
     )
+    ch_versions = ch_versions.mix(TABIX_GVCF.out.versions)
 
-    gvcf_branch.no_tbi
+    ch_gvcf_branch.no_tbi
         .join(TABIX_GVCF.out.tbi, failOnDuplicate:true, failOnMismatch:true)
-        .mix(gvcf_branch.tbi)
-        .set { ready_gvcfs }
+        .mix(ch_gvcf_branch.tbi)
+        .set { ch_gvcfs_ready }
 
     //
     // Run sample preparation
     //
 
     SAMPLE_PREPARATION(
-        ch_parsed_inputs.cram,
-        ch_parsed_inputs.roi,
-        fasta,
-        fasta_fai,
-        default_roi
+        ch_input.cram,
+        ch_input.roi,
+        ch_fasta_ready,
+        ch_fai_ready,
+        ch_default_roi
     )
-
     ch_versions = ch_versions.mix(SAMPLE_PREPARATION.out.versions)
 
-    ch_parsed_inputs.peds
-        .distinct()
+    //
+    // Take one PED file per family
+    //
+
+    ch_input.peds
         .groupTuple()
-        .map(
-            { meta, peds ->
-                output = peds.size() == 1 ? peds[0] : peds[0] == [] ? peds[1] : peds[0]
-                [ meta, output ]
-            }
-        )
+        .map { meta, peds ->
+            // Find the first PED file and return that one for the family ([] if no PED is given for the family)
+            [ meta, peds.find { it != [] } ?: [] ]
+        }
         .dump(tag:'peds', pretty:true)
-        .set { peds }
+        .set { ch_peds_ready }
 
     //
     // Perform the variant calling
@@ -410,21 +419,21 @@ workflow CMGGGERMLINE {
     GERMLINE_VARIANT_CALLING(
         SAMPLE_PREPARATION.out.ready_crams.filter { it[0].type == "cram" },
         SAMPLE_PREPARATION.out.ready_beds.filter { it[0].type == "cram" },
-        fasta,
-        fasta_fai,
-        dict,
-        strtablefile,
-        dbsnp,
-        dbsnp_tbi
+        ch_fasta_ready,
+        ch_fai_ready,
+        ch_dict_ready,
+        ch_strtablefile_ready,
+        ch_dbsnp,
+        ch_dbsnp_tbi_ready
     )
 
     ch_versions = ch_versions.mix(GERMLINE_VARIANT_CALLING.out.versions)
     ch_reports  = ch_reports.mix(GERMLINE_VARIANT_CALLING.out.reports)
 
     GERMLINE_VARIANT_CALLING.out.gvcfs
-        .mix(ready_gvcfs)
+        .mix(ch_gvcfs_ready)
         .dump(tag:'variantcalling_output', pretty:true)
-        .set { variantcalling_output }
+        .set { ch_variantcalling_output }
 
     //
     // Validate the found variants
@@ -432,44 +441,45 @@ workflow CMGGGERMLINE {
 
     if (params.validate){
 
-        variantcalling_output
-            .join(ch_parsed_inputs.truth_variants, failOnDuplicate: true, failOnMismatch: true)
+        ch_variantcalling_output
+            .join(ch_input.truth_variants, failOnDuplicate: true, failOnMismatch: true)
             .filter { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ->
+                // Filter out all samples that have no truth VCF
                 truth_vcf != []
             }
             .branch { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ->
                 tbi: truth_tbi != []
                 no_tbi: truth_tbi == []
             }
-            .set { validation_branch }
+            .set { ch_validation_branch }
 
+        // Create truth VCF indices if none were given
         TABIX_TRUTH(
-            validation_branch.no_tbi.map { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed -> 
+            ch_validation_branch.no_tbi.map { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed -> 
                 [ meta, truth_vcf ]
             }
         )
-
         ch_versions = ch_versions.mix(TABIX_TRUTH.out.versions)
 
-        validation_branch.no_tbi
+        ch_validation_branch.no_tbi
             .join(TABIX_TRUTH.out.tbi, failOnDuplicate: true, failOnMismatch: true) 
             .map { meta, vcf, tbi, truth_vcf, empty_tbi, truth_bed, truth_tbi ->
                 [ meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ]
             }
-            .mix(validation_branch.tbi)
+            .mix(ch_validation_branch.tbi)
             .multiMap { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ->
                 vcfs: [meta, vcf, tbi, truth_vcf, truth_tbi]
                 bed:  [meta, truth_bed, []]
             }
-            .set { validation_input }
+            .set { ch_validation_input }
 
         // TODO: add support for truth regions when happy works
         VCF_VALIDATE_SMALL_VARIANTS(
-            validation_input.vcfs,
-            validation_input.bed,
-            fasta.map { [[], it] },
-            fasta_fai.map { [[], it] },
-            sdf.collect(),
+            ch_validation_input.vcfs,
+            ch_validation_input.bed,
+            ch_fasta_ready.map { [[], it] },
+            ch_fai_ready.map { [[], it] },
+            ch_sdf_ready.collect(),
             [[],[]],
             [[],[]],
             [[],[]],
@@ -484,20 +494,19 @@ workflow CMGGGERMLINE {
     //
 
     JOINT_GENOTYPING(
-        variantcalling_output,
+        ch_variantcalling_output,
         SAMPLE_PREPARATION.out.ready_beds,
-        peds,
-        fasta,
-        fasta_fai,
-        dict
+        ch_peds_ready,
+        ch_fasta_ready,
+        ch_fai_ready,
+        ch_dict_ready
     )
 
     ch_versions = ch_versions.mix(JOINT_GENOTYPING.out.versions)
 
     JOINT_GENOTYPING.out.genotyped_vcfs
         .dump(tag:'joint_genotyping_output', pretty:true)
-        .tap { vcf_qc_input }
-        .set { joint_genotyping_output }
+        .set { ch_joint_genotyping_output }
 
     //
     // Filter the variants
@@ -505,7 +514,7 @@ workflow CMGGGERMLINE {
 
     if (params.filter) {
         FILTER_SNPS(
-            joint_genotyping_output
+            ch_joint_genotyping_output
         )
 
         FILTER_INDELS(
@@ -515,29 +524,29 @@ workflow CMGGGERMLINE {
         ch_versions = ch_versions.mix(FILTER_SNPS.out.versions)
         ch_versions = ch_versions.mix(FILTER_INDELS.out.versions)
 
-        FILTER_INDELS.out.vcf.set { filter_output }
+        FILTER_INDELS.out.vcf.set { ch_filter_output }
 
     }
     else {
-        joint_genotyping_output.set { filter_output }
+        ch_joint_genotyping_output.set { ch_filter_output }
     }
 
-    filter_output.dump(tag:'filter_output', pretty: true)
+    ch_filter_output.dump(tag:'filter_output', pretty: true)
 
     //
     // Somalier
     //
 
     VCF_EXTRACT_RELATE_SOMALIER(
-        filter_output
+        ch_filter_output
             .filter { meta, vcf ->
                 meta.family_count > 1
             }
             .map { it + [[], 1] },
-        fasta,
-        fasta_fai,
-        somalier_sites,
-        peds
+        ch_fasta_ready,
+        ch_fai_ready,
+        ch_somalier_sites,
+        ch_peds_ready
             .filter { meta, ped ->
                 meta.family_count > 1
             },
@@ -553,7 +562,7 @@ workflow CMGGGERMLINE {
 
     if(params.add_ped){
         ADD_PED_HEADER(
-            filter_output,
+            ch_filter_output,
             VCF_EXTRACT_RELATE_SOMALIER.out.samples_tsv
         )
 
@@ -561,9 +570,9 @@ workflow CMGGGERMLINE {
 
         ADD_PED_HEADER.out.ped_vcfs
             .dump(tag:'ped_vcfs', pretty:true)
-            .set { ped_vcfs }
+            .set { ch_ped_vcfs }
     } else {
-        filter_output.set { ped_vcfs }
+        ch_filter_output.set { ch_ped_vcfs }
     }
 
 
@@ -574,33 +583,31 @@ workflow CMGGGERMLINE {
     if (params.annotate) {
 
         ANNOTATION(
-            ped_vcfs,
-            fasta,
-            fasta_fai,
-            vep_cache,
-            vep_extra_files,
-            vcfanno_config,
-            vcfanno_lua,
-            vcfanno_resources
+            ch_ped_vcfs,
+            ch_fasta_ready,
+            ch_fai_ready,
+            ch_vep_cache,
+            ch_vep_extra_files,
+            ch_vcfanno_config,
+            ch_vcfanno_lua,
+            ch_vcfanno_resources
         )
         ch_versions = ch_versions.mix(ANNOTATION.out.versions)
         ch_reports  = ch_reports.mix(ANNOTATION.out.reports)
 
-        ANNOTATION.out.annotated_vcfs.set { annotation_output }
+        ANNOTATION.out.annotated_vcfs.set { ch_annotation_output }
     } else {
-        ped_vcfs.set { annotation_output }
+        ped_vcfs.set { ch_annotation_output }
     }
 
-    annotation_output
-        .dump(tag:'annotation_output', pretty:true)
-        .set { annotation_output }
+    ch_annotation_output.dump(tag:'annotation_output', pretty:true)
 
     //
     // Perform QC on the final VCFs
     //
 
     BCFTOOLS_STATS_FAMILY(
-        annotation_output.map{ it + [[]] },
+        ch_annotation_output.map{ it + [[]] },
         [],
         [],
         []
@@ -615,21 +622,20 @@ workflow CMGGGERMLINE {
     if(params.gemini){
 
         CustomChannelOperators.joinOnKeys(
-            annotation_output,
+            ch_annotation_output,
             VCF_EXTRACT_RELATE_SOMALIER.out.samples_tsv,
             ['id', 'family', 'family_count']
         )
         .dump(tag:'vcf2db_input', pretty:true)
-        .set { vcf2db_input }
+        .set { ch_vcf2db_input }
 
         VCF2DB(
-            vcf2db_input
+            ch_vcf2db_input
         )
 
         ch_versions = ch_versions.mix(VCF2DB.out.versions)
 
-        VCF2DB.out.db
-            .dump(tag:'vcf2db_output', pretty:true)
+        VCF2DB.out.db.dump(tag:'vcf2db_output', pretty:true)
 
     }
 
@@ -655,7 +661,7 @@ workflow CMGGGERMLINE {
         ch_multiqc_files.collect(),
         ch_multiqc_config,
         [],
-        multiqc_logo
+        ch_multiqc_logo
     )
 }
 

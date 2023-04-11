@@ -12,18 +12,18 @@ include { VCF_GATHER_BCFTOOLS                        } from '../../subworkflows/
 
 workflow JOINT_GENOTYPING {
     take:
-        gvcfs               // channel: [mandatory] [ meta, gvcf, tbi ] => The fresh GVCFs called with HaplotypeCaller
-        beds                // channel: [mandatory] [ meta, bed ] => The BED files of the individuals
-        peds                // channel: [mandatory] [ meta, peds ] => The pedigree files for the samples
-        fasta               // channel: [mandatory] [ fasta ] => fasta reference
-        fasta_fai           // channel: [mandatory] [ fasta_fai ] => fasta reference index
-        dict                // channel: [mandatory] [ dict ] => sequence dictionary
+        ch_gvcfs               // channel: [mandatory] [ meta, gvcf, tbi ] => The fresh GVCFs called with HaplotypeCaller
+        ch_beds                // channel: [mandatory] [ meta, bed ] => The BED files of the individuals
+        ch_peds                // channel: [mandatory] [ meta, peds ] => The pedigree files for the samples
+        ch_fasta               // channel: [mandatory] [ fasta ] => fasta reference
+        ch_fai                 // channel: [mandatory] [ fasta_fai ] => fasta reference index
+        ch_dict                // channel: [mandatory] [ dict ] => sequence dictionary
 
     main:
 
     ch_versions         = Channel.empty()
 
-    beds
+    ch_beds
         .map { meta, bed ->
                 new_meta = [
                     family:         meta.family,
@@ -34,11 +34,11 @@ workflow JOINT_GENOTYPING {
             }
         .groupTuple()
         .dump(tag:'merge_beds_input', pretty: true)
-        .set { merge_beds_input }
+        .set { ch_merge_beds_input }
 
     MERGE_BEDS(
-        merge_beds_input,
-        fasta_fai
+        ch_merge_beds_input,
+        ch_fai
     )
     ch_versions = ch_versions.mix(MERGE_BEDS.out.versions.first())
 
@@ -49,7 +49,7 @@ workflow JOINT_GENOTYPING {
     )
     ch_versions = ch_versions.mix(BEDTOOLS_SPLIT.out.versions.first())
 
-    gvcfs
+    ch_gvcfs
         .map(
             { meta, gvcf, tbi ->
                 new_meta = [
@@ -72,16 +72,16 @@ workflow JOINT_GENOTYPING {
             new_meta = meta + [id:bed.baseName]
             [ new_meta, gvcfs, tbis, bed, [], [] ]
         }
-        .set { genomicsdbimport_input }
+        .set { ch_genomicsdbimport_input }
 
-    genomicsdbimport_input.dump(tag:'genomicsdbimport_input', pretty:true)
+    ch_genomicsdbimport_input.dump(tag:'genomicsdbimport_input', pretty:true)
 
     //
     // Merge/Combine all the GVCFs from each family
     //
 
     GENOMICSDBIMPORT(
-        genomicsdbimport_input,
+        ch_genomicsdbimport_input,
         false,
         false,
         false
@@ -96,7 +96,7 @@ workflow JOINT_GENOTYPING {
             }
         )
         .dump(tag:'genotypegvcfs_input', pretty:true)
-        .set { genotypegvcfs_input }
+        .set { ch_genotypegvcfs_input }
 
     ch_versions = ch_versions.mix(GENOMICSDBIMPORT.out.versions)
 
@@ -105,10 +105,10 @@ workflow JOINT_GENOTYPING {
     //
 
     GENOTYPE_GVCFS(
-        genotypegvcfs_input,
-        fasta,
-        fasta_fai,
-        dict,
+        ch_genotypegvcfs_input,
+        ch_fasta,
+        ch_fai,
+        ch_dict,
         [],
         []
     )
@@ -121,12 +121,12 @@ workflow JOINT_GENOTYPING {
             new_meta = meta - meta.subMap("region")
             [ new_meta, vcf, tbi ]
         }
-        .dump(tag:'genotyped_vcfs', pretty:true)
-        .set { genotyped_vcfs }
+        .dump(tag:'gather_inputs_joint_genotyping', pretty:true)
+        .set { ch_gather_inputs }
 
     VCF_GATHER_BCFTOOLS(
-        genotyped_vcfs,
-        genotyped_vcfs.map { meta, vcf, tbi ->
+        ch_gather_inputs,
+        ch_gather_inputs.map { meta, vcf, tbi ->
             [ meta, [], meta.region_count ]
         },
         "family",
@@ -140,9 +140,9 @@ workflow JOINT_GENOTYPING {
             new_meta = meta - meta.subMap("region_count")
             [ new_meta, vcf ]
         }
-        .set { genotyped_vcfs }
+        .set { ch_genotyped_vcfs }
 
     emit:
-    genotyped_vcfs              // channel: [meta, vcf] => The output channel containing the post processed VCF
-    versions = ch_versions
+    genotyped_vcfs = ch_genotyped_vcfs  // channel: [meta, vcf] => The output channel containing the post processed VCF
+    versions       = ch_versions
 }

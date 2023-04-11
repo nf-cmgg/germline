@@ -10,14 +10,14 @@ include { BCFTOOLS_CONCAT                     } from '../../modules/nf-core/bcft
 
 workflow ANNOTATION {
     take:
-        vcfs                 // channel: [mandatory] [ meta, vcfs ] => The post-processed VCFs
-        fasta                // channel: [mandatory] [ fasta ] => fasta reference
-        fasta_fai            // channel: [mandatory] [ fasta_fai ] => fasta index
-        vep_cache            // channel: [optional]  [ vep_cache ] => The VEP cache to use
-        vep_extra_files      // channel: [optional]  [ file_1, file_2, file_3, ... ] => All files necessary for using the desired plugins
-        vcfanno_config       // channel: [mandatory if params.vcfanno == true] [ toml_config_file ] => The TOML config file for VCFanno
-        vcfanno_lua          // channel: [optional  if params.vcfanno == true] [ lua_file ] => A VCFanno Lua file
-        vcfanno_resources    // channel: [mandatory if params.vcfanno == true] [ resource_dir ] => The directory containing the reference files for VCFanno
+        ch_vcfs                 // channel: [mandatory] [ meta, vcfs ] => The post-processed VCFs
+        ch_fasta                // channel: [mandatory] [ fasta ] => fasta reference
+        ch_fai                  // channel: [mandatory] [ fasta_fai ] => fasta index
+        ch_vep_cache            // channel: [optional]  [ vep_cache ] => The VEP cache to use
+        ch_vep_extra_files      // channel: [optional]  [ file_1, file_2, file_3, ... ] => All files necessary for using the desired plugins
+        ch_vcfanno_config       // channel: [mandatory if params.vcfanno == true] [ toml_config_file ] => The TOML config file for VCFanno
+        ch_vcfanno_lua          // channel: [optional  if params.vcfanno == true] [ lua_file ] => A VCFanno Lua file
+        ch_vcfanno_resources    // channel: [mandatory if params.vcfanno == true] [ resource_dir ] => The directory containing the reference files for VCFanno
 
     main:
 
@@ -29,7 +29,7 @@ workflow ANNOTATION {
     // Define the present chromosomes
     //
 
-    fasta_fai
+    ch_fai
         .splitText() { region ->
                 chrom = (region[0].tokenize("\t")[0])
                 if (chrom ==~ /^(chr)?[0-9XY]{1,2}$/) {
@@ -49,70 +49,70 @@ workflow ANNOTATION {
                 meta.chr != "other"
             }
         )
-        .groupTuple()
+        .groupTuple() // No size needed here since this always originates from one file
         .map(
             { meta, chroms ->
                 [ meta, chroms.join(",") ]
             }
         )
         .dump(tag:"all_regions", pretty: true)
-        .tap { all_regions }
+        .tap { ch_all_regions }
         .count()
         .dump(tag:"count_chromosomes", pretty:true)
-        .set { count_chromosomes }
+        .set { ch_count_chromosomes }
 
-    vcfs
-        .combine(all_regions)
+    ch_vcfs
+        .combine(ch_all_regions)
         .map(
             { meta, vcf, meta2, chroms ->
                 [ meta + [regions:chroms], vcf ]
             }
         )
         .dump(tag:'vep_input', pretty:true)
-        .set { vep_input }
+        .set { ch_vep_input }
 
     //
     // Annotate using Ensembl VEP
     //
 
     ENSEMBLVEP_VEP(
-        vep_input,
+        ch_vep_input,
         params.genome,
         params.species,
         params.vep_cache_version,
-        vep_cache,
-        fasta,
-        vep_extra_files
+        ch_vep_cache,
+        ch_fasta,
+        ch_vep_extra_files
     )
 
     ch_reports  = ch_reports.mix(ENSEMBLVEP_VEP.out.report)
     ch_versions = ch_versions.mix(ENSEMBLVEP_VEP.out.versions)
 
     ENSEMBLVEP_VEP.out.vcf
-        .tap { vep_vcfs_to_index }
         .dump(tag:'vep_output', pretty:true)
-        .set { vep_vcfs }
+        .set { ch_vep_vcfs }
 
     TABIX_ENSEMBLVEP(
-        vep_vcfs_to_index
+        ch_vep_vcfs
     )
 
     ch_versions = ch_versions.mix(TABIX_ENSEMBLVEP.out.versions)
 
-    vep_vcfs
+    ch_vep_vcfs
         .join(TABIX_ENSEMBLVEP.out.tbi, failOnDuplicate: true, failOnMismatch: true)
-        .combine(count_chromosomes)
+        .combine(ch_count_chromosomes)
         .map(
             { meta, vcf, tbi, count ->
-                [ groupKey(meta.findAll{!(it.key == "regions")}, count), vcf, tbi ]
+                new_meta = meta - meta.subMap("regions")
+                [ groupKey(new_meta, count), vcf, tbi ]
             }
         )
         .groupTuple()
         .dump(tag:"ensemblvep_concat_input", pretty:true)
-        .set { ensemblvep_concat_input }
+        .set { ch_ensemblvep_concat_input }
 
     BCFTOOLS_CONCAT(
-        ensemblvep_concat_input
+        ch_ensemblvep_concat_input
     )
 
     ch_versions = ch_versions.mix(BCFTOOLS_CONCAT.out.versions)
@@ -122,13 +122,13 @@ workflow ANNOTATION {
         BCFTOOLS_CONCAT.out.vcf
             .map { it + [[]]}
             .dump(tag:'vcfanno_input', pretty:true)
-            .set { vcfanno_input }
+            .set { ch_vcfanno_input }
 
         VCFANNO(
-            vcfanno_input,
-            vcfanno_config,
-            vcfanno_lua,
-            vcfanno_resources
+            ch_vcfanno_input,
+            ch_vcfanno_config,
+            ch_vcfanno_lua,
+            ch_vcfanno_resources
         )
 
         BGZIP_ANNOTATED_VCFS(
