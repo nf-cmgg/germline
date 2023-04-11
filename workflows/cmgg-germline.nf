@@ -597,7 +597,7 @@ workflow CMGGGERMLINE {
 
         ANNOTATION.out.annotated_vcfs.set { ch_annotation_output }
     } else {
-        ped_vcfs.set { ch_annotation_output }
+        ch_ped_vcfs.set { ch_annotation_output }
     }
 
     ch_annotation_output.dump(tag:'annotation_output', pretty:true)
