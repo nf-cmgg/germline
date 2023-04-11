@@ -36,7 +36,7 @@ workflow ADD_PED_HEADER {
 
     ch_versions = ch_versions.mix(MERGE_HEADERS.out.versions)
 
-    vcfs
+    ch_vcfs
         .join(MERGE_HEADERS.out.header, failOnDuplicate: true, failOnMismatch: true)
         .set { ch_bcftools_reheader_input }
 
