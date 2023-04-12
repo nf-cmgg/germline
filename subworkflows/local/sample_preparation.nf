@@ -15,11 +15,11 @@ include { MOSDEPTH                          } from '../../modules/nf-core/mosdep
 
 workflow SAMPLE_PREPARATION {
     take:
-        ch_crams             // channel: [mandatory] [ meta, cram, crai ] => sample CRAM files and their optional indices
-        ch_roi               // channel: [mandatory] [ meta, roi ] => ROI bed files for WES analysis
-        ch_fasta             // channel: [mandatory] [ fasta ] => fasta reference
-        ch_fai               // channel: [mandatory] [ fasta_fai ] => fasta reference index
-        ch_default_roi       // channel: [optional]  [ roi ] => bed containing regions of interest to be used as default
+        ch_crams             // channel: [mandatory] [ val(meta), path(cram), path(crai) ] => sample CRAM files and their optional indices
+        ch_roi               // channel: [optional]  [ val(meta), path(roi) ] => ROI bed files for WES analysis
+        ch_fasta             // channel: [mandatory] [ path(fasta) ] => fasta reference
+        ch_fai               // channel: [mandatory] [ path(fai) ] => fasta reference index
+        ch_default_roi       // channel: [optional]  [ path(roi) ] => bed containing regions of interest to be used as default
 
     main:
 
@@ -31,16 +31,13 @@ workflow SAMPLE_PREPARATION {
     //
 
     ch_crams
-        .filter { meta, cram, crai ->
-            cram != []
-        }
-        .groupTuple()
+        .groupTuple() // No size needed here because this runs before any process
         .branch(
             { meta, cram, crai ->
                 multiple: cram.size() > 1
                     return [meta, cram]
                 single:   cram.size() == 1
-                    return [meta, cram, crai]
+                    return [meta, cram[0], crai[0]]
             }
         )
         .set { ch_cram_branch }
@@ -53,48 +50,44 @@ workflow SAMPLE_PREPARATION {
         ch_fasta,
         ch_fai
     )
+    ch_versions = ch_versions.mix(SAMTOOLS_MERGE.out.versions.first())
+
+    //
+    // Index the CRAM files which have no index
+    //
 
     SAMTOOLS_MERGE.out.cram
-        .mix(ch_cram_branch.single
-            .map(
-                {meta, cram, crai ->
-                    [ meta, cram[0], crai[0]]
-                }
-            )
-        )
-        .branch(
-            { meta, cram, crai=[] ->
-                not_indexed: crai == []
-                    return [ meta, cram ]
-                indexed: crai != []
-                    return [ meta, cram, crai ]
-            }
-        )
+        .mix(ch_cram_branch.single)
+        .branch { meta, cram, crai=[] ->
+            not_indexed: crai == []
+                return [ meta, cram ]
+            indexed: crai != []
+                return [ meta, cram, crai ]
+        }
         .set { ch_merged_crams }
 
-    ch_merged_crams.not_indexed
-        .dump(tag:'merged_crams_not_indexed', pretty:true)
-        .set { ch_crams_to_index }
+    ch_merged_crams.not_indexed.dump(tag:'merged_crams_not_indexed', pretty:true)
     ch_merged_crams.indexed.dump(tag:'merged_crams_indexed', pretty:true)
 
     SAMTOOLS_INDEX(
-        ch_crams_to_index
+        ch_merged_crams.not_indexed
     )
+    ch_versions = ch_versions.mix(SAMTOOLS_INDEX.out.versions.first())
 
-    ch_crams_to_index
+    ch_merged_crams.not_indexed
         .join(SAMTOOLS_INDEX.out.crai, failOnDuplicate: true, failOnMismatch: true)
         .mix(ch_merged_crams.indexed)
         .dump(tag:'ready_crams', pretty:true)
         .set { ch_ready_crams }
 
     //
-    // Preprocess the ROI BED files => merge overlapping 
+    // Preprocess the ROI BED files => sort and merge overlapping regions
     //
 
     ch_roi
         .groupTuple() // A specified size isn't needed here since this runs before any process using ROI files is executed
         .branch { meta, roi ->
-            // Determine whether or not there is an ROI file given to the current sample
+            // Determine whether there is an ROI file given to the current sample
             // It's possible that a sample is given multiple times in the samplesheet, in which
             // case they have been merged earlier. This code checks if at least one entry of the same
             // sample contains an ROI file
@@ -113,7 +106,6 @@ workflow SAMPLE_PREPARATION {
         }
         .set { ch_roi_branch }
 
-    // Merge the ROI BED files if multiple samples are given, also merges overlapping regions in the BED files
     MERGE_ROI_SAMPLE(
         ch_roi_branch.found,
         ch_fai
@@ -148,7 +140,6 @@ workflow SAMPLE_PREPARATION {
     // Create callable regions
     //
 
-    // Create BEDs with callable regions using Mosdepth
     ch_ready_crams
         .join(ch_ready_rois, failOnDuplicate:true, failOnMismatch:true)
         .set { ch_mosdepth_input }
@@ -159,12 +150,8 @@ workflow SAMPLE_PREPARATION {
     )
     ch_versions = ch_versions.mix(MOSDEPTH.out.versions.first())
 
-    // Join all channels back together
-    MOSDEPTH.out.quantized_bed
-        .join(ch_ready_rois, failOnDuplicate:true, failOnMismatch:true)
-        .map { meta, callable, roi ->
-            [ meta, roi, callable ]
-        }
+    ch_ready_rois
+        .join(MOSDEPTH.out.quantized_bed, failOnDuplicate:true, failOnMismatch:true)
         .set { ch_beds_to_filter }
 
     // Filter out the regions with no coverage
@@ -195,8 +182,8 @@ workflow SAMPLE_PREPARATION {
         .set { ch_ready_beds }
 
     emit:
-    ready_crams = ch_ready_crams
-    ready_beds  = ch_ready_beds
-    versions    = ch_versions
-    reports     = ch_reports
+    ready_crams = ch_ready_crams    // [ val(meta), path(cram), path(crai) ]
+    ready_beds  = ch_ready_beds     // [ val(meta), path(bed) ]
+    versions    = ch_versions       // [ path(versions) ]
+    reports     = ch_reports        // [ path(reports) ]
 }
