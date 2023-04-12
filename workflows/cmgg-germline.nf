@@ -13,31 +13,6 @@ def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
 WorkflowCmggGermline.initialise(params, log)
 
 //
-// Check input path parameters to see if they exist
-//
-
-def checkPathParamList = [
-    params.fasta,
-    params.fai,
-    params.dict,
-    params.strtablefile,
-    params.vep_cache,
-    params.vcfanno_config,
-    params.vcfanno_lua,
-    params.dbsnp,
-    params.dbsnp_tbi,
-    params.somalier_sites,
-    params.sdf
-]
-for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
-
-//
-// Check the input samplesheet
-//
-
-if (params.input) { ch_input = file(params.input, checkIfExists: true) } else { exit 1, 'Input samplesheet not specified!' }
-
-//
 // Check for dependencies between parameters
 //
 
@@ -126,6 +101,44 @@ def multiqc_report = []
 
 // The main workflow
 workflow CMGGGERMLINE {
+
+    //
+    // Check input path parameters to see if they exist
+    //
+
+    def checkPathParamList = [
+        params.fasta,
+        params.fai,
+        params.dict,
+        params.strtablefile,
+        params.dbsnp,
+        params.dbsnp_tbi,
+        params.somalier_sites,
+        params.sdf,
+        params.roi,
+        params.vep_cache,
+        params.vcfanno_config,
+        params.vcfanno_lua,
+        params.dbnsfp,
+        params.dbnsfp_tbi,
+        params.spliceai_indel,
+        params.spliceai_indel_tbi,
+        params.spliceai_snv,
+        params.spliceai_snv_tbi,
+        params.mastermind,
+        params.mastermind_tbi,
+        params.maxentscan,
+        params.eog,
+        params.eog_tbi
+    ]
+    for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
+
+    //
+    // Check the input samplesheet
+    //
+
+    if (params.input) { ch_input = file(params.input, checkIfExists: true) } else { error('Input samplesheet not specified!') }
+
 
     ch_versions = Channel.empty()
     ch_reports  = Channel.empty()
