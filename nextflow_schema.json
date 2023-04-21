@@ -181,8 +181,7 @@
                 "use_dragstr_model": {
                     "type": "boolean",
                     "description": "Whether or not the DRAGSTR models should be used",
-                    "fa_icon": "fas fa-question-circle",
-                    "default": false
+                    "fa_icon": "fas fa-question-circle"
                 },
                 "dbsnp": {
                     "type": "string",
@@ -201,6 +200,15 @@
                     "default": "https://github.com/brentp/somalier/files/3412456/sites.hg38.vcf.gz",
                     "fa_icon": "far fa-file-alt",
                     "description": "A VCF file with sites for Somalier to use"
+                },
+                "coverage_fast": {
+                    "type": "boolean",
+                    "description": "If true, mosdepth will be run in fast-mode and will only output quantized BED files in the output directory for each WGS individual. If false, it will run in normal mode and output everything"
+                },
+                "merge_distance": {
+                    "type": "integer",
+                    "default": 10000,
+                    "description": "Define the merge distance for the family BED files. Increase this value if you get disk space issues with GenomicsDBImport."
                 }
             }
         },

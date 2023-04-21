@@ -33,6 +33,8 @@ process FILTER_BEDS {
     """
 
     stub:
+    def prefix = task.ext.prefix ?: "${meta.id}"
+
     """
     touch ${prefix}.bed.gz
 

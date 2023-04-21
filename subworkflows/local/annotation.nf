@@ -10,14 +10,14 @@ include { BCFTOOLS_CONCAT                     } from '../../modules/nf-core/bcft
 
 workflow ANNOTATION {
     take:
-        vcfs                 // channel: [mandatory] [ meta, vcfs ] => The post-processed VCFs
-        fasta                // channel: [mandatory] [ fasta ] => fasta reference
-        fasta_fai            // channel: [mandatory] [ fasta_fai ] => fasta index
-        vep_cache            // channel: [optional]  [ vep_cache ] => The VEP cache to use
-        vep_extra_files      // channel: [optional]  [ file_1, file_2, file_3, ... ] => All files necessary for using the desired plugins
-        vcfanno_config       // channel: [mandatory if params.vcfanno == true] [ toml_config_file ] => The TOML config file for VCFanno
-        vcfanno_lua          // channel: [optional  if params.vcfanno == true] [ lua_file ] => A VCFanno Lua file
-        vcfanno_resources    // channel: [mandatory if params.vcfanno == true] [ resource_dir ] => The directory containing the reference files for VCFanno
+        ch_vcfs                 // channel: [mandatory] [ val(meta), path(vcf) ] => The post-processed VCFs
+        ch_fasta                // channel: [mandatory] [ path(fasta) ] => fasta reference
+        ch_fai                  // channel: [mandatory] [ path(fai) ] => fasta index
+        ch_vep_cache            // channel: [optional]  [ path(vep_cache) ] => The VEP cache to use
+        ch_vep_extra_files      // channel: [optional]  [ path(file_1, file_2, file_3, ...) ] => All files necessary for using the desired plugins
+        ch_vcfanno_config       // channel: [mandatory if params.vcfanno == true] [ path(toml_config_file) ] => The TOML config file for VCFanno
+        ch_vcfanno_lua          // channel: [optional  if params.vcfanno == true] [ path(lua_file) ] => A VCFanno Lua file
+        ch_vcfanno_resources    // channel: [mandatory if params.vcfanno == true] [ path(resource_dir) ] => The directory containing the reference files for VCFanno
 
     main:
 
@@ -29,123 +29,126 @@ workflow ANNOTATION {
     // Define the present chromosomes
     //
 
-    fasta_fai
+    ch_fai
         .splitText() { region ->
-                chrom = (region[0].tokenize("\t")[0])
-                if (chrom ==~ /^(chr)?[0-9XY]{1,2}$/) {
-                    meta = [chr:chrom]
-                }
-                else if (chrom ==~ /^.*_alt.*$/) {
-                    meta = [chr:"alt"]
-                }
-                else {
-                    meta = [chr:"other"]
-                }
-
-                [ meta, chrom ]
+            chrom = (region[0].tokenize("\t")[0])
+            if (chrom ==~ /^(chr)?[0-9XY]{1,2}$/) {
+                // If the chromosome is a full chromosome, add it as the chr meta
+                meta = [chr:chrom]
             }
-        .filter(
-            { meta, chrom ->
-                meta.chr != "other"
+            else if (chrom ==~ /^.*_alt.*$/) {
+                // If the chromosome is an alt contig, add alt as the chr meta
+                meta = [chr:"alt"]
             }
-        )
-        .groupTuple()
-        .map(
-            { meta, chroms ->
-                [ meta, chroms.join(",") ]
+            else {
+                // If the chromosome isn't a full chromosome or an alt contig, add other as the chr meta
+                meta = [chr:"other"]
             }
-        )
+            [ meta, chrom ]
+        }
+        .filter { meta, chrom ->
+            // Filter out the chromosomes tagged as other
+            meta.chr != "other"
+        }
+        .groupTuple() // No size needed here since this always originates from one file
+        .map { meta, chroms ->
+            // Join all alt contigs by commas (these will together be used as intervals)
+            [ meta, chroms.join(",") ]
+        }
         .dump(tag:"all_regions", pretty: true)
-        .tap { all_regions }
-        .count()
+        .tap { ch_all_regions }
+        .count() // Count how much chromosomes are found (alt contigs are counted as one for all contigs)
         .dump(tag:"count_chromosomes", pretty:true)
-        .set { count_chromosomes }
+        .set { ch_count_chromosomes }
 
-    vcfs
-        .combine(all_regions)
-        .map(
-            { meta, vcf, meta2, chroms ->
-                [ meta + [regions:chroms], vcf ]
-            }
-        )
+    ch_vcfs
+        .combine(ch_all_regions)
+        .map { meta, vcf, meta2, chroms ->
+            // Remove the chromosomes meta and add the found chromosomes to the VCF meta
+            [ meta + [regions:chroms], vcf ]
+        }
         .dump(tag:'vep_input', pretty:true)
-        .set { vep_input }
+        .set { ch_vep_input }
 
     //
     // Annotate using Ensembl VEP
     //
 
     ENSEMBLVEP_VEP(
-        vep_input,
+        ch_vep_input,
         params.genome,
         params.species,
         params.vep_cache_version,
-        vep_cache,
-        fasta,
-        vep_extra_files
+        ch_vep_cache,
+        ch_fasta,
+        ch_vep_extra_files
     )
-
     ch_reports  = ch_reports.mix(ENSEMBLVEP_VEP.out.report)
-    ch_versions = ch_versions.mix(ENSEMBLVEP_VEP.out.versions)
+    ch_versions = ch_versions.mix(ENSEMBLVEP_VEP.out.versions.first())
 
     ENSEMBLVEP_VEP.out.vcf
-        .tap { vep_vcfs_to_index }
         .dump(tag:'vep_output', pretty:true)
-        .set { vep_vcfs }
+        .set { ch_vep_vcfs }
+
+    //
+    // Create the VCF index for the annotated VCFs and concatenate all VCFs from the same family back together
+    //
 
     TABIX_ENSEMBLVEP(
-        vep_vcfs_to_index
+        ch_vep_vcfs
     )
+    ch_versions = ch_versions.mix(TABIX_ENSEMBLVEP.out.versions.first())
 
-    ch_versions = ch_versions.mix(TABIX_ENSEMBLVEP.out.versions)
-
-    vep_vcfs
+    ch_vep_vcfs
         .join(TABIX_ENSEMBLVEP.out.tbi, failOnDuplicate: true, failOnMismatch: true)
-        .combine(count_chromosomes)
-        .map(
-            { meta, vcf, tbi, count ->
-                [ groupKey(meta.findAll{!(it.key == "regions")}, count), vcf, tbi ]
-            }
-        )
+        .combine(ch_count_chromosomes)
+        .map { meta, vcf, tbi, count ->
+            // Remove the chromosome regions from the meta and specify the group size as the amount of chromosomes found earlier
+            new_meta = meta - meta.subMap("regions")
+            [ groupKey(new_meta, count), vcf, tbi ]
+        }
         .groupTuple()
         .dump(tag:"ensemblvep_concat_input", pretty:true)
-        .set { ensemblvep_concat_input }
+        .set { ch_ensemblvep_concat_input }
 
     BCFTOOLS_CONCAT(
-        ensemblvep_concat_input
+        ch_ensemblvep_concat_input
     )
+    ch_versions = ch_versions.mix(BCFTOOLS_CONCAT.out.versions.first())
 
-    ch_versions = ch_versions.mix(BCFTOOLS_CONCAT.out.versions)
+    //
+    // Annotate the VCFs with VCFanno
+    //
 
     if (params.vcfanno) {
 
         BCFTOOLS_CONCAT.out.vcf
             .map { it + [[]]}
             .dump(tag:'vcfanno_input', pretty:true)
-            .set { vcfanno_input }
+            .set { ch_vcfanno_input }
 
         VCFANNO(
-            vcfanno_input,
-            vcfanno_config,
-            vcfanno_lua,
-            vcfanno_resources
+            ch_vcfanno_input,
+            ch_vcfanno_config,
+            ch_vcfanno_lua,
+            ch_vcfanno_resources
         )
+        ch_versions = ch_versions.mix(VCFANNO.out.versions.first())
 
         BGZIP_ANNOTATED_VCFS(
             VCFANNO.out.vcf
         )
+        ch_versions = ch_versions.mix(BGZIP_ANNOTATED_VCFS.out.versions.first())
 
-        ch_annotated_vcfs = BGZIP_ANNOTATED_VCFS.out.output
-        ch_versions       = ch_versions.mix(VCFANNO.out.versions)
-        ch_versions       = ch_versions.mix(BGZIP_ANNOTATED_VCFS.out.versions)
+        BGZIP_ANNOTATED_VCFS.out.output.set { ch_annotated_vcfs }
     }
     else {
-        ch_annotated_vcfs = BCFTOOLS_CONCAT.out.vcf
+        BCFTOOLS_CONCAT.out.vcf.set { ch_annotated_vcfs }
     }
 
 
     emit:
-    annotated_vcfs  = ch_annotated_vcfs
-    reports         = ch_reports
-    versions        = ch_versions
+    annotated_vcfs  = ch_annotated_vcfs // [ val(meta), path(vcf) ]
+    reports         = ch_reports        // [ path(reports) ]
+    versions        = ch_versions       // [ path(versions) ]
 }
