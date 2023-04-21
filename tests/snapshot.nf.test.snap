@@ -1,0 +1,34 @@
+{
+    "Success": {
+        "content": [
+            "Proband_12345.bcftools_stats.txt:md5,4b0e424d6b1dac323c97ae909695f235",
+            [
+                "##INFO=<ID=AC,Number=A,Type=Integer,Description=\"Allele count in genotypes, for each ALT allele, in the same order as listed\">",
+                "##INFO=<ID=AF,Number=A,Type=Float,Description=\"Allele Frequency, for each ALT allele, in the same order as listed\">",
+                "##INFO=<ID=AN,Number=1,Type=Integer,Description=\"Total number of alleles in called genotypes\">"
+            ],
+            "Proband_12345.bed:md5,61cb9f410188a436acff4303e145a1b5",
+            "Proband_12345.samples.tsv:md5,b35e0c38d88aa0f9ffa8bccb9be47ebc",
+            "NA24385D2_NVQ_034.bcftools_stats.txt:md5,93fb089fc983f1a364dfc685a4b6cefb",
+            [
+                "##GVCFBlock30-40=minGQ=30(inclusive),maxGQ=40(exclusive)",
+                "##GVCFBlock40-50=minGQ=40(inclusive),maxGQ=50(exclusive)",
+                "##GVCFBlock50-60=minGQ=50(inclusive),maxGQ=60(exclusive)"
+            ],
+            true,
+            "NA24385D2_NVQ_034.bed:md5,cec9cc653cb901208a2c2cc4caed18d4",
+            "NA24385D2_NVQ_034.quantized.bed.gz:md5,e7837ac172345534b9788ea22b639f3b",
+            "DNA049572.bcftools_stats.txt:md5,0896dd412178c3de9d860e5b75af9318",
+            [
+                "##GVCFBlock30-40=minGQ=30(inclusive),maxGQ=40(exclusive)",
+                "##GVCFBlock40-50=minGQ=40(inclusive),maxGQ=50(exclusive)",
+                "##GVCFBlock50-60=minGQ=50(inclusive),maxGQ=60(exclusive)"
+            ],
+            true,
+            "DNA049572.bed:md5,137d0be286ef553da82fc938020b6ae9",
+            "DNA049572.quantized.bed.gz:md5,bee846bf544675a458a1c79e53dcf954",
+            true
+        ],
+        "timestamp": "2023-04-21T11:09:17+0000"
+    }
+}

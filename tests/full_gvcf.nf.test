@@ -2,6 +2,7 @@ nextflow_pipeline {
 
     name "Full pipeline test"
     script "main.nf"
+    tag "full_gvcf"
 
     test("Success") {
 

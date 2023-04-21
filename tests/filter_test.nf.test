@@ -1,13 +1,14 @@
 nextflow_pipeline {
 
-    name "Basic annotate tests"
+    name "Filter tests"
     script "main.nf"
+    tag "filter_test"
 
     test("Success") {
 
         when {
             params {
-                annotate = true
+                filter = true
             }
         }
 
