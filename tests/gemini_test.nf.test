@@ -2,6 +2,7 @@ nextflow_pipeline {
 
     name "Gemini tests"
     script "main.nf"
+    tag "gemini_test"
 
     test("Success") {
 

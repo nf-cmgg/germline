@@ -51,17 +51,17 @@ workflow VCF_VALIDATE_SMALL_VARIANTS {
     rtgtools_non_snp_svg_rocplot            = Channel.empty()
     rtgtools_weighted_svg_rocplot           = Channel.empty()
 
-    list_tools = tools.tokenize(",")
+    val_list_tools = tools.tokenize(",")
 
     ch_input = ch_vcf.join(ch_beds, failOnDuplicate: true, failOnMismatch: true)
 
-    if("happy" in list_tools){
-        happy_input = ch_input
+    if("happy" in val_list_tools){
+        ch_happy_input = ch_input
             .map { meta, vcf, tbi, truth_vcf, truth_tbi, regions_bed, targets_bed ->
                 [ meta, vcf, truth_vcf, regions_bed, targets_bed ]
             }
         HAPPY_HAPPY (
-            happy_input,
+            ch_happy_input,
             ch_fasta,
             ch_fasta_fai,
             ch_happy_false_positive_regions,
@@ -81,7 +81,7 @@ workflow VCF_VALIDATE_SMALL_VARIANTS {
         happy_extended_csv      = HAPPY_HAPPY.out.extended_csv
     }
 
-    if("vcfeval" in list_tools){
+    if("vcfeval" in val_list_tools){
         RTGTOOLS_VCFEVAL(
             ch_input.map { it[0..-2] + [[]] },
             ch_vcfeval_sdf

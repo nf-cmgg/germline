@@ -2,6 +2,7 @@ nextflow_pipeline {
 
     name "Tests of the pipeline with failing options"
     script "main.nf"
+    tag "fails"
 
     test("Missing required input") {
 
