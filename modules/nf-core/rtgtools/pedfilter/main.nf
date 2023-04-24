@@ -28,7 +28,7 @@ process RTGTOOLS_PEDFILTER {
         error "The input and output file have the same name, please use another ext.prefix."
     }
 
-    def postprocess = extension == "vcf.gz" ? "| rtg bgzip ${args2} -" : ""
+    def postprocess = extension == "vcf.gz" ? "| grep '^##' | rtg bgzip ${args2} -" : ""
 
     """
     cut -f1-6 ${input} > ${prefix}.ped
