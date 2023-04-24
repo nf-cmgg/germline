@@ -1,7 +1,6 @@
 FROM mambaorg/micromamba:1.4-focal
 
 ENV SOMALIER_VERSION=0.2.15
-ENV PIPELINE_VERSION=1.2.0
 
 # Install mamba dependencies
 RUN micromamba install -y --name base -c conda-forge -c bioconda -c defaults \
@@ -27,10 +26,6 @@ RUN micromamba install -y --name base -c conda-forge -c bioconda -c defaults \
     && micromamba clean --all --yes
 
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
-
-# Download the pipeline
-RUN nextflow pull CenterForMedicalGeneticsGhent/nf-cmgg-germline -r ${PIPELINE_VERSION} && \
-    nextflow run CenterForMedicalGeneticsGhent/nf-cmgg-germline -r ${PIPELINE_VERSION} --help
 
 USER root
 
