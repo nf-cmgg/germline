@@ -38,6 +38,7 @@ nextflow_pipeline {
             assert file("${outputDir}/multiqc_reports/multiqc_report.html").exists()
             assert file("${outputDir}/individuals/DNA049572/validation/DNA049572.fn.vcf.gz").exists()
             assert file("${outputDir}/individuals/DNA049572/validation/DNA049572.fn.vcf.gz.tbi").exists()
+            assert file("${outputDir}/individuals/DNA049572/validation/DNA049572.jaccard.tsv").exists()
             assert file("${outputDir}/individuals/DNA049572/validation/DNA049572.fp.vcf.gz").exists()
             assert file("${outputDir}/individuals/DNA049572/validation/DNA049572.fp.vcf.gz.tbi").exists()
             assert file("${outputDir}/individuals/DNA049572/validation/DNA049572.non_snp_roc.tsv.gz").exists()
