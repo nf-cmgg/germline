@@ -26,7 +26,7 @@ process MERGE_BEDS {
     do
         if [[ \$FILE != '*/*.bed.gz' ]]
         then
-            gunzip \$FILE
+            gzip -d --force \$FILE
         fi
     done;
 
