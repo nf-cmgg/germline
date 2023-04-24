@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 1. Added a `--coverage_fast <true/false>` flag which can be used to run mosdepth in fast mode. This flag will also make sure that only the quantized bed from mosdepth is present in the output directory for each WGS individual, otherwise it will output everything
 2. Added the possibility to give GVCF files as inputs and immediately go to the joint-genotyping. This is especially useful for the cases where several samples should be combined. This way the variant calling doesn't need to be re-run. Beware though that a CRAM file should still be given to generate the BED files used for the scatter/gathering. The new header names are `gvcf` and `tbi` where `gvcf` is used to give the GVCF and `tbi` is used to give its index.
+3. Added `bedtools jaccard` to the validation.
+4. Added a Dockerfile which creates an image that is able to run a full pipeline run inside of it.
 
 ### Improvements
 
@@ -23,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    - Run GenomicsDBImport and GenotypeGVCFs in parallel using these regions
 2. Updated the resource requirements of GenomicsDBImport and GenotypeGVCFs to be more efficient (and more cluster friendly)
 3. Removed ReblockGVCFs (this wasn't worth it and we save the raw GVCFs)
+4. Added `--merge_distance <integer>` to decrease the amount of intervals passed to genomicsdbimport. Increase this value if GenomicsDBImport is running slow.
 
 ### Bug fixes
 
