@@ -493,7 +493,7 @@ workflow CMGGGERMLINE {
             [[],[]],
             [[],[]],
             [[],[]],
-            "vcfeval" //Only VCFeval for now, awaiting the conda fix for happy (https://github.com/bioconda/bioconda-recipes/pull/39267)
+            "vcfeval,jaccard" //Only VCFeval for now, awaiting the conda fix for happy (https://github.com/bioconda/bioconda-recipes/pull/39267)
         )
         ch_versions = ch_versions.mix(VCF_VALIDATE_SMALL_VARIANTS.out.versions)
     }

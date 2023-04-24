@@ -41,6 +41,11 @@
                         "installed_by": ["modules"],
                         "patch": "modules/nf-core/bedtools/intersect/bedtools-intersect.diff"
                     },
+                    "bedtools/jaccard": {
+                        "branch": "master",
+                        "git_sha": "e53ca1ea41b5e9ab001ac84fbdb10ebcc852c5b8",
+                        "installed_by": ["modules"]
+                    },
                     "bedtools/merge": {
                         "branch": "master",
                         "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
