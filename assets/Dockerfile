@@ -2,6 +2,8 @@ FROM mambaorg/micromamba:1.4-focal
 
 # Install mamba dependencies
 RUN micromamba install -y --name base -c conda-forge -c bioconda -c defaults \
+    git \
+    nim \
     mosdepth=0.3.3 \
     multiqc=1.14 \
     nextflow=22.10.6 \
@@ -19,23 +21,16 @@ RUN micromamba install -y --name base -c conda-forge -c bioconda -c defaults \
     vcfanno=0.3.3 \
     && micromamba clean --all --yes
 
+ARG MAMBA_DOCKERFILE_ACTIVATE=1
+
 USER root
 
-RUN apt update -y && apt install git nim wget libz-dev liblzma-dev libbz2-dev libcurl4-openssl-dev -y
-
-RUN cd /usr/bin && \
-    wget https://github.com/samtools/htslib/releases/download/1.16/htslib-1.16.tar.bz2 && \
-    tar -vxjf htslib-1.16.tar.bz2 && \
-    cd htslib-1.16 && \
-    make
+ENV somalier_version=0.2.15
 
 # Install somalier
-RUN cd / &&    \
-    git clone -b master --depth 5 https://github.com/brentp/somalier.git
+RUN curl -SL https://github.com/brentp/somalier/releases/download/v$somalier_version/somalier -o somalier && \
+    chmod +x somalier && \
+    cp somalier /usr/local/bin/
 
-RUN cd /somalier &&  \
-    nim c -d:danger -d:nsb_static -d:release -d:openmp -d:blas=openblas -d:lapack=openblas -o:/usr/bin/somalier src/somalier && \
-    cp scripts/ancestry-labels-1kg.tsv / && \
-    rm -rf /somalier && somalier --help
-
-ENV somalier_ancestry_labels /ancestry_labels-1kg.tsv
+RUN which somalier && \
+    somalier -h
