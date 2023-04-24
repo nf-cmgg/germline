@@ -38,10 +38,10 @@ workflow GERMLINE_VARIANT_CALLING {
         .set { ch_split_beds }
 
     //
-    // Generate DRAGSTR models (if --use_dragstr_model true is specified)
+    // Generate DRAGSTR models (if --dragstr true is specified)
     //
 
-    if (params.use_dragstr_model) {
+    if (params.dragstr) {
 
         CALIBRATEDRAGSTRMODEL(
             ch_crams,

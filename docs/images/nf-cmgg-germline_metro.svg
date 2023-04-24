@@ -463,7 +463,7 @@
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.175px;font-family:FontAwesome;-inkscape-font-specification:'FontAwesome, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:end;text-anchor:end;fill:#241c1c;stroke-width:0.264583"
          x="38.978828"
          y="74.441734"
-         id="tspan5383">--use_dragstr_model = true</tspan><tspan
+         id="tspan5383">--dragstr = true</tspan><tspan
          sodipodi:role="line"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.175px;font-family:FontAwesome;-inkscape-font-specification:'FontAwesome, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:end;text-anchor:end;fill:#241c1c;stroke-width:0.264583"
          x="38.978828"
