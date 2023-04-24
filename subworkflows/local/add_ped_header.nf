@@ -24,7 +24,7 @@ workflow ADD_PED_HEADER {
     ch_versions = ch_versions.mix(RTGTOOLS_PEDFILTER.out.versions.first())
 
     //
-    // Create the new headers and replace the VCF headers with the new headers
+    // Add the PED headers to the VCF using bcftools annotate --header-lines
     //
 
     ch_vcfs

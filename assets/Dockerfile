@@ -7,9 +7,12 @@ ENV PIPELINE_VERSION=1.2.0
 RUN micromamba install -y --name base -c conda-forge -c bioconda -c defaults \
     git \
     nim \
+    gcc \
+    snappy \
+    nextflow=22.10.6 \
+    python==3.11 \
     mosdepth=0.3.3 \
     multiqc=1.14 \
-    nextflow=22.10.6 \
     samtools=1.16.1 \
     tar=1.34 \
     tabix=1.11 \
@@ -20,12 +23,12 @@ RUN micromamba install -y --name base -c conda-forge -c bioconda -c defaults \
     rtg-tools=3.12.1 \
     sed=4.7 \
     grep=3.4 \
-    vcf2db=2020.02.24 \
     vcfanno=0.3.3 \
     && micromamba clean --all --yes
 
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
 
+# Download the pipeline
 RUN nextflow pull CenterForMedicalGeneticsGhent/nf-cmgg-germline -r ${PIPELINE_VERSION} && \
     nextflow run CenterForMedicalGeneticsGhent/nf-cmgg-germline -r ${PIPELINE_VERSION} --help
 
@@ -36,3 +39,12 @@ RUN curl -SL https://github.com/brentp/somalier/releases/download/v${SOMALIER_VE
     chmod +x somalier && \
     cp somalier /usr/local/bin/ && \
     somalier -h
+
+# Install vcf2db
+RUN git clone https://github.com/quinlan-lab/vcf2db && \
+    cd vcf2db && \
+    pip install -r requirements.txt && \
+    pip install SQLAlchemy==1.4.4 && \
+    chmod a+x vcf2db.py && \
+    cp vcf2db.py /usr/local/bin/ && \
+    vcf2db.py -h
