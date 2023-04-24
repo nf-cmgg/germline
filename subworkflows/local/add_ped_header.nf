@@ -3,9 +3,7 @@
 //
 
 include { RTGTOOLS_PEDFILTER    } from '../../modules/nf-core/rtgtools/pedfilter/main'
-include { BCFTOOLS_REHEADER     } from '../../modules/nf-core/bcftools/reheader/main'
-
-include { MERGE_HEADERS         } from '../../modules/local/merge_headers'
+include { BCFTOOLS_ANNOTATE     } from '../../modules/nf-core/bcftools/annotate/main'
 
 workflow ADD_PED_HEADER {
     take:
@@ -26,26 +24,23 @@ workflow ADD_PED_HEADER {
     ch_versions = ch_versions.mix(RTGTOOLS_PEDFILTER.out.versions.first())
 
     //
-    // Create the new headers and replace the VCF headers with the new headers
+    // Add the PED headers to the VCF using bcftools annotate --header-lines
     //
 
-    // TODO: rewrite this module in a better language than groovy
-    MERGE_HEADERS(
-        ch_vcfs.join(RTGTOOLS_PEDFILTER.out.output, failOnDuplicate: true, failOnMismatch: true)
-    )
-    ch_versions = ch_versions.mix(MERGE_HEADERS.out.versions.first())
-
     ch_vcfs
-        .join(MERGE_HEADERS.out.header, failOnDuplicate: true, failOnMismatch: true)
-        .set { ch_bcftools_reheader_input }
+        .join(RTGTOOLS_PEDFILTER.out.output, failOnDuplicate: true, failOnMismatch: true)
+        .map { meta, vcf, ped_vcf ->
+            [ meta, vcf, [], [], [], ped_vcf ]
+        }
+        .set { ch_annotate_input }
+    
 
-    BCFTOOLS_REHEADER(
-        ch_bcftools_reheader_input,
-        []
+    BCFTOOLS_ANNOTATE(
+        ch_annotate_input
     )
-    ch_versions = ch_versions.mix(BCFTOOLS_REHEADER.out.versions.first())
+    ch_versions = ch_versions.mix(BCFTOOLS_ANNOTATE.out.versions.first())
 
     emit:
-    ped_vcfs = BCFTOOLS_REHEADER.out.vcf // [ val(meta), path(vcf) ]
+    ped_vcfs = BCFTOOLS_ANNOTATE.out.vcf // [ val(meta), path(vcf) ]
     versions = ch_versions               // [ path(versions) ]
 }
