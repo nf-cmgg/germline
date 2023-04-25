@@ -29,7 +29,6 @@
 
 ## Pipeline tools (in alphabetical order)
 
-
 - [BCFTools](https://pubmed.ncbi.nlm.nih.gov/21903627/)
 
   > Li H: A statistical framework for SNP calling, mutation discovery, association mapping and population genetical parameter estimation from sequencing data. Bioinformatics. 2011 Nov 1;27(21):2987-93. doi: 10.1093/bioinformatics/btr509. PubMed PMID: 21903627; PubMed Central PMCID: PMC3198575.
