@@ -20,7 +20,7 @@ Reference genome related files and options required for the workflow.
 |-----------|-----------|-----------|-----------|-----------|-----------|
 | `genome` | Reference genome build <details><summary>Help</summary><small>Requires a Genome Reference Consortium reference ID (e.g. GRCh38)</small></details>| `string` | GRCh38 |  |  |
 | `fasta` | Path to FASTA genome file. <details><summary>Help</summary><small>This parameter is *mandatory* if `--genome` is not specified. The path to the reference genome fasta.</small></details>| `string` |  | True |  |
-| `fai` | Path to FASTA genome index file. <details><summary>Help</summary><small>This parameter is *mandatory* if `--genome` is not specified.</small></details>| `string` |  |  |  |
+| `fai` | Path to FASTA genome index file. | `string` |  |  |  |
 | `dict` | Path to the sequence dictionary generated from the FASTA reference | `string` |  |  |  |
 | `strtablefile` | Path to the STR table file generated from the FASTA reference | `string` |  |  |  |
 | `sdf` | Path to the SDF folder generated from the reference FASTA file | `string` |  |  |  |
@@ -38,13 +38,13 @@ Parameters that define how the pipeline works
 |-----------|-----------|-----------|-----------|-----------|-----------|
 | `scatter_count` | The amount of scattering that should happen per sample. <details><summary>Help</summary><small>Increase this number to increase the pipeline run speed, but at the tradeoff of using more IO and disk space. This can differ from the actual scatter count in some cases (especially with smaller files).<br>This has an effect on HaplotypeCaller, GenomicsDBImport and GenotypeGVCFs.</small></details>| `integer` | 40 | True |  |
 | `merge_distance` | The merge distance for genotype BED files <details><summary>Help</summary><small>Increase this parameter if GenomicsDBImport is running slow. This defines the maximum distance between intervals that should be merged. The less intervals GenomicsDBImport actually gets, the faster it will run.</small></details>| `integer` | 10000 |  |  |
-| `dragstr` | Create DragSTR models to be used with HaplotypeCaller <details><summary>Help</summary><small>This currently is only able to run single-core per sample. Due to this, the process is very slow with only very small improvements to the analysis. It currently isn't advised to use this parameter unless you are willing to wait a lot longer.</small></details>| `boolean` |  |  |  |
-| `validate` | Validate the found variants <details><summary>Help</summary><small>This only validates individual sample GVCFs that have truth VCF supplied to them via the samplesheet (in row `truth_vcf`, with an optional index in the `truth_tbi` row)</small></details>| `boolean` |  |  |  |
-| `filter` | Filter the found variants | `boolean` |  |  |  |
-| `annotate` | Annotate the found variants | `boolean` |  |  |  |
-| `add_ped` | Add PED INFO header lines to the final VCFs | `boolean` |  |  |  |
-| `gemini` | Create a Gemini databases from the final VCFs | `boolean` |  |  |  |
-| `coverage_fast` | Run mosdepth in fast-mode <details><summary>Help</summary><small>This is advised if you don't need exact coverage BED files as output</small></details>| `boolean` |  |  |  |
+| `dragstr` | Create DragSTR models to be used with HaplotypeCaller <details><summary>Help</summary><small>This currently is only able to run single-core per sample. Due to this, the process is very slow with only very small improvements to the analysis. It currently isn't advised to use this parameter unless you are willing to wait a lot longer.</small></details>| `boolean` | False |  |  |
+| `validate` | Validate the found variants <details><summary>Help</summary><small>This only validates individual sample GVCFs that have truth VCF supplied to them via the samplesheet (in row `truth_vcf`, with an optional index in the `truth_tbi` row)</small></details>| `boolean` | False |  |  |
+| `filter` | Filter the found variants | `boolean` | False |  |  |
+| `annotate` | Annotate the found variants | `boolean` | False |  |  |
+| `add_ped` | Add PED INFO header lines to the final VCFs | `boolean` | False |  |  |
+| `gemini` | Create a Gemini databases from the final VCFs | `boolean` | False |  |  |
+| `coverage_fast` | Run mosdepth in fast-mode <details><summary>Help</summary><small>This is advised if you don't need exact coverage BED files as output</small></details>| `boolean` | False |  |  |
 | `roi` | Path to the default ROI (regions of interest) BED file to be used for WES analysis <details><summary>Help</summary><small>This will be used for all samples that do not have a specific ROI file supplied to them through the samplesheet. Don't supply an ROI file to run the analysis as WGS.</small></details>| `string` |  |  |  |
 | `dbsnp` | Path to the dbSNP VCF file | `string` |  |  |  |
 | `dbsnp_tbi` | Path to the index of the dbSNP VCF file | `string` |  |  |  |
@@ -104,14 +104,14 @@ Parameters to configure Ensembl VEP and VCFanno
 | `species` | The species of the samples <details><summary>Help</summary><small>Must be lower case and have underscores as spaces</small></details>| `string` | homo_sapiens |  |  |
 | `vep_merged` | Specify if the VEP cache is a merged cache | `boolean` | True |  |  |
 | `vep_cache` | The path to the VEP cache | `string` | None |  |  |
-| `vep_dbnsfp` | Use the dbNSFP plugin with Ensembl VEP <details><summary>Help</summary><small>The '--dbnsfp' and '--dbnsfp_tbi' parameters need to be specified when using this parameter.</small></details>| `boolean` |  |  |  |
-| `vep_spliceai` | Use the SpliceAI plugin with Ensembl VEP <details><summary>Help</summary><small>The '--spliceai_indel', '--spliceai_indel_tbi', '--spliceai_snv' and '--spliceai_snv_tbi' parameters need to be specified when using this parameter.</small></details>| `boolean` |  |  |  |
-| `vep_spliceregion` | Use the SpliceRegion plugin with Ensembl VEP | `boolean` |  |  |  |
-| `vep_mastermind` | Use the Mastermind plugin with Ensembl VEP <details><summary>Help</summary><small>The '--mastermind' and '--mastermind_tbi' parameters need to be specified when using this parameter.</small></details>| `boolean` |  |  |  |
-| `vep_maxentscan` | Use the MaxEntScan plugin with Ensembl VEP <details><summary>Help</summary><small>The '--maxentscan' parameter need to be specified when using this parameter.</small></details>| `boolean` |  |  |  |
-| `vep_eog` | Use the custom EOG annotation with Ensembl VEP <details><summary>Help</summary><small>The '--eog' and '--eog_tbi' parameters need to be specified when using this parameter.</small></details>| `boolean` |  |  |  |
+| `vep_dbnsfp` | Use the dbNSFP plugin with Ensembl VEP <details><summary>Help</summary><small>The '--dbnsfp' and '--dbnsfp_tbi' parameters need to be specified when using this parameter.</small></details>| `boolean` | False |  |  |
+| `vep_spliceai` | Use the SpliceAI plugin with Ensembl VEP <details><summary>Help</summary><small>The '--spliceai_indel', '--spliceai_indel_tbi', '--spliceai_snv' and '--spliceai_snv_tbi' parameters need to be specified when using this parameter.</small></details>| `boolean` | False |  |  |
+| `vep_spliceregion` | Use the SpliceRegion plugin with Ensembl VEP | `boolean` | False |  |  |
+| `vep_mastermind` | Use the Mastermind plugin with Ensembl VEP <details><summary>Help</summary><small>The '--mastermind' and '--mastermind_tbi' parameters need to be specified when using this parameter.</small></details>| `boolean` | False |  |  |
+| `vep_maxentscan` | Use the MaxEntScan plugin with Ensembl VEP <details><summary>Help</summary><small>The '--maxentscan' parameter need to be specified when using this parameter.</small></details>| `boolean` | False |  |  |
+| `vep_eog` | Use the custom EOG annotation with Ensembl VEP <details><summary>Help</summary><small>The '--eog' and '--eog_tbi' parameters need to be specified when using this parameter.</small></details>| `boolean` | False |  |  |
 | `vep_version` | The version of the VEP tool to be used | `string` | 105.0 |  |  |
-| `vep_cache_version` | The version of the VEP cache to be used | `integer` | 105 |  |  |
+| `vep_cache_version` | The version of the VEP cache to be used | `string` | 105 |  |  |
 | `dbnsfp` | Path to the dbSNFP file | `string` |  |  |  |
 | `dbnsfp_tbi` | Path to the index of the dbSNFP file | `string` |  |  |  |
 | `spliceai_indel` | Path to the VCF containing indels for spliceAI | `string` |  |  |  |
