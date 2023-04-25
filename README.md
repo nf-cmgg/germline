@@ -39,7 +39,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool
    nextflow run CenterForMedicalGeneticsGhent/nf-cmgg-germline --input <INPUT_CSV/TSV/YAML> --outdir <OUTDIR> -profile <docker/singularity/podman/shifter/charliecloud/conda/institute> --fasta <PATH/TO/FASTA>
    ```
 
-An overview of the parameters for this pipeline can be viewed using:
+An overview of the parameters for this pipeline can be viewed at the [parameter docs](docs/parameters.md) or using:
 
 ```
 nextflow run CenterForMedicalGeneticsGhent/nf-cmgg-germline --help
