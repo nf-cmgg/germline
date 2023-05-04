@@ -3,7 +3,7 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v1.2.0dev
+## v1.2.0 - Brave Brussels - [May 4 2023]
 
 ### New Features
 
@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 2. Added the possibility to give GVCF files as inputs and immediately go to the joint-genotyping. This is especially useful for the cases where several samples should be combined. This way the variant calling doesn't need to be re-run. Beware though that a CRAM file should still be given to generate the BED files used for the scatter/gathering. The new header names are `gvcf` and `tbi` where `gvcf` is used to give the GVCF and `tbi` is used to give its index.
 3. Added `bedtools jaccard` to the validation.
 4. Added a Dockerfile which creates an image that is able to run a full pipeline run inside of it.
+5. Added better documentation
 
 ### Improvements
 
