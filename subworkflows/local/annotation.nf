@@ -65,7 +65,7 @@ workflow ANNOTATION {
         .combine(ch_all_regions)
         .map { meta, vcf, meta2, chroms ->
             // Remove the chromosomes meta and add the found chromosomes to the VCF meta
-            [ meta + [regions:chroms], vcf ]
+            [ meta + [regions:chroms], vcf, [] ]
         }
         .dump(tag:'vep_input', pretty:true)
         .set { ch_vep_input }
@@ -80,7 +80,7 @@ workflow ANNOTATION {
         params.species,
         params.vep_cache_version,
         ch_vep_cache,
-        ch_fasta,
+        ch_fasta.map { [[], it] },
         ch_vep_extra_files
     )
     ch_reports  = ch_reports.mix(ENSEMBLVEP_VEP.out.report)
