@@ -1,8 +1,6 @@
 # CenterForMedicalGeneticsGhent/nf-cmgg-germline: Usage
 
-> _Documentation of pipeline parameters is generated automatically from the pipeline schema and can no longer be found in markdown files._
-
-## Introduction
+> _Documentation of pipeline parameters can be found in the [parameters documentation](./parameters.md)_
 
 ## Samplesheet input
 
@@ -16,21 +14,23 @@ You will need to create a samplesheet with information about the samples you wou
 
 The `sample` identifiers have to be the same when you have re-sequenced the same sample more than once e.g. to increase sequencing depth. Either the `ped` or `family` field can be used to specify the family name. The pipeline automatically extracts the family id from the `ped` file if the `family` field is empty. The `family` is used to specify on which samples the joint-genotyping should be performed. If neither the `ped` or `family` fields are used, the pipeline will default to a single-sample family with the sample name as its ID. Below is an example of how the samplesheet could look like in the three formats.
 
+> The order and presence of the fields is not set, you can arrange/remove these as you see fit. The only required fields are `sample` and `cram`.
+
 #### CSV
 
 ```csv
-sample,family,cram,crai,ped,truth_vcf,truth_tbi
-SAMPLE_1,FAMILY_1,SAMPLE_1.cram,SAMPLE_1.crai,FAMILY_1.ped,SAMPLE_1.truth.vcf.gz,SAMPLE_1.truth.vcf.gz.tbi
-SAMPLE_2,FAMILY_1,SAMPLE_2.cram,SAMPLE_2.crai,,SAMPLE_2.truth.vcf.gz,
-SAMPLE_3,,SAMPLE_3.cram,,,,
+sample,family,cram,crai,ped,truth_vcf,truth_tbi,roi
+SAMPLE_1,FAMILY_1,SAMPLE_1.cram,SAMPLE_1.crai,FAMILY_1.ped,SAMPLE_1.truth.vcf.gz,SAMPLE_1.truth.vcf.gz.tbi,SAMPLE_1.bed
+SAMPLE_2,FAMILY_1,SAMPLE_2.cram,SAMPLE_2.crai,,SAMPLE_2.truth.vcf.gz,,SAMPLE_2.bed
+SAMPLE_3,,SAMPLE_3.cram,,,,,
 ```
 
 #### TSV
 
 ```tsv
-sample  family  cram  crai  ped truth_vcf truth_tbi
-SAMPLE_1  FAMILY_1  SAMPLE_1.cram SAMPLE_1.crai FAMILY_1.ped  SAMPLE_1.truth.vcf.gz SAMPLE_1.truth.vcf.gz.tbi
-SAMPLE_2  FAMILY_1  SAMPLE_2.cram SAMPLE_2.crai SAMPLE_2.truth.vcf.gz
+sample    family    cram   crai   ped truth_vcf truth_tbi roi
+SAMPLE_1  FAMILY_1  SAMPLE_1.cram SAMPLE_1.crai FAMILY_1.ped  SAMPLE_1.truth.vcf.gz SAMPLE_1.truth.vcf.gz.tbi SAMPLE_1.bed
+SAMPLE_2  FAMILY_1  SAMPLE_2.cram SAMPLE_2.crai SAMPLE_2.truth.vcf.gz              SAMPLE_2.bed
 SAMPLE_3    SAMPLE_3.cram
 ```
 
@@ -44,12 +44,14 @@ SAMPLE_3    SAMPLE_3.cram
   ped: FAMILY_1.ped
   truth_vcf: SAMPLE_1.truth.vcf.gz
   truth_tbi: SAMPLE_1.truth.vcf.gz.tbi
+  roi: SAMPLE_1.bed
 - sample: SAMPLE_2
   family: FAMILY_1
   cram: SAMPLE_2.cram
   crai: SAMPLE_2.crai
   ped: FAMILY_1.ped
   truth_vcf: SAMPLE_2.truth.vcf.gz
+  roi: SAMPLE_2.bed
 - sample: SAMPLE_3
   cram: SAMPLE_3.cram
 ```
@@ -58,19 +60,18 @@ SAMPLE_3    SAMPLE_3.cram
 
 The samplesheet can have following columns:
 
-| Column      | Description                                                                                                                                                                                                                                                                                                |
-| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sample`    | MANDATORY - Custom sample name. This entry has to be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`).                                                                                                       |
-| `family`    | OPTIONAL - The family ID of the specified sample. This field is optional, as the family id can also be extracted from the `ped` file. If no `ped` file and `family` ID are supplied, the `family` ID defaults to the `sample` ID. Spaces in sample names are automatically converted to underscores (`_`). |
-| `cram`      | MANDATORY - Full path to CRAM file fetched from the preprocessing pipeline. File has to have the extension `.cram`                                                                                                                                                                                         |
-| `crai`      | OPTIONAL - Full path to CRAM index file fetched from the preprocessing pipeline. File has to have the extension `.crai`.                                                                                                                                                                                   |
-| `ped`       | OPTIONAL - Full path to PED file containing the relational information between samples in the same family to call on. File has to have the extension `.ped`.                                                                                                                                               |
-| `truth_vcf` | OPTIONAL - Full path to the VCF containing all the truth variants of the current sample. The validation subworkflow will run automatically when this file is supplied (this can be turned of by adding the `--validate false` flag).                                                                       |
-| `truth_tbi` | OPTIONAL - Full path to the index of the truth VCF. This file can either be supplied by the user or generated by the pipeline.                                                                                                                                                                             |
+| Column      | Description                                                                                                                                                                                                                                                                                                                                                           |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sample`    | MANDATORY - Custom sample name. This entry has to be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`).                                                                                                                                                                  |
+| `family`    | OPTIONAL - The family ID of the specified sample. This field is optional, as the family id can also be extracted from the `ped` file. If no `ped` file and `family` ID are supplied, the `family` ID defaults to the `sample` ID (which means that the resulting VCF will be single-sample). Spaces in family names are automatically converted to underscores (`_`). |
+| `cram`      | MANDATORY - Full path to CRAM file to call variants from. File has to have the extension `.cram`                                                                                                                                                                                                                                                                      |
+| `crai`      | OPTIONAL - Full path to CRAM index file. File has to have the extension `.crai`.                                                                                                                                                                                                                                                                                      |
+| `ped`       | OPTIONAL - Full path to PED file containing the relational information between samples in the same family. File has to have the extension `.ped`.                                                                                                                                                                                                                     |
+| `truth_vcf` | OPTIONAL - Full path to the VCF containing all the truth variants of the current sample. The validation subworkflow will be run when this file is supplied and the `--validate true` flag has been given. File has to have the extension `.vcf.gz`                                                                                                                    |
+| `truth_tbi` | OPTIONAL - Full path to the index of the truth VCF. This file can either be supplied by the user or generated by the pipeline. File has to have the extensions `.tbi`                                                                                                                                                                                                 |
+| `roi`       | OPTIONAL - Full path to a BED file containing the regions of interest for the current sample to call on. When this file is given, the pipeline will run this sample in WES mode. (The flag `--roi <path>` can also be given to run WES mode for all samples using the file specified by the flag) File has to have the extension `.bed` or `.bed.gz`.                 |
 
-<!-- | `roi`    | OPTIONAL - Full path to a BED file containing the regions of interest for the current sample to call on. When this or the `--roi` argument aren't given, the pipeline will call all callable regions for the current sample. File has to have the extension `.bed` or `.bed.gz`. WARNING: This input isn't supported for now but will be added in a future release. |                                                                                                                        | -->
-
-An [example samplesheet](../assets/samplesheet_template.csv) has been provided with the pipeline.
+An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
 ## Running the pipeline
 
@@ -129,8 +130,6 @@ If `-profile` is not specified, the pipeline will run locally and expect all sof
 - `test`
   - A profile with a complete configuration for automated testing
   - Includes links to test data so needs no other parameters
-- `test_local`
-  - A profile for local testing by @nvnieuwk. This won't work on other machines
 - `nf_test`
   - The profile setting the default values for `nf-test`. When running `nf-test` this profile is automatically used.
 - `docker`

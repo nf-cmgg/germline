@@ -277,7 +277,7 @@ workflow CMGGGERMLINE {
     }
 
     // Reference STR table file
-    if (params.use_dragstr_model && !ch_strtablefile) {
+    if (params.dragstr && !ch_strtablefile) {
         COMPOSESTRTABLEFILE(
             ch_fasta_ready,
             ch_fai_ready,
@@ -289,7 +289,7 @@ workflow CMGGGERMLINE {
             .collect()
             .dump(tag:'strtablefile', pretty:true)
             .set { ch_strtablefile_ready }
-    } else if (params.use_dragstr_model) {
+    } else if (params.dragstr) {
         ch_strtablefile.set { ch_strtablefile_ready }
     } else {
         ch_strtablefile_ready = []

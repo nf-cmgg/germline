@@ -26,10 +26,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 2. Updated the resource requirements of GenomicsDBImport and GenotypeGVCFs to be more efficient (and more cluster friendly)
 3. Removed ReblockGVCFs (this wasn't worth it and we save the raw GVCFs)
 4. Added `--merge_distance <integer>` to decrease the amount of intervals passed to genomicsdbimport. Increase this value if GenomicsDBImport is running slow.
+5. Renamed `--use_dragstr_model` to `--dragstr`.
 
 ### Bug fixes
 
-1. Fixed a warning showing up when running with `--use_dragstr_model false`
+1. Fixed a warning showing up when running with `--dragstr false`
 2. Add `--infer` flag to `somalier relate` when no PED file is given
 
 ## v1.1.2 - Groovy Ghent - [Mar 21 2023]
