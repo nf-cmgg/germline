@@ -3,8 +3,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     CenterForMedicalGeneticsGhent/nf-cmgg-germline
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Github : https://github.com/CenterForMedicalGeneticsGhent/nf-cmgg-germline
-----------------------------------------------------------------------------------------
+    Github : https://github.com/CenterForMedicalGeneticsGhent/nf-cmgg-germline----------------------------------------------------------------------------------------
 */
 
 nextflow.enable.dsl = 2
