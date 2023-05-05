@@ -36,7 +36,7 @@ process RTGTOOLS_PEDFILTER {
     rtg pedfilter \\
         ${args} \\
         ${prefix}.ped \\
-    ${postprocess} > ${prefix}.${extension}
+    | head -n -1 ${postprocess} > ${prefix}.${extension}
 
 
     cat <<-END_VERSIONS > versions.yml
