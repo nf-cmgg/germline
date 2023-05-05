@@ -123,7 +123,9 @@ workflow ANNOTATION {
     if (params.vcfanno) {
 
         BCFTOOLS_CONCAT.out.vcf
-            .map { it + [[]]}
+            .map { meta, vcf ->
+                [ meta, vcf, [], [] ]
+            }
             .dump(tag:'vcfanno_input', pretty:true)
             .set { ch_vcfanno_input }
 
