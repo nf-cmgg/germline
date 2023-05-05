@@ -5,7 +5,7 @@ process RTGTOOLS_PEDFILTER {
     conda "bioconda::rtg-tools=3.12.1"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/rtg-tools:3.12.1--hdfd78af_0':
-        'quay.io/biocontainers/rtg-tools:3.12.1--hdfd78af_0' }"
+        'biocontainers/rtg-tools:3.12.1--hdfd78af_0' }"
 
     input:
     tuple val(meta), path(input)
@@ -36,7 +36,7 @@ process RTGTOOLS_PEDFILTER {
     rtg pedfilter \\
         ${args} \\
         ${prefix}.ped \\
-    ${postprocess} > ${prefix}.${extension}
+    | head -n -1 ${postprocess} > ${prefix}.${extension}
 
 
     cat <<-END_VERSIONS > versions.yml

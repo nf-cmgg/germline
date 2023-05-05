@@ -9,6 +9,7 @@ process MERGE_BEDS {
 
     input:
     tuple val(meta), path(bed, stageAs: "?/*")
+    path(fai)
 
     output:
     tuple val(meta), path('*.bed'), emit: bed
@@ -25,11 +26,11 @@ process MERGE_BEDS {
     do
         if [[ \$FILE != '*/*.bed.gz' ]]
         then
-            gunzip \$FILE
+            gzip -d -f \$FILE
         fi
     done;
 
-    awk '{print \$1"\\t"\$2"\\t"\$3 }' */*.bed | sort -k 1,1 -k2,2n | bedtools merge > ${meta.id}.bed
+    awk '{print \$1"\\t"\$2"\\t"\$3 }' */*.bed | bedtools sort -faidx ${fai} | bedtools merge ${args} > ${prefix}.bed
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -38,8 +39,9 @@ process MERGE_BEDS {
     """
 
     stub:
+    def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    touch ${meta.id}.bed
+    touch ${prefix}.bed
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

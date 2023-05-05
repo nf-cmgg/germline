@@ -1,0 +1,34 @@
+nextflow_pipeline {
+
+    name "A test file to test new ways of testing the pipeline"
+    script "main.nf"
+    tag "snapshots"
+
+    test("Success") {
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    path("${outputDir}/ready/Proband_12345/reports/Proband_12345.bcftools_stats.txt"),
+                    path("${outputDir}/ready/Proband_12345/Proband_12345.vcf.gz").linesGzip[20..22],
+                    path("${outputDir}/ready/Proband_12345/Proband_12345.bed"),
+                    path("${outputDir}/ready/Proband_12345/Proband_12345.samples.tsv"),
+                    path("${outputDir}/individuals/NA24385D2_NVQ_034/reports/NA24385D2_NVQ_034.bcftools_stats.txt"),
+                    path("${outputDir}/individuals/NA24385D2_NVQ_034/NA24385D2_NVQ_034.g.vcf.gz").linesGzip[20..22],
+                    file("${outputDir}/individuals/NA24385D2_NVQ_034/NA24385D2_NVQ_034.g.vcf.gz.tbi").exists(),
+                    path("${outputDir}/individuals/NA24385D2_NVQ_034/NA24385D2_NVQ_034.bed"),
+                    path("${outputDir}/individuals/NA24385D2_NVQ_034/NA24385D2_NVQ_034.quantized.bed.gz"),
+                    path("${outputDir}/individuals/DNA049572/reports/DNA049572.bcftools_stats.txt"),
+                    path("${outputDir}/individuals/DNA049572/DNA049572.g.vcf.gz").linesGzip[20..22],
+                    file("${outputDir}/individuals/DNA049572/DNA049572.g.vcf.gz.tbi").exists(),
+                    path("${outputDir}/individuals/DNA049572/DNA049572.bed"),
+                    path("${outputDir}/individuals/DNA049572/DNA049572.quantized.bed.gz"),
+                    file("${outputDir}/multiqc_reports/multiqc_report.html").exists()
+                ).match()
+                }
+            )
+    
+        }
+    }
+}

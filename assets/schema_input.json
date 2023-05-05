@@ -23,6 +23,16 @@
             "pattern": "^\\S+\\.crai$",
             "format": "file-path"
         },
+        "gvcf": {
+            "type": "string",
+            "pattern": "^\\S+vcf(.gz)?$",
+            "format": "file-path"
+        },
+        "tbi": {
+            "type": "string",
+            "pattern": "^\\S+\\.tbi$",
+            "format": "file-path"
+        },
         "roi": {
             "type": "string",
             "pattern": "^\\S+\\.bed(\\.gz)?$",
@@ -41,6 +51,11 @@
         "truth_tbi": {
             "type": "string",
             "pattern": "^\\S+\\.tbi$",
+            "format": "file-path"
+        },
+        "truth_bed": {
+            "type": "string",
+            "pattern": "^\\S+\\.bed$",
             "format": "file-path"
         }
     },

@@ -1,6 +1,7 @@
 include { RTGTOOLS_VCFEVAL      } from '../../../modules/nf-core/rtgtools/vcfeval/main'
 include { RTGTOOLS_ROCPLOT      } from '../../../modules/nf-core/rtgtools/rocplot/main'
 include { HAPPY_HAPPY           } from '../../../modules/nf-core/happy/happy/main'
+include { BEDTOOLS_JACCARD      } from '../../../modules/nf-core/bedtools/jaccard/main'
 
 workflow VCF_VALIDATE_SMALL_VARIANTS {
 
@@ -13,7 +14,7 @@ workflow VCF_VALIDATE_SMALL_VARIANTS {
     ch_happy_false_positive_regions // [optional] channel: [ meta, false_positives_bed ]
     ch_happy_stratification_tsv     // [optional] channel: [ meta, stratification_tsv ]
     ch_happy_stratification_beds    // [optional] channel: [ meta, [stratification_beds] ]
-    tools                           // [mandatory] value: A comma-delimited list of the tools to use for validation (happy,vcfeval)
+    tools                           // [mandatory] value: A comma-delimited list of the tools to use for validation (happy,vcfeval,jaccard)
 
     main:
 
@@ -51,17 +52,19 @@ workflow VCF_VALIDATE_SMALL_VARIANTS {
     rtgtools_non_snp_svg_rocplot            = Channel.empty()
     rtgtools_weighted_svg_rocplot           = Channel.empty()
 
-    list_tools = tools.tokenize(",")
+    jaccard_tsv                             = Channel.empty()
+
+    val_list_tools = tools.tokenize(",")
 
     ch_input = ch_vcf.join(ch_beds, failOnDuplicate: true, failOnMismatch: true)
 
-    if("happy" in list_tools){
-        happy_input = ch_input
+    if("happy" in val_list_tools){
+        ch_happy_input = ch_input
             .map { meta, vcf, tbi, truth_vcf, truth_tbi, regions_bed, targets_bed ->
                 [ meta, vcf, truth_vcf, regions_bed, targets_bed ]
             }
         HAPPY_HAPPY (
-            happy_input,
+            ch_happy_input,
             ch_fasta,
             ch_fasta_fai,
             ch_happy_false_positive_regions,
@@ -81,7 +84,7 @@ workflow VCF_VALIDATE_SMALL_VARIANTS {
         happy_extended_csv      = HAPPY_HAPPY.out.extended_csv
     }
 
-    if("vcfeval" in list_tools){
+    if("vcfeval" in val_list_tools){
         RTGTOOLS_VCFEVAL(
             ch_input.map { it[0..-2] + [[]] },
             ch_vcfeval_sdf
@@ -148,6 +151,23 @@ workflow VCF_VALIDATE_SMALL_VARIANTS {
         rtgtools_snp_svg_rocplot        = rocplot_out_svg.snp
         rtgtools_non_snp_svg_rocplot    = rocplot_out_svg.non_snp
         rtgtools_weighted_svg_rocplot   = rocplot_out_svg.weighted
+    }
+
+    if("jaccard" in val_list_tools) {
+        ch_vcf
+            .map { meta, vcf, tbi, truth_vcf, truth_tbi ->
+                [ meta, vcf, truth_vcf ]
+            }
+            .set { ch_jaccard_input }
+
+        BEDTOOLS_JACCARD(
+            ch_jaccard_input,
+            ch_fasta_fai
+        )
+
+        ch_versions = ch_versions.mix(BEDTOOLS_JACCARD.out.versions.first())
+
+        jaccard_tsv = BEDTOOLS_JACCARD.out.tsv
 
     }
 
@@ -182,6 +202,8 @@ workflow VCF_VALIDATE_SMALL_VARIANTS {
     rtgtools_snp_svg_rocplot                // channel: [ meta, svg ]
     rtgtools_non_snp_svg_rocplot            // channel: [ meta, svg ]
     rtgtools_weighted_svg_rocplot           // channel: [ meta, svg ]
+
+    jaccard_tsv                             // channel: [ meta, tsv ]
 
     versions = ch_versions                  // channel: [ versions.yml ]
 }

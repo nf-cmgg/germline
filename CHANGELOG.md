@@ -3,6 +3,37 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.2.0 - Brave Brussels - [May 5 2023]
+
+### New Features
+
+1. Added a `--coverage_fast <true/false>` flag which can be used to run mosdepth in fast mode. This flag will also make sure that only the quantized bed from mosdepth is present in the output directory for each WGS individual, otherwise it will output everything
+2. Added the possibility to give GVCF files as inputs and immediately go to the joint-genotyping. This is especially useful for the cases where several samples should be combined. This way the variant calling doesn't need to be re-run. Beware though that a CRAM file should still be given to generate the BED files used for the scatter/gathering. The new header names are `gvcf` and `tbi` where `gvcf` is used to give the GVCF and `tbi` is used to give its index.
+3. Added `bedtools jaccard` to the validation.
+4. Added a Dockerfile which creates an image that is able to run a full pipeline run inside of it.
+5. Added better documentation
+
+### Improvements
+
+1. Updated the scattering again: it now follows this workflow:
+   - Sort and merge overlapping intervals of given ROI BED files (WES only)
+   - Create a BED file with callable regions using mosdepth
+   - Intersect the callable regions BED with the ROI BED (WES only)
+   - Split the resulting BED file (or the callable regions BED for WGS) into evenly sized BED files (amount is specified with `--scatter_count`)
+   - Run HaplotypeCaller in parallel using these regions
+   - Merge and sort the BED files of all individuals in a family
+   - Split the merged BED file into evenly sized BED files (amount is specified with `--scatter_count` times the family size)
+   - Run GenomicsDBImport and GenotypeGVCFs in parallel using these regions
+2. Updated the resource requirements of GenomicsDBImport and GenotypeGVCFs to be more efficient (and more cluster friendly)
+3. Removed ReblockGVCFs (this wasn't worth it and we save the raw GVCFs)
+4. Added `--merge_distance <integer>` to decrease the amount of intervals passed to genomicsdbimport. Increase this value if GenomicsDBImport is running slow.
+5. Renamed `--use_dragstr_model` to `--dragstr`.
+
+### Bug fixes
+
+1. Fixed a warning showing up when running with `--dragstr false`
+2. Add `--infer` flag to `somalier relate` when no PED file is given
+
 ## v1.1.2 - Groovy Ghent - [Mar 21 2023]
 
 ### New features
