@@ -7,7 +7,7 @@
     "properties": {
         "sample": {
             "type": "string",
-            "meta": ["id","sample"]
+            "meta": ["id", "sample"]
         },
         "family": {
             "type": "string",
