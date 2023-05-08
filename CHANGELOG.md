@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Bug fixes
 1. Removed the `-sorted` argument from bedtools/jaccard
+2. Fixed some patterns in the parameter JSON schema (since they are actually used now)
 
 ## v1.2.0 - Brave Brussels - [May 5 2023]
 
