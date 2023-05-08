@@ -14,7 +14,7 @@ nextflow_pipeline {
 
         then {
             assert workflow.failed
-            assert workflow.stdout.join("\n").contains("* Missing required parameter: --scatter_count")
+            assert workflow.stderr.join("\n").contains("* Missing required parameter: --scatter_count")
         }
 
     }
