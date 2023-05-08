@@ -402,13 +402,13 @@
                     "help_text": "By default, parameters set as _hidden_ in the schema are not shown on the command line when a user runs with `--help`. Specifying this option will tell the pipeline to show all parameters."
                 },
                 "validationLenientMode": {
-                    "type": "string",
-                    "default": "true",
+                    "type": "boolean",
+                    "default": true,
                     "hidden": true
                 },
                 "validationFailUnrecognisedParams": {
-                    "type": "string",
-                    "default": "false",
+                    "type": "boolean",
+                    "default": false,
                     "hidden": true
                 }
             }
