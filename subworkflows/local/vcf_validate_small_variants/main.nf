@@ -162,7 +162,7 @@ workflow VCF_VALIDATE_SMALL_VARIANTS {
 
         BEDTOOLS_JACCARD(
             ch_jaccard_input,
-            ch_fasta_fai
+            [[],[]]
         )
 
         ch_versions = ch_versions.mix(BEDTOOLS_JACCARD.out.versions.first())

@@ -295,7 +295,7 @@
                     "description": "Maximum amount of time that can be requested for any single job.",
                     "default": "240.h",
                     "fa_icon": "far fa-clock",
-                    "pattern": "^(\\d+\\.?\\s*(s|m|h|day)\\s*)+$",
+                    "pattern": "^(\\d+\\.?\\s*(s|m|h|d|day)\\s*)+$",
                     "hidden": true,
                     "help_text": "Use to set an upper-limit for the time requirement for each process. Should be a string in the format integer-unit e.g. `--max_time '2.h'`"
                 }
@@ -400,6 +400,16 @@
                     "description": "Show all params when using `--help`",
                     "hidden": true,
                     "help_text": "By default, parameters set as _hidden_ in the schema are not shown on the command line when a user runs with `--help`. Specifying this option will tell the pipeline to show all parameters."
+                },
+                "validationLenientMode": {
+                    "type": "boolean",
+                    "default": true,
+                    "hidden": true
+                },
+                "validationFailUnrecognisedParams": {
+                    "type": "boolean",
+                    "default": false,
+                    "hidden": true
                 }
             }
         },
@@ -580,7 +590,6 @@
                 },
                 "vcfanno_resources": {
                     "type": "string",
-                    "format": "directory-path",
                     "description": "A comma-seperated list of resource files for VCFanno, please also supply their indices using this parameter"
                 }
             },

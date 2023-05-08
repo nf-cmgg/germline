@@ -9,6 +9,10 @@
 
 nextflow.enable.dsl = 2
 
+include { paramsSummaryLog   } from 'plugin/nf-validation'
+include { paramsHelp         } from 'plugin/nf-validation'
+include { validateParameters } from 'plugin/nf-validation'
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     GENOME PARAMETER VALUES
@@ -41,7 +45,18 @@ params.eog_tbi              = WorkflowMain.getGenomeAttribute(params, 'eog_tbi')
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-WorkflowMain.initialise(workflow, params, log)
+// Print help message
+if (params.help) {
+   def String command = "nextflow run CenterForMedicalGeneticsGhent/nf-cmgg-germline --input <input csv/tsv/yaml> --outdir <output folder>"
+   log.info paramsHelp(command)
+   exit 0
+}
+
+// Validate input parameters
+validateParameters()
+
+// Print parameter summary log to screen
+log.info paramsSummaryLog(workflow)
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
