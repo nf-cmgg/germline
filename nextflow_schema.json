@@ -580,7 +580,6 @@
                 },
                 "vcfanno_resources": {
                     "type": "string",
-                    "format": "directory-path",
                     "description": "A comma-seperated list of resource files for VCFanno, please also supply their indices using this parameter"
                 }
             },

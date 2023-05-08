@@ -3,15 +3,15 @@
     "$id": "https://raw.githubusercontent.com/CenterForMedicalGeneticsGhent/nf-cmgg-germline/master/assets/schema_input.json",
     "title": "Samplesheet validation schema",
     "description": "Schema for the samplesheet used in this pipeline",
-    "type": "array",
+    "type": "object",
     "properties": {
         "sample": {
             "type": "string",
-            "meta": "id,sample"
+            "meta": ["id","sample"]
         },
         "family": {
             "type": "string",
-            "meta": "family"
+            "meta": ["family"]
         },
         "cram": {
             "type": "string",
