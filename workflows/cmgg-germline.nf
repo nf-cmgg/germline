@@ -344,7 +344,7 @@ workflow CMGGGERMLINE {
         .combine(ch_raw_inputs)
         .multiMap { counts, meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ->
             // Divide the input files into their corresponding channel
-            new_meta_ped = [
+            new_meta_family = [
                 id:             meta.family,
                 family:         meta.family,
                 family_count:   counts[meta.family] // Contains the amount of samples in the current family
@@ -355,10 +355,10 @@ workflow CMGGGERMLINE {
                 type:           gvcf ? "gvcf" : "cram" // Whether a GVCF is given to this sample or not (aka skip variantcalling or not)
             ]
 
-            truth_variants: [new_meta, truth_vcf, truth_tbi, truth_bed] // Optional channel containing the truth VCF, its index and the optional BED file
+            truth_variants: [new_meta_family, truth_vcf, truth_tbi, truth_bed, meta.id] // Optional channel containing the truth VCF, its index and the optional BED file
             gvcf:           [new_meta, gvcf, tbi] // Optional channel containing the GVCFs and their optional indices
             cram:           [new_meta, cram, crai]  // Mandatory channel containing the CRAM files and their optional indices
-            peds:           [new_meta_ped, ped] // Optional channel containing the PED files 
+            peds:           [new_meta_family, ped] // Optional channel containing the PED files 
             roi:            [new_meta, roi] // Optional channel containing the ROI BED files for WES samples
         }
         .set { ch_input }
@@ -440,58 +440,6 @@ workflow CMGGGERMLINE {
         .mix(ch_gvcfs_ready)
         .dump(tag:'variantcalling_output', pretty:true)
         .set { ch_variantcalling_output }
-
-    //
-    // Validate the found variants
-    //
-
-    if (params.validate){
-
-        ch_variantcalling_output
-            .join(ch_input.truth_variants, failOnDuplicate: true, failOnMismatch: true)
-            .filter { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ->
-                // Filter out all samples that have no truth VCF
-                truth_vcf != []
-            }
-            .branch { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ->
-                tbi: truth_tbi != []
-                no_tbi: truth_tbi == []
-            }
-            .set { ch_validation_branch }
-
-        // Create truth VCF indices if none were given
-        TABIX_TRUTH(
-            ch_validation_branch.no_tbi.map { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed -> 
-                [ meta, truth_vcf ]
-            }
-        )
-        ch_versions = ch_versions.mix(TABIX_TRUTH.out.versions)
-
-        ch_validation_branch.no_tbi
-            .join(TABIX_TRUTH.out.tbi, failOnDuplicate: true, failOnMismatch: true) 
-            .map { meta, vcf, tbi, truth_vcf, empty_tbi, truth_bed, truth_tbi ->
-                [ meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ]
-            }
-            .mix(ch_validation_branch.tbi)
-            .multiMap { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ->
-                vcfs: [meta, vcf, tbi, truth_vcf, truth_tbi]
-                bed:  [meta, truth_bed, []]
-            }
-            .set { ch_validation_input }
-
-        VCF_VALIDATE_SMALL_VARIANTS(
-            ch_validation_input.vcfs,
-            ch_validation_input.bed,
-            ch_fasta_ready.map { [[], it] },
-            ch_fai_ready.map { [[], it] },
-            ch_sdf_ready.collect(),
-            [[],[]],
-            [[],[]],
-            [[],[]],
-            "vcfeval,jaccard" //Only VCFeval for now, awaiting the conda fix for happy (https://github.com/bioconda/bioconda-recipes/pull/39267)
-        )
-        ch_versions = ch_versions.mix(VCF_VALIDATE_SMALL_VARIANTS.out.versions)
-    }
 
     //
     // Joint-genotyping of the families
@@ -611,11 +559,67 @@ workflow CMGGGERMLINE {
     ch_annotation_output.dump(tag:'annotation_output', pretty:true)
 
     //
+    // Validate the found variants
+    //
+
+    if (params.validate){
+
+        ch_annotation_output
+            .combine(ch_input.truth_variants, by: 0)
+            .map { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed, sample ->
+                new_meta = meta + [sample:sample]
+                [ new_meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ]
+            }.view()
+            .filter { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ->
+                // Filter out all samples that have no truth VCF
+                truth_vcf != []
+            }
+            .branch { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ->
+                tbi: truth_tbi != []
+                no_tbi: truth_tbi == []
+            }
+            .set { ch_validation_branch }
+
+        // Create truth VCF indices if none were given
+        TABIX_TRUTH(
+            ch_validation_branch.no_tbi.map { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed -> 
+                [ meta, truth_vcf ]
+            }
+        )
+        ch_versions = ch_versions.mix(TABIX_TRUTH.out.versions)
+
+        ch_validation_branch.no_tbi
+            .join(TABIX_TRUTH.out.tbi, failOnDuplicate: true, failOnMismatch: true) 
+            .map { meta, vcf, tbi, truth_vcf, empty_tbi, truth_bed, truth_tbi ->
+                [ meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ]
+            }
+            .mix(ch_validation_branch.tbi)
+            .multiMap { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ->
+                vcfs: [meta, vcf, tbi, truth_vcf, truth_tbi]
+                bed:  [meta, truth_bed, []]
+            }
+            .set { ch_validation_input }
+
+        VCF_VALIDATE_SMALL_VARIANTS(
+            ch_validation_input.vcfs,
+            ch_validation_input.bed,
+            ch_fasta_ready.map { [[], it] },
+            ch_fai_ready.map { [[], it] },
+            ch_sdf_ready.collect(),
+            [[],[]],
+            [[],[]],
+            [[],[]],
+            "vcfeval" //Only VCFeval for now, awaiting the conda fix for happy (https://github.com/bioconda/bioconda-recipes/pull/39267)
+        )
+        ch_versions = ch_versions.mix(VCF_VALIDATE_SMALL_VARIANTS.out.versions)
+    }
+
+    //
     // Perform QC on the final VCFs
     //
 
     BCFTOOLS_STATS_FAMILY(
-        ch_annotation_output.map{ it + [[]] },
+        ch_annotation_output,
         [],
         [],
         []
@@ -629,7 +633,7 @@ workflow CMGGGERMLINE {
 
     if(params.gemini){
         CustomChannelOperators.joinOnKeys(
-            ch_annotation_output,
+            ch_annotation_output.map { meta, vcf, tbi -> [ meta, vcf ]},
             VCF_EXTRACT_RELATE_SOMALIER.out.samples_tsv,
             ['id', 'family', 'family_count']
         )
