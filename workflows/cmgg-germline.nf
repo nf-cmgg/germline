@@ -569,7 +569,7 @@ workflow CMGGGERMLINE {
             .map { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed, sample ->
                 new_meta = meta + [sample:sample]
                 [ new_meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ]
-            }.view()
+            }
             .filter { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ->
                 // Filter out all samples that have no truth VCF
                 truth_vcf != []
