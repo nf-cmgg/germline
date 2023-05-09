@@ -6,7 +6,6 @@ include { ENSEMBLVEP_VEP                      } from '../../modules/nf-core/ense
 include { VCFANNO                             } from '../../modules/nf-core/vcfanno/main'
 include { TABIX_BGZIP as BGZIP_ANNOTATED_VCFS } from '../../modules/nf-core/tabix/bgzip/main'
 include { TABIX_TABIX as TABIX_ENSEMBLVEP     } from '../../modules/nf-core/tabix/tabix/main'
-include { TABIX_TABIX as TABIX_ANNOTATED      } from '../../modules/nf-core/tabix/tabix/main'
 include { BCFTOOLS_CONCAT                     } from '../../modules/nf-core/bcftools/concat/main'
 
 workflow ANNOTATION {
@@ -149,17 +148,8 @@ workflow ANNOTATION {
         BCFTOOLS_CONCAT.out.vcf.set { ch_annotated_vcfs }
     }
 
-    TABIX_ANNOTATED(
-        ch_annotated_vcfs
-    )
-    ch_versions = ch_versions.mix(TABIX_ANNOTATED.out.versions.first())
-
-    ch_annotated_vcfs
-        .join(TABIX_ANNOTATED.out.tbi, failOnDuplicate:true, failOnMismatch:true)
-        .set { ch_tabixed }
-
     emit:
-    annotated_vcfs  = ch_tabixed   // [ val(meta), path(vcf) ]
-    reports         = ch_reports   // [ path(reports) ]
-    versions        = ch_versions  // [ path(versions) ]
+    annotated_vcfs  = ch_annotated_vcfs   // [ val(meta), path(vcf) ]
+    reports         = ch_reports          // [ path(reports) ]
+    versions        = ch_versions         // [ path(versions) ]
 }

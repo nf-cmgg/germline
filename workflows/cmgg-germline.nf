@@ -75,6 +75,7 @@ include { UNTAR                                                      } from '../
 include { TABIX_TABIX as TABIX_DBSNP                                 } from '../modules/nf-core/tabix/tabix/main'
 include { TABIX_TABIX as TABIX_TRUTH                                 } from '../modules/nf-core/tabix/tabix/main'
 include { TABIX_TABIX as TABIX_GVCF                                  } from '../modules/nf-core/tabix/tabix/main'
+include { TABIX_TABIX as TABIX_FINAL                                 } from '../modules/nf-core/tabix/tabix/main'
 include { BCFTOOLS_FILTER as FILTER_SNPS                             } from '../modules/nf-core/bcftools/filter/main'
 include { BCFTOOLS_FILTER as FILTER_INDELS                           } from '../modules/nf-core/bcftools/filter/main'
 include { BCFTOOLS_STATS as BCFTOOLS_STATS_FAMILY                    } from '../modules/nf-core/bcftools/stats/main'
@@ -559,12 +560,25 @@ workflow CMGGGERMLINE {
     ch_annotation_output.dump(tag:'annotation_output', pretty:true)
 
     //
+    // Tabix the resulting VCF
+    //
+
+    TABIX_FINAL(
+        ch_annotation_output
+    )
+    ch_versions = ch_versions.mix(TABIX_FINAL.out.versions.first())
+
+    ch_annotation_output
+        .join(TABIX_FINAL.out.tbi, failOnDuplicate:true, failOnMismatch:true)
+        .set { ch_final_vcfs }
+
+    //
     // Validate the found variants
     //
 
     if (params.validate){
 
-        ch_annotation_output
+        ch_final_vcfs
             .combine(ch_input.truth_variants, by: 0)
             .map { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed, sample ->
                 new_meta = meta + [sample:sample]
@@ -619,7 +633,7 @@ workflow CMGGGERMLINE {
     //
 
     BCFTOOLS_STATS_FAMILY(
-        ch_annotation_output,
+        ch_final_vcfs,
         [],
         [],
         []
@@ -633,7 +647,7 @@ workflow CMGGGERMLINE {
 
     if(params.gemini){
         CustomChannelOperators.joinOnKeys(
-            ch_annotation_output.map { meta, vcf, tbi -> [ meta, vcf ]},
+            ch_final_vcfs.map { meta, vcf, tbi -> [ meta, vcf ]},
             VCF_EXTRACT_RELATE_SOMALIER.out.samples_tsv,
             ['id', 'family', 'family_count']
         )
