@@ -152,23 +152,30 @@ workflow SAMPLE_PREPARATION {
 
     ch_ready_rois
         .join(MOSDEPTH.out.quantized_bed, failOnDuplicate:true, failOnMismatch:true)
-        .set { ch_beds_to_filter }
-
-    // Filter out the regions with no coverage
-    FILTER_BEDS(
-        ch_beds_to_filter.map { meta, roi, callable -> [ meta, callable ]}
-    )
-    ch_versions = ch_versions.mix(FILTER_BEDS.out.versions)
-
-    FILTER_BEDS.out.bed
-        .join(ch_beds_to_filter, failOnDuplicate:true, failOnMismatch:true)
-        .branch { meta, filtered_callable, roi, callable ->
+        .branch { meta, roi, callable ->
             roi:    roi
-                return [ meta, roi, filtered_callable ]
+                return [ meta, roi, callable ]
             no_roi: !roi
-                return [ meta, filtered_callable ]
+                return [ meta, callable ]
         }
         .set { ch_beds_to_intersect }
+    //     .set { ch_beds_to_filter }
+
+    // // Filter out the regions with no coverage
+    // FILTER_BEDS(
+    //     ch_beds_to_filter.map { meta, roi, callable -> [ meta, callable ]}
+    // )
+    // ch_versions = ch_versions.mix(FILTER_BEDS.out.versions)
+
+    // FILTER_BEDS.out.bed
+    //     .join(ch_beds_to_filter, failOnDuplicate:true, failOnMismatch:true)
+        // .branch { meta, filtered_callable, roi, callable ->
+        //     roi:    roi
+        //         return [ meta, roi, filtered_callable ]
+        //     no_roi: !roi
+        //         return [ meta, filtered_callable ]
+        // }
+        // .set { ch_beds_to_intersect }
 
     // Intersect the ROI with the callable regions
     BEDTOOLS_INTERSECT(
