@@ -148,9 +148,8 @@ workflow ANNOTATION {
         BCFTOOLS_CONCAT.out.vcf.set { ch_annotated_vcfs }
     }
 
-
     emit:
-    annotated_vcfs  = ch_annotated_vcfs // [ val(meta), path(vcf) ]
-    reports         = ch_reports        // [ path(reports) ]
-    versions        = ch_versions       // [ path(versions) ]
+    annotated_vcfs  = ch_annotated_vcfs   // [ val(meta), path(vcf) ]
+    reports         = ch_reports          // [ path(reports) ]
+    versions        = ch_versions         // [ path(versions) ]
 }

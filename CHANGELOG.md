@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 1. Removed the `-sorted` argument from bedtools/jaccard
 2. Fixed some patterns in the parameter JSON schema (since they are actually used now)
+3. Fixed a breaking bug where mosdepth didn't output the callable regions (this makes v1.2.0 deprecated, please use v1.2.1 instead)
 
 ## v1.2.0 - Brave Brussels - [May 5 2023]
 

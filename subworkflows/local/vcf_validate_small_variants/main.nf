@@ -1,7 +1,6 @@
 include { RTGTOOLS_VCFEVAL      } from '../../../modules/nf-core/rtgtools/vcfeval/main'
 include { RTGTOOLS_ROCPLOT      } from '../../../modules/nf-core/rtgtools/rocplot/main'
 include { HAPPY_HAPPY           } from '../../../modules/nf-core/happy/happy/main'
-include { BEDTOOLS_JACCARD      } from '../../../modules/nf-core/bedtools/jaccard/main'
 
 workflow VCF_VALIDATE_SMALL_VARIANTS {
 
@@ -51,8 +50,6 @@ workflow VCF_VALIDATE_SMALL_VARIANTS {
     rtgtools_snp_svg_rocplot                = Channel.empty()
     rtgtools_non_snp_svg_rocplot            = Channel.empty()
     rtgtools_weighted_svg_rocplot           = Channel.empty()
-
-    jaccard_tsv                             = Channel.empty()
 
     val_list_tools = tools.tokenize(",")
 
@@ -153,24 +150,6 @@ workflow VCF_VALIDATE_SMALL_VARIANTS {
         rtgtools_weighted_svg_rocplot   = rocplot_out_svg.weighted
     }
 
-    if("jaccard" in val_list_tools) {
-        ch_vcf
-            .map { meta, vcf, tbi, truth_vcf, truth_tbi ->
-                [ meta, vcf, truth_vcf ]
-            }
-            .set { ch_jaccard_input }
-
-        BEDTOOLS_JACCARD(
-            ch_jaccard_input,
-            [[],[]]
-        )
-
-        ch_versions = ch_versions.mix(BEDTOOLS_JACCARD.out.versions.first())
-
-        jaccard_tsv = BEDTOOLS_JACCARD.out.tsv
-
-    }
-
     emit:
     happy_vcf                               // channel: [ meta, vcf ]
     happy_tbi                               // channel: [ meta, tbi ]
@@ -202,8 +181,6 @@ workflow VCF_VALIDATE_SMALL_VARIANTS {
     rtgtools_snp_svg_rocplot                // channel: [ meta, svg ]
     rtgtools_non_snp_svg_rocplot            // channel: [ meta, svg ]
     rtgtools_weighted_svg_rocplot           // channel: [ meta, svg ]
-
-    jaccard_tsv                             // channel: [ meta, tsv ]
 
     versions = ch_versions                  // channel: [ versions.yml ]
 }
