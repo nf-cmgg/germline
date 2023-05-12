@@ -159,6 +159,11 @@ workflow CMGGGERMLINE {
     ch_vcfanno_lua        = params.vcfanno_lua         ? Channel.fromPath(params.vcfanno_lua).collect()        : []
     ch_vcfanno_resources  = params.vcfanno_resources   ? Channel.of(params.vcfanno_resources.split(",")).map({ file(it, checkIfExists:true) }).collect()   : []
 
+    def val_callers       = params.callers.tokenize(",")
+    def allowed_callers   = ["haplotypecaller", "deepvariant"]
+
+    for (caller in val_callers) { if(!(caller in allowed_callers)) {error("The caller '${caller}' is not supported please specify a comma delimited list with on or more of the following callers: ${allowed_callers}".toString())}}
+
     //
     // Check for the presence of EnsemblVEP plugins that use extra files
     //
@@ -353,7 +358,8 @@ workflow CMGGGERMLINE {
 
             new_meta = meta + [
                 family_count:   counts[meta.family], // Contains the amount of samples in the family from this sample
-                type:           gvcf ? "gvcf" : "cram" // Whether a GVCF is given to this sample or not (aka skip variantcalling or not)
+                type:           gvcf ? "gvcf" : "cram", // Whether a GVCF is given to this sample or not (aka skip variantcalling or not)
+                analysis_type:  roi ? "WES" : "WGS" // Define if the data is WGS or WES
             ]
 
             truth_variants: [new_meta_family, truth_vcf, truth_tbi, truth_bed, meta.id] // Optional channel containing the truth VCF, its index and the optional BED file
@@ -389,7 +395,16 @@ workflow CMGGGERMLINE {
     )
     ch_versions = ch_versions.mix(TABIX_GVCF.out.versions)
 
+    // TODO find a clever solution for the possible double analysis of GVCFs (will only happen when two callers are used)
     ch_gvcf_branch.no_tbi
+        .map { meta, vcf, tbi ->
+            [ meta, vcf, tbi, val_callers ]
+        }
+        .transpose(by:3)
+        .map { meta, vcf, tbi, caller ->
+            new_meta = meta + [caller:caller]
+            [ new_meta, vcf, tbi ]
+        }
         .join(TABIX_GVCF.out.tbi, failOnDuplicate:true, failOnMismatch:true)
         .mix(ch_gvcf_branch.tbi)
         .set { ch_gvcfs_ready }
@@ -415,7 +430,12 @@ workflow CMGGGERMLINE {
         .groupTuple() // No size needed here because no process has been run with PED files before this
         .map { meta, peds ->
             // Find the first PED file and return that one for the family ([] if no PED is given for the family)
-            [ meta, peds.find { it != [] } ?: [] ]
+            [ meta, peds.find { it != [] } ?: [], val_callers ]
+        }
+        .transpose(by:2)
+        .map { meta, ped, caller ->
+            new_meta = meta + [caller:caller]
+            [ new_meta, ped ]
         }
         .dump(tag:'peds', pretty:true)
         .set { ch_peds_ready }
@@ -578,8 +598,19 @@ workflow CMGGGERMLINE {
 
     if (params.validate){
 
+        ch_input.truth_variants
+            .map { meta, vcf, tbi, bed, sample ->
+                [ meta, vcf, tbi, bed, sample, val_callers ]
+            }
+            .transpose(by:5)
+            .map { meta, vcf, tbi, bed, sample, caller ->
+                new_meta = meta + [caller:caller]
+                [ new_meta, vcf, tbi, bed, sample ]
+            }
+            .set { ch_truth_variants_ready }
+
         ch_final_vcfs
-            .combine(ch_input.truth_variants, by: 0)
+            .combine(ch_truth_variants_ready, by: 0)
             .map { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed, sample ->
                 new_meta = meta + [sample:sample]
                 [ new_meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ]

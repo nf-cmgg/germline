@@ -24,6 +24,8 @@ workflow JOINT_GENOTYPING {
 
     ch_versions = Channel.empty()
 
+    def callers = params.callers.tokenize(",")
+
     //
     // Merge BED files from the same family => merge all regions that overlap with the distance set with --merge_distance
     //
@@ -60,6 +62,16 @@ workflow JOINT_GENOTYPING {
     )
     ch_versions = ch_versions.mix(BEDTOOLS_SPLIT.out.versions.first())
 
+    BEDTOOLS_SPLIT.out.beds
+        .map { meta, beds ->
+            [ meta, beds, callers ]
+        }
+        .transpose(by:2)
+        .map { meta, beds, caller ->
+            new_meta = meta + [caller:caller]
+            [ new_meta, beds ]
+        }
+        .set { ch_scattered_beds }
     //
     // Create GenomicDBs for each family for each BED file
     //
@@ -70,12 +82,13 @@ workflow JOINT_GENOTYPING {
             new_meta = [
                 family:         meta.family,
                 id:             meta.family,
-                family_count:   meta.family_count
+                family_count:   meta.family_count,
+                caller:         meta.caller
             ]
             [ groupKey(new_meta, meta.family_count.toInteger()), gvcf, tbi ]
         }
         .groupTuple()
-        .join(BEDTOOLS_SPLIT.out.beds, failOnDuplicate: true, failOnMismatch: true)
+        .join(ch_scattered_beds, failOnDuplicate: true, failOnMismatch: true)
         .map { meta, gvcfs, tbis, beds ->
             // Determine the amount of BED files per sample
             bed_is_list = beds instanceof ArrayList
