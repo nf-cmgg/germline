@@ -3,17 +3,17 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v1.2.1dev
+## v1.3.0dev
 
 ### New Features
 
 1. Added support for the [`nf-validation`](https://github.com/nextflow-io/nf-validation/tree/master) plugin.
-
+2. Added DeepVariant as a caller. Use `--caller deepvariant` to use it. This new parameter defaults to `"haplotypecaller"`.
 ### Bug fixes
 
 1. Removed the `-sorted` argument from bedtools/jaccard
 2. Fixed some patterns in the parameter JSON schema (since they are actually used now)
-3. Fixed a breaking bug where mosdepth didn't output the callable regions (this makes v1.2.0 deprecated, please use v1.2.1 instead)
+3. Fixed a breaking bug where mosdepth didn't output the callable regions (this makes v1.2.0 deprecated, please use v1.3.0 instead)
 
 ## v1.2.0 - Brave Brussels - [May 5 2023]
 
