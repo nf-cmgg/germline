@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 1. Added support for the [`nf-validation`](https://github.com/nextflow-io/nf-validation/tree/master) plugin.
 2. Added DeepVariant as a caller. Use `--caller deepvariant` to use it. This new parameter defaults to `"haplotypecaller"`.
+
 ### Bug fixes
 
 1. Removed the `-sorted` argument from bedtools/jaccard
