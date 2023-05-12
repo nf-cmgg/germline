@@ -353,7 +353,8 @@ workflow CMGGGERMLINE {
 
             new_meta = meta + [
                 family_count:   counts[meta.family], // Contains the amount of samples in the family from this sample
-                type:           gvcf ? "gvcf" : "cram" // Whether a GVCF is given to this sample or not (aka skip variantcalling or not)
+                type:           gvcf ? "gvcf" : "cram", // Whether a GVCF is given to this sample or not (aka skip variantcalling or not)
+                analysis_type:  roi ? "WES" : "WGS" // The analysis type of the input
             ]
 
             truth_variants: [new_meta_family, truth_vcf, truth_tbi, truth_bed, meta.id] // Optional channel containing the truth VCF, its index and the optional BED file
