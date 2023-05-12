@@ -34,6 +34,7 @@ jobs:
           - "gemini_test"
           - "full_wes"
           - "full_wgs"
+          - "full_wgs_deepvariant"
     steps:
       - name: Free some space
         run: |
