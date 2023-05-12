@@ -11,7 +11,7 @@ process FILTER_BEDS {
     tuple val(meta), path(bed)
 
     output:
-    tuple val(meta), path('*.bed.gz'), emit: bed
+    tuple val(meta), path('*.bed'), emit: bed
     path  "versions.yml"             , emit: versions
 
     when:
@@ -24,7 +24,7 @@ process FILTER_BEDS {
 
     def unzip = bed.extension == "gz" ? "zcat" : "cat"
     """
-    ${unzip} ${bed} | grep -v NO_COVERAGE | bgzip --threads ${task.cpus} --stdout > ${prefix}.bed.gz
+    ${unzip} ${bed} | grep -v NO_COVERAGE > ${prefix}.bed
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
