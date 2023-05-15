@@ -611,7 +611,7 @@ workflow CMGGGERMLINE {
             .mix(ch_validation_branch.tbi)
             .multiMap { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ->
                 vcfs: [meta, vcf, tbi, truth_vcf, truth_tbi]
-                bed:  [meta, truth_bed, []]
+                bed:  [meta, [], truth_bed]
             }
             .set { ch_validation_input }
 
