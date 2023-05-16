@@ -83,7 +83,7 @@ workflow VCF_VALIDATE_SMALL_VARIANTS {
 
     if("vcfeval" in val_list_tools){
         RTGTOOLS_VCFEVAL(
-            ch_input.map { it[0..-2] + [[]] },
+            ch_input,
             ch_vcfeval_sdf
         )
         ch_versions = ch_versions.mix(RTGTOOLS_VCFEVAL.out.versions.first())
