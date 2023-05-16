@@ -36,6 +36,7 @@ process DEEPVARIANT {
         --output_gvcf=${prefix}.dv.g.vcf.gz \\
         ${args} \\
         ${regions} \\
+        --intermediate_results_dir=. \\
         --num_shards=${task.cpus}
 
     zcat ${prefix}.dv.g.vcf.gz | sed 's/<\\*>/<NON_REF>/' | bgzip --threads ${task.cpus} --stdout > ${prefix}.g.vcf.gz
