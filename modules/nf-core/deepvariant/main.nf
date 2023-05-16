@@ -26,7 +26,7 @@ process DEEPVARIANT {
     script:
     def args = task.ext.args ?: ''
     prefix = task.ext.prefix ?: "${meta.id}"
-    def regions = intervals ? "--regions ${intervals}" : ""
+    def regions = intervals ? "--regions=${intervals}" : ""
 
     """
     /opt/deepvariant/bin/run_deepvariant \\
