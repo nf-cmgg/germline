@@ -29,16 +29,14 @@ process ENSEMBLVEP_VEP {
     script:
     def args = task.ext.args ?: ''
     def file_extension = args.contains("--vcf") ? 'vcf' : args.contains("--json")? 'json' : args.contains("--tab")? 'tab' : 'vcf'
-    def compress_cmd = args.contains("--compress_output") ? '' : '--compress_output bgzip'
     def prefix = task.ext.prefix ?: "${meta.id}"
     def dir_cache = cache ? "\${PWD}/${cache}" : "/.vep"
     def reference = fasta ? "--fasta $fasta" : ""
     """
     vep \\
         -i $vcf \\
-        -o ${prefix}.${file_extension}.gz \\
+        -o ${prefix}.${file_extension} \\
         $args \\
-        $compress_cmd \\
         $reference \\
         --assembly $genome \\
         --species $species \\
@@ -47,7 +45,6 @@ process ENSEMBLVEP_VEP {
         --dir_cache $dir_cache \\
         --fork $task.cpus \\
         --stats_file ${prefix}.summary.html \\
-
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
