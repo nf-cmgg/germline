@@ -16,9 +16,9 @@ process DEEPVARIANT {
     path(gzi)
 
     output:
-    tuple val(meta), path("${prefix}.vcf.gz") ,  emit: vcf
+    tuple val(meta), path("${prefix}.vcf.gz")  ,  emit: vcf
     tuple val(meta), path("${prefix}.g.vcf.gz"),  emit: gvcf
-    path "versions.yml"               ,  emit: versions
+    path "versions.yml"                        ,  emit: versions
 
     when:
     task.ext.when == null || task.ext.when
