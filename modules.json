@@ -13,7 +13,7 @@
                     "bcftools/concat": {
                         "branch": "master",
                         "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
-                        "installed_by": ["vcf_gather_bcftools", "vcf_annotate_ensemblvep_snpeff", "modules"]
+                        "installed_by": ["vcf_annotate_ensemblvep_snpeff", "modules", "vcf_gather_bcftools"]
                     },
                     "bcftools/filter": {
                         "branch": "master",
@@ -33,7 +33,7 @@
                     "bcftools/sort": {
                         "branch": "master",
                         "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
-                        "installed_by": ["vcf_gather_bcftools", "vcf_annotate_ensemblvep_snpeff"]
+                        "installed_by": ["vcf_annotate_ensemblvep_snpeff", "vcf_gather_bcftools"]
                     },
                     "bcftools/stats": {
                         "branch": "master",
@@ -63,7 +63,7 @@
                     "ensemblvep/vep": {
                         "branch": "master",
                         "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
-                        "installed_by": ["vcf_annotate_ensemblvep_snpeff", "modules"],
+                        "installed_by": ["vcf_annotate_ensemblvep_snpeff"],
                         "patch": "modules/nf-core/ensemblvep/vep/ensemblvep-vep.diff"
                     },
                     "gatk4/calibratedragstrmodel": {
@@ -170,9 +170,9 @@
                         "branch": "master",
                         "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
                         "installed_by": [
-                            "vcf_gather_bcftools",
                             "vcf_annotate_ensemblvep_snpeff",
                             "modules",
+                            "vcf_gather_bcftools",
                             "vcf_extract_relate_somalier"
                         ]
                     },
