@@ -416,7 +416,7 @@
             "properties": {
                 "vep_chunk_size": {
                     "type": "integer",
-                    "default": 72000,
+                    "default": 50000,
                     "description": "The amount of sites per split VCF as input to VEP"
                 },
                 "species": {
