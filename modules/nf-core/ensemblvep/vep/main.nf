@@ -1,6 +1,6 @@
 process ENSEMBLVEP_VEP {
     tag "$meta.id"
-    label 'process_medium'
+    label 'process_low'
 
     conda "bioconda::ensembl-vep=108.2"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
