@@ -2,12 +2,13 @@
 // Run VEP and/or SNPEFF to annotate VCF files
 //
 
-include { ENSEMBLVEP_VEP         } from '../../../modules/nf-core/ensemblvep/vep/main'
-include { SNPEFF_SNPEFF          } from '../../../modules/nf-core/snpeff/snpeff/main'
-include { TABIX_TABIX            } from '../../../modules/nf-core/tabix/tabix/main'
-include { BCFTOOLS_PLUGINSCATTER } from '../../../modules/nf-core/bcftools/pluginscatter/main'
-include { BCFTOOLS_CONCAT        } from '../../../modules/nf-core/bcftools/concat/main'
-include { BCFTOOLS_SORT          } from '../../../modules/nf-core/bcftools/sort/main'
+include { ENSEMBLVEP_VEP                } from '../../../modules/nf-core/ensemblvep/vep/main'
+include { SNPEFF_SNPEFF                 } from '../../../modules/nf-core/snpeff/snpeff/main'
+include { TABIX_TABIX as TABIX_RESULT   } from '../../../modules/nf-core/tabix/tabix/main'
+include { TABIX_TABIX as TABIX_VEP      } from '../../../modules/nf-core/tabix/tabix/main'
+include { BCFTOOLS_PLUGINSCATTER        } from '../../../modules/nf-core/bcftools/pluginscatter/main'
+include { BCFTOOLS_CONCAT               } from '../../../modules/nf-core/bcftools/concat/main'
+include { BCFTOOLS_SORT                 } from '../../../modules/nf-core/bcftools/sort/main'
 
 workflow VCF_ANNOTATE_ENSEMBLVEP_SNPEFF {
     take:
@@ -132,14 +133,19 @@ workflow VCF_ANNOTATE_ENSEMBLVEP_SNPEFF {
         // Concatenate the VCFs back together with bcftools concat
         //
 
+        TABIX_VEP(
+            ch_snpeff_output
+        )
+        ch_versions = ch_versions.mix(TABIX_VEP.out.versions.first())
+
         ch_concat_input = ch_snpeff_output
+            .join(TABIX_VEP.out.tbi, failOnDuplicate:true, failOnMismatch:true)
             .join(ch_scatter.count, failOnDuplicate:true, failOnMismatch:true)
-            .map { meta, vcf, id, count ->
+            .map { meta, vcf, tbi, id, count ->
                 new_meta = meta + [id:id]
-                [ groupKey(new_meta, count), vcf ]
+                [ groupKey(new_meta, count), vcf, tbi ]
             }
             .groupTuple() // Group the VCFs which need to be concatenated
-            .map { it + [[]] }
 
         BCFTOOLS_CONCAT(
             ch_concat_input
@@ -172,13 +178,13 @@ workflow VCF_ANNOTATE_ENSEMBLVEP_SNPEFF {
                 return [ meta, vcf, [] ]
         }
 
-    TABIX_TABIX(
+    TABIX_RESULT(
         ch_tabix_input.bgzip
     )
-    ch_versions = ch_versions.mix(TABIX_TABIX.out.versions)
+    ch_versions = ch_versions.mix(TABIX_RESULT.out.versions)
 
     ch_vcf_tbi = ch_tabix_input.bgzip
-        .join(TABIX_TABIX.out.tbi, failOnDuplicate: true, failOnMismatch: true)
+        .join(TABIX_RESULT.out.tbi, failOnDuplicate: true, failOnMismatch: true)
         .mix(ch_tabix_input.unzip)
 
     emit:
