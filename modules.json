@@ -13,12 +13,17 @@
                     "bcftools/concat": {
                         "branch": "master",
                         "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
-                        "installed_by": ["modules", "vcf_gather_bcftools"]
+                        "installed_by": ["vcf_gather_bcftools", "vcf_annotate_ensemblvep_snpeff", "modules"]
                     },
                     "bcftools/filter": {
                         "branch": "master",
                         "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
                         "installed_by": ["modules"]
+                    },
+                    "bcftools/pluginscatter": {
+                        "branch": "master",
+                        "git_sha": "5cb7989b8b3de11ca2607f8b096f4bdfb24baf80",
+                        "installed_by": ["vcf_annotate_ensemblvep_snpeff"]
                     },
                     "bcftools/reheader": {
                         "branch": "master",
@@ -28,7 +33,7 @@
                     "bcftools/sort": {
                         "branch": "master",
                         "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
-                        "installed_by": ["vcf_gather_bcftools"]
+                        "installed_by": ["vcf_gather_bcftools", "vcf_annotate_ensemblvep_snpeff"]
                     },
                     "bcftools/stats": {
                         "branch": "master",
@@ -58,7 +63,7 @@
                     "ensemblvep/vep": {
                         "branch": "master",
                         "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
-                        "installed_by": ["modules"],
+                        "installed_by": ["vcf_annotate_ensemblvep_snpeff", "modules"],
                         "patch": "modules/nf-core/ensemblvep/vep/ensemblvep-vep.diff"
                     },
                     "gatk4/calibratedragstrmodel": {
@@ -140,6 +145,11 @@
                         "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
                         "installed_by": ["modules"]
                     },
+                    "snpeff/snpeff": {
+                        "branch": "master",
+                        "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
+                        "installed_by": ["vcf_annotate_ensemblvep_snpeff"]
+                    },
                     "somalier/extract": {
                         "branch": "master",
                         "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
@@ -159,7 +169,12 @@
                     "tabix/tabix": {
                         "branch": "master",
                         "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
-                        "installed_by": ["vcf_extract_relate_somalier", "modules", "vcf_gather_bcftools"]
+                        "installed_by": [
+                            "vcf_gather_bcftools",
+                            "vcf_annotate_ensemblvep_snpeff",
+                            "modules",
+                            "vcf_extract_relate_somalier"
+                        ]
                     },
                     "untar": {
                         "branch": "master",
@@ -180,6 +195,11 @@
             },
             "subworkflows": {
                 "nf-core": {
+                    "vcf_annotate_ensemblvep_snpeff": {
+                        "branch": "master",
+                        "git_sha": "4b67587330aa81ab2f3f3b5b709adf21c6f6f8b2",
+                        "installed_by": ["subworkflows"]
+                    },
                     "vcf_extract_relate_somalier": {
                         "branch": "master",
                         "git_sha": "a9784afdd5dcda23b84e64db75dc591065d64653",

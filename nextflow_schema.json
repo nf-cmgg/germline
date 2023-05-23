@@ -414,6 +414,11 @@
             "description": "Parameters to configure Ensembl VEP and VCFanno",
             "default": "",
             "properties": {
+                "vep_chunk_size": {
+                    "type": "integer",
+                    "default": 20000,
+                    "description": "The amount of sites per split VCF as input to VEP"
+                },
                 "species": {
                     "type": "string",
                     "default": "homo_sapiens",
