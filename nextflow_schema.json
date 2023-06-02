@@ -144,13 +144,16 @@
                     "description": "The merge distance for genotype BED files",
                     "help_text": "Increase this parameter if GenomicsDBImport is running slow. This defines the maximum distance between intervals that should be merged. The less intervals GenomicsDBImport actually gets, the faster it will run."
                 },
-                "dragstr": {
+                "no_dragstr": {
                     "type": "boolean",
-                    "description": "Create DragSTR models to be used with HaplotypeCaller",
-                    "help_text": "This currently is only able to run single-core per sample. Due to this, the process is very slow with only very small improvements to the analysis. It currently isn't advised to use this parameter unless you are willing to wait a lot longer."
+                    "description": "Don't create DragSTR models to be used with HaplotypeCaller",
+                    "help_text": "This currently is only able to run single-core per sample. Due to this, the process is very slow with only very small improvements to the analysis.",
+                    "default": false
                 },
-                "dragen_mode": {
-                    "type": "boolean"
+                "no_dragen_mode": {
+                    "type": "boolean",
+                    "description": "Don't use the HaplotypeCaller Dragen mode",
+                    "default": false
                 },
                 "validate": {
                     "type": "boolean",
