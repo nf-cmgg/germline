@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### New Features
 
 1. Added support for the [`nf-validation`](https://github.com/nextflow-io/nf-validation/tree/master) plugin.
-2. Added a new parameter `--no_dragen_mode` which disables the dragen-mode option for HaplotypeCaller
+2. Haplotypecaller dragen mode will be automatically disabled when not using a dragstr model.
 
 ### Bug fixes
 
@@ -21,7 +21,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 1. Genomicsdbs aren't scattered now, this increases the precision of the analyis by almost 3% at the cost of a bit longer runtimes
 2. Actually do the validation on the output VCFs now instead the freshly called GVCFs
 3. Improved the efficiency of the VEP run by scattering more efficiently on the amount of variants instead of the chromosomes
-4. Changed the `--dragstr` parameter to `--no_dragstr`, DragSTR models are now created by default and need to be turned off if they are not desired.
 
 ## v1.2.0 - Brave Brussels - [May 5 2023]
 
