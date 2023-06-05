@@ -75,22 +75,11 @@ workflow JOINT_GENOTYPING {
             [ groupKey(new_meta, meta.family_count.toInteger()), gvcf, tbi ]
         }
         .groupTuple()
-        .join(BEDTOOLS_SPLIT.out.beds, failOnDuplicate: true, failOnMismatch: true)
-        .map { meta, gvcfs, tbis, beds ->
-            // Determine the amount of BED files per sample
-            bed_is_list = beds instanceof ArrayList
-            new_meta = meta + [region_count: bed_is_list ? beds.size() : 1]
-            [ new_meta, gvcfs, tbis, bed_is_list ? beds : [beds] ]
-        }
-        .transpose(by:3) // Create one channel entry for each BED file per family
-        .map { meta, gvcfs, tbis, bed ->
-            // Set the base name of the BED file as the ID (this will look like sample_id.xxxx, where xxxx are numbers)
-            new_meta = meta + [id:bed.baseName]
-            [ new_meta, gvcfs, tbis, bed, [], [] ]
+        .join(MERGE_BEDS.out.bed, failOnDuplicate:true, failOnMismatch:true)
+        .map { meta, gvcfs, tbis, bed -> 
+            [ meta, gvcfs, tbis, bed, [], [] ]
         }
         .set { ch_genomicsdbimport_input }
-
-    ch_genomicsdbimport_input.dump(tag:'genomicsdbimport_input', pretty:true)
 
     GENOMICSDBIMPORT(
         ch_genomicsdbimport_input,
@@ -101,10 +90,19 @@ workflow JOINT_GENOTYPING {
     ch_versions = ch_versions.mix(GENOMICSDBIMPORT.out.versions.first())
 
     GENOMICSDBIMPORT.out.genomicsdb
-        .map { meta, genomic_db ->
-            [ meta, genomic_db, [], [], [] ]
+        .join(BEDTOOLS_SPLIT.out.beds, failOnDuplicate: true, failOnMismatch: true)
+        .map { meta, genomicsdb, beds ->
+            // Determine the amount of BED files per sample
+            bed_is_list = beds instanceof ArrayList
+            new_meta = meta + [region_count: bed_is_list ? beds.size() : 1]
+            [ new_meta, genomicsdb, bed_is_list ? beds : [beds] ]
         }
-        .dump(tag:'genotypegvcfs_input', pretty:true)
+        .transpose(by:2) // Create one channel entry for each BED file per family
+        .map { meta, genomicsdb, bed ->
+            // Set the base name of the BED file as the ID (this will look like sample_id.xxxx, where xxxx are numbers)
+            new_meta = meta + [id:bed.baseName]
+            [ new_meta, genomicsdb, [], bed, [] ]
+        }
         .set { ch_genotypegvcfs_input }
 
     //

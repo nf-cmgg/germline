@@ -147,40 +147,34 @@
                 "dragstr": {
                     "type": "boolean",
                     "description": "Create DragSTR models to be used with HaplotypeCaller",
-                    "help_text": "This currently is only able to run single-core per sample. Due to this, the process is very slow with only very small improvements to the analysis. It currently isn't advised to use this parameter unless you are willing to wait a lot longer.",
+                    "help_text": "This currently is only able to run single-core per sample. Due to this, the process is very slow with only very small improvements to the analysis.",
                     "default": false
                 },
                 "validate": {
                     "type": "boolean",
                     "description": "Validate the found variants",
-                    "help_text": "This only validates individual sample GVCFs that have truth VCF supplied to them via the samplesheet (in row `truth_vcf`, with an optional index in the `truth_tbi` row)",
-                    "default": false
+                    "help_text": "This only validates individual sample GVCFs that have truth VCF supplied to them via the samplesheet (in row `truth_vcf`, with an optional index in the `truth_tbi` row)"
                 },
                 "filter": {
                     "type": "boolean",
-                    "description": "Filter the found variants",
-                    "default": false
+                    "description": "Filter the found variants"
                 },
                 "annotate": {
                     "type": "boolean",
-                    "description": "Annotate the found variants",
-                    "default": false
+                    "description": "Annotate the found variants"
                 },
                 "add_ped": {
                     "type": "boolean",
-                    "description": "Add PED INFO header lines to the final VCFs",
-                    "default": false
+                    "description": "Add PED INFO header lines to the final VCFs"
                 },
                 "gemini": {
                     "type": "boolean",
-                    "description": "Create a Gemini databases from the final VCFs",
-                    "default": false
+                    "description": "Create a Gemini databases from the final VCFs"
                 },
                 "coverage_fast": {
                     "type": "boolean",
                     "description": "Run mosdepth in fast-mode",
-                    "help_text": "This is advised if you don't need exact coverage BED files as output",
-                    "default": false
+                    "help_text": "This is advised if you don't need exact coverage BED files as output"
                 },
                 "roi": {
                     "type": "string",
@@ -295,7 +289,7 @@
                     "description": "Maximum amount of time that can be requested for any single job.",
                     "default": "240.h",
                     "fa_icon": "far fa-clock",
-                    "pattern": "^(\\d+\\.?\\s*(s|m|h|day)\\s*)+$",
+                    "pattern": "^(\\d+\\.?\\s*(s|m|h|d|day)\\s*)+$",
                     "hidden": true,
                     "help_text": "Use to set an upper-limit for the time requirement for each process. Should be a string in the format integer-unit e.g. `--max_time '2.h'`"
                 }
@@ -400,6 +394,15 @@
                     "description": "Show all params when using `--help`",
                     "hidden": true,
                     "help_text": "By default, parameters set as _hidden_ in the schema are not shown on the command line when a user runs with `--help`. Specifying this option will tell the pipeline to show all parameters."
+                },
+                "validationLenientMode": {
+                    "type": "boolean",
+                    "default": true,
+                    "hidden": true
+                },
+                "validationFailUnrecognisedParams": {
+                    "type": "boolean",
+                    "hidden": true
                 }
             }
         },
@@ -409,6 +412,11 @@
             "description": "Parameters to configure Ensembl VEP and VCFanno",
             "default": "",
             "properties": {
+                "vep_chunk_size": {
+                    "type": "integer",
+                    "default": 50000,
+                    "description": "The amount of sites per split VCF as input to VEP"
+                },
                 "species": {
                     "type": "string",
                     "default": "homo_sapiens",
@@ -432,42 +440,36 @@
                     "type": "boolean",
                     "description": "Use the dbNSFP plugin with Ensembl VEP",
                     "fa_icon": "fas fa-question-circle",
-                    "help_text": "The '--dbnsfp' and '--dbnsfp_tbi' parameters need to be specified when using this parameter.",
-                    "default": false
+                    "help_text": "The '--dbnsfp' and '--dbnsfp_tbi' parameters need to be specified when using this parameter."
                 },
                 "vep_spliceai": {
                     "type": "boolean",
                     "description": "Use the SpliceAI plugin with Ensembl VEP",
                     "fa_icon": "fas fa-question-circle",
-                    "help_text": "The '--spliceai_indel', '--spliceai_indel_tbi', '--spliceai_snv' and '--spliceai_snv_tbi' parameters need to be specified when using this parameter.",
-                    "default": false
+                    "help_text": "The '--spliceai_indel', '--spliceai_indel_tbi', '--spliceai_snv' and '--spliceai_snv_tbi' parameters need to be specified when using this parameter."
                 },
                 "vep_spliceregion": {
                     "type": "boolean",
                     "description": "Use the SpliceRegion plugin with Ensembl VEP",
-                    "fa_icon": "fas fa-question-circle",
-                    "default": false
+                    "fa_icon": "fas fa-question-circle"
                 },
                 "vep_mastermind": {
                     "type": "boolean",
                     "description": "Use the Mastermind plugin with Ensembl VEP",
                     "fa_icon": "fas fa-question-circle",
-                    "help_text": "The '--mastermind' and '--mastermind_tbi' parameters need to be specified when using this parameter.",
-                    "default": false
+                    "help_text": "The '--mastermind' and '--mastermind_tbi' parameters need to be specified when using this parameter."
                 },
                 "vep_maxentscan": {
                     "type": "boolean",
                     "description": "Use the MaxEntScan plugin with Ensembl VEP",
                     "fa_icon": "fas fa-question-circle",
-                    "help_text": "The '--maxentscan' parameter need to be specified when using this parameter.",
-                    "default": false
+                    "help_text": "The '--maxentscan' parameter need to be specified when using this parameter."
                 },
                 "vep_eog": {
                     "type": "boolean",
                     "description": "Use the custom EOG annotation with Ensembl VEP",
                     "fa_icon": "fas fa-question-circle",
-                    "help_text": "The '--eog' and '--eog_tbi' parameters need to be specified when using this parameter.",
-                    "default": false
+                    "help_text": "The '--eog' and '--eog_tbi' parameters need to be specified when using this parameter."
                 },
                 "vep_version": {
                     "type": "string",
@@ -580,7 +582,6 @@
                 },
                 "vcfanno_resources": {
                     "type": "string",
-                    "format": "directory-path",
                     "description": "A comma-seperated list of resource files for VCFanno, please also supply their indices using this parameter"
                 }
             },

@@ -3,6 +3,25 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.2.1 - Balanced Brussels - [June 5 2023]
+
+### New Features
+
+1. Added support for the [`nf-validation`](https://github.com/nextflow-io/nf-validation/tree/master) plugin.
+2. Haplotypecaller dragen mode will be automatically disabled when not using a dragstr model.
+
+### Bug fixes
+
+1. Removed bedtools/jaccard
+2. Fixed some patterns in the parameter JSON schema (since they are actually used now)
+3. Fixed a breaking bug where mosdepth didn't output the callable regions (this makes v1.2.0 deprecated, please use v1.2.1 instead)
+
+### Improvements
+
+1. Genomicsdbs aren't scattered now, this increases the precision of the analyis by almost 3% at the cost of a bit longer runtimes
+2. Actually do the validation on the output VCFs now instead the freshly called GVCFs
+3. Improved the efficiency of the VEP run by scattering more efficiently on the amount of variants instead of the chromosomes
+
 ## v1.2.0 - Brave Brussels - [May 5 2023]
 
 ### New Features
