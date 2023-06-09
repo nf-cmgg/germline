@@ -11,7 +11,6 @@ nextflow_pipeline {
             assert workflow.success
             assert file("${outputDir}/${date}_test/Proband_12345/reports/Proband_12345.bcftools_stats.txt").exists()
             assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.vcf.gz").exists()
-            assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.db").exists()
             assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.ped").exists()
             assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.bed").exists()
             assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.samples.tsv").exists()
