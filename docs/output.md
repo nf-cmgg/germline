@@ -11,7 +11,6 @@ The directories listed below will be created in the results directory after the 
 - The folder `multiqc_reports` contains all the MultiQC report files
 - The folder `pipeline_info` contains reports on the execution of the pipeline
 
-
 ```bash
 results/
 ├── yyyy-MM-dd_project_name/
