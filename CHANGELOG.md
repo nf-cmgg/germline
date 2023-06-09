@@ -5,11 +5,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v1.2.2dev
 
-### New Features
-
-### Bug fixes
-
 ### Improvements
+Changed the output directory structure to be more bcbio like
 
 ## v1.2.1 - Balanced Brussels - [June 5 2023]
 
