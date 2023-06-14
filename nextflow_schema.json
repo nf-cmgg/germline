@@ -10,7 +10,10 @@
             "type": "object",
             "fa_icon": "fas fa-terminal",
             "description": "Define where the pipeline should find input data and save output data.",
-            "required": ["input", "outdir"],
+            "required": [
+                "input",
+                "outdir"
+            ],
             "properties": {
                 "input": {
                     "type": "string",
@@ -123,7 +126,9 @@
                     "default": true
                 }
             },
-            "required": ["fasta"]
+            "required": [
+                "fasta"
+            ]
         },
         "pipeline_specific_parameters": {
             "title": "Pipeline specific parameters",
@@ -147,8 +152,7 @@
                 "dragstr": {
                     "type": "boolean",
                     "description": "Create DragSTR models to be used with HaplotypeCaller",
-                    "help_text": "This currently is only able to run single-core per sample. Due to this, the process is very slow with only very small improvements to the analysis.",
-                    "default": false
+                    "help_text": "This currently is only able to run single-core per sample. Due to this, the process is very slow with only very small improvements to the analysis."
                 },
                 "validate": {
                     "type": "boolean",
@@ -213,9 +217,15 @@
                     "pattern": "^\\S+\\.vcf\\.gz",
                     "format": "file-path",
                     "mimetype": "text/plain"
+                },
+                "only_call": {
+                    "type": "boolean",
+                    "description": "Only call the variants without doing any post-processing"
                 }
             },
-            "required": ["scatter_count"]
+            "required": [
+                "scatter_count"
+            ]
         },
         "institutional_config_options": {
             "title": "Institutional config options",
@@ -323,7 +333,14 @@
                     "description": "Method used to save pipeline results to output directory.",
                     "help_text": "The Nextflow `publishDir` option specifies which intermediate files should be saved to the output directory. This option tells the pipeline what method should be used to move these files. See [Nextflow docs](https://www.nextflow.io/docs/latest/process.html#publishdir) for details.",
                     "fa_icon": "fas fa-copy",
-                    "enum": ["symlink", "rellink", "link", "copy", "copyNoFollow", "move"]
+                    "enum": [
+                        "symlink",
+                        "rellink",
+                        "link",
+                        "copy",
+                        "copyNoFollow",
+                        "move"
+                    ]
                 },
                 "email_on_fail": {
                     "type": "string",
@@ -407,6 +424,11 @@
                 },
                 "validationFailUnrecognisedParams": {
                     "type": "boolean",
+                    "hidden": true
+                },
+                "validationSchemaIgnoreParams": {
+                    "type": "string",
+                    "default": "genomes,test_data",
                     "hidden": true
                 }
             }

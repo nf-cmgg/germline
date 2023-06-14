@@ -1,0 +1,30 @@
+nextflow_pipeline {
+
+    name "Tests of the pipeline with all optional parameters on default"
+    script "main.nf"
+    tag "only_call"
+
+    test("Success") {
+
+        when {
+            params {
+                only_call = true
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert file("${outputDir}/NA24385D2_NVQ_034/reports/NA24385D2_NVQ_034.bcftools_stats.txt").exists()
+            assert file("${outputDir}/NA24385D2_NVQ_034/NA24385D2_NVQ_034.g.vcf.gz").exists()
+            assert file("${outputDir}/NA24385D2_NVQ_034/NA24385D2_NVQ_034.g.vcf.gz.tbi").exists()
+            assert file("${outputDir}/NA24385D2_NVQ_034/NA24385D2_NVQ_034.bed").exists()
+            assert file("${outputDir}/NA24385D2_NVQ_034/NA24385D2_NVQ_034.quantized.bed.gz").exists()
+            assert file("${outputDir}/DNA049572/reports/DNA049572.bcftools_stats.txt").exists()
+            assert file("${outputDir}/DNA049572/DNA049572.g.vcf.gz").exists()
+            assert file("${outputDir}/DNA049572/DNA049572.g.vcf.gz.tbi").exists()
+            assert file("${outputDir}/DNA049572/DNA049572.bed").exists()
+            assert file("${outputDir}/DNA049572/DNA049572.quantized.bed.gz").exists()
+            assert file("${outputDir}/multiqc_reports/multiqc_report.html").exists()        
+        }
+    }
+}

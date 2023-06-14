@@ -439,224 +439,227 @@ workflow CMGGGERMLINE {
         .dump(tag:'variantcalling_output', pretty:true)
         .set { ch_variantcalling_output }
 
-    //
-    // Joint-genotyping of the families
-    //
+    if(!params.only_call){
 
-    JOINT_GENOTYPING(
-        ch_variantcalling_output,
-        SAMPLE_PREPARATION.out.ready_beds,
-        ch_fasta_ready,
-        ch_fai_ready,
-        ch_dict_ready,
-        ch_dbsnp_ready,
-        ch_dbsnp_tbi_ready
-    )
-    ch_versions = ch_versions.mix(JOINT_GENOTYPING.out.versions)
+        //
+        // Joint-genotyping of the families
+        //
 
-    JOINT_GENOTYPING.out.genotyped_vcfs
-        .dump(tag:'joint_genotyping_output', pretty:true)
-        .set { ch_joint_genotyping_output }
-
-    //
-    // Filter the variants
-    //
-
-    if (params.filter) {
-        FILTER_SNPS(
-            ch_joint_genotyping_output
-        )
-        ch_versions = ch_versions.mix(FILTER_SNPS.out.versions)
-
-        FILTER_INDELS(
-            FILTER_SNPS.out.vcf
-        )
-        ch_versions = ch_versions.mix(FILTER_INDELS.out.versions)
-
-        FILTER_INDELS.out.vcf.set { ch_filter_output }
-    } else {
-        ch_joint_genotyping_output.set { ch_filter_output }
-    }
-
-    ch_filter_output.dump(tag:'filter_output', pretty: true)
-
-    //
-    // Run relation tests with somalier
-    //
-
-    VCF_EXTRACT_RELATE_SOMALIER(
-        ch_filter_output
-            .filter { meta, vcf ->
-                // Filter out the families that only have one individual
-                meta.family_count > 1
-            }
-            .map { it + [[], 1] },
-        ch_fasta_ready,
-        ch_fai_ready,
-        ch_somalier_sites,
-        ch_peds_ready
-            .filter { meta, ped ->
-                // Filter out the families that only have one individual
-                meta.family_count > 1
-            },
-        [],
-        []
-    )
-    ch_versions = ch_versions.mix(VCF_EXTRACT_RELATE_SOMALIER.out.versions)
-
-    //
-    // Add PED headers to the VCFs
-    //
-
-    if(params.add_ped){
-        ch_filter_output
-            .branch { meta, vcf ->
-                // Only add ped headers to VCFs with more than one individual
-                single: meta.family_count == 1
-                multiple: meta.family_count > 1
-            }
-            .set { ch_ped_header_branch }
-
-        ADD_PED_HEADER(
-            ch_ped_header_branch.multiple,
-            VCF_EXTRACT_RELATE_SOMALIER.out.samples_tsv
-        )
-        ch_versions = ch_versions.mix(ADD_PED_HEADER.out.versions)
-
-        ADD_PED_HEADER.out.ped_vcfs
-            .mix(ch_ped_header_branch.single)
-            .dump(tag:'ped_vcfs', pretty:true)
-            .set { ch_ped_vcfs }
-    } else {
-        ch_filter_output.set { ch_ped_vcfs }
-    }
-
-    //
-    // Annotation of the variants and creation of Gemini-compatible database files
-    //
-
-    if (params.annotate) {
-        ANNOTATION(
-            ch_ped_vcfs,
+        JOINT_GENOTYPING(
+            ch_variantcalling_output,
+            SAMPLE_PREPARATION.out.ready_beds,
             ch_fasta_ready,
             ch_fai_ready,
-            ch_vep_cache,
-            ch_vep_extra_files,
-            ch_vcfanno_config,
-            ch_vcfanno_lua,
-            ch_vcfanno_resources
+            ch_dict_ready,
+            ch_dbsnp_ready,
+            ch_dbsnp_tbi_ready
         )
-        ch_versions = ch_versions.mix(ANNOTATION.out.versions)
-        ch_reports  = ch_reports.mix(ANNOTATION.out.reports)
+        ch_versions = ch_versions.mix(JOINT_GENOTYPING.out.versions)
 
-        ANNOTATION.out.annotated_vcfs.set { ch_annotation_output }
-    } else {
-        ch_ped_vcfs.set { ch_annotation_output }
-    }
+        JOINT_GENOTYPING.out.genotyped_vcfs
+            .dump(tag:'joint_genotyping_output', pretty:true)
+            .set { ch_joint_genotyping_output }
 
-    ch_annotation_output.dump(tag:'annotation_output', pretty:true)
+        //
+        // Filter the variants
+        //
 
-    //
-    // Tabix the resulting VCF
-    //
+        if (params.filter) {
+            FILTER_SNPS(
+                ch_joint_genotyping_output
+            )
+            ch_versions = ch_versions.mix(FILTER_SNPS.out.versions)
 
-    TABIX_FINAL(
+            FILTER_INDELS(
+                FILTER_SNPS.out.vcf
+            )
+            ch_versions = ch_versions.mix(FILTER_INDELS.out.versions)
+
+            FILTER_INDELS.out.vcf.set { ch_filter_output }
+        } else {
+            ch_joint_genotyping_output.set { ch_filter_output }
+        }
+
+        ch_filter_output.dump(tag:'filter_output', pretty: true)
+
+        //
+        // Run relation tests with somalier
+        //
+
+        VCF_EXTRACT_RELATE_SOMALIER(
+            ch_filter_output
+                .filter { meta, vcf ->
+                    // Filter out the families that only have one individual
+                    meta.family_count > 1
+                }
+                .map { it + [[], 1] },
+            ch_fasta_ready,
+            ch_fai_ready,
+            ch_somalier_sites,
+            ch_peds_ready
+                .filter { meta, ped ->
+                    // Filter out the families that only have one individual
+                    meta.family_count > 1
+                },
+            [],
+            []
+        )
+        ch_versions = ch_versions.mix(VCF_EXTRACT_RELATE_SOMALIER.out.versions)
+
+        //
+        // Add PED headers to the VCFs
+        //
+
+        if(params.add_ped){
+            ch_filter_output
+                .branch { meta, vcf ->
+                    // Only add ped headers to VCFs with more than one individual
+                    single: meta.family_count == 1
+                    multiple: meta.family_count > 1
+                }
+                .set { ch_ped_header_branch }
+
+            ADD_PED_HEADER(
+                ch_ped_header_branch.multiple,
+                VCF_EXTRACT_RELATE_SOMALIER.out.samples_tsv
+            )
+            ch_versions = ch_versions.mix(ADD_PED_HEADER.out.versions)
+
+            ADD_PED_HEADER.out.ped_vcfs
+                .mix(ch_ped_header_branch.single)
+                .dump(tag:'ped_vcfs', pretty:true)
+                .set { ch_ped_vcfs }
+        } else {
+            ch_filter_output.set { ch_ped_vcfs }
+        }
+
+        //
+        // Annotation of the variants and creation of Gemini-compatible database files
+        //
+
+        if (params.annotate) {
+            ANNOTATION(
+                ch_ped_vcfs,
+                ch_fasta_ready,
+                ch_fai_ready,
+                ch_vep_cache,
+                ch_vep_extra_files,
+                ch_vcfanno_config,
+                ch_vcfanno_lua,
+                ch_vcfanno_resources
+            )
+            ch_versions = ch_versions.mix(ANNOTATION.out.versions)
+            ch_reports  = ch_reports.mix(ANNOTATION.out.reports)
+
+            ANNOTATION.out.annotated_vcfs.set { ch_annotation_output }
+        } else {
+            ch_ped_vcfs.set { ch_annotation_output }
+        }
+
+        ch_annotation_output.dump(tag:'annotation_output', pretty:true)
+
+        //
+        // Tabix the resulting VCF
+        //
+
+        TABIX_FINAL(
+            ch_annotation_output
+        )
+        ch_versions = ch_versions.mix(TABIX_FINAL.out.versions.first())
+
         ch_annotation_output
-    )
-    ch_versions = ch_versions.mix(TABIX_FINAL.out.versions.first())
+            .join(TABIX_FINAL.out.tbi, failOnDuplicate:true, failOnMismatch:true)
+            .set { ch_final_vcfs }
 
-    ch_annotation_output
-        .join(TABIX_FINAL.out.tbi, failOnDuplicate:true, failOnMismatch:true)
-        .set { ch_final_vcfs }
+        //
+        // Validate the found variants
+        //
 
-    //
-    // Validate the found variants
-    //
+        if (params.validate){
 
-    if (params.validate){
+            ch_final_vcfs
+                .combine(ch_input.truth_variants, by: 0)
+                .map { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed, sample ->
+                    new_meta = meta + [sample:sample]
+                    [ new_meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ]
+                }
+                .filter { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ->
+                    // Filter out all samples that have no truth VCF
+                    truth_vcf != []
+                }
+                .branch { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ->
+                    tbi: truth_tbi != []
+                    no_tbi: truth_tbi == []
+                }
+                .set { ch_validation_branch }
 
-        ch_final_vcfs
-            .combine(ch_input.truth_variants, by: 0)
-            .map { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed, sample ->
-                new_meta = meta + [sample:sample]
-                [ new_meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ]
-            }
-            .filter { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ->
-                // Filter out all samples that have no truth VCF
-                truth_vcf != []
-            }
-            .branch { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ->
-                tbi: truth_tbi != []
-                no_tbi: truth_tbi == []
-            }
-            .set { ch_validation_branch }
+            // Create truth VCF indices if none were given
+            TABIX_TRUTH(
+                ch_validation_branch.no_tbi.map { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed -> 
+                    [ meta, truth_vcf ]
+                }
+            )
+            ch_versions = ch_versions.mix(TABIX_TRUTH.out.versions)
 
-        // Create truth VCF indices if none were given
-        TABIX_TRUTH(
-            ch_validation_branch.no_tbi.map { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed -> 
-                [ meta, truth_vcf ]
-            }
+            ch_validation_branch.no_tbi
+                .join(TABIX_TRUTH.out.tbi, failOnDuplicate: true, failOnMismatch: true) 
+                .map { meta, vcf, tbi, truth_vcf, empty_tbi, truth_bed, truth_tbi ->
+                    [ meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ]
+                }
+                .mix(ch_validation_branch.tbi)
+                .multiMap { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ->
+                    vcfs: [meta, vcf, tbi, truth_vcf, truth_tbi]
+                    bed:  [meta, truth_bed, []]
+                }
+                .set { ch_validation_input }
+
+            VCF_VALIDATE_SMALL_VARIANTS(
+                ch_validation_input.vcfs,
+                ch_validation_input.bed,
+                ch_fasta_ready.map { [[], it] },
+                ch_fai_ready.map { [[], it] },
+                ch_sdf_ready.collect(),
+                [[],[]],
+                [[],[]],
+                [[],[]],
+                "vcfeval" //Only VCFeval for now, awaiting the conda fix for happy (https://github.com/bioconda/bioconda-recipes/pull/39267)
+            )
+            ch_versions = ch_versions.mix(VCF_VALIDATE_SMALL_VARIANTS.out.versions)
+        }
+
+        //
+        // Perform QC on the final VCFs
+        //
+
+        BCFTOOLS_STATS_FAMILY(
+            ch_final_vcfs,
+            [],
+            [],
+            []
         )
-        ch_versions = ch_versions.mix(TABIX_TRUTH.out.versions)
+        ch_versions = ch_versions.mix(BCFTOOLS_STATS_FAMILY.out.versions)
+        ch_reports  = ch_reports.mix(BCFTOOLS_STATS_FAMILY.out.stats.collect{it[1]})
 
-        ch_validation_branch.no_tbi
-            .join(TABIX_TRUTH.out.tbi, failOnDuplicate: true, failOnMismatch: true) 
-            .map { meta, vcf, tbi, truth_vcf, empty_tbi, truth_bed, truth_tbi ->
-                [ meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ]
-            }
-            .mix(ch_validation_branch.tbi)
-            .multiMap { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ->
-                vcfs: [meta, vcf, tbi, truth_vcf, truth_tbi]
-                bed:  [meta, truth_bed, []]
-            }
-            .set { ch_validation_input }
+        //
+        // Create Gemini-compatible database files
+        //
 
-        VCF_VALIDATE_SMALL_VARIANTS(
-            ch_validation_input.vcfs,
-            ch_validation_input.bed,
-            ch_fasta_ready.map { [[], it] },
-            ch_fai_ready.map { [[], it] },
-            ch_sdf_ready.collect(),
-            [[],[]],
-            [[],[]],
-            [[],[]],
-            "vcfeval" //Only VCFeval for now, awaiting the conda fix for happy (https://github.com/bioconda/bioconda-recipes/pull/39267)
-        )
-        ch_versions = ch_versions.mix(VCF_VALIDATE_SMALL_VARIANTS.out.versions)
-    }
+        if(params.gemini){
+            CustomChannelOperators.joinOnKeys(
+                ch_final_vcfs.map { meta, vcf, tbi -> [ meta, vcf ]},
+                VCF_EXTRACT_RELATE_SOMALIER.out.samples_tsv,
+                ['id', 'family', 'family_count']
+            )
+            .dump(tag:'vcf2db_input', pretty:true)
+            .set { ch_vcf2db_input }
 
-    //
-    // Perform QC on the final VCFs
-    //
+            VCF2DB(
+                ch_vcf2db_input
+            )
+            ch_versions = ch_versions.mix(VCF2DB.out.versions.first())
 
-    BCFTOOLS_STATS_FAMILY(
-        ch_final_vcfs,
-        [],
-        [],
-        []
-    )
-    ch_versions = ch_versions.mix(BCFTOOLS_STATS_FAMILY.out.versions)
-    ch_reports  = ch_reports.mix(BCFTOOLS_STATS_FAMILY.out.stats.collect{it[1]})
-
-    //
-    // Create Gemini-compatible database files
-    //
-
-    if(params.gemini){
-        CustomChannelOperators.joinOnKeys(
-            ch_final_vcfs.map { meta, vcf, tbi -> [ meta, vcf ]},
-            VCF_EXTRACT_RELATE_SOMALIER.out.samples_tsv,
-            ['id', 'family', 'family_count']
-        )
-        .dump(tag:'vcf2db_input', pretty:true)
-        .set { ch_vcf2db_input }
-
-        VCF2DB(
-            ch_vcf2db_input
-        )
-        ch_versions = ch_versions.mix(VCF2DB.out.versions.first())
-
-        VCF2DB.out.db.dump(tag:'vcf2db_output', pretty:true)
+            VCF2DB.out.db.dump(tag:'vcf2db_output', pretty:true)
+        }
     }
 
     //
