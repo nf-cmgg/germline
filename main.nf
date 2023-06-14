@@ -52,11 +52,11 @@ if (params.help) {
    exit 0
 }
 
-// Validate input parameters
-validateParameters()
-
 // Print parameter summary log to screen
 log.info paramsSummaryLog(workflow)
+
+// Validate input parameters
+validateParameters()
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -4,7 +4,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { validateAndConvertSamplesheet } from 'plugin/nf-validation'
+include { fromSamplesheet } from 'plugin/nf-validation'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -319,10 +319,7 @@ workflow CMGGGERMLINE {
     // Read in samplesheet, validate and convert to a channel
     //
 
-    Channel.validateAndConvertSamplesheet(
-        file(params.input, checkIfExists:true),
-        file("${projectDir}/assets/schema_input.json", checkIfExists:true)
-    )
+    Channel.fromSamplesheet("input", immutable_meta: false)
         .map { meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ->
             // Infer the family ID from the PED file if no family ID was given.
             // If no PED is given, use the sample ID as family ID            
