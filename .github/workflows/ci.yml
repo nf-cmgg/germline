@@ -35,6 +35,7 @@ jobs:
           - "full_wes"
           - "full_wgs"
           - "full_wgs_deepvariant"
+          - "only_call"
     steps:
       - name: Free some space
         run: |

@@ -3,61 +3,64 @@
     "$id": "https://raw.githubusercontent.com/CenterForMedicalGeneticsGhent/nf-cmgg-germline/master/assets/schema_input.json",
     "title": "Samplesheet validation schema",
     "description": "Schema for the samplesheet used in this pipeline",
-    "type": "object",
-    "properties": {
-        "sample": {
-            "type": "string",
-            "meta": ["id", "sample"]
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "sample": {
+                "type": "string",
+                "meta": ["id", "sample"]
+            },
+            "family": {
+                "type": "string",
+                "meta": ["family"]
+            },
+            "cram": {
+                "type": "string",
+                "pattern": "^\\S+\\.cram$",
+                "format": "file-path"
+            },
+            "crai": {
+                "type": "string",
+                "pattern": "^\\S+\\.crai$",
+                "format": "file-path"
+            },
+            "gvcf": {
+                "type": "string",
+                "pattern": "^\\S+vcf(.gz)?$",
+                "format": "file-path"
+            },
+            "tbi": {
+                "type": "string",
+                "pattern": "^\\S+\\.tbi$",
+                "format": "file-path"
+            },
+            "roi": {
+                "type": "string",
+                "pattern": "^\\S+\\.bed(\\.gz)?$",
+                "format": "file-path"
+            },
+            "ped": {
+                "type": "string",
+                "pattern": "^\\S+\\.ped$",
+                "format": "file-path"
+            },
+            "truth_vcf": {
+                "type": "string",
+                "pattern": "^\\S+\\.vcf\\.gz$",
+                "format": "file-path"
+            },
+            "truth_tbi": {
+                "type": "string",
+                "pattern": "^\\S+\\.tbi$",
+                "format": "file-path"
+            },
+            "truth_bed": {
+                "type": "string",
+                "pattern": "^\\S+\\.bed$",
+                "format": "file-path"
+            }
         },
-        "family": {
-            "type": "string",
-            "meta": ["family"]
-        },
-        "cram": {
-            "type": "string",
-            "pattern": "^\\S+\\.cram$",
-            "format": "file-path"
-        },
-        "crai": {
-            "type": "string",
-            "pattern": "^\\S+\\.crai$",
-            "format": "file-path"
-        },
-        "gvcf": {
-            "type": "string",
-            "pattern": "^\\S+vcf(.gz)?$",
-            "format": "file-path"
-        },
-        "tbi": {
-            "type": "string",
-            "pattern": "^\\S+\\.tbi$",
-            "format": "file-path"
-        },
-        "roi": {
-            "type": "string",
-            "pattern": "^\\S+\\.bed(\\.gz)?$",
-            "format": "file-path"
-        },
-        "ped": {
-            "type": "string",
-            "pattern": "^\\S+\\.ped$",
-            "format": "file-path"
-        },
-        "truth_vcf": {
-            "type": "string",
-            "pattern": "^\\S+\\.vcf\\.gz$",
-            "format": "file-path"
-        },
-        "truth_tbi": {
-            "type": "string",
-            "pattern": "^\\S+\\.tbi$",
-            "format": "file-path"
-        },
-        "truth_bed": {
-            "type": "string",
-            "pattern": "^\\S+\\.bed$",
-            "format": "file-path"
-        }
-    },
-    "required": ["sample", "cram"]
+        "required": ["sample", "cram"]
+    }
 }

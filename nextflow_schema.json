@@ -153,10 +153,7 @@
                 "dragstr": {
                     "type": "boolean",
                     "description": "Create DragSTR models to be used with HaplotypeCaller",
-                    "help_text": "This currently is only able to run single-core per sample. Due to this, the process is very slow with only very small improvements to the analysis. It currently isn't advised to use this parameter unless you are willing to wait a lot longer."
-                },
-                "dragen_mode": {
-                    "type": "boolean"
+                    "help_text": "This currently is only able to run single-core per sample. Due to this, the process is very slow with only very small improvements to the analysis."
                 },
                 "validate": {
                     "type": "boolean",
@@ -183,6 +180,11 @@
                     "type": "boolean",
                     "description": "Run mosdepth in fast-mode",
                     "help_text": "This is advised if you don't need exact coverage BED files as output"
+                },
+                "project": {
+                    "type": "string",
+                    "description": "The name of the project.",
+                    "help_text": "This will be used to specify the final output files folder in the output directory."
                 },
                 "roi": {
                     "type": "string",
@@ -216,6 +218,10 @@
                     "pattern": "^\\S+\\.vcf\\.gz",
                     "format": "file-path",
                     "mimetype": "text/plain"
+                },
+                "only_call": {
+                    "type": "boolean",
+                    "description": "Only call the variants without doing any post-processing"
                 }
             },
             "required": ["scatter_count"]
@@ -411,6 +417,11 @@
                 "validationFailUnrecognisedParams": {
                     "type": "boolean",
                     "hidden": true
+                },
+                "validationSchemaIgnoreParams": {
+                    "type": "string",
+                    "default": "genomes,test_data",
+                    "hidden": true
                 }
             }
         },
@@ -420,6 +431,11 @@
             "description": "Parameters to configure Ensembl VEP and VCFanno",
             "default": "",
             "properties": {
+                "vep_chunk_size": {
+                    "type": "integer",
+                    "default": 50000,
+                    "description": "The amount of sites per split VCF as input to VEP"
+                },
                 "species": {
                     "type": "string",
                     "default": "homo_sapiens",
