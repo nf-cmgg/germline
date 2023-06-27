@@ -61,6 +61,7 @@ process ENSEMBLVEP_VEP {
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
     touch ${prefix}.vcf.gz
+    touch ${prefix}.tbi
     touch ${prefix}.tab.gz
     touch ${prefix}.json.gz
     touch ${prefix}.summary.html
