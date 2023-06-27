@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixes
 
 Fixed an error where the truth VCFs caused a join error when the same sample was given multiple times
+
 ## v1.2.2 - Benign Brussels - [June 12 2023]
 
 ### Improvements
