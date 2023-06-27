@@ -7,12 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### New Features
 
-Added the `--only_call` parameter. Specifying this parameter tells the pipeline to only do variant calling and skip all post-processing. This will only output the GVCFs and files created to help variant calling.
+1. Added the `--only_call` parameter. Specifying this parameter tells the pipeline to only do variant calling and skip all post-processing. This will only output the GVCFs and files created to help variant calling.
+2. The samplesheet is now also in the output folder.
 
 ### Improvements
 
 1. Updated `nf-validation` to v0.2.1.
 2. Updated the samtools/merge tool to the nf-core version. This increases the efficiency and disk space usage of the tool.
+
+### Fixes
+
+Fixed an error where the truth VCFs caused a join error when the same sample was given multiple times
 ## v1.2.2 - Benign Brussels - [June 12 2023]
 
 ### Improvements

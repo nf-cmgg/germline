@@ -319,6 +319,9 @@ workflow CMGGGERMLINE {
     // Read in samplesheet, validate and convert to a channel
     //
 
+    // Output the samplesheet
+    file(params.input).copyTo("${params.outdir}/samplesheet.csv")
+
     Channel.fromSamplesheet("input", immutable_meta: false)
         .map { meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ->
             // Infer the family ID from the PED file if no family ID was given.
@@ -577,8 +580,19 @@ workflow CMGGGERMLINE {
 
         if (params.validate){
 
+            ch_input.truth_variants
+                .groupTuple(by: [0,4]) // No size needed here since it's being run before any process
+                .map { meta, vcf, tbi, bed, sample ->
+                    // Get only one VCF for sample that were given multiple times
+                    one_vcf = vcf.find { it != [] } ?: []
+                    one_tbi = tbi.find { it != [] } ?: []
+                    one_bed = bed.find { it != [] } ?: []
+                    [ meta, one_vcf, one_tbi, one_bed, sample ]
+                }
+                .set { ch_truths }
+
             ch_final_vcfs
-                .combine(ch_input.truth_variants, by: 0)
+                .combine(ch_truths, by: 0)
                 .map { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed, sample ->
                     new_meta = meta + [sample:sample]
                     [ new_meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ]
