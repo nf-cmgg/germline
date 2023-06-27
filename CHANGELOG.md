@@ -11,8 +11,8 @@ Added the `--only_call` parameter. Specifying this parameter tells the pipeline 
 
 ### Improvements
 
-Updated `nf-validation` to v0.2.1.
-
+1. Updated `nf-validation` to v0.2.1.
+2. Updated the samtools/merge tool to the nf-core version. This increases the efficiency and disk space usage of the tool.
 ## v1.2.2 - Benign Brussels - [June 12 2023]
 
 ### Improvements
