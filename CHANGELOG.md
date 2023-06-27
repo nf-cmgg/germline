@@ -3,13 +3,15 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v1.3.0dev
+## v1.2.3dev
 
 ### New Features
 
-### Bug fixes
+Added the `--only_call` parameter. Specifying this parameter tells the pipeline to only do variant calling and skip all post-processing. This will only output the GVCFs and files created to help variant calling.
 
 ### Improvements
+
+Updated `nf-validation` to v0.2.1.
 
 ## v1.2.2 - Benign Brussels - [June 12 2023]
 

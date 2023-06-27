@@ -147,8 +147,7 @@
                 "dragstr": {
                     "type": "boolean",
                     "description": "Create DragSTR models to be used with HaplotypeCaller",
-                    "help_text": "This currently is only able to run single-core per sample. Due to this, the process is very slow with only very small improvements to the analysis.",
-                    "default": false
+                    "help_text": "This currently is only able to run single-core per sample. Due to this, the process is very slow with only very small improvements to the analysis."
                 },
                 "validate": {
                     "type": "boolean",
@@ -213,6 +212,10 @@
                     "pattern": "^\\S+\\.vcf\\.gz",
                     "format": "file-path",
                     "mimetype": "text/plain"
+                },
+                "only_call": {
+                    "type": "boolean",
+                    "description": "Only call the variants without doing any post-processing"
                 }
             },
             "required": ["scatter_count"]
@@ -407,6 +410,11 @@
                 },
                 "validationFailUnrecognisedParams": {
                     "type": "boolean",
+                    "hidden": true
+                },
+                "validationSchemaIgnoreParams": {
+                    "type": "string",
+                    "default": "genomes,test_data",
                     "hidden": true
                 }
             }
