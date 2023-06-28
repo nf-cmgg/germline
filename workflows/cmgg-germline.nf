@@ -356,6 +356,9 @@ workflow CMGGGERMLINE {
                 type:           gvcf ? "gvcf" : "cram" // Whether a GVCF is given to this sample or not (aka skip variantcalling or not)
             ]
 
+            println(new_meta)
+            println(new_meta_family)
+
             truth_variants: [new_meta_family, truth_vcf, truth_tbi, truth_bed, meta.id] // Optional channel containing the truth VCF, its index and the optional BED file
             gvcf:           [new_meta, gvcf, tbi] // Optional channel containing the GVCFs and their optional indices
             cram:           [new_meta, cram, crai]  // Mandatory channel containing the CRAM files and their optional indices
