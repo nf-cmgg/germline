@@ -332,7 +332,7 @@ workflow CMGGGERMLINE {
             [ new_meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ]
         }
         .tap { ch_raw_inputs }
-        .map { it[0] }
+        .map { [ "id":it[0].id, "family":it[0].family ] }
         .distinct() // Make sure the same sample isn't counted twice when given multiple times
         .map { meta ->
             meta.family
