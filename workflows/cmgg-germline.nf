@@ -333,26 +333,23 @@ workflow CMGGGERMLINE {
         }
         .tap { ch_raw_inputs }
         .map { [ "id":it[0].id, "family":it[0].family ] }
-        .distinct() // Make sure the same sample isn't counted twice when given multiple times
-        .map { meta ->
-            meta.family
-        }
-        .reduce([:]) { counts, v ->
+        .reduce([:]) { families, v ->
             // Count the unique samples in one family
-            counts[v] = (counts[v] ?: 0) + 1
-            counts
+            families[v.family] = families[v.family] ? families[v.family] + [v.id] : [v.id]
+            families[v.family] = families[v.family].unique()
+            families
         }
         .combine(ch_raw_inputs)
-        .multiMap { counts, meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ->
+        .multiMap { families, meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ->
             // Divide the input files into their corresponding channel
             new_meta_family = [
                 id:             meta.family,
                 family:         meta.family,
-                family_count:   counts[meta.family] // Contains the amount of samples in the current family
+                family_count:   families[meta.family].size() // Contains the amount of samples in the current family
             ]
 
             new_meta = meta + [
-                family_count:   counts[meta.family], // Contains the amount of samples in the family from this sample
+                family_count:   families[meta.family].size(), // Contains the amount of samples in the family from this sample
                 type:           gvcf ? "gvcf" : "cram" // Whether a GVCF is given to this sample or not (aka skip variantcalling or not)
             ]
 
