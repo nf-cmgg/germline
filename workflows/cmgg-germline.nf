@@ -319,6 +319,9 @@ workflow CMGGGERMLINE {
     // Read in samplesheet, validate and convert to a channel
     //
 
+    // Output the samplesheet
+    file(params.input).copyTo("${params.outdir}/samplesheet.csv")
+
     Channel.fromSamplesheet("input", immutable_meta: false)
         .map { meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ->
             // Infer the family ID from the PED file if no family ID was given.
@@ -329,27 +332,24 @@ workflow CMGGGERMLINE {
             [ new_meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ]
         }
         .tap { ch_raw_inputs }
-        .map { it[0] }
-        .distinct() // Make sure the same sample isn't counted twice when given multiple times
-        .map { meta ->
-            meta.family
-        }
-        .reduce([:]) { counts, v ->
+        .map { [ "id":it[0].id, "family":it[0].family ] }
+        .reduce([:]) { families, v ->
             // Count the unique samples in one family
-            counts[v] = (counts[v] ?: 0) + 1
-            counts
+            families[v.family] = families[v.family] ? families[v.family] + [v.id] : [v.id]
+            families[v.family] = families[v.family].unique()
+            families
         }
         .combine(ch_raw_inputs)
-        .multiMap { counts, meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ->
+        .multiMap { families, meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ->
             // Divide the input files into their corresponding channel
             new_meta_family = [
                 id:             meta.family,
                 family:         meta.family,
-                family_count:   counts[meta.family] // Contains the amount of samples in the current family
+                family_count:   families[meta.family].size() // Contains the amount of samples in the current family
             ]
 
             new_meta = meta + [
-                family_count:   counts[meta.family], // Contains the amount of samples in the family from this sample
+                family_count:   families[meta.family].size(), // Contains the amount of samples in the family from this sample
                 type:           gvcf ? "gvcf" : "cram" // Whether a GVCF is given to this sample or not (aka skip variantcalling or not)
             ]
 
@@ -577,8 +577,19 @@ workflow CMGGGERMLINE {
 
         if (params.validate){
 
+            ch_input.truth_variants
+                .groupTuple(by: [0,4]) // No size needed here since it's being run before any process
+                .map { meta, vcf, tbi, bed, sample ->
+                    // Get only one VCF for sample that were given multiple times
+                    one_vcf = vcf.find { it != [] } ?: []
+                    one_tbi = tbi.find { it != [] } ?: []
+                    one_bed = bed.find { it != [] } ?: []
+                    [ meta, one_vcf, one_tbi, one_bed, sample ]
+                }
+                .set { ch_truths }
+
             ch_final_vcfs
-                .combine(ch_input.truth_variants, by: 0)
+                .combine(ch_truths, by: 0)
                 .map { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed, sample ->
                     new_meta = meta + [sample:sample]
                     [ new_meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ]

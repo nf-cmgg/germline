@@ -27,5 +27,13 @@ Changes in module 'nf-core/rtgtools/pedfilter'
  
  
      cat <<-END_VERSIONS > versions.yml
+@@ -44,6 +46,7 @@
+     """
+ 
+     stub:
++    def args = task.ext.args ?: ''
+     def prefix = task.ext.prefix ?: "${meta.id}"
+ 
+     def extension = args.contains("--vcf") ? "vcf.gz" : "ped"
 
 ************************************************************
