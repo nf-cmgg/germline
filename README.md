@@ -35,9 +35,9 @@ Now, you can run the pipeline using:
 
    <!-- TODO nf-core: Update the example "typical command" below used to run the pipeline -->
 
-   ```bash
-   nextflow run CenterForMedicalGeneticsGhent/nf-cmgg-germline --input samplesheet.csv --outdir <OUTDIR> --genome GRCh37 -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
-   ```
+```bash
+nextflow run CenterForMedicalGeneticsGhent/nf-cmgg-germline --input samplesheet.csv --outdir <OUTDIR> --genome GRCh37 -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+```
 
 > **Warning:**
 > Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those
