@@ -120,9 +120,9 @@ workflow JOINT_GENOTYPING {
 
         GENOTYPE_GVCFS(
             ch_genotypegvcfs_input,
-            ch_fasta,
-            ch_fai,
-            ch_dict,
+            ch_fasta.map { it[1] },
+            ch_fai.map { it[1] },
+            ch_dict.map { it[1] },
             ch_dbsnp,
             ch_dbsnp_tbi
         )

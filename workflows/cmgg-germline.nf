@@ -140,10 +140,10 @@ workflow CMGGGERMLINE {
     // Importing and convert the input files passed through the parameters to channels
     //
 
-    ch_fasta_ready        = Channel.fromPath(params.fasta).collect()
-    ch_fai                = params.fai                 ? Channel.fromPath(params.fai).collect()                                        : null
-    ch_dict               = params.dict                ? Channel.fromPath(params.dict).collect()                                       : null
-    ch_strtablefile       = params.strtablefile        ? Channel.fromPath(params.strtablefile).collect()                               : null
+    ch_fasta_ready        = Channel.fromPath(params.fasta).map{ [[id:"reference"], it]}.collect()
+    ch_fai                = params.fai                 ? Channel.fromPath(params.fai).map{ [[id:"reference"], it]}.collect()                                        : null
+    ch_dict               = params.dict                ? Channel.fromPath(params.dict).map{ [[id:"reference"], it]}.collect()                                       : null
+    ch_strtablefile       = params.strtablefile        ? Channel.fromPath(params.strtablefile).map{ [[id:"reference"], it]}.collect()                               : null
     ch_sdf                = params.sdf                 ? Channel.fromPath(params.sdf).map {sdf -> [[id:'reference'], sdf]}.collect()   : null
 
     ch_default_roi        = params.roi                 ? Channel.fromPath(params.roi).collect()                : []
@@ -225,11 +225,9 @@ workflow CMGGGERMLINE {
         ch_versions = ch_versions.mix(TABIX_DBSNP.out.versions)
 
         TABIX_DBSNP.out.tbi
-            .map(
-                { meta, tbi ->
-                    [ tbi ]
-                }
-            )
+            .map{ meta, tbi ->
+                [ tbi ]
+            }
             .collect()
             .set { ch_dbsnp_tbi_ready }
     } else if (ch_dbsnp_ready) {
@@ -241,12 +239,11 @@ workflow CMGGGERMLINE {
     // Reference fasta index
     if (!ch_fai) {
         FAIDX(
-            ch_fasta_ready.map({ fasta -> [ [id:"fasta_fai"], fasta ]})
+            ch_fasta_ready
         )
         ch_versions = ch_versions.mix(FAIDX.out.versions)
 
         FAIDX.out.fai
-            .map({ meta, fai -> [ fai ]})
             .collect()
             .dump(tag:'fasta_fai', pretty:true)
             .set { ch_fai_ready }
@@ -291,7 +288,7 @@ workflow CMGGGERMLINE {
     // Reference validation SDF
     if (params.validate && !ch_sdf) {
         RTGTOOLS_FORMAT(
-            ch_fasta_ready.map { fasta -> [[id:'reference'], fasta, [], []]}
+            ch_fasta_ready.map { meta, fasta -> [meta, fasta, [], []]}
         )
         ch_versions  = ch_versions.mix(RTGTOOLS_FORMAT.out.versions)
 
@@ -499,8 +496,8 @@ workflow CMGGGERMLINE {
                     meta.family_count > 1
                 }
                 .map { it + [[], 1] },
-            ch_fasta_ready,
-            ch_fai_ready,
+            ch_fasta_ready.map { it[1] },
+            ch_fai_ready.map { it[1] },
             ch_somalier_sites,
             ch_peds_ready
                 .filter { meta, ped ->
@@ -633,8 +630,8 @@ workflow CMGGGERMLINE {
             VCF_VALIDATE_SMALL_VARIANTS(
                 ch_validation_input.vcfs,
                 ch_validation_input.bed,
-                ch_fasta_ready.map { [[], it] },
-                ch_fai_ready.map { [[], it] },
+                ch_fasta_ready,
+                ch_fai_ready,
                 ch_sdf_ready.collect(),
                 [[],[]],
                 [[],[]],

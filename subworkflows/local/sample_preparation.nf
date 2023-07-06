@@ -47,8 +47,8 @@ workflow SAMPLE_PREPARATION {
 
     SAMTOOLS_MERGE(
         ch_cram_branch.multiple,
-        ch_fasta.map { [[], it] },
-        ch_fai.map { [[], it] }
+        ch_fasta,
+        ch_fai
     )
     ch_versions = ch_versions.mix(SAMTOOLS_MERGE.out.versions.first())
 
@@ -146,7 +146,7 @@ workflow SAMPLE_PREPARATION {
 
     MOSDEPTH(
         ch_mosdepth_input,
-        ch_fasta.map { [[], it] }
+        ch_fasta
     )
     ch_versions = ch_versions.mix(MOSDEPTH.out.versions.first())
 
@@ -173,7 +173,7 @@ workflow SAMPLE_PREPARATION {
     // Intersect the ROI with the callable regions
     BEDTOOLS_INTERSECT(
         ch_beds_to_intersect.roi,
-        ch_fai.map { [[], it] }
+        ch_fai
     )
     ch_versions = ch_versions.mix(BEDTOOLS_INTERSECT.out.versions)
 
