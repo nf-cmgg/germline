@@ -329,6 +329,9 @@ workflow CMGGGERMLINE {
             new_meta = meta + [
                 family: meta.family ?: ped ? get_family_id_from_ped(ped) : meta.sample, 
             ]
+            if(!params.only_merge && !cram) {
+                error("Please supply a CRAM file in the samplesheet for each sample")
+            }
             [ new_meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ]
         }
         .tap { ch_raw_inputs }
@@ -396,8 +399,8 @@ workflow CMGGGERMLINE {
     //
 
     SAMPLE_PREPARATION(
-        ch_input.cram,
-        ch_input.roi,
+        ch_input.cram.filter { it[0].type == "cram" }, // Filter out files that already have a called GVCF
+        ch_input.roi.filter { it[0].type == "cram" }, // Filter out files that already have a called GVCF
         ch_fasta_ready,
         ch_fai_ready,
         ch_default_roi
@@ -422,8 +425,8 @@ workflow CMGGGERMLINE {
     //
 
     GERMLINE_VARIANT_CALLING(
-        SAMPLE_PREPARATION.out.ready_crams.filter { it[0].type == "cram" }, // Filter out files that already have a called GVCF
-        SAMPLE_PREPARATION.out.ready_beds.filter { it[0].type == "cram" }, // Filter out files that already have a called GVCF
+        SAMPLE_PREPARATION.out.ready_crams,
+        SAMPLE_PREPARATION.out.ready_beds,
         ch_fasta_ready,
         ch_fai_ready,
         ch_dict_ready,
@@ -447,7 +450,6 @@ workflow CMGGGERMLINE {
 
         JOINT_GENOTYPING(
             ch_variantcalling_output,
-            SAMPLE_PREPARATION.out.ready_beds,
             ch_fasta_ready,
             ch_fai_ready,
             ch_dict_ready,
@@ -459,6 +461,10 @@ workflow CMGGGERMLINE {
         JOINT_GENOTYPING.out.genotyped_vcfs
             .dump(tag:'joint_genotyping_output', pretty:true)
             .set { ch_joint_genotyping_output }
+
+    }
+
+    if(!params.only_merge && !params.only_call) {
 
         //
         // Filter the variants

@@ -216,6 +216,10 @@
                 "only_call": {
                     "type": "boolean",
                     "description": "Only call the variants without doing any post-processing"
+                },
+                "only_merge": {
+                    "type": "boolean",
+                    "description": "Only run the pipeline until the creation of the genomicsdbs and output them"
                 }
             },
             "required": ["scatter_count"]

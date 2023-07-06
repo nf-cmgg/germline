@@ -25,6 +25,11 @@
                         "git_sha": "5cb7989b8b3de11ca2607f8b096f4bdfb24baf80",
                         "installed_by": ["vcf_annotate_ensemblvep_snpeff"]
                     },
+                    "bcftools/query": {
+                        "branch": "master",
+                        "git_sha": "b5cc8edd887e27c51a48387e34549d4405d9769f",
+                        "installed_by": ["modules"]
+                    },
                     "bcftools/reheader": {
                         "branch": "master",
                         "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
