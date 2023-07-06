@@ -22,14 +22,14 @@ if(params.dbsnp_tbi && !params.dbsnp){
 
 if (params.annotate) {
     // Check if a genome is given
-    if (!params.genome) { exit 1, "A genome should be supplied for seqplorer mode (use --genome)"}
+    if (!params.genome) { exit 1, "A genome should be supplied for annotation (use --genome)"}
 
     // Check if the VEP versions were given
-    if (!params.vep_version) { exit 1, "A VEP version should be supplied for seqplorer mode (use --vep_version)"}
-    if (!params.vep_cache_version) { exit 1, "A VEP cache version should be supplied for seqplorer mode (use --vep_cache_version)"}
+    if (!params.vep_version) { exit 1, "A VEP version should be supplied for annotation (use --vep_version)"}
+    if (!params.vep_cache_version) { exit 1, "A VEP cache version should be supplied for annotation (use --vep_cache_version)"}
 
     // Check if a species is entered
-    if (!params.species) { exit 1, "A species should be supplied for seqplorer mode (use --species)"}
+    if (!params.species) { exit 1, "A species should be supplied for annotation (use --species)"}
 
     // Check if all vcfanno files are supplied when vcfanno should be used
     if (params.vcfanno && (!params.vcfanno_config || !params.vcfanno_resources)) {
