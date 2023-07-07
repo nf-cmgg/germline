@@ -326,9 +326,6 @@ workflow CMGGGERMLINE {
             new_meta = meta + [
                 family: meta.family ?: ped ? get_family_id_from_ped(ped) : meta.sample, 
             ]
-            if(!params.only_merge && !cram) {
-                error("Please supply a CRAM file in the samplesheet for each sample")
-            }
             [ new_meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ]
         }
         .tap { ch_raw_inputs }
