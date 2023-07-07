@@ -3,28 +3,12 @@ Changes in module 'nf-core/deepvariant'
 +++ modules/nf-core/deepvariant/main.nf
 @@ -2,7 +2,7 @@
      tag "$meta.id"
-     label 'process_medium'
+     label 'process_high'
  
--    container "docker.io/google/deepvariant:1.4.0"
+-    container "nf-core/deepvariant:1.5.0"
 +    container "docker.io/google/deepvariant:1.5.0"
  
      // Exit if running this module with -profile conda / -profile mamba
      if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
-@@ -33,10 +33,14 @@
-         --ref=${fasta} \\
-         --reads=${input} \\
-         --output_vcf=${prefix}.vcf.gz \\
--        --output_gvcf=${prefix}.g.vcf.gz \\
-+        --output_gvcf=${prefix}.dv.g.vcf.gz \\
-         ${args} \\
-         ${regions} \\
-+        --intermediate_results_dir=. \\
-         --num_shards=${task.cpus}
-+
-+    zcat ${prefix}.dv.g.vcf.gz | sed 's/<\\*>/<NON_REF>/' | bgzip --threads ${task.cpus} --stdout > ${prefix}.g.vcf.gz
-+    rm ${prefix}.dv.g.vcf.gz
- 
-     cat <<-END_VERSIONS > versions.yml
-     "${task.process}":
 
 ************************************************************

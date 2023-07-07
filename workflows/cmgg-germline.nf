@@ -346,6 +346,7 @@ workflow CMGGGERMLINE {
             ]
 
             new_meta = meta + [
+                analysis_type:  roi ? "WES" : "WGS",
                 family_count:   families[meta.family].size(), // Contains the amount of samples in the family from this sample
                 type:           gvcf ? "gvcf" : "cram" // Whether a GVCF is given to this sample or not (aka skip variantcalling or not)
             ]
