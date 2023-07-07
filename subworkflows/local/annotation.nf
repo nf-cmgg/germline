@@ -45,7 +45,7 @@ workflow ANNOTATION {
 
     VCF_ANNOTATE_ENSEMBLVEP(
         ch_vep_input,
-        ch_fasta.map { [[], it] },
+        ch_fasta,
         params.genome,
         params.species,
         params.vep_cache_version,

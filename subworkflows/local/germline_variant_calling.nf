@@ -46,14 +46,14 @@ workflow GERMLINE_VARIANT_CALLING {
 
         if (params.dragstr) {
 
-            CALIBRATEDRAGSTRMODEL(
-                ch_crams,
-                ch_fasta,
-                ch_fai,
-                ch_dict,
-                ch_strtablefile
-            )
-            ch_versions = ch_versions.mix(CALIBRATEDRAGSTRMODEL.out.versions.first())
+        CALIBRATEDRAGSTRMODEL(
+            ch_crams,
+            ch_fasta.map { it[1] },
+            ch_fai.map { it[1] },
+            ch_dict.map { it[1] },
+            ch_strtablefile
+        )
+        ch_versions = ch_versions.mix(CALIBRATEDRAGSTRMODEL.out.versions.first())
 
             ch_crams
                 .join(ch_split_beds, failOnDuplicate: true, failOnMismatch: true)
@@ -91,15 +91,15 @@ workflow GERMLINE_VARIANT_CALLING {
         // Call the variants using HaplotypeCaller
         //
 
-        HAPLOTYPECALLER(
-            ch_cram_intervals,
-            ch_fasta,
-            ch_fai,
-            ch_dict,
-            ch_dbsnp,
-            ch_dbsnp_tbi
-        )
-        ch_versions = ch_versions.mix(HAPLOTYPECALLER.out.versions.first())
+    HAPLOTYPECALLER(
+        ch_cram_intervals,
+        ch_fasta.map { it[1] },
+        ch_fai.map { it[1] },
+        ch_dict.map { it[1] },
+        ch_dbsnp,
+        ch_dbsnp_tbi
+    )
+    ch_versions = ch_versions.mix(HAPLOTYPECALLER.out.versions.first())
 
         HAPLOTYPECALLER.out.vcf
             .join(HAPLOTYPECALLER.out.tbi, failOnDuplicate: true, failOnMismatch: true)

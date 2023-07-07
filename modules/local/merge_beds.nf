@@ -9,7 +9,7 @@ process MERGE_BEDS {
 
     input:
     tuple val(meta), path(bed, stageAs: "?/*")
-    path(fai)
+    tuple val(meta2), path(fai)
 
     output:
     tuple val(meta), path('*.bed'), emit: bed

@@ -1,9 +1,10 @@
-name: samtools_faidx
-description: Index FASTA file
+name: samtools_merge
+description: Merge BAM or CRAM file
 keywords:
-  - index
-  - fasta
-  - faidx
+  - merge
+  - bam
+  - sam
+  - cram
 tools:
   - samtools:
       description: |
@@ -18,40 +19,55 @@ input:
   - meta:
       type: map
       description: |
-        Groovy Map containing reference information
-        e.g. [ id:'test' ]
-  - fasta:
+        Groovy Map containing sample information
+        e.g. [ id:'test', single_end:false ]
+  - input_files:
       type: file
-      description: FASTA file
-      pattern: "*.{fa,fasta}"
+      description: BAM/CRAM file
+      pattern: "*.{bam,cram,sam}"
   - meta2:
       type: map
       description: |
         Groovy Map containing reference information
-        e.g. [ id:'test' ]
+        e.g. [ id:'genome' ]
+  - fasta:
+      type: file
+      description: Reference file the CRAM was created with (optional)
+      pattern: "*.{fasta,fa}"
+  - meta3:
+      type: map
+      description: |
+        Groovy Map containing reference information
+        e.g. [ id:'genome' ]
   - fai:
       type: file
-      description: FASTA index file
-      pattern: "*.{fai}"
+      description: Index of the reference file the CRAM was created with (optional)
+      pattern: "*.fai"
 output:
   - meta:
       type: map
       description: |
         Groovy Map containing sample information
         e.g. [ id:'test', single_end:false ]
-  - fai:
+  - bam:
       type: file
-      description: FASTA index file
-      pattern: "*.{fai}"
-  - gzi:
+      description: BAM file
+      pattern: "*.{bam}"
+  - cram:
       type: file
-      description: Optional gzip index file for compressed inputs
-      pattern: "*.gzi"
+      description: CRAM file
+      pattern: "*.{cram}"
   - versions:
       type: file
       description: File containing software versions
       pattern: "versions.yml"
+  - csi:
+      type: file
+      description: BAM index file (optional)
+      pattern: "*.csi"
 authors:
   - "@drpatelh"
-  - "@ewels"
-  - "@phue"
+  - "@yuukiiwa "
+  - "@maxulysse"
+  - "@FriederikeHanssen"
+  - "@ramprasadn"

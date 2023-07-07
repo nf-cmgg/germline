@@ -46,6 +46,7 @@ process RTGTOOLS_PEDFILTER {
     """
 
     stub:
+    def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
 
     def extension = args.contains("--vcf") ? "vcf.gz" : "ped"

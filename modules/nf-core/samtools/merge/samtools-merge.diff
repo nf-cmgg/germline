@@ -1,0 +1,13 @@
+Changes in module 'nf-core/samtools/merge'
+--- modules/nf-core/samtools/merge/main.nf
++++ modules/nf-core/samtools/merge/main.nf
+@@ -1,6 +1,6 @@
+ process SAMTOOLS_MERGE {
+     tag "$meta.id"
+-    label 'process_low'
++    label 'process_high'
+ 
+     conda "bioconda::samtools=1.17"
+     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+
+************************************************************
