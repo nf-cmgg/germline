@@ -61,6 +61,6 @@
                 "format": "file-path"
             }
         },
-        "required": ["sample", "cram"]
+        "required": ["sample"]
     }
 }
