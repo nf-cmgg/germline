@@ -3,14 +3,14 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v1.3.0dev
+## v1.3.0 - Happy Hasselt - [July 10 2023]
 
 ### New Features
 
 1. Added the `--only_call` parameter. Specifying this parameter tells the pipeline to only do variant calling and skip all post-processing. This will only output the GVCFs and files created to help variant calling.
 2. The samplesheet is now also in the output folder.
 3. Added an option `--only_merge` to tell the pipeline to create genomicsdbs and stop running there
-4. Get regions from the GVCF instead of CRAM for joint genotyping
+4. Get regions from the GVCF instead of CRAM for joint genotyping. This removes the need to supply a CRAM file when a GVCF file has been used as input.
 
 ### Improvements
 
