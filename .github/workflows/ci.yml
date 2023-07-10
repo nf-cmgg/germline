@@ -24,7 +24,7 @@ jobs:
     strategy:
       matrix:
         NXF_VER:
-          - "22.10.5"
+          - "23.04.0"
           - "latest-everything"
         test:
           - "default"
@@ -34,9 +34,12 @@ jobs:
           - "gemini_test"
           - "full_wes"
           - "full_wgs"
+          - "only_call"
     steps:
       - name: Free some space
         run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
           sudo rm -rf "/usr/local/share/boost"
           sudo rm -rf "$AGENT_TOOLSDIRECTORY"
 

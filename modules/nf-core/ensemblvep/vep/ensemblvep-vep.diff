@@ -25,5 +25,13 @@ Changes in module 'nf-core/ensemblvep/vep'
  
      cat <<-END_VERSIONS > versions.yml
      "${task.process}":
+@@ -59,6 +61,7 @@
+     def prefix = task.ext.prefix ?: "${meta.id}"
+     """
+     touch ${prefix}.vcf.gz
++    touch ${prefix}.tbi
+     touch ${prefix}.tab.gz
+     touch ${prefix}.json.gz
+     touch ${prefix}.summary.html
 
 ************************************************************

@@ -9,10 +9,6 @@
 
 nextflow.enable.dsl = 2
 
-include { paramsSummaryLog   } from 'plugin/nf-validation'
-include { paramsHelp         } from 'plugin/nf-validation'
-include { validateParameters } from 'plugin/nf-validation'
-
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     GENOME PARAMETER VALUES
@@ -45,18 +41,23 @@ params.eog_tbi              = WorkflowMain.getGenomeAttribute(params, 'eog_tbi')
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-// Print help message
+include { validateParameters; paramsHelp } from 'plugin/nf-validation'
+
+// Print help message if needed
 if (params.help) {
-   def String command = "nextflow run CenterForMedicalGeneticsGhent/nf-cmgg-germline --input <input csv/tsv/yaml> --outdir <output folder>"
-   log.info paramsHelp(command)
-   exit 0
+    def logo = NfcoreTemplate.logo(workflow, params.monochrome_logs)
+    def citation = '\n' + WorkflowMain.citation(workflow) + '\n'
+    def String command = "nextflow run ${workflow.manifest.name} --input samplesheet.csv --genome GRCh37 -profile docker"
+    log.info logo + paramsHelp(command) + citation + NfcoreTemplate.dashedLine(params.monochrome_logs)
+    System.exit(0)
 }
 
 // Validate input parameters
-validateParameters()
+if (params.validate_params) {
+    validateParameters()
+}
 
-// Print parameter summary log to screen
-log.info paramsSummaryLog(workflow)
+WorkflowMain.initialise(workflow, params, log)
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

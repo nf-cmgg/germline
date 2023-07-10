@@ -17,6 +17,11 @@ lint:
   readme:
     - nextflow_badge
   files_unchanged:
+    - CODE_OF_CONDUCT.md
+    - assets/nf-core-nf-cmgg-germline_logo_light.png
+    - docs/images/nf-core-nf-cmgg-germline_logo_light.png
+    - docs/images/nf-core-nf-cmgg-germline_logo_dark.png
+    - .github/ISSUE_TEMPLATE/bug_report.yml
     - .github/CONTRIBUTING.md
     - .github/ISSUE_TEMPLATE/bug_report.yml
     - .github/ISSUE_TEMPLATE/feature_request.yml

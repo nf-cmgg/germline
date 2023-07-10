@@ -4,9 +4,9 @@
 
 include { MERGE_BEDS as MERGE_ROI_PARAMS    } from '../../modules/local/merge_beds'
 include { MERGE_BEDS as MERGE_ROI_SAMPLE    } from '../../modules/local/merge_beds'
-include { SAMTOOLS_MERGE                    } from '../../modules/local/samtools_merge'
 include { FILTER_BEDS                       } from '../../modules/local/filter_beds/main'
 
+include { SAMTOOLS_MERGE                    } from '../../modules/nf-core/samtools/merge/main'
 include { SAMTOOLS_INDEX                    } from '../../modules/nf-core/samtools/index/main'
 include { TABIX_TABIX                       } from '../../modules/nf-core/tabix/tabix/main'
 include { TABIX_BGZIP as UNZIP_ROI          } from '../../modules/nf-core/tabix/bgzip/main'
@@ -146,7 +146,7 @@ workflow SAMPLE_PREPARATION {
 
     MOSDEPTH(
         ch_mosdepth_input,
-        ch_fasta.map { [[], it] }
+        ch_fasta
     )
     ch_versions = ch_versions.mix(MOSDEPTH.out.versions.first())
 
@@ -173,7 +173,7 @@ workflow SAMPLE_PREPARATION {
     // Intersect the ROI with the callable regions
     BEDTOOLS_INTERSECT(
         ch_beds_to_intersect.roi,
-        ch_fai.map { [[], it] }
+        ch_fai
     )
     ch_versions = ch_versions.mix(BEDTOOLS_INTERSECT.out.versions)
 

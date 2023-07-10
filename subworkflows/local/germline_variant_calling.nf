@@ -45,9 +45,9 @@ workflow GERMLINE_VARIANT_CALLING {
 
         CALIBRATEDRAGSTRMODEL(
             ch_crams,
-            ch_fasta,
-            ch_fai,
-            ch_dict,
+            ch_fasta.map { it[1] },
+            ch_fai.map { it[1] },
+            ch_dict.map { it[1] },
             ch_strtablefile
         )
         ch_versions = ch_versions.mix(CALIBRATEDRAGSTRMODEL.out.versions.first())
@@ -90,9 +90,9 @@ workflow GERMLINE_VARIANT_CALLING {
 
     HAPLOTYPECALLER(
         ch_cram_intervals,
-        ch_fasta,
-        ch_fai,
-        ch_dict,
+        ch_fasta.map { it[1] },
+        ch_fai.map { it[1] },
+        ch_dict.map { it[1] },
         ch_dbsnp,
         ch_dbsnp_tbi
     )
