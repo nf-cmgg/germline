@@ -3,6 +3,7 @@ nextflow_pipeline {
     name "Full pipeline test"
     script "main.nf"
     tag "full_wes"
+    options "-cache false"
 
     test("Success") {
 
