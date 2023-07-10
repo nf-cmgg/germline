@@ -3,6 +3,7 @@ nextflow_pipeline {
     name "Basic annotate tests"
     script "main.nf"
     tag "annotate_test"
+    options "-cache false"
 
     test("Success") {
 
