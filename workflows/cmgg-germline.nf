@@ -53,8 +53,7 @@ ch_multiqc_logo     = params.multiqc_logo   ? file(params.multiqc_logo, checkIfE
 */
 
 include { SAMPLE_PREPARATION            } from '../subworkflows/local/sample_preparation'
-include { GERMLINE_VARIANT_CALLING      } from '../subworkflows/local/germline_variant_calling'
-include { JOINT_GENOTYPING              } from '../subworkflows/local/joint_genotyping'
+include { CRAM_CALL_GENOTYPE_GATK4      } from '../subworkflows/local/cram_call_genotype_gatk4/main'
 include { ANNOTATION                    } from '../subworkflows/local/annotation'
 include { ADD_PED_HEADER                } from '../subworkflows/local/add_ped_header'
 include { VCF_VALIDATE_SMALL_VARIANTS   } from '../subworkflows/local/vcf_validate_small_variants/main'
@@ -76,8 +75,6 @@ include { TABIX_TABIX as TABIX_DBSNP                                 } from '../
 include { TABIX_TABIX as TABIX_TRUTH                                 } from '../modules/nf-core/tabix/tabix/main'
 include { TABIX_TABIX as TABIX_GVCF                                  } from '../modules/nf-core/tabix/tabix/main'
 include { TABIX_TABIX as TABIX_FINAL                                 } from '../modules/nf-core/tabix/tabix/main'
-include { BCFTOOLS_FILTER as FILTER_SNPS                             } from '../modules/nf-core/bcftools/filter/main'
-include { BCFTOOLS_FILTER as FILTER_INDELS                           } from '../modules/nf-core/bcftools/filter/main'
 include { BCFTOOLS_STATS as BCFTOOLS_STATS_FAMILY                    } from '../modules/nf-core/bcftools/stats/main'
 include { VCF2DB                                                     } from '../modules/nf-core/vcf2db/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS                                } from '../modules/nf-core/custom/dumpsoftwareversions/main'
@@ -132,6 +129,10 @@ workflow CMGGGERMLINE {
 
     if (params.input) { ch_input = file(params.input, checkIfExists: true) } else { error('Input samplesheet not specified!') }
 
+    callers = params.callers.tokenize(",")
+    for(caller in callers) {
+        if(!(caller in GlobalVariables.availableCallers)) { error("\"${caller}\" is not a supported callers please use one or more of these instead: ${GlobalVariables.availableCallers}")}
+    }
 
     ch_versions = Channel.empty()
     ch_reports  = Channel.empty()
@@ -414,80 +415,41 @@ workflow CMGGGERMLINE {
         .dump(tag:'peds', pretty:true)
         .set { ch_peds_ready }
 
-    //
-    // Perform the variant calling
-    //
+    ch_called_variants = Channel.empty()
 
-    GERMLINE_VARIANT_CALLING(
-        SAMPLE_PREPARATION.out.ready_crams,
-        SAMPLE_PREPARATION.out.ready_beds,
-        ch_fasta_ready,
-        ch_fai_ready,
-        ch_dict_ready,
-        ch_strtablefile_ready,
-        ch_dbsnp_ready,
-        ch_dbsnp_tbi_ready
-    )
-    ch_versions = ch_versions.mix(GERMLINE_VARIANT_CALLING.out.versions)
-    ch_reports  = ch_reports.mix(GERMLINE_VARIANT_CALLING.out.reports)
+    if("haplotypecaller" in callers) {
+            
+            //
+            // Call variants with GATK4 HaplotypeCaller
+            //
+    
+            CRAM_CALL_GENOTYPE_GATK4(
+                SAMPLE_PREPARATION.out.ready_crams,
+                ch_gvcfs_ready,
+                SAMPLE_PREPARATION.out.ready_beds,
+                ch_fasta_ready,
+                ch_fai_ready,
+                ch_dict_ready,
+                ch_strtablefile_ready,
+                ch_dbsnp_ready,
+                ch_dbsnp_tbi_ready,
+                ch_sdf_ready,
+                ch_peds_ready
+            )
+            ch_versions = ch_versions.mix(CRAM_CALL_GENOTYPE_GATK4.out.versions)
 
-    GERMLINE_VARIANT_CALLING.out.gvcfs
-        .mix(ch_gvcfs_ready)
-        .dump(tag:'variantcalling_output', pretty:true)
-        .set { ch_variantcalling_output }
-
-    if(!params.only_call){
-
-        //
-        // Joint-genotyping of the families
-        //
-
-        JOINT_GENOTYPING(
-            ch_variantcalling_output,
-            ch_fasta_ready,
-            ch_fai_ready,
-            ch_dict_ready,
-            ch_dbsnp_ready,
-            ch_dbsnp_tbi_ready
-        )
-        ch_versions = ch_versions.mix(JOINT_GENOTYPING.out.versions)
-
-        JOINT_GENOTYPING.out.genotyped_vcfs
-            .dump(tag:'joint_genotyping_output', pretty:true)
-            .set { ch_joint_genotyping_output }
-
+            ch_called_variants = ch_called_variants.mix(CRAM_CALL_GENOTYPE_GATK4.out.vcfs)
+    
     }
 
     if(!params.only_merge && !params.only_call) {
-
-        //
-        // Filter the variants
-        //
-
-        if (params.filter) {
-            FILTER_SNPS(
-                ch_joint_genotyping_output
-            )
-            ch_versions = ch_versions.mix(FILTER_SNPS.out.versions)
-
-            FILTER_INDELS(
-                FILTER_SNPS.out.vcf
-            )
-            ch_versions = ch_versions.mix(FILTER_INDELS.out.versions)
-
-            FILTER_INDELS.out.vcf.set { ch_filter_output }
-        } else {
-            ch_joint_genotyping_output.set { ch_filter_output }
-        }
-
-        ch_filter_output.dump(tag:'filter_output', pretty: true)
 
         //
         // Run relation tests with somalier
         //
 
         VCF_EXTRACT_RELATE_SOMALIER(
-            ch_filter_output
+            ch_called_variants
                 .filter { meta, vcf ->
                     // Filter out the families that only have one individual
                     meta.family_count > 1
@@ -511,7 +473,7 @@ workflow CMGGGERMLINE {
         //
 
         if(params.add_ped){
-            ch_filter_output
+            ch_called_variants
                 .branch { meta, vcf ->
                     // Only add ped headers to VCFs with more than one individual
                     single: meta.family_count == 1
@@ -530,7 +492,7 @@ workflow CMGGGERMLINE {
                 .dump(tag:'ped_vcfs', pretty:true)
                 .set { ch_ped_vcfs }
         } else {
-            ch_filter_output.set { ch_ped_vcfs }
+            ch_called_variants.set { ch_ped_vcfs }
         }
 
         //

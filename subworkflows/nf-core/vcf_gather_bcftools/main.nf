@@ -20,7 +20,7 @@ workflow VCF_GATHER_BCFTOOLS {
             [ groupKey(meta, gather_count), vcf, tbi ]
         }.groupTuple()
 
-    BCFTOOLS_CONCAT ( ch_concat_input )
+    BCFTOOLS_CONCAT ( ch_concat_input, [] )
     ch_versions = ch_versions.mix(BCFTOOLS_CONCAT.out.versions)
 
     if (val_sort) {

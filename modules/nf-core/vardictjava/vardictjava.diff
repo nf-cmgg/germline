@@ -1,0 +1,13 @@
+Changes in module 'nf-core/vardictjava'
+--- modules/nf-core/vardictjava/main.nf
++++ modules/nf-core/vardictjava/main.nf
+@@ -1,6 +1,6 @@
+ process VARDICTJAVA {
+     tag "$meta.id"
+-    label 'process_high'
++    label 'process_single'
+ 
+     conda "bioconda::vardict-java=1.8.3"
+     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+
+************************************************************

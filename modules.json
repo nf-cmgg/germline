@@ -140,6 +140,11 @@
                         "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
                         "installed_by": ["modules"]
                     },
+                    "samtools/convert": {
+                        "branch": "master",
+                        "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
+                        "installed_by": ["modules"]
+                    },
                     "samtools/faidx": {
                         "branch": "master",
                         "git_sha": "fd742419940e01ba1c5ecb172c3e32ec840662fe",
@@ -177,6 +182,11 @@
                         "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
                         "installed_by": ["modules"]
                     },
+                    "tabix/bgziptabix": {
+                        "branch": "master",
+                        "git_sha": "591b71642820933dcb3c954c934b397bd00d8e5e",
+                        "installed_by": ["modules"]
+                    },
                     "tabix/tabix": {
                         "branch": "master",
                         "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
@@ -191,6 +201,12 @@
                         "branch": "master",
                         "git_sha": "5c460c5a4736974abde2843294f35307ee2b0e5e",
                         "installed_by": ["modules"]
+                    },
+                    "vardictjava": {
+                        "branch": "master",
+                        "git_sha": "e49c94771f461306d53198d304ce21849adc0ab3",
+                        "installed_by": ["modules"],
+                        "patch": "modules/nf-core/vardictjava/vardictjava.diff"
                     },
                     "vcf2db": {
                         "branch": "master",
