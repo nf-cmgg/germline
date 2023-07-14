@@ -42,12 +42,17 @@ workflow CRAM_CALL_GENOTYPE_GATK4 {
     ch_versions = ch_versions.mix(CRAM_CALL_GATK4.out.versions)
     ch_reports  = ch_reports.mix(CRAM_CALL_GATK4.out.reports)
 
-    ch_gvcfs = ch_gvcfs.mix(CRAM_CALL_GATK4.out.gvcfs)
+    ch_gvcfs_ready = ch_gvcfs
+        .map { meta, gvcf, tbi ->
+            def new_meta = meta + [caller:"haplotypecaller"]
+            [ new_meta, gvcf, tbi ]
+        }
+        .mix(CRAM_CALL_GATK4.out.gvcfs)
 
     if(!params.only_call) {
 
         GVCF_JOINT_GENOTYPE_GATK4(
-            ch_gvcfs,
+            ch_gvcfs_ready,
             ch_fasta,
             ch_fai,
             ch_dict,
@@ -99,8 +104,8 @@ workflow CRAM_CALL_GENOTYPE_GATK4 {
         )
         ch_versions = ch_versions.mix(VCF_EXTRACT_RELATE_SOMALIER.out.versions)
 
-        VCF_EXTRACT_RELATE_SOMALIER.out.samples_tsv
-            .set { ch_somalier_samples_tsv }
+        VCF_EXTRACT_RELATE_SOMALIER.out.peds
+            .set { ch_somalier_ped }
 
         //
         // Add PED headers to the VCFs
@@ -119,7 +124,7 @@ workflow CRAM_CALL_GENOTYPE_GATK4 {
 
             VCF_PED_RTGTOOLS(
                 ch_ped_header_branch.multiple,
-                VCF_EXTRACT_RELATE_SOMALIER.out.samples_tsv
+                ch_somalier_ped
             )
             ch_versions = ch_versions.mix(VCF_PED_RTGTOOLS.out.versions)
 
@@ -138,10 +143,10 @@ workflow CRAM_CALL_GENOTYPE_GATK4 {
     }
 
     emit:
-    vcfs = ch_vcfs                          // channel: [ val(meta), path(vcf), path(tbi) ]
-    samples_tsv = ch_somalier_samples_tsv   // channel: [ val(meta), path(tsv) ]
+    vcfs = ch_vcfs         // channel: [ val(meta), path(vcf), path(tbi) ]
+    peds = ch_somalier_ped // channel: [ val(meta), path(tsv) ]
     
-    reports = ch_reports                    // channel: [ path(reports) ]
-    versions = ch_versions                  // channel: [ versions.yml ]
+    reports = ch_reports   // channel: [ path(reports) ]
+    versions = ch_versions // channel: [ versions.yml ]
 
 }

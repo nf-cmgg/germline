@@ -38,5 +38,6 @@ workflow VCF_EXTRACT_RELATE_SOMALIER {
     html           = SOMALIER_RELATE.out.html           // channel: [ val(meta), path(html) ]
     pairs_tsv      = SOMALIER_RELATE.out.pairs_tsv      // channel: [ val(meta), path(tsv) ]
     samples_tsv    = SOMALIER_RELATE.out.samples_tsv    // channel: [ val(meta), path(tsv) ]
+    peds           = SOMALIER_RELATE.out.ped            // channel: [ val(meta), path(tsv) ]
     versions       = ch_versions                        // channel: [ path(versions.yml) ]
 }

@@ -37,7 +37,7 @@ process SOMALIER_RELATE {
         ${sample_groups_command} \\
         ${ped_command}
 
-    cut -f1-6 ${prefix}.samples.tsv > ${prefix}_somalier.ped
+    cut -f1-6 ${prefix}.samples.tsv | sed -e 's/-9/0/' > ${prefix}_somalier.ped
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -52,7 +52,7 @@ process SOMALIER_RELATE {
     touch ${prefix}.html
     touch ${prefix}.pairs.tsv
     touch ${prefix}.samples.tsv
-    touch ${prefix}.ped
+    touch ${prefix}_somalier.ped
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

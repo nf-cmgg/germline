@@ -559,7 +559,7 @@ workflow CMGGGERMLINE {
         if(params.gemini){
             CustomChannelOperators.joinOnKeys(
                 ch_final_vcfs.map { meta, vcf, tbi -> [ meta, vcf ]},
-                CRAM_CALL_GENOTYPE_GATK4.out.samples_tsv,
+                CRAM_CALL_GENOTYPE_GATK4.out.peds,
                 ['id', 'family', 'family_count']
             )
             .dump(tag:'vcf2db_input', pretty:true)

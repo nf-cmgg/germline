@@ -31,11 +31,10 @@ process RTGTOOLS_PEDFILTER {
     def postprocess = extension == "vcf.gz" ? "| rtg bgzip ${args2} -" : ""
 
     """
-    cut -f1-6 ${input} > ${prefix}.ped
 
     rtg pedfilter \\
         ${args} \\
-        ${prefix}.ped \\
+        ${input} \\
     | head -n -1 ${postprocess} > ${prefix}.${extension}
 
 
