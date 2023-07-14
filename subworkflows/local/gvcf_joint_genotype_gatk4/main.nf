@@ -66,7 +66,7 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
                 family:         meta.family,
                 id:             meta.family,
                 family_count:   meta.family_count,
-                meta.caller:    meta.caller
+                caller:         meta.caller
             ]
             [ groupKey(new_meta, meta.family_count.toInteger()), gvcf, tbi ]
         }
@@ -102,7 +102,7 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
 
         INPUT_SPLIT_BEDTOOLS.out.split
             .map { meta, genomicsdb, extra, extra2, bed ->
-                [ new_meta, genomicsdb, [], bed, [] ]
+                [ meta, genomicsdb, [], bed, [] ]
             }
             .set { ch_genotypegvcfs_input }
 
@@ -133,7 +133,7 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
         )
         ch_versions = ch_versions.mix(VCF_CONCAT_BCFTOOLS.out.versions)
 
-        VCF_CONCAT_BCFTOOLS.out.vcf
+        VCF_CONCAT_BCFTOOLS.out.vcfs
             .set { ch_vcfs }
 
     }

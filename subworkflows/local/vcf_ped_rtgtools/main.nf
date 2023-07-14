@@ -2,10 +2,10 @@
 // ADD PED HEADER
 //
 
-include { RTGTOOLS_PEDFILTER    } from '../../modules/nf-core/rtgtools/pedfilter/main'
-include { BCFTOOLS_ANNOTATE     } from '../../modules/nf-core/bcftools/annotate/main'
+include { RTGTOOLS_PEDFILTER    } from '../../../modules/nf-core/rtgtools/pedfilter/main'
+include { BCFTOOLS_ANNOTATE     } from '../../../modules/nf-core/bcftools/annotate/main'
 
-workflow ADD_PED_HEADER {
+workflow VCF_PED_RTGTOOLS {
     take:
         ch_vcfs                 // channel: [mandatory] [ val(meta), path(vcf) ] => The post-processed VCFs
         ch_somalier_samples_tsv // channel: [mandatory] [ val(meta), path(samples_tsv) ] => The samples TSV retrieved from SOMALIER_RELATE

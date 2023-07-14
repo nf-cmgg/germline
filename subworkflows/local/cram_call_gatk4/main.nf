@@ -2,8 +2,9 @@
 // Call the variants using GATK4 tooling
 //
 
-include { GATK4_HAPLOTYPECALLER         } from '../../../modules/nf-core/gatk4/haplotypecaller/main'
 include { GATK4_CALIBRATEDRAGSTRMODEL   } from '../../../modules/nf-core/gatk4/calibratedragstrmodel/main'
+include { GATK4_HAPLOTYPECALLER         } from '../../../modules/nf-core/gatk4/haplotypecaller/main'
+include { BCFTOOLS_STATS                } from '../../../modules/nf-core/bcftools/stats/main'
 
 include { INPUT_SPLIT_BEDTOOLS          } from '../input_split_bedtools/main'
 include { VCF_CONCAT_BCFTOOLS           } from '../vcf_concat_bcftools/main'
@@ -50,12 +51,18 @@ workflow CRAM_CALL_GATK4 {
 
     INPUT_SPLIT_BEDTOOLS(
         ch_beds.map{ it + [params.scatter_count] },
-        ch_crams
+        ch_cram_models
     )
     ch_versions = ch_versions.mix(INPUT_SPLIT_BEDTOOLS.out.versions)
 
+    INPUT_SPLIT_BEDTOOLS.out.split
+        .map { meta, cram, crai, dragstr, bed ->
+            [ meta, cram, crai, bed, dragstr ]
+        }
+        .set { ch_split }
+
     GATK4_HAPLOTYPECALLER(
-        INPUT_SPLIT_BEDTOOLS.out.split,
+        ch_split,
         ch_fasta.map { it[1] },
         ch_fai.map { it[1] },
         ch_dict.map { it[1] },
@@ -77,9 +84,18 @@ workflow CRAM_CALL_GATK4 {
     )
     ch_versions = ch_versions.mix(VCF_CONCAT_BCFTOOLS.out.versions)
 
-    emit:
-    gvcfs = VCF_CONCAT_BCFTOOLS.out.vcf // channel: [ val(meta), path(vcf), path(tbi) ]
+    BCFTOOLS_STATS(
+        VCF_CONCAT_BCFTOOLS.out.vcfs,
+        [],
+        [],
+        []
+    )
+    ch_versions = ch_versions.mix(BCFTOOLS_STATS.out.versions.first())
 
-    versions = ch_versions              // channel: [ versions.yml ]
+    emit:
+    gvcfs = VCF_CONCAT_BCFTOOLS.out.vcfs                // channel: [ val(meta), path(vcf), path(tbi) ]
+
+    reports = BCFTOOLS_STATS.out.stats.collect{it[1]}   // channel: [ path(stats) ]
+    versions = ch_versions                              // channel: [ versions.yml ]
 
 }

@@ -55,10 +55,7 @@ ch_multiqc_logo     = params.multiqc_logo   ? file(params.multiqc_logo, checkIfE
 include { SAMPLE_PREPARATION            } from '../subworkflows/local/sample_preparation'
 include { CRAM_CALL_GENOTYPE_GATK4      } from '../subworkflows/local/cram_call_genotype_gatk4/main'
 include { ANNOTATION                    } from '../subworkflows/local/annotation'
-include { ADD_PED_HEADER                } from '../subworkflows/local/add_ped_header'
 include { VCF_VALIDATE_SMALL_VARIANTS   } from '../subworkflows/local/vcf_validate_small_variants/main'
-
-include { VCF_EXTRACT_RELATE_SOMALIER   } from '../subworkflows/nf-core/vcf_extract_relate_somalier/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -427,16 +424,17 @@ workflow CMGGGERMLINE {
                 SAMPLE_PREPARATION.out.ready_crams,
                 ch_gvcfs_ready,
                 SAMPLE_PREPARATION.out.ready_beds,
+                ch_peds_ready,
                 ch_fasta_ready,
                 ch_fai_ready,
                 ch_dict_ready,
                 ch_strtablefile_ready,
                 ch_dbsnp_ready,
                 ch_dbsnp_tbi_ready,
-                ch_sdf_ready,
-                ch_peds_ready
+                ch_somalier_sites
             )
             ch_versions = ch_versions.mix(CRAM_CALL_GENOTYPE_GATK4.out.versions)
+            ch_reports  = ch_reports.mix(CRAM_CALL_GENOTYPE_GATK4.out.reports)
 
             ch_called_variants = ch_called_variants.mix(CRAM_CALL_GENOTYPE_GATK4.out.vcfs)
     
@@ -445,63 +443,12 @@ workflow CMGGGERMLINE {
     if(!params.only_merge && !params.only_call) {
 
         //
-        // Run relation tests with somalier
-        //
-
-        VCF_EXTRACT_RELATE_SOMALIER(
-            ch_called_variants
-                .filter { meta, vcf ->
-                    // Filter out the families that only have one individual
-                    meta.family_count > 1
-                }
-                .map { it + [[], 1] },
-            ch_fasta_ready.map { it[1] },
-            ch_fai_ready.map { it[1] },
-            ch_somalier_sites,
-            ch_peds_ready
-                .filter { meta, ped ->
-                    // Filter out the families that only have one individual
-                    meta.family_count > 1
-                },
-            [],
-            []
-        )
-        ch_versions = ch_versions.mix(VCF_EXTRACT_RELATE_SOMALIER.out.versions)
-
-        //
-        // Add PED headers to the VCFs
-        //
-
-        if(params.add_ped){
-            ch_called_variants
-                .branch { meta, vcf ->
-                    // Only add ped headers to VCFs with more than one individual
-                    single: meta.family_count == 1
-                    multiple: meta.family_count > 1
-                }
-                .set { ch_ped_header_branch }
-
-            ADD_PED_HEADER(
-                ch_ped_header_branch.multiple,
-                VCF_EXTRACT_RELATE_SOMALIER.out.samples_tsv
-            )
-            ch_versions = ch_versions.mix(ADD_PED_HEADER.out.versions)
-
-            ADD_PED_HEADER.out.ped_vcfs
-                .mix(ch_ped_header_branch.single)
-                .dump(tag:'ped_vcfs', pretty:true)
-                .set { ch_ped_vcfs }
-        } else {
-            ch_called_variants.set { ch_ped_vcfs }
-        }
-
-        //
         // Annotation of the variants and creation of Gemini-compatible database files
         //
 
         if (params.annotate) {
             ANNOTATION(
-                ch_ped_vcfs,
+                ch_called_variants,
                 ch_fasta_ready,
                 ch_fai_ready,
                 ch_vep_cache,
@@ -515,7 +462,7 @@ workflow CMGGGERMLINE {
 
             ANNOTATION.out.annotated_vcfs.set { ch_annotation_output }
         } else {
-            ch_ped_vcfs.set { ch_annotation_output }
+            ch_called_variants.set { ch_annotation_output }
         }
 
         ch_annotation_output.dump(tag:'annotation_output', pretty:true)
@@ -540,6 +487,11 @@ workflow CMGGGERMLINE {
         if (params.validate){
 
             ch_input.truth_variants
+                .combine(callers)
+                .map { meta, vcf, tbi, bed, sample, caller ->
+                    new_meta = meta + [caller:caller]
+                    [ new_meta, vcf, tbi, bed, sample ]    
+                }
                 .groupTuple(by: [0,4]) // No size needed here since it's being run before any process
                 .map { meta, vcf, tbi, bed, sample ->
                     // Get only one VCF for sample that were given multiple times
@@ -620,7 +572,7 @@ workflow CMGGGERMLINE {
         if(params.gemini){
             CustomChannelOperators.joinOnKeys(
                 ch_final_vcfs.map { meta, vcf, tbi -> [ meta, vcf ]},
-                VCF_EXTRACT_RELATE_SOMALIER.out.samples_tsv,
+                CRAM_CALL_GENOTYPE_GATK4.out.samples_tsv,
                 ['id', 'family', 'family_count']
             )
             .dump(tag:'vcf2db_input', pretty:true)

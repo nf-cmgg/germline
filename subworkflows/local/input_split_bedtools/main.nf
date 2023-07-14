@@ -6,7 +6,7 @@ include { BEDTOOLS_SPLIT } from '../../../modules/nf-core/bedtools/split/main'
 
 workflow INPUT_SPLIT_BEDTOOLS {
     take:
-        ch_beds     // channel: [mandatory] [ val(meta), path(bed) ] => bed files
+        ch_beds     // channel: [mandatory] [ val(meta), path(bed), val(scatter_count) ] => bed files
         ch_inputs   // channel: [mandatory] [ val(meta), path(input), path(input_index), path(extra_file) ] => input files
 
     main:
@@ -14,7 +14,7 @@ workflow INPUT_SPLIT_BEDTOOLS {
     ch_versions = Channel.empty()
 
     BEDTOOLS_SPLIT(
-        ch_beds.map { it + [params.scatter_count]}
+        ch_beds
     )
     ch_versions = ch_versions.mix(BEDTOOLS_SPLIT.out.versions.first())
 
@@ -26,7 +26,7 @@ workflow INPUT_SPLIT_BEDTOOLS {
             new_meta = meta + [split_count: bed_is_list ? beds.size() : 1]
             [ new_meta, input, input_index, extra_file, bed_is_list ? beds : [beds] ]
         }
-        .transpose(by:3) // Create one channel entry for each BED file per sample
+        .transpose(by:4) // Create one channel entry for each BED file per sample
         .map { meta, input, input_index, extra_file, bed ->
             // Set the base name of the BED file as the ID (this will look like sample_id.xxxx, where xxxx are numbers)
             new_meta = meta + [id:bed.baseName]

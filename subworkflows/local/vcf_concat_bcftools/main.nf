@@ -15,7 +15,8 @@ workflow VCF_CONCAT_BCFTOOLS {
 
     ch_vcfs
         .map { meta, vcf, tbi ->
-            [ groupKey(meta, meta.split_count), vcf, tbi ]
+            new_meta = meta + [id:meta.sample ?: meta.family]
+            [ groupKey(new_meta, meta.split_count), vcf, tbi ]
         }
         .groupTuple()
         .set { ch_concat_input }

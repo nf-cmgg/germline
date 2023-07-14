@@ -2,9 +2,9 @@
 // Filter the VCFs
 //
 
-include { BCFTOOLS_FILTER as FILTER_1 } from '../../modules/nf-core/bcftools/filter/main'
-include { BCFTOOLS_FILTER as FILTER_2 } from '../../modules/nf-core/bcftools/filter/main'
-include { TABIX_TABIX                 } from '../../modules/nf-core/tabix/tabix/main'
+include { BCFTOOLS_FILTER as FILTER_1 } from '../../../modules/nf-core/bcftools/filter/main'
+include { BCFTOOLS_FILTER as FILTER_2 } from '../../../modules/nf-core/bcftools/filter/main'
+include { TABIX_TABIX                 } from '../../../modules/nf-core/tabix/tabix/main'
 
 workflow VCF_FILTER_BCFTOOLS {
     take:
