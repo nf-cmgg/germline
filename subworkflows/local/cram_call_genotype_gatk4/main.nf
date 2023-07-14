@@ -27,6 +27,7 @@ workflow CRAM_CALL_GENOTYPE_GATK4 {
     ch_versions             = Channel.empty()
     ch_vcfs                 = Channel.empty()
     ch_somalier_samples_tsv = Channel.empty()
+    ch_reports              = Channel.empty()
 
     CRAM_CALL_GATK4(
         ch_crams.filter { it[0].type == "cram" },
@@ -39,6 +40,7 @@ workflow CRAM_CALL_GENOTYPE_GATK4 {
         ch_dbsnp_tbi
     )
     ch_versions = ch_versions.mix(CRAM_CALL_GATK4.out.versions)
+    ch_reports  = ch_reports.mix(CRAM_CALL_GATK4.out.reports)
 
     ch_gvcfs = ch_gvcfs.mix(CRAM_CALL_GATK4.out.gvcfs)
 
@@ -53,6 +55,7 @@ workflow CRAM_CALL_GENOTYPE_GATK4 {
             ch_dbsnp_tbi
         )
         ch_versions = ch_versions.mix(GVCF_JOINT_GENOTYPE_GATK4.out.versions)
+        ch_reports  = ch_reports.mix(GVCF_JOINT_GENOTYPE_GATK4.out.reports)
 
     }
 
@@ -86,7 +89,7 @@ workflow CRAM_CALL_GENOTYPE_GATK4 {
             ch_somalier_sites,
             ch_peds
                 .map { meta, ped ->
-                    new_meta = meta + [caller:"haplotypecaller"]
+                    def new_meta = meta + [caller:"haplotypecaller"]
                     [ new_meta, ped ]
                 }
                 .filter { meta, ped ->
@@ -138,7 +141,7 @@ workflow CRAM_CALL_GENOTYPE_GATK4 {
     vcfs = ch_vcfs                          // channel: [ val(meta), path(vcf), path(tbi) ]
     samples_tsv = ch_somalier_samples_tsv   // channel: [ val(meta), path(tsv) ]
     
-    reports = CRAM_CALL_GATK4.out.reports   // channel: [ path(reports) ]
+    reports = ch_reports                    // channel: [ path(reports) ]
     versions = ch_versions                  // channel: [ versions.yml ]
 
 }

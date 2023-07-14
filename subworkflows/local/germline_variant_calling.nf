@@ -85,13 +85,13 @@ workflow GERMLINE_VARIANT_CALLING {
             .map { meta, cram, crai, beds, dragstr_model=[] ->
                 // Determine the amount of BED files per sample
                 bed_is_list = beds instanceof ArrayList
-                new_meta = meta + [region_count: bed_is_list ? beds.size() : 1]
+                def new_meta = meta + [region_count: bed_is_list ? beds.size() : 1]
                 [ new_meta, cram, crai, bed_is_list ? beds : [beds], dragstr_model ]
             }
             .transpose(by:3) // Create one channel entry for each BED file per sample
             .map { meta, cram, crai, bed, dragstr_model ->
                 // Set the base name of the BED file as the ID (this will look like sample_id.xxxx, where xxxx are numbers)
-                new_meta = meta + [id:bed.baseName, caller:"haplotypecaller"]
+                def new_meta = meta + [id:bed.baseName, caller:"haplotypecaller"]
                 [ new_meta, cram, crai, bed, dragstr_model ]
             }
             .dump(tag:'haplotypecaller_input', pretty:true)
@@ -144,13 +144,13 @@ workflow GERMLINE_VARIANT_CALLING {
             .map { meta, bam, bai, beds ->
                 // Determine the amount of BED files per sample
                 bed_is_list = beds instanceof ArrayList
-                new_meta = meta + [region_count: bed_is_list ? beds.size() : 1]
+                def new_meta = meta + [region_count: bed_is_list ? beds.size() : 1]
                 [ new_meta, bam, bai, bed_is_list ? beds : [beds] ]
             }
             .transpose(by:3) // Create one channel entry for each BED file per sample
             .map { meta, bam, bai, bed ->
                 // Set the base name of the BED file as the ID (this will look like sample_id.xxxx, where xxxx are numbers)
-                new_meta = meta + [id:bed.baseName, caller:"vardict"]
+                def new_meta = meta + [id:bed.baseName, caller:"vardict"]
                 [ new_meta, bam, bai, bed ]
             }
             .dump(tag:'vardict_input', pretty:true)
@@ -182,7 +182,7 @@ workflow GERMLINE_VARIANT_CALLING {
 
     ch_called_variants
         .map { meta, vcf, tbi ->
-            new_meta = meta + [id:meta.sample]
+            def new_meta = meta + [id:meta.sample]
             [ groupKey(new_meta, meta.region_count), vcf, tbi ]
         }
         .groupTuple()
@@ -203,7 +203,7 @@ workflow GERMLINE_VARIANT_CALLING {
         .join(TABIX_TABIX.out.tbi, failOnDuplicate: true, failOnMismatch: true)
         .map { meta, vcf, tbi ->
             // Remove the bed counter from the meta field
-            new_meta = meta - meta.subMap("region_count")
+            def new_meta = meta - meta.subMap("region_count")
             [ new_meta, vcf, tbi ]
         }
         .tap { ch_all_vcfs }

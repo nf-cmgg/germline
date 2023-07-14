@@ -8,6 +8,7 @@ include { GATK4_GENOMICSDBIMPORT } from '../../../modules/nf-core/gatk4/genomics
 include { GATK4_GENOTYPEGVCFS    } from '../../../modules/nf-core/gatk4/genotypegvcfs/main'
 include { BEDTOOLS_SPLIT         } from '../../../modules/nf-core/bedtools/split/main'
 include { BCFTOOLS_QUERY         } from '../../../modules/nf-core/bcftools/query/main'
+include { BCFTOOLS_STATS         } from '../../../modules/nf-core/bcftools/stats/main'
 
 include { INPUT_SPLIT_BEDTOOLS   } from '../input_split_bedtools/main'
 include { VCF_CONCAT_BCFTOOLS    } from '../vcf_concat_bcftools/main'
@@ -25,6 +26,7 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
 
     ch_versions = Channel.empty()
     ch_vcfs     = Channel.empty()
+    ch_reports  = Channel.empty()
 
     BCFTOOLS_QUERY(
         ch_gvcfs,
@@ -37,7 +39,7 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
     BCFTOOLS_QUERY.out.output
         .map { meta, bed ->
             // Create the family meta
-            new_meta = [
+            def new_meta = [
                 family:         meta.family,
                 id:             meta.family,
                 family_count:   meta.family_count,
@@ -62,7 +64,7 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
     ch_gvcfs
         .map { meta, gvcf, tbi ->
             // Create the family meta
-            new_meta = [
+            def new_meta = [
                 family:         meta.family,
                 id:             meta.family,
                 family_count:   meta.family_count,
@@ -136,9 +138,19 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
         VCF_CONCAT_BCFTOOLS.out.vcfs
             .set { ch_vcfs }
 
+        BCFTOOLS_STATS(
+            ch_vcfs,
+            [],
+            [],
+            []
+        )
+        ch_versions = ch_versions.mix(BCFTOOLS_STATS.out.versions.first())
+        ch_reports = ch_reports.mix(BCFTOOLS_STATS.out.stats.collect { it[1] })
+
     }
 
     emit:
     vcfs = ch_vcfs         // [ val(meta), path(vcf) ]
     versions = ch_versions // [ path(versions) ]
+    reports = ch_reports   // [ path(report) ]
 }

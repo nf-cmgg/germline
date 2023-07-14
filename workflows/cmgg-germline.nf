@@ -321,7 +321,7 @@ workflow CMGGGERMLINE {
         .map { meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ->
             // Infer the family ID from the PED file if no family ID was given.
             // If no PED is given, use the sample ID as family ID            
-            new_meta = meta + [
+            def new_meta = meta + [
                 family: meta.family ?: ped ? get_family_id_from_ped(ped) : meta.sample, 
             ]
             [ new_meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ]
@@ -343,7 +343,7 @@ workflow CMGGGERMLINE {
                 family_count:   families[meta.family].size() // Contains the amount of samples in the current family
             ]
 
-            new_meta = meta + [
+            def new_meta = meta + [
                 family_count:   families[meta.family].size(), // Contains the amount of samples in the family from this sample
                 type:           gvcf ? "gvcf" : "cram" // Whether a GVCF is given to this sample or not (aka skip variantcalling or not)
             ]
@@ -489,7 +489,7 @@ workflow CMGGGERMLINE {
             ch_input.truth_variants
                 .combine(callers)
                 .map { meta, vcf, tbi, bed, sample, caller ->
-                    new_meta = meta + [caller:caller]
+                    def new_meta = meta + [caller:caller]
                     [ new_meta, vcf, tbi, bed, sample ]    
                 }
                 .groupTuple(by: [0,4]) // No size needed here since it's being run before any process
@@ -505,7 +505,7 @@ workflow CMGGGERMLINE {
             ch_final_vcfs
                 .combine(ch_truths, by: 0)
                 .map { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed, sample ->
-                    new_meta = meta + [sample:sample]
+                    def new_meta = meta + [sample:sample]
                     [ new_meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ]
                 }
                 .filter { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ->
@@ -551,19 +551,6 @@ workflow CMGGGERMLINE {
             )
             ch_versions = ch_versions.mix(VCF_VALIDATE_SMALL_VARIANTS.out.versions)
         }
-
-        //
-        // Perform QC on the final VCFs
-        //
-
-        BCFTOOLS_STATS_FAMILY(
-            ch_final_vcfs,
-            [],
-            [],
-            []
-        )
-        ch_versions = ch_versions.mix(BCFTOOLS_STATS_FAMILY.out.versions)
-        ch_reports  = ch_reports.mix(BCFTOOLS_STATS_FAMILY.out.stats.collect{it[1]})
 
         //
         // Create Gemini-compatible database files

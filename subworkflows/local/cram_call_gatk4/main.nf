@@ -74,7 +74,7 @@ workflow CRAM_CALL_GATK4 {
     GATK4_HAPLOTYPECALLER.out.vcf
         .join(GATK4_HAPLOTYPECALLER.out.tbi, failOnDuplicate: true, failOnMismatch: true)
         .map { meta, vcf, tbi ->
-            new_meta = meta + [caller: "haplotypecaller"]
+            def new_meta = meta + [caller: "haplotypecaller"]
             [ new_meta, vcf, tbi ]
         }
         .set { ch_called_variants }

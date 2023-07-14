@@ -6,11 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## v1.4.0dev
 
 ### New Features
+1. Added the `--caller` parameter to specify the variant caller to use. Currently only `haplotypecaller` and `vardict` are supported.
+2. Added the `vardict` variant caller.
+3. Added the `--vardict_min_af` parameter to specify the minimum allele frequency for `vardict`.
 
 ### Improvements
+1. Refactored the pipeline to accomodate future additions of variant callers and genotypers
+2. Removed a lot of unnecessary bloat
 
 ### Fixes
-
+1. Fixed an issue with the outputting of the validation PNG files, now all three types of PNGs are outputted.
 
 ## v1.3.0 - Happy Hasselt - [July 10 2023]
 

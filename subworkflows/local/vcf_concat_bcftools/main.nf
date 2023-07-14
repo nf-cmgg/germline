@@ -15,7 +15,7 @@ workflow VCF_CONCAT_BCFTOOLS {
 
     ch_vcfs
         .map { meta, vcf, tbi ->
-            new_meta = meta + [id:meta.sample ?: meta.family]
+            def new_meta = meta + [id:meta.sample ?: meta.family]
             [ groupKey(new_meta, meta.split_count), vcf, tbi ]
         }
         .groupTuple()
@@ -36,7 +36,7 @@ workflow VCF_CONCAT_BCFTOOLS {
         .join(TABIX_TABIX.out.tbi, failOnDuplicate: true, failOnMismatch: true)
         .map { meta, vcf, tbi ->
             // Remove the bed counter from the meta field
-            new_meta = meta - meta.subMap("split_count")
+            def new_meta = meta - meta.subMap("split_count")
             [ new_meta, vcf, tbi ]
         }
         .set { ch_vcf_tbi }
