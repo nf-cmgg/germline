@@ -52,10 +52,10 @@ ch_multiqc_logo     = params.multiqc_logo   ? file(params.multiqc_logo, checkIfE
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { SAMPLE_PREPARATION            } from '../subworkflows/local/sample_preparation'
-include { CRAM_CALL_GENOTYPE_GATK4      } from '../subworkflows/local/cram_call_genotype_gatk4/main'
-include { ANNOTATION                    } from '../subworkflows/local/annotation'
-include { VCF_VALIDATE_SMALL_VARIANTS   } from '../subworkflows/local/vcf_validate_small_variants/main'
+include { CRAM_PREPARE_SAMTOOLS_BEDTOOLS    } from '../subworkflows/local/cram_prepare_samtools_bedtools/main'
+include { CRAM_CALL_GENOTYPE_GATK4          } from '../subworkflows/local/cram_call_genotype_gatk4/main'
+include { VCF_ANNOTATION                    } from '../subworkflows/local/vcf_annotation/main'
+include { VCF_VALIDATE_SMALL_VARIANTS       } from '../subworkflows/local/vcf_validate_small_variants/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -390,14 +390,14 @@ workflow CMGGGERMLINE {
     // Run sample preparation
     //
 
-    SAMPLE_PREPARATION(
+    CRAM_PREPARE_SAMTOOLS_BEDTOOLS(
         ch_input.cram.filter { it[0].type == "cram" }, // Filter out files that already have a called GVCF
         ch_input.roi.filter { it[0].type == "cram" }, // Filter out files that already have a called GVCF
         ch_fasta_ready,
         ch_fai_ready,
         ch_default_roi
     )
-    ch_versions = ch_versions.mix(SAMPLE_PREPARATION.out.versions)
+    ch_versions = ch_versions.mix(CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.versions)
 
     //
     // Take one PED file per family
@@ -421,9 +421,9 @@ workflow CMGGGERMLINE {
             //
     
             CRAM_CALL_GENOTYPE_GATK4(
-                SAMPLE_PREPARATION.out.ready_crams,
+                CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_crams,
                 ch_gvcfs_ready,
-                SAMPLE_PREPARATION.out.ready_beds,
+                CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_beds,
                 ch_peds_ready,
                 ch_fasta_ready,
                 ch_fai_ready,
@@ -447,7 +447,7 @@ workflow CMGGGERMLINE {
         //
 
         if (params.annotate) {
-            ANNOTATION(
+            VCF_ANNOTATION(
                 ch_called_variants,
                 ch_fasta_ready,
                 ch_fai_ready,
@@ -457,10 +457,10 @@ workflow CMGGGERMLINE {
                 ch_vcfanno_lua,
                 ch_vcfanno_resources
             )
-            ch_versions = ch_versions.mix(ANNOTATION.out.versions)
-            ch_reports  = ch_reports.mix(ANNOTATION.out.reports)
+            ch_versions = ch_versions.mix(VCF_ANNOTATION.out.versions)
+            ch_reports  = ch_reports.mix(VCF_ANNOTATION.out.reports)
 
-            ANNOTATION.out.annotated_vcfs.set { ch_annotation_output }
+            VCF_ANNOTATION.out.annotated_vcfs.set { ch_annotation_output }
         } else {
             ch_called_variants.set { ch_annotation_output }
         }
