@@ -98,12 +98,12 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
                 // Multiply the scatter count by the family size to better scatter big families
                 [meta, bed, (params.scatter_count * meta.family_count)]
             },
-            GATK4_GENOMICSDBIMPORT.out.genomicsdb.map { meta, genomicsdb -> [ meta, genomicsdb, [], [] ]}
+            GATK4_GENOMICSDBIMPORT.out.genomicsdb.map { meta, genomicsdb -> [ meta, genomicsdb, [] ]}
         )
         ch_versions = ch_versions.mix(INPUT_SPLIT_BEDTOOLS.out.versions)
 
         INPUT_SPLIT_BEDTOOLS.out.split
-            .map { meta, genomicsdb, extra, extra2, bed ->
+            .map { meta, genomicsdb, extra, bed ->
                 [ meta, genomicsdb, [], bed, [] ]
             }
             .set { ch_genotypegvcfs_input }

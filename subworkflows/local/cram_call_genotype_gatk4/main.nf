@@ -10,9 +10,8 @@ include { VCF_PED_RTGTOOLS              } from '../vcf_ped_rtgtools/main'
 
 workflow CRAM_CALL_GENOTYPE_GATK4 {
     take:
-        ch_crams             // channel: [mandatory] [ val(meta), path(cram), path(crai) ] => sample CRAM files and their indexes
+        ch_input             // channel: [mandatory] [ val(meta), path(cram), path(crai), path(bed) ] => sample CRAM files and their indexes with the split bed files
         ch_gvcfs             // channel: [mandatory] [ val(meta), path(gvcf), path(tbi) ] => earlier called GVCFs with their indices
-        ch_beds              // channel: [mandatory] [ val(meta), path(bed) ] => bed files created with the sample preparation subworkflow
         ch_peds              // channel: [mandatory] [ val(meta), path(ped) ] => bed files created with the sample preparation subworkflow
         ch_fasta             // channel: [mandatory] [ val(meta), path(fasta) ] => fasta reference
         ch_fai               // channel: [mandatory] [ val(meta), path(fai) ] => fasta reference index
@@ -30,8 +29,7 @@ workflow CRAM_CALL_GENOTYPE_GATK4 {
     ch_reports      = Channel.empty()
 
     CRAM_CALL_GATK4(
-        ch_crams.filter { it[0].type == "cram" },
-        ch_beds.filter { it[0].type == "cram" },
+        ch_input,
         ch_fasta,
         ch_fai,
         ch_dict,

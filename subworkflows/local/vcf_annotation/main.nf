@@ -27,13 +27,22 @@ workflow VCF_ANNOTATION {
     ch_reports          = Channel.empty()
     ch_versions         = Channel.empty()
 
+    ch_vcfs
+        .branch { meta, vcf, tbi=[] ->
+            tbi: tbi
+            no_tbi: !tbi
+                return [ meta, vcf ]
+        }
+        .set { ch_tabix_input }
+
     TABIX_ENSEMBLVEP(
-        ch_vcfs
+        ch_tabix_input.no_tbi
     )
     ch_versions = ch_versions.mix(TABIX_ENSEMBLVEP.out.versions.first())
 
-    ch_vcfs
+    ch_tabix_input.no_tbi
         .join(TABIX_ENSEMBLVEP.out.tbi, failOnDuplicate:true, failOnMismatch:true)
+        .mix(ch_tabix_input.tbi)
         .map { meta, vcf, tbi ->
             [ meta, vcf, tbi, [] ]
         }

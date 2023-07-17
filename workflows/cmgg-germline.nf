@@ -53,7 +53,9 @@ ch_multiqc_logo     = params.multiqc_logo   ? file(params.multiqc_logo, checkIfE
 */
 
 include { CRAM_PREPARE_SAMTOOLS_BEDTOOLS    } from '../subworkflows/local/cram_prepare_samtools_bedtools/main'
+include { INPUT_SPLIT_BEDTOOLS              } from '../subworkflows/local/input_split_bedtools/main'
 include { CRAM_CALL_GENOTYPE_GATK4          } from '../subworkflows/local/cram_call_genotype_gatk4/main'
+include { CRAM_CALL_VARDICTJAVA             } from '../subworkflows/local/cram_call_vardictjava/main'
 include { VCF_ANNOTATION                    } from '../subworkflows/local/vcf_annotation/main'
 include { VCF_VALIDATE_SMALL_VARIANTS       } from '../subworkflows/local/vcf_validate_small_variants/main'
 
@@ -412,33 +414,66 @@ workflow CMGGGERMLINE {
         .dump(tag:'peds', pretty:true)
         .set { ch_peds_ready }
 
+    //
+    // Split the BED files
+    //
+
+    INPUT_SPLIT_BEDTOOLS(
+        CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_beds.map { it + [params.scatter_count] },
+        CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_crams
+    )
+    ch_versions = ch_versions.mix(INPUT_SPLIT_BEDTOOLS.out.versions)
+
     ch_called_variants = Channel.empty()
+    ch_peds_vcf2db = Channel.empty()
 
     if("haplotypecaller" in callers) {
             
+        //
+        // Call variants with GATK4 HaplotypeCaller
+        //
+
+        CRAM_CALL_GENOTYPE_GATK4(
+            INPUT_SPLIT_BEDTOOLS.out.split,
+            ch_gvcfs_ready,
+            ch_peds_ready,
+            ch_fasta_ready,
+            ch_fai_ready,
+            ch_dict_ready,
+            ch_strtablefile_ready,
+            ch_dbsnp_ready,
+            ch_dbsnp_tbi_ready,
+            ch_somalier_sites
+        )
+        ch_versions = ch_versions.mix(CRAM_CALL_GENOTYPE_GATK4.out.versions)
+        ch_reports  = ch_reports.mix(CRAM_CALL_GENOTYPE_GATK4.out.reports)
+        ch_peds_vcf2db = ch_peds_vcf2db.mix(CRAM_CALL_GENOTYPE_GATK4.out.peds)
+
+        ch_called_variants = ch_called_variants.mix(CRAM_CALL_GENOTYPE_GATK4.out.vcfs)
+
+    } else {
+        ch_peds_vcf2db = ch_peds_vcf2db.mix(ch_peds_ready)
+    }
+
+    if("vardict" in callers) {
+            
             //
-            // Call variants with GATK4 HaplotypeCaller
+            // Call variants with VarDict
             //
     
-            CRAM_CALL_GENOTYPE_GATK4(
-                CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_crams,
-                ch_gvcfs_ready,
-                CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_beds,
-                ch_peds_ready,
+            CRAM_CALL_VARDICTJAVA(
+                INPUT_SPLIT_BEDTOOLS.out.split,
                 ch_fasta_ready,
-                ch_fai_ready,
-                ch_dict_ready,
-                ch_strtablefile_ready,
-                ch_dbsnp_ready,
-                ch_dbsnp_tbi_ready,
-                ch_somalier_sites
+                ch_fai_ready
             )
-            ch_versions = ch_versions.mix(CRAM_CALL_GENOTYPE_GATK4.out.versions)
-            ch_reports  = ch_reports.mix(CRAM_CALL_GENOTYPE_GATK4.out.reports)
+            ch_versions = ch_versions.mix(CRAM_CALL_VARDICTJAVA.out.versions)
+            ch_reports  = ch_reports.mix(CRAM_CALL_VARDICTJAVA.out.reports)
 
-            ch_called_variants = ch_called_variants.mix(CRAM_CALL_GENOTYPE_GATK4.out.vcfs)
+            ch_called_variants = ch_called_variants.mix(CRAM_CALL_VARDICTJAVA.out.vcfs)
     
     }
+
+    // TODO run somalier subworkflow on everything (even single sample VCFs)
 
     if(!params.only_merge && !params.only_call) {
 
@@ -559,7 +594,7 @@ workflow CMGGGERMLINE {
         if(params.gemini){
             CustomChannelOperators.joinOnKeys(
                 ch_final_vcfs.map { meta, vcf, tbi -> [ meta, vcf ]},
-                CRAM_CALL_GENOTYPE_GATK4.out.peds,
+                ch_peds_vcf2db,
                 ['id', 'family', 'family_count']
             )
             .dump(tag:'vcf2db_input', pretty:true)
