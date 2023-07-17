@@ -221,6 +221,16 @@
                 "only_merge": {
                     "type": "boolean",
                     "description": "Only run the pipeline until the creation of the genomicsdbs and output them"
+                },
+                "callers": {
+                    "type": "string",
+                    "description": "A comma delimited string of the available callers. Current options are: 'haplotypecaller' and 'vardict'",
+                    "default": "haplotypecaller"
+                },
+                "vardict_min_af": {
+                    "type": "number",
+                    "description": "The minimum allele frequency for VarDict",
+                    "default": 0.1
                 }
             },
             "required": ["scatter_count"]
