@@ -1,0 +1,19 @@
+Changes in module 'nf-core/bcftools/reheader'
+--- modules/nf-core/bcftools/reheader/main.nf
++++ modules/nf-core/bcftools/reheader/main.nf
+@@ -31,10 +31,13 @@
+                     args2.contains("--output-type v") || args2.contains("-Ov") ? "vcf" :
+                     "vcf"
+     """
++    echo ${meta.sample} > sample.txt
++
+     bcftools \\
+         reheader \\
+         $update_sequences \\
+         $new_header \\
++        --samples sample.txt \\
+         $args \\
+         --threads $task.cpus \\
+         $vcf \\
+
+************************************************************

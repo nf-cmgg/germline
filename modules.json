@@ -33,7 +33,8 @@
                     "bcftools/reheader": {
                         "branch": "master",
                         "git_sha": "0435e4eebc94e53721c194b2d5d06f455a79e407",
-                        "installed_by": ["modules"]
+                        "installed_by": ["modules"],
+                        "patch": "modules/nf-core/bcftools/reheader/bcftools-reheader.diff"
                     },
                     "bcftools/sort": {
                         "branch": "master",
