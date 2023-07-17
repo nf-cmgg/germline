@@ -26,7 +26,7 @@ nextflow_pipeline {
         then {
             def date = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new Date())
             assert workflow.success
-            assert file("${outputDir}/${date}_test/Proband_12345/reports/Proband_12345.bcftools_stats.txt").exists()
+            assert file("${outputDir}/${date}_test/Proband_12345/reports/Proband_12345.gatk4-joint.bcftools_stats.txt").exists()
             assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.gatk4-joint.vcf.gz").exists()
             assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.db").exists()
             assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.ped").exists()
