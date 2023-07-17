@@ -24,10 +24,10 @@ workflow CRAM_CALL_GENOTYPE_GATK4 {
 
     main:
 
-    ch_versions             = Channel.empty()
-    ch_vcfs                 = Channel.empty()
-    ch_somalier_samples_tsv = Channel.empty()
-    ch_reports              = Channel.empty()
+    ch_versions     = Channel.empty()
+    ch_vcfs         = Channel.empty()
+    ch_somalier_ped = Channel.empty()
+    ch_reports      = Channel.empty()
 
     CRAM_CALL_GATK4(
         ch_crams.filter { it[0].type == "cram" },
