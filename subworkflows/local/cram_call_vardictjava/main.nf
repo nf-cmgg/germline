@@ -1,9 +1,12 @@
 include { SAMTOOLS_CONVERT      } from '../../../modules/nf-core/samtools/convert/main'
 include { VARDICTJAVA           } from '../../../modules/nf-core/vardictjava/main'
 include { TABIX_BGZIPTABIX      } from '../../../modules/nf-core/tabix/bgziptabix/main'
+include { BCFTOOLS_REHEADER     } from '../../../modules/nf-core/bcftools/reheader/main'
+include { TABIX_TABIX           } from '../../../modules/nf-core/tabix/tabix/main'
 include { BCFTOOLS_STATS        } from '../../../modules/nf-core/bcftools/stats/main'
 
-include { VCF_CONCAT_BCFTOOLS           } from '../vcf_concat_bcftools/main'
+include { VCF_CONCAT_BCFTOOLS   } from '../vcf_concat_bcftools/main'
+include { VCF_FILTER_BCFTOOLS   } from '../vcf_filter_bcftools/main'
 
 workflow CRAM_CALL_VARDICTJAVA {
     take:
@@ -17,7 +20,7 @@ workflow CRAM_CALL_VARDICTJAVA {
 
         ch_input
             .map { meta, cram, crai, bed ->
-                def new_meta = meta + [id:meta.sample]
+                def new_meta = meta + [id:meta.sample, caller:"vardict"]
                 [ new_meta, cram, crai, bed ]
             }
             .tap { ch_original }
@@ -63,12 +66,46 @@ workflow CRAM_CALL_VARDICTJAVA {
         ch_versions = ch_versions.mix(TABIX_BGZIPTABIX.out.versions.first())
         
         VCF_CONCAT_BCFTOOLS(
-            TABIX_BGZIPTABIX.out.gz_tbi
+            TABIX_BGZIPTABIX.out.gz_tbi,
+            false
         )
         ch_versions = ch_versions.mix(VCF_CONCAT_BCFTOOLS.out.versions)
 
+        VCF_CONCAT_BCFTOOLS.out.vcfs
+            .combine(["${projectDir}/assets/vardict.header.vcf.gz"])
+            .map { meta, vcf, header ->
+                [ meta, vcf, header ]
+            }
+            .set { ch_reheader_input}
+
+        BCFTOOLS_REHEADER(
+            ch_reheader_input,
+            ch_fai
+        )
+        ch_versions = ch_versions.mix(BCFTOOLS_REHEADER.out.versions.first())
+
+        if(params.filter) {
+            VCF_FILTER_BCFTOOLS(
+                BCFTOOLS_REHEADER.out.vcf,
+                false
+            )
+            ch_versions = ch_versions.mix(VCF_FILTER_BCFTOOLS.out.versions)
+            ch_filter_output = VCF_FILTER_BCFTOOLS.out.vcfs
+        } else {
+            ch_filter_output = BCFTOOLS_REHEADER.out.vcf
+        }
+
+        TABIX_TABIX(
+            ch_filter_output
+        )
+        ch_versions = ch_versions.mix(TABIX_TABIX.out.versions.first())
+
+        ch_filter_output
+            .join(TABIX_TABIX.out.tbi, failOnDuplicate: true, failOnMismatch: true)
+            .set { ch_vcfs }
+
         BCFTOOLS_STATS(
-            VCF_CONCAT_BCFTOOLS.out.vcfs,
+            ch_vcfs,
             [],
             [],
             []
@@ -77,9 +114,9 @@ workflow CRAM_CALL_VARDICTJAVA {
         ch_reports = ch_reports.mix(BCFTOOLS_STATS.out.stats.collect { it[1] })
 
     emit:
-    vcfs = VCF_CONCAT_BCFTOOLS.out.vcfs // channel: [ val(meta), path(vcf), path(tbi) ]
+    vcfs = ch_vcfs // channel: [ val(meta), path(vcf), path(tbi) ]
 
-    reports = ch_reports                // channel: [ path(reports) ]    
-    versions = ch_versions              // channel: [ path(versions.yml) ]
+    reports = ch_reports    // channel: [ path(reports) ]    
+    versions = ch_versions  // channel: [ path(versions.yml) ]
 
 }

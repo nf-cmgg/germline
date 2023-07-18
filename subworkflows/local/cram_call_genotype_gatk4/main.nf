@@ -66,7 +66,8 @@ workflow CRAM_CALL_GENOTYPE_GATK4 {
 
         if(params.filter) {
             VCF_FILTER_BCFTOOLS(
-                GVCF_JOINT_GENOTYPE_GATK4.out.vcfs
+                GVCF_JOINT_GENOTYPE_GATK4.out.vcfs,
+                true
             )
             ch_versions = ch_versions.mix(VCF_FILTER_BCFTOOLS.out.versions)
 

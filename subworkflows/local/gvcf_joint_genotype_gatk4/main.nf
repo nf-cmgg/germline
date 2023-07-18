@@ -131,7 +131,8 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
         //
 
         VCF_CONCAT_BCFTOOLS(
-            ch_gather_inputs
+            ch_gather_inputs,
+            true
         )
         ch_versions = ch_versions.mix(VCF_CONCAT_BCFTOOLS.out.versions)
 
