@@ -20,7 +20,7 @@ workflow CRAM_CALL_VARDICTJAVA {
 
         ch_input
             .map { meta, cram, crai, bed ->
-                def new_meta = meta + [id:meta.sample, caller:"vardict"]
+                def new_meta = meta + [caller:"vardict"]
                 [ new_meta, cram, crai, bed ]
             }
             .tap { ch_original }
@@ -114,7 +114,7 @@ workflow CRAM_CALL_VARDICTJAVA {
         ch_reports = ch_reports.mix(BCFTOOLS_STATS.out.stats.collect { it[1] })
 
     emit:
-    vcfs = ch_vcfs // channel: [ val(meta), path(vcf), path(tbi) ]
+    vcfs = ch_vcfs          // channel: [ val(meta), path(vcf), path(tbi) ]
 
     reports = ch_reports    // channel: [ path(reports) ]    
     versions = ch_versions  // channel: [ path(versions.yml) ]

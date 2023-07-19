@@ -7,8 +7,8 @@ include { BCFTOOLS_ANNOTATE     } from '../../../modules/nf-core/bcftools/annota
 
 workflow VCF_PED_RTGTOOLS {
     take:
-        ch_vcfs                 // channel: [mandatory] [ val(meta), path(vcf) ] => The post-processed VCFs
-        ch_somalier_samples_tsv // channel: [mandatory] [ val(meta), path(samples_tsv) ] => The samples TSV retrieved from SOMALIER_RELATE
+        ch_vcfs // channel: [mandatory] [ val(meta), path(vcf) ] => The post-processed VCFs
+        ch_peds // channel: [mandatory] [ val(meta), path(peds) ] => The PED files retrieved from SOMALIER_RELATE
 
     main:
 
@@ -19,7 +19,7 @@ workflow VCF_PED_RTGTOOLS {
     //
 
     RTGTOOLS_PEDFILTER(
-        ch_somalier_samples_tsv
+        ch_peds
     )
     ch_versions = ch_versions.mix(RTGTOOLS_PEDFILTER.out.versions.first())
 
@@ -28,8 +28,8 @@ workflow VCF_PED_RTGTOOLS {
     //
 
     ch_vcfs
-        .join(RTGTOOLS_PEDFILTER.out.output, failOnDuplicate: true, failOnMismatch: true)
-        .map { meta, vcf, ped_vcf ->
+        .join(RTGTOOLS_PEDFILTER.out.output, failOnDuplicate:true, failOnMismatch:true)
+        .map { meta, vcf, tbi, ped_vcf ->
             [ meta, vcf, [], [], [], ped_vcf ]
         }
         .set { ch_annotate_input }
@@ -41,6 +41,6 @@ workflow VCF_PED_RTGTOOLS {
     ch_versions = ch_versions.mix(BCFTOOLS_ANNOTATE.out.versions.first())
 
     emit:
-    ped_vcfs = BCFTOOLS_ANNOTATE.out.vcf // [ val(meta), path(vcf) ]
-    versions = ch_versions               // [ path(versions) ]
+    ped_vcfs = BCFTOOLS_ANNOTATE.out.vcf    // [ val(meta), path(vcf) ]
+    versions = ch_versions                  // [ path(versions) ]
 }

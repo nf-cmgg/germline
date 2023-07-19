@@ -56,6 +56,8 @@ include { CRAM_PREPARE_SAMTOOLS_BEDTOOLS    } from '../subworkflows/local/cram_p
 include { INPUT_SPLIT_BEDTOOLS              } from '../subworkflows/local/input_split_bedtools/main'
 include { CRAM_CALL_GENOTYPE_GATK4          } from '../subworkflows/local/cram_call_genotype_gatk4/main'
 include { CRAM_CALL_VARDICTJAVA             } from '../subworkflows/local/cram_call_vardictjava/main'
+include { VCF_EXTRACT_RELATE_SOMALIER       } from '../subworkflows/local/vcf_extract_relate_somalier/main'
+include { VCF_PED_RTGTOOLS                  } from '../subworkflows/local/vcf_ped_rtgtools/main'
 include { VCF_ANNOTATION                    } from '../subworkflows/local/vcf_annotation/main'
 include { VCF_VALIDATE_SMALL_VARIANTS       } from '../subworkflows/local/vcf_validate_small_variants/main'
 
@@ -339,37 +341,36 @@ workflow CMGGGERMLINE {
         .combine(ch_raw_inputs)
         .multiMap { families, meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ->
             // Divide the input files into their corresponding channel
-            new_meta_family = [
-                id:             meta.family,
-                family:         meta.family,
-                family_count:   families[meta.family].size() // Contains the amount of samples in the current family
-            ]
-
             def new_meta = meta + [
                 family_count:   families[meta.family].size(), // Contains the amount of samples in the family from this sample
-                type:           gvcf ? "gvcf" : "cram" // Whether a GVCF is given to this sample or not (aka skip variantcalling or not)
+                type: gvcf ? "gvcf" : "cram" // Define the type of input data
             ]
 
-            truth_variants: [new_meta_family, truth_vcf, truth_tbi, truth_bed, meta.id] // Optional channel containing the truth VCF, its index and the optional BED file
+            def new_meta_ped = meta - meta.subMap(["type", "family_count"])
+
+            def new_meta_validation = [
+                id: meta.id,
+                sample: meta.sample,
+                family: meta.family
+            ]
+
+            truth_variants: [new_meta_validation, truth_vcf, truth_tbi, truth_bed] // Optional channel containing the truth VCF, its index and the optional BED file
             gvcf:           [new_meta, gvcf, tbi] // Optional channel containing the GVCFs and their optional indices
             cram:           [new_meta, cram, crai]  // Mandatory channel containing the CRAM files and their optional indices
-            peds:           [new_meta_family, ped] // Optional channel containing the PED files 
+            peds:           [new_meta_ped, ped] // Optional channel containing the PED files 
             roi:            [new_meta, roi] // Optional channel containing the ROI BED files for WES samples
+            family_samples: [meta.family, families[meta.family]] // A channel containing the samples per family
         }
         .set { ch_input }
 
-    ch_input.gvcf.dump(tag:'input_gvcf', pretty:true)
-    ch_input.roi.dump(tag:'input_roi', pretty:true)
-    ch_input.truth_variants.dump(tag:'truth_variants', pretty:true)
-    ch_input.cram.dump(tag:'input_crams', pretty:true)
-    ch_input.peds.dump(tag:'input_peds', pretty:true)
+    ch_family_samples = ch_input.family_samples.distinct()
 
     //
     // Create the GVCF index if it's missing
     //
 
     ch_input.gvcf
-        .filter { it[0].type == "gvcf" } // Filter out samples which have no GVCF
+        .filter { it[0].type == "gvcf" } // Filter out samples that have no GVCF
         .branch { meta, gvcf, tbi ->
             no_tbi: !tbi
                 return [ meta, gvcf ]
@@ -402,19 +403,6 @@ workflow CMGGGERMLINE {
     ch_versions = ch_versions.mix(CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.versions)
 
     //
-    // Take one PED file per family
-    //
-
-    ch_input.peds
-        .groupTuple() // No size needed here because no process has been run with PED files before this
-        .map { meta, peds ->
-            // Find the first PED file and return that one for the family ([] if no PED is given for the family)
-            [ meta, peds.find { it != [] } ?: [] ]
-        }
-        .dump(tag:'peds', pretty:true)
-        .set { ch_peds_ready }
-
-    //
     // Split the BED files
     //
 
@@ -424,8 +412,7 @@ workflow CMGGGERMLINE {
     )
     ch_versions = ch_versions.mix(INPUT_SPLIT_BEDTOOLS.out.versions)
 
-    ch_called_variants = Channel.empty()
-    ch_peds_vcf2db = Channel.empty()
+    ch_calls = Channel.empty()
 
     if("haplotypecaller" in callers) {
             
@@ -436,46 +423,100 @@ workflow CMGGGERMLINE {
         CRAM_CALL_GENOTYPE_GATK4(
             INPUT_SPLIT_BEDTOOLS.out.split,
             ch_gvcfs_ready,
-            ch_peds_ready,
             ch_fasta_ready,
             ch_fai_ready,
             ch_dict_ready,
             ch_strtablefile_ready,
             ch_dbsnp_ready,
-            ch_dbsnp_tbi_ready,
-            ch_somalier_sites
+            ch_dbsnp_tbi_ready
         )
         ch_versions = ch_versions.mix(CRAM_CALL_GENOTYPE_GATK4.out.versions)
         ch_reports  = ch_reports.mix(CRAM_CALL_GENOTYPE_GATK4.out.reports)
-        ch_peds_vcf2db = ch_peds_vcf2db.mix(CRAM_CALL_GENOTYPE_GATK4.out.peds)
 
-        ch_called_variants = ch_called_variants.mix(CRAM_CALL_GENOTYPE_GATK4.out.vcfs)
+        ch_calls = ch_calls.mix(CRAM_CALL_GENOTYPE_GATK4.out.vcfs)
 
-    } else {
-        ch_peds_vcf2db = ch_peds_vcf2db.mix(ch_peds_ready)
     }
 
     if("vardict" in callers) {
             
-            //
-            // Call variants with VarDict
-            //
-    
-            CRAM_CALL_VARDICTJAVA(
-                INPUT_SPLIT_BEDTOOLS.out.split,
-                ch_fasta_ready,
-                ch_fai_ready
-            )
-            ch_versions = ch_versions.mix(CRAM_CALL_VARDICTJAVA.out.versions)
-            ch_reports  = ch_reports.mix(CRAM_CALL_VARDICTJAVA.out.reports)
+        //
+        // Call variants with VarDict
+        //
 
-            ch_called_variants = ch_called_variants.mix(CRAM_CALL_VARDICTJAVA.out.vcfs)
+        CRAM_CALL_VARDICTJAVA(
+            INPUT_SPLIT_BEDTOOLS.out.split,
+            ch_fasta_ready,
+            ch_fai_ready
+        )
+        ch_versions = ch_versions.mix(CRAM_CALL_VARDICTJAVA.out.versions)
+        ch_reports  = ch_reports.mix(CRAM_CALL_VARDICTJAVA.out.reports)
+
+        ch_calls = ch_calls.mix(CRAM_CALL_VARDICTJAVA.out.vcfs)
     
     }
 
-    // TODO run somalier subworkflow on everything (even single sample VCFs)
+    ch_calls
+        .map { meta, vcf, tbi ->
+            def new_meta = meta - meta.subMap("type")
+            [ new_meta, vcf, tbi ]
+        }
+        .set { ch_called_variants }
 
     if(!params.only_merge && !params.only_call) {
+
+        //
+        // Preprocess the PED channel
+        //
+
+        ch_input.peds
+            .map { meta, ped ->
+                [ meta.family, ped ]
+            }
+            .groupTuple() // No size needed here because no process has been run with PED files before this
+            .map { meta, peds ->
+                // Find the first PED file and return that one for the family ([] if no PED is given for the family)
+                [ meta, peds.find { it != [] } ?: [] ]
+            }
+            .combine(ch_called_variants.map { meta, vcf, tbi -> [ meta.family, meta, vcf, tbi ]}, by:0)
+            .map { family, ped, meta, vcf, tbi ->
+                [ meta, ped ]
+            }
+            .set { ch_somalier_input }
+
+        //
+        // Run relation tests with somalier
+        //
+
+        VCF_EXTRACT_RELATE_SOMALIER(
+            ch_called_variants,
+            ch_fasta_ready.map { it[1] },
+            ch_fai_ready.map { it[1] },
+            ch_somalier_sites,
+            ch_somalier_input
+        )
+        ch_versions = ch_versions.mix(VCF_EXTRACT_RELATE_SOMALIER.out.versions)
+
+        //
+        // Add PED headers to the VCFs
+        //
+
+        if(params.add_ped){
+
+            VCF_PED_RTGTOOLS(
+                ch_called_variants,
+                VCF_EXTRACT_RELATE_SOMALIER.out.peds
+            )
+            ch_versions = ch_versions.mix(VCF_PED_RTGTOOLS.out.versions)
+
+            VCF_PED_RTGTOOLS.out.ped_vcfs
+                .set { ch_ped_vcfs }
+        } else {
+            ch_called_variants
+                .map { meta, vcf, tbi=[] ->
+                    [ meta, vcf ]
+                }
+                .set { ch_ped_vcfs }
+        }
 
         //
         // Annotation of the variants and creation of Gemini-compatible database files
@@ -483,7 +524,7 @@ workflow CMGGGERMLINE {
 
         if (params.annotate) {
             VCF_ANNOTATION(
-                ch_called_variants,
+                ch_ped_vcfs,
                 ch_fasta_ready,
                 ch_fai_ready,
                 ch_vep_cache,
@@ -497,7 +538,7 @@ workflow CMGGGERMLINE {
 
             VCF_ANNOTATION.out.annotated_vcfs.set { ch_annotation_output }
         } else {
-            ch_called_variants.set { ch_annotation_output }
+            ch_ped_vcfs.set { ch_annotation_output }
         }
 
         ch_annotation_output.dump(tag:'annotation_output', pretty:true)
@@ -522,51 +563,66 @@ workflow CMGGGERMLINE {
         if (params.validate){
 
             ch_input.truth_variants
-                .combine(callers)
-                .map { meta, vcf, tbi, bed, sample, caller ->
-                    def new_meta = meta + [caller:caller]
-                    [ new_meta, vcf, tbi, bed, sample ]    
-                }
-                .groupTuple(by: [0,4]) // No size needed here since it's being run before any process
-                .map { meta, vcf, tbi, bed, sample ->
-                    // Get only one VCF for sample that were given multiple times
+                .groupTuple() // No size needed here since it's being run before any process
+                .map { meta, vcf, tbi, bed ->
+                    // Get only one VCF for samples that were given multiple times
                     one_vcf = vcf.find { it != [] } ?: []
                     one_tbi = tbi.find { it != [] } ?: []
                     one_bed = bed.find { it != [] } ?: []
-                    [ meta, one_vcf, one_tbi, one_bed, sample ]
+                    [ meta, one_vcf, one_tbi, one_bed ]
+                }
+                .branch { meta, vcf, tbi, bed ->
+                    tbi: tbi
+                    no_tbi: !tbi
+                }
+                .set { ch_truths_input }
+
+            // Create truth VCF indices if none were given
+            TABIX_TRUTH(
+                ch_truths_input.no_tbi.map { meta, vcf, tbi, bed -> 
+                    [ meta, vcf ]
+                }
+            )
+            ch_versions = ch_versions.mix(TABIX_TRUTH.out.versions.first())         
+
+            ch_truths_input.no_tbi
+                .join(TABIX_TRUTH.out.tbi, failOnDuplicate:true, failOnMismatch:true)
+                .map { meta, vcf, empty, bed, tbi ->
+                    [ meta, vcf, tbi, bed ]
+                }
+                .mix(ch_truths_input.tbi)
+                .combine(callers)
+                .map { meta, vcf, tbi, bed, caller ->
+                    def new_meta = meta + [caller: caller]
+                    [ new_meta, vcf, tbi, bed ]
                 }
                 .set { ch_truths }
 
             ch_final_vcfs
-                .combine(ch_truths, by: 0)
-                .map { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed, sample ->
-                    def new_meta = meta + [sample:sample]
-                    [ new_meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ]
+                .map { meta, vcf, tbi ->
+                    def new_meta = meta - meta.subMap("family_count")
+                    [ meta.family, new_meta, vcf, tbi ]
                 }
+                .combine(ch_family_samples, by:0)
+                .map { family, meta, vcf, tbi, samples ->
+                    def sample = meta.sample ? [meta.sample] : samples
+                    [ meta, vcf, tbi, sample ]
+                }
+                .transpose(by: 3)
+                .map { meta, vcf, tbi, sample ->
+                    def new_meta = [
+                        id: sample,
+                        sample: sample,
+                        family: meta.family,
+                        caller: meta.caller
+                    ]
+                    [ new_meta, vcf, tbi ]
+                }
+                .combine(ch_truths, by:0)
                 .filter { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ->
                     // Filter out all samples that have no truth VCF
                     truth_vcf != []
                 }
-                .branch { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ->
-                    tbi: truth_tbi != []
-                    no_tbi: truth_tbi == []
-                }
-                .set { ch_validation_branch }
-
-            // Create truth VCF indices if none were given
-            TABIX_TRUTH(
-                ch_validation_branch.no_tbi.map { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed -> 
-                    [ meta, truth_vcf ]
-                }
-            )
-            ch_versions = ch_versions.mix(TABIX_TRUTH.out.versions)
-
-            ch_validation_branch.no_tbi
-                .join(TABIX_TRUTH.out.tbi, failOnDuplicate: true, failOnMismatch: true) 
-                .map { meta, vcf, tbi, truth_vcf, empty_tbi, truth_bed, truth_tbi ->
-                    [ meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ]
-                }
-                .mix(ch_validation_branch.tbi)
                 .multiMap { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ->
                     vcfs: [meta, vcf, tbi, truth_vcf, truth_tbi]
                     bed:  [meta, truth_bed, []]
@@ -594,7 +650,7 @@ workflow CMGGGERMLINE {
         if(params.gemini){
             CustomChannelOperators.joinOnKeys(
                 ch_final_vcfs.map { meta, vcf, tbi -> [ meta, vcf ]},
-                ch_peds_vcf2db,
+                VCF_EXTRACT_RELATE_SOMALIER.out.peds,
                 ['id', 'family', 'family_count']
             )
             .dump(tag:'vcf2db_input', pretty:true)

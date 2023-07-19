@@ -23,7 +23,10 @@ workflow VCF_EXTRACT_RELATE_SOMALIER {
     ch_versions = ch_versions.mix(SOMALIER_EXTRACT.out.versions.first())
 
     SOMALIER_EXTRACT.out.extract
-        .join(ch_peds, failOnDuplicate: true, failOnMismatch: true)
+        .join(ch_peds, failOnDuplicate:true, failOnMismatch:true)
+        .map { meta, extract, ped ->
+            [ meta, extract, ped ]
+        }
         .set { ch_somalierrelate_input }
 
     SOMALIER_RELATE(
