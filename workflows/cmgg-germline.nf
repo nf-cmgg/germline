@@ -343,7 +343,7 @@ workflow CMGGGERMLINE {
             // Divide the input files into their corresponding channel
             def new_meta = meta + [
                 family_count:   families[meta.family].size(), // Contains the amount of samples in the family from this sample
-                type: gvcf ? "gvcf" : "cram" // Define the type of input data
+                type: gvcf && cram ? "gvcf_cram" : gvcf ? "gvcf" : "cram" // Define the type of input data
             ]
 
             def new_meta_ped = meta - meta.subMap(["type", "family_count"])
@@ -370,7 +370,7 @@ workflow CMGGGERMLINE {
     //
 
     ch_input.gvcf
-        .filter { it[0].type == "gvcf" } // Filter out samples that have no GVCF
+        .filter { it[0].type == "gvcf" || it[0].type == "gvcf_cram" } // Filter out samples that have no GVCF
         .branch { meta, gvcf, tbi ->
             no_tbi: !tbi
                 return [ meta, gvcf ]
@@ -394,8 +394,8 @@ workflow CMGGGERMLINE {
     //
 
     CRAM_PREPARE_SAMTOOLS_BEDTOOLS(
-        ch_input.cram.filter { it[0].type == "cram" }, // Filter out files that already have a called GVCF
-        ch_input.roi.filter { it[0].type == "cram" }, // Filter out files that already have a called GVCF
+        ch_input.cram.filter { it[0].type == "cram" || (it[0].type == "gvcf_cram" && callers - GlobalVariables.gvcfCallers) }, // Filter out files that already have a called GVCF when only GVCF callers are used
+        ch_input.roi.filter { it[0].type == "cram" || (it[0].type == "gvcf_cram" && callers - GlobalVariables.gvcfCallers) }, // Filter out files that already have a called GVCF when only GVCF callers are used
         ch_fasta_ready,
         ch_fai_ready,
         ch_default_roi
@@ -421,7 +421,7 @@ workflow CMGGGERMLINE {
         //
 
         CRAM_CALL_GENOTYPE_GATK4(
-            INPUT_SPLIT_BEDTOOLS.out.split,
+            INPUT_SPLIT_BEDTOOLS.out.split.filter { it[0].type == "cram" }, // Filter out the entries that already have a GVCF
             ch_gvcfs_ready,
             ch_fasta_ready,
             ch_fai_ready,
@@ -572,6 +572,7 @@ workflow CMGGGERMLINE {
                     [ meta, one_vcf, one_tbi, one_bed ]
                 }
                 .branch { meta, vcf, tbi, bed ->
+                    no_vcf: !vcf
                     tbi: tbi
                     no_tbi: !tbi
                 }
@@ -591,6 +592,7 @@ workflow CMGGGERMLINE {
                     [ meta, vcf, tbi, bed ]
                 }
                 .mix(ch_truths_input.tbi)
+                .mix(ch_truths_input.no_vcf)
                 .combine(callers)
                 .map { meta, vcf, tbi, bed, caller ->
                     def new_meta = meta + [caller: caller]

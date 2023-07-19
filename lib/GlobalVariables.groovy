@@ -4,4 +4,6 @@ class GlobalVariables {
     // The available callers
     public static List availableCallers = ["haplotypecaller", "vardict"]
 
+    public static List gvcfCallers = ["haplotypecaller"]
+
 }
