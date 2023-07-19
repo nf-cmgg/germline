@@ -2,9 +2,9 @@
 // Call the variants using GATK4 tooling
 //
 
-include { GATK4_CALIBRATEDRAGSTRMODEL   } from '../../../modules/nf-core/gatk4/calibratedragstrmodel/main'
-include { GATK4_HAPLOTYPECALLER         } from '../../../modules/nf-core/gatk4/haplotypecaller/main'
-include { BCFTOOLS_STATS                } from '../../../modules/nf-core/bcftools/stats/main'
+include { GATK4_CALIBRATEDRAGSTRMODEL               } from '../../../modules/nf-core/gatk4/calibratedragstrmodel/main'
+include { GATK4_HAPLOTYPECALLER                     } from '../../../modules/nf-core/gatk4/haplotypecaller/main'
+include { BCFTOOLS_STATS as BCFTOOLS_STATS_SINGLE   } from '../../../modules/nf-core/bcftools/stats/main'
 
 include { VCF_CONCAT_BCFTOOLS           } from '../vcf_concat_bcftools/main'
 
@@ -87,18 +87,18 @@ workflow CRAM_CALL_GATK4 {
     )
     ch_versions = ch_versions.mix(VCF_CONCAT_BCFTOOLS.out.versions)
 
-    BCFTOOLS_STATS(
+    BCFTOOLS_STATS_SINGLE(
         VCF_CONCAT_BCFTOOLS.out.vcfs,
         [],
         [],
         []
     )
-    ch_versions = ch_versions.mix(BCFTOOLS_STATS.out.versions.first())
+    ch_versions = ch_versions.mix(BCFTOOLS_STATS_SINGLE.out.versions.first())
 
     emit:
     gvcfs = VCF_CONCAT_BCFTOOLS.out.vcfs                // channel: [ val(meta), path(vcf), path(tbi) ]
 
-    reports = BCFTOOLS_STATS.out.stats.collect{it[1]}   // channel: [ path(stats) ]
+    reports = BCFTOOLS_STATS_SINGLE.out.stats.collect{it[1]}   // channel: [ path(stats) ]
     versions = ch_versions                              // channel: [ versions.yml ]
 
 }
