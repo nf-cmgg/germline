@@ -418,16 +418,19 @@
                 "validationLenientMode": {
                     "type": "boolean",
                     "default": false,
-                    "hidden": true
+                    "hidden": true,
+                    "description": "Lenient mode for parameter validation"
                 },
                 "validationFailUnrecognisedParams": {
                     "type": "boolean",
-                    "hidden": true
+                    "hidden": true,
+                    "description": "Fail on unrecognised parameters"
                 },
                 "validationSchemaIgnoreParams": {
                     "type": "string",
                     "default": "genomes,test_data",
-                    "hidden": true
+                    "hidden": true,
+                    "description": "Comma-separated list of parameters to ignore when validating against the schema"
                 }
             }
         },
