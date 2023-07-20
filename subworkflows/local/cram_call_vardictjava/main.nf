@@ -20,7 +20,7 @@ workflow CRAM_CALL_VARDICTJAVA {
 
         ch_input
             .map { meta, cram, crai, bed ->
-                def new_meta = meta + [caller:"vardict"]
+                def new_meta = meta + [caller:"vardict", id:meta.sample]
                 [ new_meta, cram, crai, bed ]
             }
             .tap { ch_original }
