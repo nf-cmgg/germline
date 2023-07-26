@@ -444,6 +444,7 @@ workflow CMGGGERMLINE {
         //
 
         CRAM_CALL_VARDICTJAVA(
+            CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_crams,
             INPUT_SPLIT_BEDTOOLS.out.split,
             ch_fasta_ready,
             ch_fai_ready

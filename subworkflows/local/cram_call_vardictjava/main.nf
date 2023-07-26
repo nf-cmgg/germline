@@ -10,6 +10,7 @@ include { VCF_FILTER_BCFTOOLS   } from '../vcf_filter_bcftools/main'
 
 workflow CRAM_CALL_VARDICTJAVA {
     take:
+        ch_crams             // channel: [mandatory] [ val(meta), path(cram), path(crai) ] => sample CRAM files and their indexes
         ch_input             // channel: [mandatory] [ val(meta), path(cram), path(crai), path(bed) ] => sample CRAM files and their indexes
         ch_fasta             // channel: [mandatory] [ val(meta), path(fasta) ] => fasta reference
         ch_fai               // channel: [mandatory] [ val(meta), path(fai) ] => fasta reference index
@@ -18,15 +19,10 @@ workflow CRAM_CALL_VARDICTJAVA {
         ch_versions = Channel.empty()
         ch_reports  = Channel.empty()
 
-        ch_input
-            .map { meta, cram, crai, bed ->
-                def new_meta = meta + [caller:"vardict", id:meta.sample]
-                [ new_meta, cram, crai, bed ]
-            }
-            .tap { ch_original }
-            .groupTuple()
-            .map { meta, cram, crai, beds ->
-                [ meta, cram.unique()[0], crai.unique()[0] ]
+        ch_crams
+            .map { meta, cram, crai ->
+                def new_meta = meta + [caller:"vardict"]
+                [ new_meta, cram, crai ]
             }
             .set { ch_crams }
 
@@ -44,11 +40,18 @@ workflow CRAM_CALL_VARDICTJAVA {
         )
         ch_versions = ch_versions.mix(SAMTOOLS_CONVERT.out.versions.first())
 
+        ch_input
+            .map { meta, cram, crai, bed ->
+                def new_meta = meta - meta.subMap("split_count") + [caller:"vardict", id:meta.sample]
+                [ new_meta, cram, crai, bed, meta.split_count ]
+            }
+            .set { ch_vardict_crams }
+
         ch_cram_bam.bam
             .mix(SAMTOOLS_CONVERT.out.alignment_index)
-            .combine(ch_original, by:0)
-            .map { meta, bam, bai, cram, crai, bed ->
-                def new_meta = meta + [id:bed.baseName]
+            .combine(ch_vardict_crams, by:0)
+            .map { meta, bam, bai, cram, crai, bed, split_count ->
+                def new_meta = meta + [id:bed.baseName, split_count:split_count]
                 [ new_meta, bam, bai, bed ]
             }
             .set { ch_vardict_input }
