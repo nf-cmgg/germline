@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 1. Refactored the pipeline to accomodate future additions of variant callers and genotypers
 2. Removed a lot of unnecessary bloat
+3. Improved GenomicsDBImport (can now be multithreaded and runs a lot faster). This will make very big runs more possible.
 
 ### Fixes
 

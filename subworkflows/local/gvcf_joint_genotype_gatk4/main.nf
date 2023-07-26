@@ -4,6 +4,7 @@
 
 include { MERGE_BEDS             } from '../../../modules/local/merge_beds'
 
+include { GAWK                   } from '../../../modules/nf-core/gawk/main'
 include { GATK4_GENOMICSDBIMPORT } from '../../../modules/nf-core/gatk4/genomicsdbimport/main'
 include { GATK4_GENOTYPEGVCFS    } from '../../../modules/nf-core/gatk4/genotypegvcfs/main'
 include { BEDTOOLS_SPLIT         } from '../../../modules/nf-core/bedtools/split/main'
@@ -27,34 +28,15 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
     ch_versions = Channel.empty()
     ch_vcfs     = Channel.empty()
 
-    BCFTOOLS_QUERY(
-        ch_gvcfs,
-        [],
-        [],
+    //
+    // Get a BED file containing all contigs
+    //
+
+    GAWK(
+        ch_fai,
         []
     )
-    ch_versions = ch_versions.mix(BCFTOOLS_QUERY.out.versions.first())
-
-    BCFTOOLS_QUERY.out.output
-        .map { meta, bed ->
-            // Create the family meta
-            def new_meta = [
-                family:         meta.family,
-                id:             meta.family,
-                family_count:   meta.family_count,
-                caller:         meta.caller
-            ]
-            [ groupKey(new_meta, meta.family_count.toInteger()), bed ]
-        }
-        .groupTuple()
-        .dump(tag:'merge_beds_input', pretty: true)
-        .set { ch_merge_beds_input }
-
-    MERGE_BEDS(
-        ch_merge_beds_input,
-        ch_fai
-    )
-    ch_versions = ch_versions.mix(MERGE_BEDS.out.versions.first())
+    ch_versions = ch_versions.mix(GAWK.out.versions)
 
     //
     // Create GenomicDBs for each family for each BED file
@@ -72,7 +54,7 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
             [ groupKey(new_meta, meta.family_count.toInteger()), gvcf, tbi ]
         }
         .groupTuple()
-        .join(MERGE_BEDS.out.bed, failOnDuplicate:true, failOnMismatch:true)
+        .combine(GAWK.out.output.map { it[1] })
         .map { meta, gvcfs, tbis, bed -> 
             [ meta, gvcfs, tbis, bed, [], [] ]
         }
@@ -87,6 +69,35 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
     ch_versions = ch_versions.mix(GATK4_GENOMICSDBIMPORT.out.versions.first())
 
     if(!params.only_merge) {
+
+        BCFTOOLS_QUERY(
+            ch_gvcfs,
+            [],
+            [],
+            []
+        )
+        ch_versions = ch_versions.mix(BCFTOOLS_QUERY.out.versions.first())
+
+        BCFTOOLS_QUERY.out.output
+            .map { meta, bed ->
+                // Create the family meta
+                def new_meta = [
+                    family:         meta.family,
+                    id:             meta.family,
+                    family_count:   meta.family_count,
+                    caller:         meta.caller
+                ]
+                [ groupKey(new_meta, meta.family_count.toInteger()), bed ]
+            }
+            .groupTuple()
+            .dump(tag:'merge_beds_input', pretty: true)
+            .set { ch_merge_beds_input }
+
+        MERGE_BEDS(
+            ch_merge_beds_input,
+            ch_fai
+        )
+        ch_versions = ch_versions.mix(MERGE_BEDS.out.versions.first())
 
         //
         // Split BED file into multiple BEDs specified by --scatter_count
