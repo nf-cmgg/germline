@@ -26,7 +26,6 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
 
     ch_versions = Channel.empty()
     ch_vcfs     = Channel.empty()
-    ch_reports  = Channel.empty()
 
     BCFTOOLS_QUERY(
         ch_gvcfs,
@@ -139,19 +138,10 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
         VCF_CONCAT_BCFTOOLS.out.vcfs
             .set { ch_vcfs }
 
-        BCFTOOLS_STATS(
-            ch_vcfs,
-            [],
-            [],
-            []
-        )
-        ch_versions = ch_versions.mix(BCFTOOLS_STATS.out.versions.first())
-        ch_reports = ch_reports.mix(BCFTOOLS_STATS.out.stats.collect { it[1] })
-
     }
 
     emit:
     vcfs = ch_vcfs         // [ val(meta), path(vcf) ]
     versions = ch_versions // [ path(versions) ]
-    reports = ch_reports   // [ path(report) ]
+
 }

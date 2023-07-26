@@ -17,7 +17,6 @@ workflow CRAM_CALL_VARDICTJAVA {
 
     main:
         ch_versions = Channel.empty()
-        ch_reports  = Channel.empty()
 
         ch_crams
             .map { meta, cram, crai ->
@@ -107,19 +106,9 @@ workflow CRAM_CALL_VARDICTJAVA {
             .join(TABIX_TABIX.out.tbi, failOnDuplicate: true, failOnMismatch: true)
             .set { ch_vcfs }
 
-        BCFTOOLS_STATS(
-            ch_vcfs,
-            [],
-            [],
-            []
-        )
-        ch_versions = ch_versions.mix(BCFTOOLS_STATS.out.versions.first())
-        ch_reports = ch_reports.mix(BCFTOOLS_STATS.out.stats.collect { it[1] })
-
     emit:
     vcfs = ch_vcfs          // channel: [ val(meta), path(vcf), path(tbi) ]
 
-    reports = ch_reports    // channel: [ path(reports) ]    
     versions = ch_versions  // channel: [ path(versions.yml) ]
 
 }

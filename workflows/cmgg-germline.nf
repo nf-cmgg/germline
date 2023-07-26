@@ -72,9 +72,10 @@ include { GATK4_CREATESEQUENCEDICTIONARY as CREATESEQUENCEDICTIONARY } from '../
 include { GATK4_COMPOSESTRTABLEFILE as COMPOSESTRTABLEFILE           } from '../modules/nf-core/gatk4/composestrtablefile/main'
 include { RTGTOOLS_FORMAT                                            } from '../modules/nf-core/rtgtools/format/main'
 include { UNTAR                                                      } from '../modules/nf-core/untar/main'
+include { BCFTOOLS_STATS                                             } from '../modules/nf-core/bcftools/stats/main'
 include { TABIX_TABIX as TABIX_DBSNP                                 } from '../modules/nf-core/tabix/tabix/main'
-include { TABIX_TABIX as TABIX_TRUTH                                 } from '../modules/nf-core/tabix/tabix/main'
 include { TABIX_TABIX as TABIX_GVCF                                  } from '../modules/nf-core/tabix/tabix/main'
+include { TABIX_TABIX as TABIX_TRUTH                                 } from '../modules/nf-core/tabix/tabix/main'
 include { TABIX_TABIX as TABIX_FINAL                                 } from '../modules/nf-core/tabix/tabix/main'
 include { BCFTOOLS_STATS as BCFTOOLS_STATS_FAMILY                    } from '../modules/nf-core/bcftools/stats/main'
 include { VCF2DB                                                     } from '../modules/nf-core/vcf2db/main'
@@ -450,7 +451,6 @@ workflow CMGGGERMLINE {
             ch_fai_ready
         )
         ch_versions = ch_versions.mix(CRAM_CALL_VARDICTJAVA.out.versions)
-        ch_reports  = ch_reports.mix(CRAM_CALL_VARDICTJAVA.out.reports)
 
         ch_calls = ch_calls.mix(CRAM_CALL_VARDICTJAVA.out.vcfs)
     
@@ -462,6 +462,15 @@ workflow CMGGGERMLINE {
             [ new_meta, vcf, tbi ]
         }
         .set { ch_called_variants }
+
+    BCFTOOLS_STATS(
+        ch_called_variants,
+        [],
+        [],
+        []
+    )
+    ch_versions = ch_versions.mix(BCFTOOLS_STATS.out.versions.first())
+    ch_reports = ch_reports.mix(BCFTOOLS_STATS.out.stats.collect { it[1] })
 
     if(!params.only_merge && !params.only_call) {
 

@@ -53,7 +53,6 @@ workflow CRAM_CALL_GENOTYPE_GATK4 {
             ch_dbsnp_tbi
         )
         ch_versions = ch_versions.mix(GVCF_JOINT_GENOTYPE_GATK4.out.versions)
-        ch_reports  = ch_reports.mix(GVCF_JOINT_GENOTYPE_GATK4.out.reports)
 
     }
 
