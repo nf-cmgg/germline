@@ -171,10 +171,10 @@
                     "type": "boolean",
                     "description": "Create a Gemini databases from the final VCFs"
                 },
-                "coverage_fast": {
+                "mosdepth_slow": {
                     "type": "boolean",
-                    "description": "Run mosdepth in fast-mode",
-                    "help_text": "This is advised if you don't need exact coverage BED files as output"
+                    "description": "Don't run mosdepth in fast-mode",
+                    "help_text": "This is advised if you need exact coverage BED files as output"
                 },
                 "project": {
                     "type": "string",
