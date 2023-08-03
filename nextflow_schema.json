@@ -222,6 +222,10 @@
                     "type": "boolean",
                     "description": "Only run the pipeline until the creation of the genomicsdbs and output them"
                 },
+                "output_genomicsdb": {
+                    "type": "boolean",
+                    "description": "Output the genomicsDB together with the joint-genotyped VCF"
+                },
                 "callers": {
                     "type": "string",
                     "description": "A comma delimited string of the available callers. Current options are: 'haplotypecaller' and 'vardict'",
