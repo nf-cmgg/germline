@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 1. Added the `--caller` parameter to specify the variant caller to use. Currently only `haplotypecaller` and `vardict` are supported.
 2. Added the `vardict` variant caller.
 3. Added the `--vardict_min_af` parameter to specify the minimum allele frequency for `vardict`.
+4. Added the `--output_genomicsdb` option to specify whether a GenomicsDB should be outputted or not. This will be `true` when using `only_merge`.
 
 ### Improvements
 
