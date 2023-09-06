@@ -1,7 +1,7 @@
 Changes in module 'nf-core/bcftools/concat'
 --- modules/nf-core/bcftools/concat/main.nf
 +++ modules/nf-core/bcftools/concat/main.nf
-@@ -8,23 +8,32 @@
+@@ -8,24 +8,44 @@
          'biocontainers/bcftools:1.17--haef29d1_0' }"
  
      input:
@@ -30,18 +30,31 @@ Changes in module 'nf-core/bcftools/concat'
 +                args.contains("--output-type v") || args.contains("-Ov") ? "vcf" :
 +                "vcf"
      """
++    # Check which files do not contain a sample and remove them from the list of input VCFs
++    INPUT_VCFS=""
++    for VCF in ${vcfs}; 
++    do
++        if [[ \$(bcftools query -l \$VCF) ]]; then
++            INPUT_VCFS="\${INPUT_VCFS} \${VCF}"
++        else
++            echo "No sample found in \$VCF, assuming it is empty so not entering it into the concatenation"
++        fi
++    done
++
      bcftools concat \\
 -        --output ${prefix}.vcf.gz \\
 -        $args \\
 -        --threads $task.cpus \\
+-        ${vcfs}
 +        --output ${prefix}.${extension} \\
 +        ${args} \\
 +        ${regions} \\
 +        --threads ${task.cpus} \\
-         ${vcfs}
++        \$INPUT_VCFS
  
      cat <<-END_VERSIONS > versions.yml
-@@ -34,9 +43,16 @@
+     "${task.process}":
+@@ -34,9 +54,16 @@
      """
  
      stub:
