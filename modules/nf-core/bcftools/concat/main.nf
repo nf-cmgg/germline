@@ -29,12 +29,23 @@ process BCFTOOLS_CONCAT {
                 args.contains("--output-type v") || args.contains("-Ov") ? "vcf" :
                 "vcf"
     """
+    # Check which files do not contain a sample and remove them from the list of input VCFs
+    INPUT_VCFS=""
+    for VCF in ${vcfs}; 
+    do
+        if [[ \$(bcftools query -l \$VCF) ]]; then
+            INPUT_VCFS="\${INPUT_VCFS} \${VCF}"
+        else
+            echo "No sample found in \$VCF, assuming it is empty so not entering it into the concatenation"
+        fi
+    done
+
     bcftools concat \\
         --output ${prefix}.${extension} \\
         ${args} \\
         ${regions} \\
         --threads ${task.cpus} \\
-        ${vcfs}
+        \$INPUT_VCFS
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

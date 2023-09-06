@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixes
 
 1. Fixed an issue with the outputting of the validation PNG files, now all three types of PNGs are outputted.
+2. Fixed a small issue where VCFs without a sample created by the callers could not be used by `bcftools concat`, these files will now be filtered from the input of the command.
 
 ## v1.3.0 - Happy Hasselt - [July 10 2023]
 
