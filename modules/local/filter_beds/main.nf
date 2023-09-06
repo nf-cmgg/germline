@@ -2,10 +2,10 @@ process FILTER_BEDS {
     tag "$meta.id"
     label 'process_single'
 
-    conda "bioconda::tabix=1.11"
+    conda "bioconda::bedtools=2.31.0"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/tabix:1.11--hdfd78af_0' :
-        'quay.io/biocontainers/tabix:1.11--hdfd78af_0' }"
+        'https://depot.galaxyproject.org/singularity/bedtools:2.31.0--hf5e1c6e_2' :
+        'biocontainers/bedtools:2.31.0--hf5e1c6e_2' }"
 
     input:
     tuple val(meta), path(bed)
@@ -24,11 +24,11 @@ process FILTER_BEDS {
 
     def unzip = bed.extension == "gz" ? "zcat" : "cat"
     """
-    ${unzip} ${bed} | grep -v NO_COVERAGE > ${prefix}.bed
+    ${unzip} ${bed} | grep -v NO_COVERAGE | bedtools merge ${args} > ${prefix}.bed
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        tabix: \$(echo \$(tabix -h 2>&1) | sed 's/^.*Version: //; s/ .*\$//')
+        bedtools: \$(bedtools --version | sed -e "s/bedtools v//g")
     END_VERSIONS
     """
 
@@ -40,7 +40,7 @@ process FILTER_BEDS {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        tabix: \$(echo \$(tabix -h 2>&1) | sed 's/^.*Version: //; s/ .*\$//')
+        bedtools: \$(bedtools --version | sed -e "s/bedtools v//g")
     END_VERSIONS
     """
 }

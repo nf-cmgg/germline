@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 2. Removed a lot of unnecessary bloat
 3. Improved GenomicsDBImport (can now be multithreaded and runs a lot faster). This will make very big runs more possible.
 4. Changed `coverage_fast` to `mosdepth_slow`, reversing the effect of the parameter. By default mosdepth will now be run with `--fast-mode`. This can be disabled using the new `mosdepth_slow` parameter.
+5. Automatically merge the regions that are within 150 bps of eachother for the variant calling. This way it's ensured that indel calling happens correctly.
 
 ### Fixes
 
