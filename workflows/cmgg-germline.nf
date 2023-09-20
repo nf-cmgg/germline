@@ -56,6 +56,7 @@ include { CRAM_PREPARE_SAMTOOLS_BEDTOOLS    } from '../subworkflows/local/cram_p
 include { INPUT_SPLIT_BEDTOOLS              } from '../subworkflows/local/input_split_bedtools/main'
 include { CRAM_CALL_GENOTYPE_GATK4          } from '../subworkflows/local/cram_call_genotype_gatk4/main'
 include { CRAM_CALL_VARDICTJAVA             } from '../subworkflows/local/cram_call_vardictjava/main'
+include { CRAM_CALL_DEEPVARIANT             } from '../subworkflows/local/cram_call_deepvariant/main'
 include { VCF_EXTRACT_RELATE_SOMALIER       } from '../subworkflows/local/vcf_extract_relate_somalier/main'
 include { VCF_PED_RTGTOOLS                  } from '../subworkflows/local/vcf_ped_rtgtools/main'
 include { VCF_ANNOTATION                    } from '../subworkflows/local/vcf_annotation/main'
@@ -344,7 +345,8 @@ workflow CMGGGERMLINE {
             // Divide the input files into their corresponding channel
             def new_meta = meta + [
                 family_count:   families[meta.family].size(), // Contains the amount of samples in the family from this sample
-                type: gvcf && cram ? "gvcf_cram" : gvcf ? "gvcf" : "cram" // Define the type of input data
+                type: gvcf && cram ? "gvcf_cram" : gvcf ? "gvcf" : "cram", // Define the type of input data
+                model: (roi || params.roi) ? "WES" : "WGS" // Define the model of the input data
             ]
 
             def new_meta_ped = meta - meta.subMap(["type", "family_count"])
@@ -403,15 +405,18 @@ workflow CMGGGERMLINE {
     )
     ch_versions = ch_versions.mix(CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.versions)
 
-    //
-    // Split the BED files
-    //
+    if("haplotypecaller" in callers || "vardict" in callers) {
+        //
+        // Split the BED files
+        //
 
-    INPUT_SPLIT_BEDTOOLS(
-        CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_beds.map { it + [params.scatter_count] },
-        CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_crams
-    )
-    ch_versions = ch_versions.mix(INPUT_SPLIT_BEDTOOLS.out.versions)
+        INPUT_SPLIT_BEDTOOLS(
+            CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_beds.map { it + [params.scatter_count] },
+            CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_crams
+        )
+        ch_versions = ch_versions.mix(INPUT_SPLIT_BEDTOOLS.out.versions)
+
+    }
 
     ch_calls = Channel.empty()
 
@@ -456,9 +461,27 @@ workflow CMGGGERMLINE {
     
     }
 
+    if("deepvariant" in callers) {
+
+        //
+        // Call variants with Deepvariant
+        //
+
+        CRAM_CALL_DEEPVARIANT(
+            CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_crams,
+            CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_beds,
+            ch_fasta_ready,
+            ch_fai_ready
+        )
+        ch_versions = ch_versions.mix(CRAM_CALL_DEEPVARIANT.out.versions)
+
+        ch_calls = ch_calls.mix(CRAM_CALL_DEEPVARIANT.out.vcfs)
+
+    }
+
     ch_calls
         .map { meta, vcf, tbi ->
-            def new_meta = meta - meta.subMap("type")
+            def new_meta = meta - meta.subMap(["type", "model"])
             [ new_meta, vcf, tbi ]
         }
         .set { ch_called_variants }

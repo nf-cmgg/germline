@@ -235,6 +235,10 @@
                     "type": "number",
                     "description": "The minimum allele frequency for VarDict",
                     "default": 0.1
+                },
+                "gpu": {
+                    "type": "boolean",
+                    "description": "Use GPU accelerated options when possible"
                 }
             },
             "required": ["scatter_count"]

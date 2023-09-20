@@ -67,6 +67,11 @@
                         "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
                         "installed_by": ["modules"]
                     },
+                    "deepvariant": {
+                        "branch": "master",
+                        "git_sha": "ed67f2fadd6d2a155b296f728e6b1f8c92ddc1a6",
+                        "installed_by": ["modules"]
+                    },
                     "ensemblvep/vep": {
                         "branch": "master",
                         "git_sha": "1b5ffd7aa6e3c21b702957c808cbd1c351dd1809",
