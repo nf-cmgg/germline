@@ -34,3 +34,8 @@ lint:
     - LICENSE
   actions_ci: false
   pipeline_name_conventions: false
+template:
+  name: nf-cmgg-germline
+  description: A nextflow pipeline for calling and annotating variants
+  author: nvnieuwk
+  prefix: CenterForMedicalGeneticsGhent
