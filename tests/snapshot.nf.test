@@ -24,7 +24,7 @@ nextflow_pipeline {
                     file("${outputDir}/DNA049572/DNA049572.g.vcf.gz.tbi").exists(),
                     path("${outputDir}/DNA049572/DNA049572.bed"),
                     path("${outputDir}/DNA049572/DNA049572.quantized.bed.gz"),
-                    file("${outputDir}/multiqc_reports/multiqc_report.html").exists()
+                    file("${outputDir}/multiqc/multiqc_report.html").exists()
                 ).match()
                 }
             )

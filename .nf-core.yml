@@ -31,6 +31,8 @@ lint:
     - lib/NfcoreTemplate.groovy
     - .prettierignore
     - LICENSE
+  pipeline_name_conventions: false
+  actions_ci: false
 repository_type: pipeline
 template:
   author: nvnieuwk
