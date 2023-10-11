@@ -235,6 +235,10 @@
                     "type": "number",
                     "description": "The minimum allele frequency for VarDict",
                     "default": 0.1
+                },
+                "decompose": {
+                    "type": "boolean",
+                    "description": "Decompose the VCF after joint genotyping"
                 }
             },
             "required": ["scatter_count"]
