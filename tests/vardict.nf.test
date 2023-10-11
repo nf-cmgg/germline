@@ -9,6 +9,7 @@ nextflow_pipeline {
         when {
             params {
                 callers = "vardict"
+                outdir = "${outputDir}"
             }
         }
 

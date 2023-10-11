@@ -14,6 +14,7 @@ nextflow_pipeline {
                 gemini   = true
                 add_ped  = true
                 validate = true
+                outdir = "${outputDir}"
 
                 roi      = null
 

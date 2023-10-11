@@ -9,6 +9,7 @@ nextflow_pipeline {
         when {
             params {
                 input = "tests/inputs/samplesheet_gvcf.csv"
+                outdir = "${outputDir}"
                 
                 filter   = true
                 annotate = true

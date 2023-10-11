@@ -9,6 +9,7 @@ nextflow_pipeline {
         when {
             params {
                 only_call = true
+                outdir = "${outputDir}"
             }
         }
 

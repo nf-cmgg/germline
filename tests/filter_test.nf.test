@@ -9,6 +9,7 @@ nextflow_pipeline {
         when {
             params {
                 filter = true
+                outdir = "${outputDir}"
             }
         }
 

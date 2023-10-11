@@ -14,6 +14,7 @@ nextflow_pipeline {
                 gemini   = true
                 add_ped  = true
                 validate = true
+                outdir = "${outputDir}"
 
                 vcfanno           = true
                 vcfanno_config    = "https://github.com/nf-core/test-datasets/raw/modules/data/genomics/homo_sapiens/genome/vcf/vcfanno/vcfanno.toml"

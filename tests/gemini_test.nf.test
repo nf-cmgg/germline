@@ -9,6 +9,7 @@ nextflow_pipeline {
         when {
             params {
                 gemini   = true
+                outdir = "${outputDir}"
             }
         }
 
