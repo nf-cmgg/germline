@@ -1,0 +1,39 @@
+nextflow_pipeline {
+
+    name "Tests of the pipeline with all optional parameters on default"
+    script "main.nf"
+    tag "vardict"
+
+    test("Success") {
+
+        when {
+            params {
+                callers = "vardict"
+            }
+        }
+
+        then {
+            def date = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new Date())
+            assertAll {
+                assert workflow.success
+                assert file("${outputDir}/${date}_test/Proband_12345/reports/DNA049572.vardict.bcftools_stats.txt").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/reports/NA24385D2_NVQ_034.vardict.bcftools_stats.txt").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/reports/DNA049572.vardict.somalier.html").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/reports/NA24385D2_NVQ_034.vardict.somalier.html").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/NA24385D2_NVQ_034.vardict.vcf.gz").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/NA24385D2_NVQ_034.vardict.vcf.gz.tbi").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/NA24385D2_NVQ_034.vardict.ped").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/DNA049572.vardict.vcf.gz").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/DNA049572.vardict.vcf.gz.tbi").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/DNA049572.vardict.ped").exists()
+                assert file("${outputDir}/NA24385D2_NVQ_034/reports/NA24385D2_NVQ_034.mosdepth.global.dist.txt").exists()
+                assert file("${outputDir}/NA24385D2_NVQ_034/reports/NA24385D2_NVQ_034.mosdepth.summary.txt").exists()
+                assert file("${outputDir}/NA24385D2_NVQ_034/NA24385D2_NVQ_034.bed").exists()
+                assert file("${outputDir}/DNA049572/reports/DNA049572.mosdepth.global.dist.txt").exists()
+                assert file("${outputDir}/DNA049572/reports/DNA049572.mosdepth.summary.txt").exists()
+                assert file("${outputDir}/DNA049572/DNA049572.bed").exists()
+                assert file("${outputDir}/multiqc_reports/multiqc_report.html").exists()        
+            }
+        }
+    }
+}

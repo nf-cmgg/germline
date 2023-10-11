@@ -1,6 +1,6 @@
 process GATK4_GENOMICSDBIMPORT {
     tag "$meta.id"
-    label 'process_single'
+    label 'process_medium'
 
     conda "bioconda::gatk4=4.4.0.0"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?

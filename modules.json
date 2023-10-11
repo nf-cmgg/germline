@@ -13,7 +13,8 @@
                     "bcftools/concat": {
                         "branch": "master",
                         "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
-                        "installed_by": ["vcf_annotate_ensemblvep_snpeff", "modules", "vcf_gather_bcftools"]
+                        "installed_by": ["vcf_annotate_ensemblvep_snpeff", "modules"],
+                        "patch": "modules/nf-core/bcftools/concat/bcftools-concat.diff"
                     },
                     "bcftools/filter": {
                         "branch": "master",
@@ -33,12 +34,13 @@
                     "bcftools/reheader": {
                         "branch": "master",
                         "git_sha": "0435e4eebc94e53721c194b2d5d06f455a79e407",
-                        "installed_by": ["modules"]
+                        "installed_by": ["modules"],
+                        "patch": "modules/nf-core/bcftools/reheader/bcftools-reheader.diff"
                     },
                     "bcftools/sort": {
                         "branch": "master",
                         "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
-                        "installed_by": ["vcf_annotate_ensemblvep_snpeff", "vcf_gather_bcftools"]
+                        "installed_by": ["vcf_annotate_ensemblvep_snpeff"]
                     },
                     "bcftools/stats": {
                         "branch": "master",
@@ -89,8 +91,7 @@
                     "gatk4/genomicsdbimport": {
                         "branch": "master",
                         "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
-                        "installed_by": ["modules"],
-                        "patch": "modules/nf-core/gatk4/genomicsdbimport/gatk4-genomicsdbimport.diff"
+                        "installed_by": ["modules"]
                     },
                     "gatk4/genotypegvcfs": {
                         "branch": "master",
@@ -103,6 +104,11 @@
                         "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
                         "installed_by": ["modules"],
                         "patch": "modules/nf-core/gatk4/haplotypecaller/gatk4-haplotypecaller.diff"
+                    },
+                    "gawk": {
+                        "branch": "master",
+                        "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
+                        "installed_by": ["modules"]
                     },
                     "happy/happy": {
                         "branch": "master",
@@ -136,6 +142,11 @@
                         "installed_by": ["modules"]
                     },
                     "rtgtools/vcfeval": {
+                        "branch": "master",
+                        "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
+                        "installed_by": ["modules"]
+                    },
+                    "samtools/convert": {
                         "branch": "master",
                         "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
                         "installed_by": ["modules"]
@@ -177,20 +188,26 @@
                         "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
                         "installed_by": ["modules"]
                     },
+                    "tabix/bgziptabix": {
+                        "branch": "master",
+                        "git_sha": "591b71642820933dcb3c954c934b397bd00d8e5e",
+                        "installed_by": ["modules"]
+                    },
                     "tabix/tabix": {
                         "branch": "master",
                         "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
-                        "installed_by": [
-                            "vcf_annotate_ensemblvep_snpeff",
-                            "modules",
-                            "vcf_gather_bcftools",
-                            "vcf_extract_relate_somalier"
-                        ]
+                        "installed_by": ["vcf_annotate_ensemblvep_snpeff", "modules", "vcf_extract_relate_somalier"]
                     },
                     "untar": {
                         "branch": "master",
                         "git_sha": "5c460c5a4736974abde2843294f35307ee2b0e5e",
                         "installed_by": ["modules"]
+                    },
+                    "vardictjava": {
+                        "branch": "master",
+                        "git_sha": "e49c94771f461306d53198d304ce21849adc0ab3",
+                        "installed_by": ["modules"],
+                        "patch": "modules/nf-core/vardictjava/vardictjava.diff"
                     },
                     "vcf2db": {
                         "branch": "master",
@@ -209,16 +226,6 @@
                     "vcf_annotate_ensemblvep_snpeff": {
                         "branch": "master",
                         "git_sha": "4b67587330aa81ab2f3f3b5b709adf21c6f6f8b2",
-                        "installed_by": ["subworkflows"]
-                    },
-                    "vcf_extract_relate_somalier": {
-                        "branch": "master",
-                        "git_sha": "a9784afdd5dcda23b84e64db75dc591065d64653",
-                        "installed_by": ["subworkflows"]
-                    },
-                    "vcf_gather_bcftools": {
-                        "branch": "master",
-                        "git_sha": "a9784afdd5dcda23b84e64db75dc591065d64653",
                         "installed_by": ["subworkflows"]
                     }
                 }

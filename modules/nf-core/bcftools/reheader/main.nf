@@ -31,10 +31,13 @@ process BCFTOOLS_REHEADER {
                     args2.contains("--output-type v") || args2.contains("-Ov") ? "vcf" :
                     "vcf"
     """
+    echo ${meta.sample} > sample.txt
+
     bcftools \\
         reheader \\
         $update_sequences \\
         $new_header \\
+        --samples sample.txt \\
         $args \\
         --threads $task.cpus \\
         $vcf \\

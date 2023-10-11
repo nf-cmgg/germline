@@ -1,0 +1,36 @@
+nextflow_pipeline {
+
+    name "Tests of the pipeline with all optional parameters on default"
+    script "main.nf"
+    tag "haplotypecaller"
+
+    test("Success") {
+        when {
+            params {
+                callers = "haplotypecaller"
+            }
+        }
+
+        then {
+            def date = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new Date())
+            assertAll {
+                assert workflow.success
+                assert file("${outputDir}/${date}_test/Proband_12345/reports/Proband_12345.gatk4-joint.bcftools_stats.txt").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/reports/Proband_12345.gatk4-joint.somalier.html").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.gatk4-joint.vcf.gz").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.gatk4-joint.vcf.gz.tbi").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.gatk4-joint.ped").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.bed").exists()
+                assert file("${outputDir}/NA24385D2_NVQ_034/reports/NA24385D2_NVQ_034.haplotypecaller.bcftools_stats.txt").exists()
+                assert file("${outputDir}/NA24385D2_NVQ_034/reports/NA24385D2_NVQ_034.mosdepth.global.dist.txt").exists()
+                assert file("${outputDir}/NA24385D2_NVQ_034/reports/NA24385D2_NVQ_034.mosdepth.summary.txt").exists()
+                assert file("${outputDir}/NA24385D2_NVQ_034/NA24385D2_NVQ_034.bed").exists()
+                assert file("${outputDir}/DNA049572/reports/DNA049572.haplotypecaller.bcftools_stats.txt").exists()
+                assert file("${outputDir}/DNA049572/reports/DNA049572.mosdepth.global.dist.txt").exists()
+                assert file("${outputDir}/DNA049572/reports/DNA049572.mosdepth.summary.txt").exists()
+                assert file("${outputDir}/DNA049572/DNA049572.bed").exists()
+                assert file("${outputDir}/multiqc_reports/multiqc_report.html").exists()        
+            }
+        }
+    }
+}

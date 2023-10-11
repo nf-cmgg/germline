@@ -8,24 +8,44 @@ process BCFTOOLS_CONCAT {
         'biocontainers/bcftools:1.17--haef29d1_0' }"
 
     input:
-    tuple val(meta), path(vcfs), path(tbi)
+    tuple val(meta), path(vcfs), path(tbis)
+    path(bed)
 
     output:
-    tuple val(meta), path("*.gz"), emit: vcf
-    path  "versions.yml"         , emit: versions
+    tuple val(meta), path("*.${extension}") , emit: vcf
+    path  "versions.yml"                    , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
 
     script:
     def args = task.ext.args   ?: ''
-    prefix   = task.ext.prefix ?: "${meta.id}"
+    def prefix = task.ext.prefix ?: "${meta.id}"
+    def regions = bed ? "--regions-file ${bed} --allow-overlaps" : '' // --allow-overlaps is required for bcftools concat to work with bed files
+
+    extension = args.contains("--output-type b") || args.contains("-Ob") ? "bcf.gz" :
+                args.contains("--output-type u") || args.contains("-Ou") ? "bcf" :
+                args.contains("--output-type z") || args.contains("-Oz") ? "vcf.gz" :
+                args.contains("--output-type v") || args.contains("-Ov") ? "vcf" :
+                "vcf"
     """
+    # Check which files do not contain a sample and remove them from the list of input VCFs
+    INPUT_VCFS=""
+    for VCF in ${vcfs}; 
+    do
+        if [[ \$(bcftools query -l \$VCF) ]]; then
+            INPUT_VCFS="\${INPUT_VCFS} \${VCF}"
+        else
+            echo "No sample found in \$VCF, assuming it is empty so not entering it into the concatenation"
+        fi
+    done
+
     bcftools concat \\
-        --output ${prefix}.vcf.gz \\
-        $args \\
-        --threads $task.cpus \\
-        ${vcfs}
+        --output ${prefix}.${extension} \\
+        ${args} \\
+        ${regions} \\
+        --threads ${task.cpus} \\
+        \$INPUT_VCFS
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -34,9 +54,16 @@ process BCFTOOLS_CONCAT {
     """
 
     stub:
-    prefix   = task.ext.prefix ?: "${meta.id}"
+    def args = task.ext.args   ?: ''
+    def prefix = task.ext.prefix ?: "${meta.id}"
+
+    extension = args.contains("--output-type b") || args.contains("-Ob") ? "bcf.gz" :
+                args.contains("--output-type u") || args.contains("-Ou") ? "bcf" :
+                args.contains("--output-type z") || args.contains("-Oz") ? "vcf.gz" :
+                args.contains("--output-type v") || args.contains("-Ov") ? "vcf" :
+                "vcf"
     """
-    touch ${prefix}.vcf.gz
+    touch ${prefix}.${extension}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

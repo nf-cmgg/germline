@@ -2,15 +2,15 @@
 // ANNOTATION
 //
 
-include { ENSEMBLVEP_VEP                      } from '../../modules/nf-core/ensemblvep/vep/main'
-include { VCFANNO                             } from '../../modules/nf-core/vcfanno/main'
-include { TABIX_BGZIP as BGZIP_ANNOTATED_VCFS } from '../../modules/nf-core/tabix/bgzip/main'
-include { TABIX_TABIX as TABIX_ENSEMBLVEP     } from '../../modules/nf-core/tabix/tabix/main'
-include { BCFTOOLS_CONCAT                     } from '../../modules/nf-core/bcftools/concat/main'
+include { ENSEMBLVEP_VEP                      } from '../../../modules/nf-core/ensemblvep/vep/main'
+include { VCFANNO                             } from '../../../modules/nf-core/vcfanno/main'
+include { TABIX_BGZIP as BGZIP_ANNOTATED_VCFS } from '../../../modules/nf-core/tabix/bgzip/main'
+include { TABIX_TABIX as TABIX_ENSEMBLVEP     } from '../../../modules/nf-core/tabix/tabix/main'
+include { BCFTOOLS_CONCAT                     } from '../../../modules/nf-core/bcftools/concat/main'
 
-include { VCF_ANNOTATE_ENSEMBLVEP_SNPEFF as VCF_ANNOTATE_ENSEMBLVEP } from '../../subworkflows/nf-core/vcf_annotate_ensemblvep_snpeff/main'
+include { VCF_ANNOTATE_ENSEMBLVEP_SNPEFF as VCF_ANNOTATE_ENSEMBLVEP } from '../../../subworkflows/nf-core/vcf_annotate_ensemblvep_snpeff/main'
 
-workflow ANNOTATION {
+workflow VCF_ANNOTATION {
     take:
         ch_vcfs                 // channel: [mandatory] [ val(meta), path(vcf) ] => The post-processed VCFs
         ch_fasta                // channel: [mandatory] [ path(fasta) ] => fasta reference
@@ -27,13 +27,22 @@ workflow ANNOTATION {
     ch_reports          = Channel.empty()
     ch_versions         = Channel.empty()
 
+    ch_vcfs
+        .branch { meta, vcf, tbi=[] ->
+            tbi: tbi
+            no_tbi: !tbi
+                return [ meta, vcf ]
+        }
+        .set { ch_tabix_input }
+
     TABIX_ENSEMBLVEP(
-        ch_vcfs
+        ch_tabix_input.no_tbi
     )
     ch_versions = ch_versions.mix(TABIX_ENSEMBLVEP.out.versions.first())
 
-    ch_vcfs
+    ch_tabix_input.no_tbi
         .join(TABIX_ENSEMBLVEP.out.tbi, failOnDuplicate:true, failOnMismatch:true)
+        .mix(ch_tabix_input.tbi)
         .map { meta, vcf, tbi ->
             [ meta, vcf, tbi, [] ]
         }

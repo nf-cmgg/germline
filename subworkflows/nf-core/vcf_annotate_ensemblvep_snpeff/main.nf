@@ -73,7 +73,7 @@ workflow VCF_ANNOTATE_ENSEMBLVEP_SNPEFF {
             .multiMap { meta, vcf, count, custom_files ->
                 // Define the new ID. The `_annotated` is to disambiguate the VEP output with its input
                 new_id = "${meta.id}${vcf.name.replace(meta.id,"").tokenize(".")[0]}_annotated" as String
-                new_meta = meta + [id:new_id]
+                def new_meta = meta + [id:new_id]
 
                 // Create channels: one with the VEP input and one with the original ID and count of scattered VCFs
                 input:  [ new_meta, vcf, custom_files ]
@@ -136,13 +136,14 @@ workflow VCF_ANNOTATE_ENSEMBLVEP_SNPEFF {
         ch_concat_input = ch_snpeff_output
             .join(ch_scatter.count, failOnDuplicate:true, failOnMismatch:true)
             .map { meta, vcf, tbi, id, count ->
-                new_meta = meta + [id:id]
+                def new_meta = meta + [id:id]
                 [ groupKey(new_meta, count), vcf, tbi ]
             }
             .groupTuple() // Group the VCFs which need to be concatenated
 
         BCFTOOLS_CONCAT(
-            ch_concat_input
+            ch_concat_input,
+            []
         )
         ch_versions = ch_versions.mix(BCFTOOLS_CONCAT.out.versions.first())
 

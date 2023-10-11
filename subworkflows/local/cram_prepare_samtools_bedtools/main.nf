@@ -2,18 +2,18 @@
 // SAMPLE_PREPARATION
 //
 
-include { MERGE_BEDS as MERGE_ROI_PARAMS    } from '../../modules/local/merge_beds'
-include { MERGE_BEDS as MERGE_ROI_SAMPLE    } from '../../modules/local/merge_beds'
-include { FILTER_BEDS                       } from '../../modules/local/filter_beds/main'
+include { MERGE_BEDS as MERGE_ROI_PARAMS    } from '../../../modules/local/merge_beds'
+include { MERGE_BEDS as MERGE_ROI_SAMPLE    } from '../../../modules/local/merge_beds'
+include { FILTER_BEDS                       } from '../../../modules/local/filter_beds/main'
 
-include { SAMTOOLS_MERGE                    } from '../../modules/nf-core/samtools/merge/main'
-include { SAMTOOLS_INDEX                    } from '../../modules/nf-core/samtools/index/main'
-include { TABIX_TABIX                       } from '../../modules/nf-core/tabix/tabix/main'
-include { TABIX_BGZIP as UNZIP_ROI          } from '../../modules/nf-core/tabix/bgzip/main'
-include { BEDTOOLS_INTERSECT                } from '../../modules/nf-core/bedtools/intersect/main'
-include { MOSDEPTH                          } from '../../modules/nf-core/mosdepth/main'
+include { SAMTOOLS_MERGE                    } from '../../../modules/nf-core/samtools/merge/main'
+include { SAMTOOLS_INDEX                    } from '../../../modules/nf-core/samtools/index/main'
+include { TABIX_TABIX                       } from '../../../modules/nf-core/tabix/tabix/main'
+include { TABIX_BGZIP as UNZIP_ROI          } from '../../../modules/nf-core/tabix/bgzip/main'
+include { BEDTOOLS_INTERSECT                } from '../../../modules/nf-core/bedtools/intersect/main'
+include { MOSDEPTH                          } from '../../../modules/nf-core/mosdepth/main'
 
-workflow SAMPLE_PREPARATION {
+workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
     take:
         ch_crams             // channel: [mandatory] [ val(meta), path(cram), path(crai) ] => sample CRAM files and their optional indices
         ch_roi               // channel: [optional]  [ val(meta), path(roi) ] => ROI bed files for WES analysis

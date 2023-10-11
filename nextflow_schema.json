@@ -171,10 +171,10 @@
                     "type": "boolean",
                     "description": "Create a Gemini databases from the final VCFs"
                 },
-                "coverage_fast": {
+                "mosdepth_slow": {
                     "type": "boolean",
-                    "description": "Run mosdepth in fast-mode",
-                    "help_text": "This is advised if you don't need exact coverage BED files as output"
+                    "description": "Don't run mosdepth in fast-mode",
+                    "help_text": "This is advised if you need exact coverage BED files as output"
                 },
                 "project": {
                     "type": "string",
@@ -221,6 +221,20 @@
                 "only_merge": {
                     "type": "boolean",
                     "description": "Only run the pipeline until the creation of the genomicsdbs and output them"
+                },
+                "output_genomicsdb": {
+                    "type": "boolean",
+                    "description": "Output the genomicsDB together with the joint-genotyped VCF"
+                },
+                "callers": {
+                    "type": "string",
+                    "description": "A comma delimited string of the available callers. Current options are: 'haplotypecaller' and 'vardict'",
+                    "default": "haplotypecaller"
+                },
+                "vardict_min_af": {
+                    "type": "number",
+                    "description": "The minimum allele frequency for VarDict",
+                    "default": 0.1
                 }
             },
             "required": ["scatter_count"]
@@ -408,16 +422,19 @@
                 "validationLenientMode": {
                     "type": "boolean",
                     "default": false,
-                    "hidden": true
+                    "hidden": true,
+                    "description": "Lenient mode for parameter validation"
                 },
                 "validationFailUnrecognisedParams": {
                     "type": "boolean",
-                    "hidden": true
+                    "hidden": true,
+                    "description": "Fail on unrecognised parameters"
                 },
                 "validationSchemaIgnoreParams": {
                     "type": "string",
                     "default": "genomes,test_data",
-                    "hidden": true
+                    "hidden": true,
+                    "description": "Comma-separated list of parameters to ignore when validating against the schema"
                 }
             }
         },
