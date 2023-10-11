@@ -89,9 +89,11 @@ workflow CRAM_CALL_GATK4 {
 
     BCFTOOLS_STATS_SINGLE(
         VCF_CONCAT_BCFTOOLS.out.vcfs,
-        [],
-        [],
-        []
+        [[],[]],
+        [[],[]],
+        [[],[]],
+        [[],[]],
+        [[],[]]
     )
     ch_versions = ch_versions.mix(BCFTOOLS_STATS_SINGLE.out.versions.first())
 

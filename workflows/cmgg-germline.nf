@@ -465,9 +465,11 @@ workflow CMGGGERMLINE {
 
     BCFTOOLS_STATS(
         ch_called_variants,
-        [],
-        [],
-        []
+        [[],[]],
+        [[],[]],
+        [[],[]],
+        [[],[]],
+        [[],[]]
     )
     ch_versions = ch_versions.mix(BCFTOOLS_STATS.out.versions.first())
     ch_reports = ch_reports.mix(BCFTOOLS_STATS.out.stats.collect { it[1] })

@@ -9,6 +9,7 @@ nextflow_pipeline {
         when {
             params {
                 only_call = true
+                outdir = "${outputDir}"
             }
         }
 
@@ -32,7 +33,7 @@ nextflow_pipeline {
                 assert file("${outputDir}/DNA049572/DNA049572.haplotypecaller.g.vcf.gz").exists()
                 assert file("${outputDir}/DNA049572/DNA049572.haplotypecaller.g.vcf.gz.tbi").exists()
                 assert file("${outputDir}/DNA049572/DNA049572.bed").exists()
-                assert file("${outputDir}/multiqc_reports/multiqc_report.html").exists()        
+                assert file("${outputDir}/multiqc/multiqc_report.html").exists()        
             }
         }
     }

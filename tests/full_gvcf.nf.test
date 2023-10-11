@@ -9,6 +9,7 @@ nextflow_pipeline {
         when {
             params {
                 input = "tests/inputs/samplesheet_gvcf.csv"
+                outdir = "${outputDir}"
                 
                 filter   = true
                 annotate = true
@@ -35,7 +36,7 @@ nextflow_pipeline {
                 assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.gatk4-joint.ped").exists()
                 assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.gatk4-joint.db").exists()
                 assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.bed").exists()
-                assert file("${outputDir}/multiqc_reports/multiqc_report.html").exists()        
+                assert file("${outputDir}/multiqc/multiqc_report.html").exists()        
                 assert file("${outputDir}/DNA049572/validation/gatk4-joint/DNA049572.fn.vcf.gz").exists()
                 assert file("${outputDir}/DNA049572/validation/gatk4-joint/DNA049572.fn.vcf.gz.tbi").exists()
                 assert file("${outputDir}/DNA049572/validation/gatk4-joint/DNA049572.fp.vcf.gz").exists()

@@ -14,6 +14,7 @@ nextflow_pipeline {
                 gemini   = true
                 add_ped  = true
                 validate = true
+                outdir = "${outputDir}"
 
                 roi      = null
 
@@ -59,7 +60,7 @@ nextflow_pipeline {
                 assert file("${outputDir}/DNA049572/DNA049572.haplotypecaller.g.vcf.gz").exists()
                 assert file("${outputDir}/DNA049572/DNA049572.haplotypecaller.g.vcf.gz.tbi").exists()
                 assert file("${outputDir}/DNA049572/DNA049572.bed").exists()
-                assert file("${outputDir}/multiqc_reports/multiqc_report.html").exists()        
+                assert file("${outputDir}/multiqc/multiqc_report.html").exists()        
                 assert file("${outputDir}/DNA049572/validation/gatk4-joint/DNA049572.fn.vcf.gz").exists()
                 assert file("${outputDir}/DNA049572/validation/gatk4-joint/DNA049572.fn.vcf.gz.tbi").exists()
                 assert file("${outputDir}/DNA049572/validation/gatk4-joint/DNA049572.fp.vcf.gz").exists()
