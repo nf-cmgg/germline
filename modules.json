@@ -218,6 +218,11 @@
                         "branch": "master",
                         "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
                         "installed_by": ["modules"]
+                    },
+                    "vt/decompose": {
+                        "branch": "master",
+                        "git_sha": "33927c4875e02ad5899875cd5d78ceb1f348f1f0",
+                        "installed_by": ["modules"]
                     }
                 }
             },
