@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 2. Added the `vardict` variant caller.
 3. Added the `--vardict_min_af` parameter to specify the minimum allele frequency for `vardict`.
 4. Added the `--output_genomicsdb` option to specify whether a GenomicsDB should be outputted or not. This will be `true` when using `only_merge`.
+5. Added `--decompose` and `--normalize` options for decomposing and normalizing of variants after calling and genotyping.
+6. Added `WGS`, `WES`, `SeqCap` and `seqplorer` profiles that can be used to set the default parameters for these types of runs.
 
 ### Improvements
 
