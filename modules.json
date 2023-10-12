@@ -223,6 +223,11 @@
                         "branch": "master",
                         "git_sha": "33927c4875e02ad5899875cd5d78ceb1f348f1f0",
                         "installed_by": ["modules"]
+                    },
+                    "vt/normalize": {
+                        "branch": "master",
+                        "git_sha": "5c3cda93a29561e66eaba311115978feaaf9dea1",
+                        "installed_by": ["modules"]
                     }
                 }
             },

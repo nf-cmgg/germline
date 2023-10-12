@@ -239,6 +239,10 @@
                 "decompose": {
                     "type": "boolean",
                     "description": "Decompose the VCF after joint genotyping"
+                },
+                "normalize": {
+                    "type": "boolean",
+                    "description": "Normalize the VCF after joint genotyping (will run on the decomposed VCF when --decompose is also used)"
                 }
             },
             "required": ["scatter_count"]

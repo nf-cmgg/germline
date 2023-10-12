@@ -74,7 +74,9 @@ include { RTGTOOLS_FORMAT                                            } from '../
 include { UNTAR                                                      } from '../modules/nf-core/untar/main'
 include { BCFTOOLS_STATS                                             } from '../modules/nf-core/bcftools/stats/main'
 include { VT_DECOMPOSE                                               } from '../modules/nf-core/vt/decompose/main'
+include { VT_NORMALIZE                                               } from '../modules/nf-core/vt/normalize/main'
 include { TABIX_TABIX as TABIX_DECOMPOSE                             } from '../modules/nf-core/tabix/tabix/main'
+include { TABIX_TABIX as TABIX_NORMALIZE                             } from '../modules/nf-core/tabix/tabix/main'
 include { TABIX_TABIX as TABIX_DBSNP                                 } from '../modules/nf-core/tabix/tabix/main'
 include { TABIX_TABIX as TABIX_GVCF                                  } from '../modules/nf-core/tabix/tabix/main'
 include { TABIX_TABIX as TABIX_TRUTH                                 } from '../modules/nf-core/tabix/tabix/main'
@@ -494,6 +496,26 @@ workflow CMGGGERMLINE {
         ch_called_variants.set { ch_decomposed_variants }
     }
 
+    if(params.normalize) {
+        VT_NORMALIZE(
+            ch_decomposed_variants.map { meta, vcf, tbi -> [ meta, vcf, tbi, [] ]},
+            ch_fasta_ready,
+            ch_fai_ready
+        )
+        ch_versions = ch_versions.mix(VT_NORMALIZE.out.versions.first())
+
+        TABIX_NORMALIZE(
+            VT_NORMALIZE.out.vcf
+        )
+        ch_versions = ch_versions.mix(TABIX_NORMALIZE.out.versions.first())
+
+        VT_NORMALIZE.out.vcf
+            .join(TABIX_NORMALIZE.out.tbi, failOnDuplicate:true, failOnMismatch:true)
+            .set { ch_normalized_variants }
+    } else {
+        ch_decomposed_variants.set { ch_normalized_variants }
+    }
+
     if(!params.only_merge && !params.only_call) {
 
         //
@@ -509,7 +531,7 @@ workflow CMGGGERMLINE {
                 // Find the first PED file and return that one for the family ([] if no PED is given for the family)
                 [ meta, peds.find { it != [] } ?: [] ]
             }
-            .combine(ch_decomposed_variants.map { meta, vcf, tbi -> [ meta.family, meta, vcf, tbi ]}, by:0)
+            .combine(ch_normalized_variants.map { meta, vcf, tbi -> [ meta.family, meta, vcf, tbi ]}, by:0)
             .map { family, ped, meta, vcf, tbi ->
                 [ meta, ped ]
             }
@@ -520,7 +542,7 @@ workflow CMGGGERMLINE {
         //
 
         VCF_EXTRACT_RELATE_SOMALIER(
-            ch_decomposed_variants,
+            ch_normalized_variants,
             ch_fasta_ready.map { it[1] },
             ch_fai_ready.map { it[1] },
             ch_somalier_sites,
@@ -535,7 +557,7 @@ workflow CMGGGERMLINE {
         if(params.add_ped){
 
             VCF_PED_RTGTOOLS(
-                ch_decomposed_variants,
+                ch_normalized_variants,
                 VCF_EXTRACT_RELATE_SOMALIER.out.peds
             )
             ch_versions = ch_versions.mix(VCF_PED_RTGTOOLS.out.versions)
@@ -543,7 +565,7 @@ workflow CMGGGERMLINE {
             VCF_PED_RTGTOOLS.out.ped_vcfs
                 .set { ch_ped_vcfs }
         } else {
-            ch_decomposed_variants
+            ch_normalized_variants
                 .map { meta, vcf, tbi=[] ->
                     [ meta, vcf ]
                 }
