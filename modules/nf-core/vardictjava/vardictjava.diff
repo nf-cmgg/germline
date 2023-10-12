@@ -9,5 +9,14 @@ Changes in module 'nf-core/vardictjava'
  
      conda "bioconda::vardict-java=1.8.3"
      container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+@@ -29,7 +29,7 @@
+     def filter = somatic ? "testsomatic.R" : "teststrandbias.R"
+     def convert_to_vcf = somatic ? "var2vcf_paired.pl" : "var2vcf_valid.pl"
+     """
+-    export JAVA_OPTS='"-Xms${task.memory.toMega()/4}m" "-Xmx${task.memory.toGiga()}g" "-Dsamjdk.reference_fasta=${fasta}"'
++    export JAVA_OPTS='"-Xmx${task.memory.toGiga()-1}g" "-Dsamjdk.reference_fasta=${fasta}"'
+     vardict-java \\
+         ${args} \\
+         ${input} \\
 
 ************************************************************
