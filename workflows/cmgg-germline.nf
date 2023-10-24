@@ -500,7 +500,7 @@ workflow CMGGGERMLINE {
         VT_NORMALIZE(
             ch_decomposed_variants.map { meta, vcf, tbi -> [ meta, vcf, tbi, [] ]},
             ch_fasta_ready,
-            ch_fai_ready
+            [[],[]]
         )
         ch_versions = ch_versions.mix(VT_NORMALIZE.out.versions.first())
 
