@@ -462,7 +462,7 @@ workflow CMGGGERMLINE {
 
     ch_calls
         .map { meta, vcf, tbi ->
-            def new_meta = meta - meta.subMap("type", "vardict_min_af")
+            def new_meta = meta - meta.subMap(["type", "vardict_min_af"])
             [ new_meta, vcf, tbi ]
         }
         .set { ch_called_variants }
