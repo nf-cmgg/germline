@@ -351,7 +351,7 @@ workflow CMGGGERMLINE {
                 type: gvcf && cram ? "gvcf_cram" : gvcf ? "gvcf" : "cram" // Define the type of input data
             ]
 
-            def new_meta_ped = meta - meta.subMap(["type", "family_count"])
+            def new_meta_ped = meta - meta.subMap(["type", "family_count", "vardict_min_af"])
 
             def new_meta_validation = [
                 id: meta.id,
@@ -462,7 +462,7 @@ workflow CMGGGERMLINE {
 
     ch_calls
         .map { meta, vcf, tbi ->
-            def new_meta = meta - meta.subMap("type")
+            def new_meta = meta - meta.subMap("type", "vardict_min_af")
             [ new_meta, vcf, tbi ]
         }
         .set { ch_called_variants }
