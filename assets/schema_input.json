@@ -59,6 +59,10 @@
                 "type": "string",
                 "pattern": "^\\S+\\.bed$",
                 "format": "file-path"
+            },
+            "vardict_min_af": {
+                "type":"number",
+                "meta": ["vardict_min_af"]
             }
         },
         "required": ["sample"]

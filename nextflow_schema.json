@@ -233,7 +233,7 @@
                 },
                 "vardict_min_af": {
                     "type": "number",
-                    "description": "The minimum allele frequency for VarDict",
+                    "description": "The minimum allele frequency for VarDict when no `vardict_min_af` is supplied in the samplesheet",
                     "default": 0.1
                 },
                 "decompose": {
