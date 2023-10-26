@@ -73,6 +73,7 @@ include { GATK4_COMPOSESTRTABLEFILE as COMPOSESTRTABLEFILE           } from '../
 include { RTGTOOLS_FORMAT                                            } from '../modules/nf-core/rtgtools/format/main'
 include { UNTAR                                                      } from '../modules/nf-core/untar/main'
 include { BCFTOOLS_STATS                                             } from '../modules/nf-core/bcftools/stats/main'
+include { VCFLIB_VCFALLELICPRIMITIVES                                } from '../modules/local/vcflib/vcfallelicprimitives/main'
 include { VT_DECOMPOSE                                               } from '../modules/nf-core/vt/decompose/main'
 include { VT_NORMALIZE                                               } from '../modules/nf-core/vt/normalize/main'
 include { TABIX_TABIX as TABIX_DECOMPOSE                             } from '../modules/nf-core/tabix/tabix/main'
@@ -479,8 +480,13 @@ workflow CMGGGERMLINE {
     ch_reports = ch_reports.mix(BCFTOOLS_STATS.out.stats.collect { it[1] })
 
     if(params.decompose) {
+        VCFLIB_VCFALLELICPRIMITIVES(
+            ch_called_variants
+        )
+        ch_versions = ch_versions.mix(VCFLIB_VCFALLELICPRIMITIVES.out.versions.first())
+
         VT_DECOMPOSE(
-            ch_called_variants.map { meta, vcf, tbi -> [ meta, vcf, [] ] }
+            VCFLIB_VCFALLELICPRIMITIVES.out.vcf.map { meta, vcf -> [ meta, vcf, [] ]}
         )
         ch_versions = ch_versions.mix(VT_DECOMPOSE.out.versions.first())
 
