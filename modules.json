@@ -21,6 +21,11 @@
                         "git_sha": "bd4e0df3319c171072d09dade42e3c06fa373779",
                         "installed_by": ["modules"]
                     },
+                    "bcftools/norm": {
+                        "branch": "master",
+                        "git_sha": "516189e968feb4ebdd9921806988b4c12b4ac2dc",
+                        "installed_by": ["modules"]
+                    },
                     "bcftools/pluginscatter": {
                         "branch": "master",
                         "git_sha": "5cb7989b8b3de11ca2607f8b096f4bdfb24baf80",
