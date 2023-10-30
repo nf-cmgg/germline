@@ -18,47 +18,56 @@
             "cram": {
                 "type": "string",
                 "pattern": "^\\S+\\.cram$",
-                "format": "file-path"
+                "format": "file-path",
+                "exists": true
             },
             "crai": {
                 "type": "string",
                 "pattern": "^\\S+\\.crai$",
-                "format": "file-path"
+                "format": "file-path",
+                "exists": true
             },
             "gvcf": {
                 "type": "string",
                 "pattern": "^\\S+vcf(.gz)?$",
-                "format": "file-path"
+                "format": "file-path",
+                "exists": true
             },
             "tbi": {
                 "type": "string",
                 "pattern": "^\\S+\\.tbi$",
-                "format": "file-path"
+                "format": "file-path",
+                "exists": true
             },
             "roi": {
                 "type": "string",
                 "pattern": "^\\S+\\.bed(\\.gz)?$",
-                "format": "file-path"
+                "format": "file-path",
+                "exists": true
             },
             "ped": {
                 "type": "string",
                 "pattern": "^\\S+\\.ped$",
-                "format": "file-path"
+                "format": "file-path",
+                "exists": true
             },
             "truth_vcf": {
                 "type": "string",
                 "pattern": "^\\S+\\.vcf\\.gz$",
-                "format": "file-path"
+                "format": "file-path",
+                "exists": true
             },
             "truth_tbi": {
                 "type": "string",
                 "pattern": "^\\S+\\.tbi$",
-                "format": "file-path"
+                "format": "file-path",
+                "exists": true
             },
             "truth_bed": {
                 "type": "string",
                 "pattern": "^\\S+\\.bed$",
-                "format": "file-path"
+                "format": "file-path",
+                "exists": true
             },
             "vardict_min_af": {
                 "type":"number",
