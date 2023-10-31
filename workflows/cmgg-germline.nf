@@ -74,9 +74,6 @@ include { RTGTOOLS_FORMAT                                            } from '../
 include { UNTAR                                                      } from '../modules/nf-core/untar/main'
 include { BCFTOOLS_STATS                                             } from '../modules/nf-core/bcftools/stats/main'
 include { BCFTOOLS_NORM                                              } from '../modules/nf-core/bcftools/norm/main'
-include { VCFLIB_VCFALLELICPRIMITIVES                                } from '../modules/local/vcflib/vcfallelicprimitives/main'
-include { VT_DECOMPOSE                                               } from '../modules/nf-core/vt/decompose/main'
-include { VT_NORMALIZE                                               } from '../modules/nf-core/vt/normalize/main'
 include { TABIX_TABIX as TABIX_DECOMPOSE                             } from '../modules/nf-core/tabix/tabix/main'
 include { TABIX_TABIX as TABIX_NORMALIZE                             } from '../modules/nf-core/tabix/tabix/main'
 include { TABIX_TABIX as TABIX_DBSNP                                 } from '../modules/nf-core/tabix/tabix/main'
@@ -498,49 +495,6 @@ workflow CMGGGERMLINE {
     } else {
         ch_called_variants.set { ch_normalized_variants }
     }
-
-    // if(params.decompose) {
-    //     VCFLIB_VCFALLELICPRIMITIVES(
-    //         ch_called_variants
-    //     )
-    //     ch_versions = ch_versions.mix(VCFLIB_VCFALLELICPRIMITIVES.out.versions.first())
-
-    //     VT_DECOMPOSE(
-    //         VCFLIB_VCFALLELICPRIMITIVES.out.vcf.map { meta, vcf -> [ meta, vcf, [] ]}
-    //     )
-    //     ch_versions = ch_versions.mix(VT_DECOMPOSE.out.versions.first())
-
-    //     TABIX_DECOMPOSE(
-    //         VT_DECOMPOSE.out.vcf
-    //     )
-    //     ch_versions = ch_versions.mix(TABIX_DECOMPOSE.out.versions.first())
-
-    //     VT_DECOMPOSE.out.vcf
-    //         .join(TABIX_DECOMPOSE.out.tbi, failOnDuplicate:true, failOnMismatch:true)
-    //         .set { ch_decomposed_variants }
-    // } else {
-    //     ch_called_variants.set { ch_decomposed_variants }
-    // }
-
-    // if(params.normalize) {
-    //     VT_NORMALIZE(
-    //         ch_decomposed_variants.map { meta, vcf, tbi -> [ meta, vcf, tbi, [] ]},
-    //         ch_fasta_ready,
-    //         [[],[]]
-    //     )
-    //     ch_versions = ch_versions.mix(VT_NORMALIZE.out.versions.first())
-
-    //     TABIX_NORMALIZE(
-    //         VT_NORMALIZE.out.vcf
-    //     )
-    //     ch_versions = ch_versions.mix(TABIX_NORMALIZE.out.versions.first())
-
-    //     VT_NORMALIZE.out.vcf
-    //         .join(TABIX_NORMALIZE.out.tbi, failOnDuplicate:true, failOnMismatch:true)
-    //         .set { ch_normalized_variants }
-    // } else {
-    //     ch_decomposed_variants.set { ch_normalized_variants }
-    // }
 
     if(!params.only_merge && !params.only_call) {
 
