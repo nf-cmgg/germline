@@ -530,7 +530,7 @@
                     "format": "file-path",
                     "description": "Path to the index of the dbSNFP file",
                     "fa_icon": "far fa-file-alt",
-                    "pattern": "^\\S+\\.csi$",
+                    "pattern": "^\\S+\\.(csi|tbi)$",
                     "mimetype": "text/plain"
                 },
                 "spliceai_indel": {
@@ -545,7 +545,7 @@
                     "type": "string",
                     "format": "file-path",
                     "description": "Path to the index of the VCF containing indels for spliceAI",
-                    "pattern": "^\\S+\\.tbi$",
+                    "pattern": "^\\S+\\.(csi|tbi)$",
                     "mimetype": "text/plain"
                 },
                 "spliceai_snv": {
@@ -559,7 +559,7 @@
                     "type": "string",
                     "format": "file-path",
                     "description": "Path to the index of the VCF containing SNVs for spliceAI",
-                    "pattern": "^\\S+\\.tbi$",
+                    "pattern": "^\\S+\\.(csi|tbi)$",
                     "mimetype": "text/plain"
                 },
                 "mastermind": {
@@ -573,7 +573,7 @@
                     "type": "string",
                     "format": "file-path",
                     "description": "Path to the index of the VCF for Mastermind",
-                    "pattern": "^\\S+\\.tbi$",
+                    "pattern": "^\\S+\\.(csi|tbi)$",
                     "mimetype": "text/plain"
                 },
                 "maxentscan": {
@@ -592,7 +592,7 @@
                     "type": "string",
                     "format": "file-path",
                     "description": "Path to the index of the VCF containing EOG annotations",
-                    "pattern": "^\\S+\\.tbi$",
+                    "pattern": "^\\S+\\.(csi|tbi)$",
                     "mimetype": "text/plain"
                 },
                 "vcfanno": {
