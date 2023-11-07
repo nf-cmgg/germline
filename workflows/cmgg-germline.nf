@@ -72,6 +72,7 @@ include { GATK4_CREATESEQUENCEDICTIONARY as CREATESEQUENCEDICTIONARY } from '../
 include { GATK4_COMPOSESTRTABLEFILE as COMPOSESTRTABLEFILE           } from '../modules/nf-core/gatk4/composestrtablefile/main'
 include { RTGTOOLS_FORMAT                                            } from '../modules/nf-core/rtgtools/format/main'
 include { UNTAR                                                      } from '../modules/nf-core/untar/main'
+include { ENSEMBLVEP_DOWNLOAD                                        } from '../modules/nf-core/ensemblvep/download/main'
 include { BCFTOOLS_STATS                                             } from '../modules/nf-core/bcftools/stats/main'
 include { BCFTOOLS_NORM                                              } from '../modules/nf-core/bcftools/norm/main'
 include { TABIX_TABIX as TABIX_DECOMPOSE                             } from '../modules/nf-core/tabix/tabix/main'
@@ -307,6 +308,17 @@ workflow CMGGGERMLINE {
         ch_sdf.set { ch_sdf_ready }
     } else {
         ch_sdf_ready = [[],[]]
+    }
+
+    if (!ch_vep_cache && params.annotate) {
+        ENSEMBLVEP_DOWNLOAD(
+            Channel.of([[id:"vep_cache"], params.genome == "hg38" ? "GRCh38" : params.genome, params.species, params.vep_cache_version]).collect()
+        )
+        ch_versions = ch_versions.mix(ENSEMBLVEP_DOWNLOAD.out.versions)
+
+        ch_vep_cache_ready = ENSEMBLVEP_DOWNLOAD.out.cache.map{it[1]}.collect()
+    } else {
+        ch_vep_cache_ready = ch_vep_cache
     }
 
     //
@@ -552,7 +564,7 @@ workflow CMGGGERMLINE {
                 ch_ped_vcfs,
                 ch_fasta_ready,
                 ch_fai_ready,
-                ch_vep_cache,
+                ch_vep_cache_ready,
                 ch_vep_extra_files,
                 ch_vcfanno_config,
                 ch_vcfanno_lua,

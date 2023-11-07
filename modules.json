@@ -72,6 +72,12 @@
                         "git_sha": "05c280924b6c768d484c7c443dad5e605c4ff4b4",
                         "installed_by": ["modules"]
                     },
+                    "ensemblvep/download": {
+                        "branch": "master",
+                        "git_sha": "8fc1d24c710ebe1d5de0f2447ec9439fd3d9d66a",
+                        "installed_by": ["modules"],
+                        "patch": "modules/nf-core/ensemblvep/download/ensemblvep-download.diff"
+                    },
                     "ensemblvep/vep": {
                         "branch": "master",
                         "git_sha": "1b5ffd7aa6e3c21b702957c808cbd1c351dd1809",
