@@ -576,11 +576,6 @@
                     "pattern": "^\\S+\\.(csi|tbi)$",
                     "mimetype": "text/plain"
                 },
-                "maxentscan": {
-                    "type": "string",
-                    "format": "directory-path",
-                    "description": "Path to the MaxEntScan executable directory"
-                },
                 "eog": {
                     "type": "string",
                     "format": "file-path",

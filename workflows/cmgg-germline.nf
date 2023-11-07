@@ -122,7 +122,6 @@ workflow CMGGGERMLINE {
         params.spliceai_snv_tbi,
         params.mastermind,
         params.mastermind_tbi,
-        params.maxentscan,
         params.eog,
         params.eog_tbi
     ]
@@ -199,14 +198,6 @@ workflow CMGGGERMLINE {
         }
         else if (params.vep_mastermind) {
             exit 1, "Please specify '--vep_mastermind true', '--mastermind PATH/TO/MASTERMIND/FILE' and '--mastermind_tbi PATH/TO/MASTERMIND/INDEX/FILE' to use the mastermind VEP plugin."
-        }
-
-        // Check if all maxentscan files are given
-        if (params.maxentscan && params.vep_maxentscan) {
-            ch_vep_extra_files.add(file(params.maxentscan, checkIfExists: true))
-        }
-        else if (params.vep_maxentscan) {
-            exit 1, "Please specify '--vep_maxentscan true', '--maxentscan PATH/TO/MAXENTSCAN/' to use the MaxEntScan VEP plugin."
         }
 
         // Check if all EOG files are given
