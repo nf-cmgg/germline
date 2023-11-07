@@ -73,8 +73,7 @@ include { GATK4_COMPOSESTRTABLEFILE as COMPOSESTRTABLEFILE           } from '../
 include { RTGTOOLS_FORMAT                                            } from '../modules/nf-core/rtgtools/format/main'
 include { UNTAR                                                      } from '../modules/nf-core/untar/main'
 include { BCFTOOLS_STATS                                             } from '../modules/nf-core/bcftools/stats/main'
-include { VT_DECOMPOSE                                               } from '../modules/nf-core/vt/decompose/main'
-include { VT_NORMALIZE                                               } from '../modules/nf-core/vt/normalize/main'
+include { BCFTOOLS_NORM                                              } from '../modules/nf-core/bcftools/norm/main'
 include { TABIX_TABIX as TABIX_DECOMPOSE                             } from '../modules/nf-core/tabix/tabix/main'
 include { TABIX_TABIX as TABIX_NORMALIZE                             } from '../modules/nf-core/tabix/tabix/main'
 include { TABIX_TABIX as TABIX_DBSNP                                 } from '../modules/nf-core/tabix/tabix/main'
@@ -123,7 +122,6 @@ workflow CMGGGERMLINE {
         params.spliceai_snv_tbi,
         params.mastermind,
         params.mastermind_tbi,
-        params.maxentscan,
         params.eog,
         params.eog_tbi
     ]
@@ -200,14 +198,6 @@ workflow CMGGGERMLINE {
         }
         else if (params.vep_mastermind) {
             exit 1, "Please specify '--vep_mastermind true', '--mastermind PATH/TO/MASTERMIND/FILE' and '--mastermind_tbi PATH/TO/MASTERMIND/INDEX/FILE' to use the mastermind VEP plugin."
-        }
-
-        // Check if all maxentscan files are given
-        if (params.maxentscan && params.vep_maxentscan) {
-            ch_vep_extra_files.add(file(params.maxentscan, checkIfExists: true))
-        }
-        else if (params.vep_maxentscan) {
-            exit 1, "Please specify '--vep_maxentscan true', '--maxentscan PATH/TO/MAXENTSCAN/' to use the MaxEntScan VEP plugin."
         }
 
         // Check if all EOG files are given
@@ -351,7 +341,7 @@ workflow CMGGGERMLINE {
                 type: gvcf && cram ? "gvcf_cram" : gvcf ? "gvcf" : "cram" // Define the type of input data
             ]
 
-            def new_meta_ped = meta - meta.subMap(["type", "family_count"])
+            def new_meta_ped = meta - meta.subMap(["type", "family_count", "vardict_min_af"])
 
             def new_meta_validation = [
                 id: meta.id,
@@ -462,7 +452,7 @@ workflow CMGGGERMLINE {
 
     ch_calls
         .map { meta, vcf, tbi ->
-            def new_meta = meta - meta.subMap("type")
+            def new_meta = meta - meta.subMap(["type", "vardict_min_af"])
             [ new_meta, vcf, tbi ]
         }
         .set { ch_called_variants }
@@ -478,42 +468,23 @@ workflow CMGGGERMLINE {
     ch_versions = ch_versions.mix(BCFTOOLS_STATS.out.versions.first())
     ch_reports = ch_reports.mix(BCFTOOLS_STATS.out.stats.collect { it[1] })
 
-    if(params.decompose) {
-        VT_DECOMPOSE(
-            ch_called_variants.map { meta, vcf, tbi -> [ meta, vcf, [] ] }
-        )
-        ch_versions = ch_versions.mix(VT_DECOMPOSE.out.versions.first())
-
-        TABIX_DECOMPOSE(
-            VT_DECOMPOSE.out.vcf
-        )
-        ch_versions = ch_versions.mix(TABIX_DECOMPOSE.out.versions.first())
-
-        VT_DECOMPOSE.out.vcf
-            .join(TABIX_DECOMPOSE.out.tbi, failOnDuplicate:true, failOnMismatch:true)
-            .set { ch_decomposed_variants }
-    } else {
-        ch_called_variants.set { ch_decomposed_variants }
-    }
-
     if(params.normalize) {
-        VT_NORMALIZE(
-            ch_decomposed_variants.map { meta, vcf, tbi -> [ meta, vcf, tbi, [] ]},
+        BCFTOOLS_NORM(
+            ch_called_variants,
             ch_fasta_ready,
-            ch_fai_ready
         )
-        ch_versions = ch_versions.mix(VT_NORMALIZE.out.versions.first())
+        ch_versions = ch_versions.mix(BCFTOOLS_NORM.out.versions.first())
 
         TABIX_NORMALIZE(
-            VT_NORMALIZE.out.vcf
+            BCFTOOLS_NORM.out.vcf
         )
         ch_versions = ch_versions.mix(TABIX_NORMALIZE.out.versions.first())
 
-        VT_NORMALIZE.out.vcf
+        BCFTOOLS_NORM.out.vcf
             .join(TABIX_NORMALIZE.out.tbi, failOnDuplicate:true, failOnMismatch:true)
             .set { ch_normalized_variants }
     } else {
-        ch_decomposed_variants.set { ch_normalized_variants }
+        ch_called_variants.set { ch_normalized_variants }
     }
 
     if(!params.only_merge && !params.only_call) {

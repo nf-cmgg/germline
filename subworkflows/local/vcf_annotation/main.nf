@@ -55,7 +55,7 @@ workflow VCF_ANNOTATION {
     VCF_ANNOTATE_ENSEMBLVEP(
         ch_vep_input,
         ch_fasta,
-        params.genome,
+        params.genome == "hg38" ? "GRCh38" : params.genome,
         params.species,
         params.vep_cache_version,
         ch_vep_cache,

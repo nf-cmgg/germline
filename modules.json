@@ -21,6 +21,11 @@
                         "git_sha": "bd4e0df3319c171072d09dade42e3c06fa373779",
                         "installed_by": ["modules"]
                     },
+                    "bcftools/norm": {
+                        "branch": "master",
+                        "git_sha": "516189e968feb4ebdd9921806988b4c12b4ac2dc",
+                        "installed_by": ["modules"]
+                    },
                     "bcftools/pluginscatter": {
                         "branch": "master",
                         "git_sha": "5cb7989b8b3de11ca2607f8b096f4bdfb24baf80",
@@ -217,16 +222,6 @@
                     "vcfanno": {
                         "branch": "master",
                         "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
-                        "installed_by": ["modules"]
-                    },
-                    "vt/decompose": {
-                        "branch": "master",
-                        "git_sha": "33927c4875e02ad5899875cd5d78ceb1f348f1f0",
-                        "installed_by": ["modules"]
-                    },
-                    "vt/normalize": {
-                        "branch": "master",
-                        "git_sha": "5c3cda93a29561e66eaba311115978feaaf9dea1",
                         "installed_by": ["modules"]
                     }
                 }

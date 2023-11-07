@@ -233,12 +233,8 @@
                 },
                 "vardict_min_af": {
                     "type": "number",
-                    "description": "The minimum allele frequency for VarDict",
+                    "description": "The minimum allele frequency for VarDict when no `vardict_min_af` is supplied in the samplesheet",
                     "default": 0.1
-                },
-                "decompose": {
-                    "type": "boolean",
-                    "description": "Decompose the VCF after joint genotyping"
                 },
                 "normalize": {
                     "type": "boolean",
@@ -534,7 +530,7 @@
                     "format": "file-path",
                     "description": "Path to the index of the dbSNFP file",
                     "fa_icon": "far fa-file-alt",
-                    "pattern": "^\\S+\\.csi$",
+                    "pattern": "^\\S+\\.(csi|tbi)$",
                     "mimetype": "text/plain"
                 },
                 "spliceai_indel": {
@@ -549,7 +545,7 @@
                     "type": "string",
                     "format": "file-path",
                     "description": "Path to the index of the VCF containing indels for spliceAI",
-                    "pattern": "^\\S+\\.tbi$",
+                    "pattern": "^\\S+\\.(csi|tbi)$",
                     "mimetype": "text/plain"
                 },
                 "spliceai_snv": {
@@ -563,7 +559,7 @@
                     "type": "string",
                     "format": "file-path",
                     "description": "Path to the index of the VCF containing SNVs for spliceAI",
-                    "pattern": "^\\S+\\.tbi$",
+                    "pattern": "^\\S+\\.(csi|tbi)$",
                     "mimetype": "text/plain"
                 },
                 "mastermind": {
@@ -577,13 +573,8 @@
                     "type": "string",
                     "format": "file-path",
                     "description": "Path to the index of the VCF for Mastermind",
-                    "pattern": "^\\S+\\.tbi$",
+                    "pattern": "^\\S+\\.(csi|tbi)$",
                     "mimetype": "text/plain"
-                },
-                "maxentscan": {
-                    "type": "string",
-                    "format": "directory-path",
-                    "description": "Path to the MaxEntScan executable directory"
                 },
                 "eog": {
                     "type": "string",
@@ -596,7 +587,7 @@
                     "type": "string",
                     "format": "file-path",
                     "description": "Path to the index of the VCF containing EOG annotations",
-                    "pattern": "^\\S+\\.tbi$",
+                    "pattern": "^\\S+\\.(csi|tbi)$",
                     "mimetype": "text/plain"
                 },
                 "vcfanno": {
