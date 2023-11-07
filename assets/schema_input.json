@@ -70,7 +70,7 @@
                 "exists": true
             },
             "vardict_min_af": {
-                "type":"number",
+                "type": "number",
                 "meta": ["vardict_min_af"]
             }
         },
