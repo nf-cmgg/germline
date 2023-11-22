@@ -7,7 +7,7 @@ Changes in module 'nf-core/gatk4/haplotypecaller'
 -    label 'process_medium'
 +    label 'process_single'
  
-     conda "bioconda::gatk4=4.3.0.0"
+     conda "${moduleDir}/environment.yml"
      container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
 
 ************************************************************
