@@ -1,8 +1,8 @@
 process VARDICTJAVA {
     tag "$meta.id"
-    label 'process_single'
+    label 'process_high'
 
-    conda "bioconda::vardict-java=1.8.3"
+    conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/vardict-java:1.8.3--hdfd78af_0':
         'biocontainers/vardict-java:1.8.3--hdfd78af_0' }"
@@ -29,7 +29,7 @@ process VARDICTJAVA {
     def filter = somatic ? "testsomatic.R" : "teststrandbias.R"
     def convert_to_vcf = somatic ? "var2vcf_paired.pl" : "var2vcf_valid.pl"
     """
-    export JAVA_OPTS='"-Xmx${task.memory.toGiga()-1}g" "-Dsamjdk.reference_fasta=${fasta}"'
+    export JAVA_OPTS='"-Xms${task.memory.toMega()/4}m" "-Xmx${task.memory.toGiga()}g" "-Dsamjdk.reference_fasta=${fasta}"'
     vardict-java \\
         ${args} \\
         ${input} \\

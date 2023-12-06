@@ -65,11 +65,11 @@ workflow CRAM_CALL_GATK4 {
 
     GATK4_HAPLOTYPECALLER(
         ch_cram_models,
-        ch_fasta.map { it[1] },
-        ch_fai.map { it[1] },
-        ch_dict.map { it[1] },
-        ch_dbsnp,
-        ch_dbsnp_tbi
+        ch_fasta,
+        ch_fai,
+        ch_dict,
+        ch_dbsnp.map { [[], it]},
+        ch_dbsnp_tbi.map { [[], it]}
     )
     ch_versions = ch_versions.mix(GATK4_HAPLOTYPECALLER.out.versions.first())
 

@@ -2,12 +2,12 @@
 // Run VEP and/or SNPEFF to annotate VCF files
 //
 
-include { ENSEMBLVEP_VEP                } from '../../../modules/nf-core/ensemblvep/vep/main'
-include { SNPEFF_SNPEFF                 } from '../../../modules/nf-core/snpeff/snpeff/main'
-include { TABIX_TABIX                   } from '../../../modules/nf-core/tabix/tabix/main'
-include { BCFTOOLS_PLUGINSCATTER        } from '../../../modules/nf-core/bcftools/pluginscatter/main'
-include { BCFTOOLS_CONCAT               } from '../../../modules/nf-core/bcftools/concat/main'
-include { BCFTOOLS_SORT                 } from '../../../modules/nf-core/bcftools/sort/main'
+include { ENSEMBLVEP_VEP         } from '../../../modules/nf-core/ensemblvep/vep/main'
+include { SNPEFF_SNPEFF          } from '../../../modules/nf-core/snpeff/snpeff/main'
+include { TABIX_TABIX            } from '../../../modules/nf-core/tabix/tabix/main'
+include { BCFTOOLS_PLUGINSCATTER } from '../../../modules/nf-core/bcftools/pluginscatter/main'
+include { BCFTOOLS_CONCAT        } from '../../../modules/nf-core/bcftools/concat/main'
+include { BCFTOOLS_SORT          } from '../../../modules/nf-core/bcftools/sort/main'
 
 workflow VCF_ANNOTATE_ENSEMBLVEP_SNPEFF {
     take:
@@ -73,7 +73,7 @@ workflow VCF_ANNOTATE_ENSEMBLVEP_SNPEFF {
             .multiMap { meta, vcf, count, custom_files ->
                 // Define the new ID. The `_annotated` is to disambiguate the VEP output with its input
                 new_id = "${meta.id}${vcf.name.replace(meta.id,"").tokenize(".")[0]}_annotated" as String
-                def new_meta = meta + [id:new_id]
+                new_meta = meta + [id:new_id]
 
                 // Create channels: one with the VEP input and one with the original ID and count of scattered VCFs
                 input:  [ new_meta, vcf, custom_files ]
@@ -100,7 +100,6 @@ workflow VCF_ANNOTATE_ENSEMBLVEP_SNPEFF {
         ch_versions = ch_versions.mix(ENSEMBLVEP_VEP.out.versions.first())
 
         ch_vep_output  = ENSEMBLVEP_VEP.out.vcf
-            .join(ENSEMBLVEP_VEP.out.tbi, failOnDuplicate:true, failOnMismatch:true)
         ch_vep_reports = ENSEMBLVEP_VEP.out.report
     } else {
         ch_vep_output  = ch_vep_input.map { meta, vcf, files -> [ meta, vcf ] }
@@ -135,15 +134,15 @@ workflow VCF_ANNOTATE_ENSEMBLVEP_SNPEFF {
 
         ch_concat_input = ch_snpeff_output
             .join(ch_scatter.count, failOnDuplicate:true, failOnMismatch:true)
-            .map { meta, vcf, tbi, id, count ->
-                def new_meta = meta + [id:id]
-                [ groupKey(new_meta, count), vcf, tbi ]
+            .map { meta, vcf, id, count ->
+                new_meta = meta + [id:id]
+                [ groupKey(new_meta, count), vcf ]
             }
             .groupTuple() // Group the VCFs which need to be concatenated
+            .map { it + [[]] }
 
         BCFTOOLS_CONCAT(
-            ch_concat_input,
-            []
+            ch_concat_input
         )
         ch_versions = ch_versions.mix(BCFTOOLS_CONCAT.out.versions.first())
 
