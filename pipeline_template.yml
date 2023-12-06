@@ -1,4 +1,0 @@
-author: nvnieuwk
-description: A nextflow pipeline for calling and annotating variants
-name: nf-cmgg-germline
-prefix: CenterForMedicalGeneticsGhent

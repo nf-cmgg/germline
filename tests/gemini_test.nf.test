@@ -9,27 +9,43 @@ nextflow_pipeline {
         when {
             params {
                 gemini   = true
+                outdir = "${outputDir}"
             }
         }
 
         then {
             def date = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new Date())
-            assert workflow.success
-            assert file("${outputDir}/${date}_test/Proband_12345/reports/Proband_12345.bcftools_stats.txt").exists()
-            assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.vcf.gz").exists()
-            assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.db").exists()
-            assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.ped").exists()
-            assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.bed").exists()
-            assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.samples.tsv").exists()
-            assert file("${outputDir}/NA24385D2_NVQ_034/reports/NA24385D2_NVQ_034.bcftools_stats.txt").exists()
-            assert file("${outputDir}/NA24385D2_NVQ_034/NA24385D2_NVQ_034.g.vcf.gz").exists()
-            assert file("${outputDir}/NA24385D2_NVQ_034/NA24385D2_NVQ_034.g.vcf.gz.tbi").exists()
-            assert file("${outputDir}/NA24385D2_NVQ_034/NA24385D2_NVQ_034.bed").exists()
-            assert file("${outputDir}/DNA049572/reports/DNA049572.bcftools_stats.txt").exists()
-            assert file("${outputDir}/DNA049572/DNA049572.g.vcf.gz").exists()
-            assert file("${outputDir}/DNA049572/DNA049572.g.vcf.gz.tbi").exists()
-            assert file("${outputDir}/DNA049572/DNA049572.bed").exists()
-            assert file("${outputDir}/multiqc_reports/multiqc_report.html").exists()
+            assertAll {
+                assert workflow.success
+                assert file("${outputDir}/${date}_test/Proband_12345/reports/Proband_12345.gatk4-joint.bcftools_stats.txt").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/reports/Proband_12345.gatk4-joint.somalier.html").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.gatk4-joint.vcf.gz").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.gatk4-joint.vcf.gz.tbi").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.gatk4-joint.ped").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.gatk4-joint.db").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/reports/DNA049572.vardict.bcftools_stats.txt").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/reports/NA24385D2_NVQ_034.vardict.bcftools_stats.txt").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/reports/DNA049572.vardict.somalier.html").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/reports/NA24385D2_NVQ_034.vardict.somalier.html").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/NA24385D2_NVQ_034.vardict.vcf.gz").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/NA24385D2_NVQ_034.vardict.vcf.gz.tbi").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/NA24385D2_NVQ_034.vardict.db").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/NA24385D2_NVQ_034.vardict.ped").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/DNA049572.vardict.vcf.gz").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/DNA049572.vardict.vcf.gz.tbi").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/DNA049572.vardict.db").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/DNA049572.vardict.ped").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.bed").exists()
+                assert file("${outputDir}/NA24385D2_NVQ_034/reports/NA24385D2_NVQ_034.haplotypecaller.bcftools_stats.txt").exists()
+                assert file("${outputDir}/NA24385D2_NVQ_034/reports/NA24385D2_NVQ_034.mosdepth.global.dist.txt").exists()
+                assert file("${outputDir}/NA24385D2_NVQ_034/reports/NA24385D2_NVQ_034.mosdepth.summary.txt").exists()
+                assert file("${outputDir}/NA24385D2_NVQ_034/NA24385D2_NVQ_034.bed").exists()
+                assert file("${outputDir}/DNA049572/reports/DNA049572.haplotypecaller.bcftools_stats.txt").exists()
+                assert file("${outputDir}/DNA049572/reports/DNA049572.mosdepth.global.dist.txt").exists()
+                assert file("${outputDir}/DNA049572/reports/DNA049572.mosdepth.summary.txt").exists()
+                assert file("${outputDir}/DNA049572/DNA049572.bed").exists()
+                assert file("${outputDir}/multiqc/multiqc_report.html").exists()        
+            }
         }
     }
 }

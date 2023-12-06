@@ -4,7 +4,7 @@
 
 ## Samplesheet input
 
-You will need to create a samplesheet with information about the samples you would like to analyse before running the pipeline. Use this parameter to specify its location. It can be either a CSV, TSV or YAML file.
+You will need to create a samplesheet with information with the samples you would like to analyse before running the pipeline. Use this parameter to specify its location. It can be either a CSV, TSV or YAML file.
 
 ```bash
 --input '[path to samplesheet file]'
@@ -19,18 +19,18 @@ The `sample` identifiers have to be the same when you have re-sequenced the same
 #### CSV
 
 ```csv
-sample,family,cram,crai,ped,truth_vcf,truth_tbi,roi
-SAMPLE_1,FAMILY_1,SAMPLE_1.cram,SAMPLE_1.crai,FAMILY_1.ped,SAMPLE_1.truth.vcf.gz,SAMPLE_1.truth.vcf.gz.tbi,SAMPLE_1.bed
-SAMPLE_2,FAMILY_1,SAMPLE_2.cram,SAMPLE_2.crai,,SAMPLE_2.truth.vcf.gz,,SAMPLE_2.bed
-SAMPLE_3,,SAMPLE_3.cram,,,,,
+sample,family,cram,crai,ped,truth_vcf,truth_tbi,roi,vardict_min_af
+SAMPLE_1,FAMILY_1,SAMPLE_1.cram,SAMPLE_1.crai,FAMILY_1.ped,SAMPLE_1.truth.vcf.gz,SAMPLE_1.truth.vcf.gz.tbi,SAMPLE_1.bed,0.1
+SAMPLE_2,FAMILY_1,SAMPLE_2.cram,SAMPLE_2.crai,,SAMPLE_2.truth.vcf.gz,,SAMPLE_2.bed,0.01
+SAMPLE_3,,SAMPLE_3.cram,,,,,,
 ```
 
 #### TSV
 
 ```tsv
-sample    family    cram   crai   ped truth_vcf truth_tbi roi
-SAMPLE_1  FAMILY_1  SAMPLE_1.cram SAMPLE_1.crai FAMILY_1.ped  SAMPLE_1.truth.vcf.gz SAMPLE_1.truth.vcf.gz.tbi SAMPLE_1.bed
-SAMPLE_2  FAMILY_1  SAMPLE_2.cram SAMPLE_2.crai SAMPLE_2.truth.vcf.gz              SAMPLE_2.bed
+sample    family    cram   crai   ped truth_vcf truth_tbi roi vardict_min_af
+SAMPLE_1  FAMILY_1  SAMPLE_1.cram SAMPLE_1.crai FAMILY_1.ped  SAMPLE_1.truth.vcf.gz SAMPLE_1.truth.vcf.gz.tbi SAMPLE_1.bed  0.1
+SAMPLE_2  FAMILY_1  SAMPLE_2.cram SAMPLE_2.crai SAMPLE_2.truth.vcf.gz              SAMPLE_2.bed 0.01
 SAMPLE_3    SAMPLE_3.cram
 ```
 
@@ -45,6 +45,7 @@ SAMPLE_3    SAMPLE_3.cram
   truth_vcf: SAMPLE_1.truth.vcf.gz
   truth_tbi: SAMPLE_1.truth.vcf.gz.tbi
   roi: SAMPLE_1.bed
+  vardict_min_af: 0.1
 - sample: SAMPLE_2
   family: FAMILY_1
   cram: SAMPLE_2.cram
@@ -52,6 +53,7 @@ SAMPLE_3    SAMPLE_3.cram
   ped: FAMILY_1.ped
   truth_vcf: SAMPLE_2.truth.vcf.gz
   roi: SAMPLE_2.bed
+  vardict_min_af: 0.01
 - sample: SAMPLE_3
   cram: SAMPLE_3.cram
 ```
@@ -60,16 +62,17 @@ SAMPLE_3    SAMPLE_3.cram
 
 The samplesheet can have following columns:
 
-| Column      | Description                                                                                                                                                                                                                                                                                                                                                           |
-| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sample`    | MANDATORY - Custom sample name. This entry has to be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`).                                                                                                                                                                  |
-| `family`    | OPTIONAL - The family ID of the specified sample. This field is optional, as the family id can also be extracted from the `ped` file. If no `ped` file and `family` ID are supplied, the `family` ID defaults to the `sample` ID (which means that the resulting VCF will be single-sample). Spaces in family names are automatically converted to underscores (`_`). |
-| `cram`      | MANDATORY - Full path to CRAM file to call variants from. File has to have the extension `.cram`                                                                                                                                                                                                                                                                      |
-| `crai`      | OPTIONAL - Full path to CRAM index file. File has to have the extension `.crai`.                                                                                                                                                                                                                                                                                      |
-| `ped`       | OPTIONAL - Full path to PED file containing the relational information between samples in the same family. File has to have the extension `.ped`.                                                                                                                                                                                                                     |
-| `truth_vcf` | OPTIONAL - Full path to the VCF containing all the truth variants of the current sample. The validation subworkflow will be run when this file is supplied and the `--validate true` flag has been given. File has to have the extension `.vcf.gz`                                                                                                                    |
-| `truth_tbi` | OPTIONAL - Full path to the index of the truth VCF. This file can either be supplied by the user or generated by the pipeline. File has to have the extensions `.tbi`                                                                                                                                                                                                 |
-| `roi`       | OPTIONAL - Full path to a BED file containing the regions of interest for the current sample to call on. When this file is given, the pipeline will run this sample in WES mode. (The flag `--roi <path>` can also be given to run WES mode for all samples using the file specified by the flag) File has to have the extension `.bed` or `.bed.gz`.                 |
+| Column           | Description                                                                                                                                                                                                                                                                                                                                                           |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sample`         | MANDATORY - Custom sample name. This entry has to be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`).                                                                                                                                                                  |
+| `family`         | OPTIONAL - The family ID of the specified sample. This field is optional, as the family id can also be extracted from the `ped` file. If no `ped` file and `family` ID are supplied, the `family` ID defaults to the `sample` ID (which means that the resulting VCF will be single-sample). Spaces in family names are automatically converted to underscores (`_`). |
+| `cram`           | MANDATORY - Full path to CRAM file to call variants from. File has to have the extension `.cram`                                                                                                                                                                                                                                                                      |
+| `crai`           | OPTIONAL - Full path to CRAM index file. File has to have the extension `.crai`.                                                                                                                                                                                                                                                                                      |
+| `ped`            | OPTIONAL - Full path to PED file containing the relational information between samples in the same family. File has to have the extension `.ped`.                                                                                                                                                                                                                     |
+| `truth_vcf`      | OPTIONAL - Full path to the VCF containing all the truth variants of the current sample. The validation subworkflow will be run when this file is supplied and the `--validate true` flag has been given. File has to have the extension `.vcf.gz`                                                                                                                    |
+| `truth_tbi`      | OPTIONAL - Full path to the index of the truth VCF. This file can either be supplied by the user or generated by the pipeline. File has to have the extensions `.tbi`                                                                                                                                                                                                 |
+| `roi`            | OPTIONAL - Full path to a BED file containing the regions of interest for the current sample to call on. When this file is given, the pipeline will run this sample in WES mode. (The flag `--roi <path>` can also be given to run WES mode for all samples using the file specified by the flag) File has to have the extension `.bed` or `.bed.gz`.                 |
+| `vardict_min_af` | OPTIONAL - The minimum AF value to use for the vardict variant caller (`--callers vardict`). This can be set in the samplesheet when it differs for all samples. A default can be set using the `--vardict_min_af` parameter (whichs defaults to 0.1)                                                                                                                 |
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
@@ -78,7 +81,7 @@ An [example samplesheet](../assets/samplesheet.csv) has been provided with the p
 The typical command for running the pipeline is as follows:
 
 ```bash
-nextflow run CenterForMedicalGeneticsGhent/nf-cmgg-germline --input ./samplesheet.csv --outdir ./results --genome GRCh37 -profile docker
+nextflow run CenterForMedicalGeneticsGhent/nf-cmgg-germline --input ./samplesheet.csv --outdir ./results --genome GRCh38 -profile docker
 ```
 
 This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
@@ -96,7 +99,9 @@ If you wish to repeatedly use the same parameters for multiple runs, rather than
 
 Pipeline settings can be provided in a `yaml` or `json` file via `-params-file <file>`.
 
-> ⚠️ Do not use `-c <file>` to specify parameters as this will result in errors. Custom config files specified with `-c` must only be used for [tuning process resource specifications](https://nf-co.re/docs/usage/configuration#tuning-workflow-resources), other infrastructural tweaks (such as output directories), or module arguments (args).
+:::warning
+Do not use `-c <file>` to specify parameters as this will result in errors. Custom config files specified with `-c` must only be used for [tuning process resource specifications](https://nf-co.re/docs/usage/configuration#tuning-workflow-resources), other infrastructural tweaks (such as output directories), or module arguments (args).
+:::
 
 The above pipeline run specified with a params file in yaml format:
 
@@ -109,11 +114,9 @@ with `params.yaml` containing:
 ```yaml
 input: './samplesheet.csv'
 outdir: './results/'
-genome: 'GRCh37'
+genome: 'GRCh38'
 <...>
 ```
-
-You can also generate such `YAML`/`JSON` files via [nf-core/launch](https://nf-co.re/launch).
 
 ### Updating the pipeline
 
@@ -133,11 +136,15 @@ This version number will be logged in reports when you run the pipeline, so that
 
 To further assist in reproducbility, you can use share and re-use [parameter files](#running-the-pipeline) to repeat pipeline runs with the same settings without having to write out a command with every single parameter.
 
-> 💡 If you wish to share such profile (such as upload as supplementary material for academic publications), make sure to NOT include cluster specific paths to files, nor institutional specific profiles.
+:::tip
+If you wish to share such profile (such as upload as supplementary material for academic publications), make sure to NOT include cluster specific paths to files, nor institutional specific profiles.
+:::
 
 ## Core Nextflow arguments
 
-> **NB:** These options are part of Nextflow and use a _single_ hyphen (pipeline parameters use a double-hyphen).
+:::note
+These options are part of Nextflow and use a _single_ hyphen (pipeline parameters use a double-hyphen).
+:::
 
 ### `-profile`
 
@@ -145,7 +152,9 @@ Use this parameter to choose a configuration profile. Profiles can give configur
 
 Several generic profiles are bundled with the pipeline which instruct the pipeline to use software packaged using different methods (Docker, Singularity, Podman, Shifter, Charliecloud, Apptainer, Conda) - see below.
 
-> We highly recommend the use of Docker or Singularity containers for full pipeline reproducibility, however when this is not possible, Conda is also supported.
+:::info
+We highly recommend the use of Docker or Singularity containers for full pipeline reproducibility, however when this is not possible, Conda is also supported.
+:::
 
 The pipeline also dynamically loads configurations from [https://github.com/nf-core/configs](https://github.com/nf-core/configs) when it runs, making multiple config profiles for various institutional clusters available at run time. For more information and to see if your system is available in these configs please see the [nf-core/configs documentation](https://github.com/nf-core/configs#documentation).
 

@@ -1,15 +1,20 @@
 Changes in module 'nf-core/ensemblvep/vep'
 --- modules/nf-core/ensemblvep/vep/main.nf
 +++ modules/nf-core/ensemblvep/vep/main.nf
-@@ -1,6 +1,6 @@
- process ENSEMBLVEP_VEP {
+@@ -2,10 +2,8 @@
      tag "$meta.id"
--    label 'process_medium'
-+    label 'process_single'
+     label 'process_medium'
  
-     conda "bioconda::ensembl-vep=108.2"
-     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-@@ -18,6 +18,7 @@
+-    conda "bioconda::ensembl-vep=109.3"
+-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+-        'https://depot.galaxyproject.org/singularity/ensembl-vep:109.3--pl5321h2a3209d_1' :
+-        'biocontainers/ensembl-vep:109.3--pl5321h2a3209d_1' }"
++    conda "${ DynamicContainers.findLatest('ensembl-vep', params.vep_version, 'conda') }"
++    container "${ DynamicContainers.findLatest('ensembl-vep', params.vep_version, workflow.containerEngine) }"
+ 
+     input:
+     tuple val(meta), path(vcf), path(custom_extra_files)
+@@ -18,6 +16,7 @@
  
      output:
      tuple val(meta), path("*.vcf.gz")  , optional:true, emit: vcf
@@ -17,7 +22,7 @@ Changes in module 'nf-core/ensemblvep/vep'
      tuple val(meta), path("*.tab.gz")  , optional:true, emit: tab
      tuple val(meta), path("*.json.gz") , optional:true, emit: json
      path "*.summary.html"              , emit: report
-@@ -48,6 +49,7 @@
+@@ -48,6 +47,7 @@
          --fork $task.cpus \\
          --stats_file ${prefix}.summary.html \\
  
@@ -25,7 +30,7 @@ Changes in module 'nf-core/ensemblvep/vep'
  
      cat <<-END_VERSIONS > versions.yml
      "${task.process}":
-@@ -59,6 +61,7 @@
+@@ -59,6 +59,7 @@
      def prefix = task.ext.prefix ?: "${meta.id}"
      """
      touch ${prefix}.vcf.gz

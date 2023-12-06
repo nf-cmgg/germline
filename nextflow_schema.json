@@ -171,10 +171,10 @@
                     "type": "boolean",
                     "description": "Create a Gemini databases from the final VCFs"
                 },
-                "coverage_fast": {
+                "mosdepth_slow": {
                     "type": "boolean",
-                    "description": "Run mosdepth in fast-mode",
-                    "help_text": "This is advised if you don't need exact coverage BED files as output"
+                    "description": "Don't run mosdepth in fast-mode",
+                    "help_text": "This is advised if you need exact coverage BED files as output"
                 },
                 "project": {
                     "type": "string",
@@ -221,6 +221,24 @@
                 "only_merge": {
                     "type": "boolean",
                     "description": "Only run the pipeline until the creation of the genomicsdbs and output them"
+                },
+                "output_genomicsdb": {
+                    "type": "boolean",
+                    "description": "Output the genomicsDB together with the joint-genotyped VCF"
+                },
+                "callers": {
+                    "type": "string",
+                    "description": "A comma delimited string of the available callers. Current options are: 'haplotypecaller' and 'vardict'",
+                    "default": "haplotypecaller"
+                },
+                "vardict_min_af": {
+                    "type": "number",
+                    "description": "The minimum allele frequency for VarDict when no `vardict_min_af` is supplied in the samplesheet",
+                    "default": 0.1
+                },
+                "normalize": {
+                    "type": "boolean",
+                    "description": "Normalize the VCF after joint genotyping (will run on the decomposed VCF when --decompose is also used)"
                 }
             },
             "required": ["scatter_count"]
@@ -345,7 +363,6 @@
                     "type": "boolean",
                     "description": "Send plain-text email instead of HTML.",
                     "fa_icon": "fas fa-remove-format",
-                    "default": false,
                     "hidden": true
                 },
                 "max_multiqc_email_size": {
@@ -360,7 +377,6 @@
                     "type": "boolean",
                     "description": "Do not use coloured log outputs.",
                     "fa_icon": "fas fa-palette",
-                    "default": false,
                     "hidden": true
                 },
                 "hook_url": {
@@ -401,23 +417,25 @@
                     "type": "boolean",
                     "fa_icon": "far fa-eye-slash",
                     "description": "Show all params when using `--help`",
-                    "default": false,
                     "hidden": true,
                     "help_text": "By default, parameters set as _hidden_ in the schema are not shown on the command line when a user runs with `--help`. Specifying this option will tell the pipeline to show all parameters."
                 },
                 "validationLenientMode": {
                     "type": "boolean",
                     "default": false,
-                    "hidden": true
+                    "hidden": true,
+                    "description": "Lenient mode for parameter validation"
                 },
                 "validationFailUnrecognisedParams": {
                     "type": "boolean",
-                    "hidden": true
+                    "hidden": true,
+                    "description": "Fail on unrecognised parameters"
                 },
                 "validationSchemaIgnoreParams": {
                     "type": "string",
                     "default": "genomes,test_data",
-                    "hidden": true
+                    "hidden": true,
+                    "description": "Comma-separated list of parameters to ignore when validating against the schema"
                 }
             }
         },
@@ -512,7 +530,7 @@
                     "format": "file-path",
                     "description": "Path to the index of the dbSNFP file",
                     "fa_icon": "far fa-file-alt",
-                    "pattern": "^\\S+\\.csi$",
+                    "pattern": "^\\S+\\.(csi|tbi)$",
                     "mimetype": "text/plain"
                 },
                 "spliceai_indel": {
@@ -527,7 +545,7 @@
                     "type": "string",
                     "format": "file-path",
                     "description": "Path to the index of the VCF containing indels for spliceAI",
-                    "pattern": "^\\S+\\.tbi$",
+                    "pattern": "^\\S+\\.(csi|tbi)$",
                     "mimetype": "text/plain"
                 },
                 "spliceai_snv": {
@@ -541,7 +559,7 @@
                     "type": "string",
                     "format": "file-path",
                     "description": "Path to the index of the VCF containing SNVs for spliceAI",
-                    "pattern": "^\\S+\\.tbi$",
+                    "pattern": "^\\S+\\.(csi|tbi)$",
                     "mimetype": "text/plain"
                 },
                 "mastermind": {
@@ -555,13 +573,8 @@
                     "type": "string",
                     "format": "file-path",
                     "description": "Path to the index of the VCF for Mastermind",
-                    "pattern": "^\\S+\\.tbi$",
+                    "pattern": "^\\S+\\.(csi|tbi)$",
                     "mimetype": "text/plain"
-                },
-                "maxentscan": {
-                    "type": "string",
-                    "format": "directory-path",
-                    "description": "Path to the MaxEntScan executable directory"
                 },
                 "eog": {
                     "type": "string",
@@ -574,7 +587,7 @@
                     "type": "string",
                     "format": "file-path",
                     "description": "Path to the index of the VCF containing EOG annotations",
-                    "pattern": "^\\S+\\.tbi$",
+                    "pattern": "^\\S+\\.(csi|tbi)$",
                     "mimetype": "text/plain"
                 },
                 "vcfanno": {

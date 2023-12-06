@@ -3,7 +3,7 @@ nextflow_pipeline {
     name "Full pipeline test"
     script "main.nf"
     tag "full_wgs"
-    options "-cache false"
+    options "-stub"
 
     test("Success") {
 
@@ -14,6 +14,7 @@ nextflow_pipeline {
                 gemini   = true
                 add_ped  = true
                 validate = true
+                outdir = "${outputDir}"
 
                 roi      = null
 
@@ -26,37 +27,75 @@ nextflow_pipeline {
 
         then {
             def date = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new Date())
-            assert workflow.success
-            assert file("${outputDir}/${date}_test/Proband_12345/reports/Proband_12345.bcftools_stats.txt").exists()
-            assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.vcf.gz").exists()
-            assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.db").exists()
-            assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.ped").exists()
-            assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.bed").exists()
-            assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.samples.tsv").exists()
-            assert file("${outputDir}/NA24385D2_NVQ_034/reports/NA24385D2_NVQ_034.bcftools_stats.txt").exists()
-            assert file("${outputDir}/NA24385D2_NVQ_034/NA24385D2_NVQ_034.g.vcf.gz").exists()
-            assert file("${outputDir}/NA24385D2_NVQ_034/NA24385D2_NVQ_034.g.vcf.gz.tbi").exists()
-            assert file("${outputDir}/NA24385D2_NVQ_034/NA24385D2_NVQ_034.quantized.bed.gz").exists()
-            assert file("${outputDir}/DNA049572/reports/DNA049572.bcftools_stats.txt").exists()
-            assert file("${outputDir}/DNA049572/DNA049572.g.vcf.gz").exists()
-            assert file("${outputDir}/DNA049572/DNA049572.g.vcf.gz.tbi").exists()
-            assert file("${outputDir}/DNA049572/DNA049572.quantized.bed.gz").exists()
-            assert file("${outputDir}/multiqc_reports/multiqc_report.html").exists()
-            assert file("${outputDir}/DNA049572/validation/DNA049572.fn.vcf.gz").exists()
-            assert file("${outputDir}/DNA049572/validation/DNA049572.fn.vcf.gz.tbi").exists()
-            assert file("${outputDir}/DNA049572/validation/DNA049572.fp.vcf.gz").exists()
-            assert file("${outputDir}/DNA049572/validation/DNA049572.fp.vcf.gz.tbi").exists()
-            assert file("${outputDir}/DNA049572/validation/DNA049572.non_snp_roc.tsv.gz").exists()
-            assert file("${outputDir}/DNA049572/validation/DNA049572.phasing.txt").exists()
-            assert file("${outputDir}/DNA049572/validation/DNA049572.png").exists()
-            assert file("${outputDir}/DNA049572/validation/DNA049572.snp_roc.tsv.gz").exists()
-            assert file("${outputDir}/DNA049572/validation/DNA049572.summary.txt").exists()
-            assert file("${outputDir}/DNA049572/validation/DNA049572.svg").exists()
-            assert file("${outputDir}/DNA049572/validation/DNA049572.tp-baseline.vcf.gz").exists()
-            assert file("${outputDir}/DNA049572/validation/DNA049572.tp-baseline.vcf.gz.tbi").exists()
-            assert file("${outputDir}/DNA049572/validation/DNA049572.tp.vcf.gz").exists()
-            assert file("${outputDir}/DNA049572/validation/DNA049572.tp.vcf.gz.tbi").exists()
-            assert file("${outputDir}/DNA049572/validation/DNA049572.weighted_roc.tsv.gz").exists()
+            assertAll {
+                assert workflow.success
+                assert file("${outputDir}/${date}_test/Proband_12345/reports/Proband_12345.gatk4-joint.bcftools_stats.txt").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/reports/Proband_12345.gatk4-joint.somalier.html").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.gatk4-joint.vcf.gz").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.gatk4-joint.vcf.gz.tbi").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.gatk4-joint.ped").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.gatk4-joint.db").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/reports/DNA049572.vardict.bcftools_stats.txt").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/reports/NA24385D2_NVQ_034.vardict.bcftools_stats.txt").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/reports/DNA049572.vardict.somalier.html").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/reports/NA24385D2_NVQ_034.vardict.somalier.html").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/NA24385D2_NVQ_034.vardict.vcf.gz").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/NA24385D2_NVQ_034.vardict.vcf.gz.tbi").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/NA24385D2_NVQ_034.vardict.ped").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/NA24385D2_NVQ_034.vardict.db").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/DNA049572.vardict.vcf.gz").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/DNA049572.vardict.vcf.gz.tbi").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/DNA049572.vardict.ped").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/DNA049572.vardict.db").exists()
+                assert file("${outputDir}/${date}_test/Proband_12345/Proband_12345.bed").exists()
+                assert file("${outputDir}/NA24385D2_NVQ_034/reports/NA24385D2_NVQ_034.haplotypecaller.bcftools_stats.txt").exists()
+                assert file("${outputDir}/NA24385D2_NVQ_034/NA24385D2_NVQ_034.haplotypecaller.g.vcf.gz").exists()
+                assert file("${outputDir}/NA24385D2_NVQ_034/NA24385D2_NVQ_034.haplotypecaller.g.vcf.gz.tbi").exists()
+                assert file("${outputDir}/NA24385D2_NVQ_034/NA24385D2_NVQ_034.bed").exists()
+                assert file("${outputDir}/DNA049572/reports/DNA049572.haplotypecaller.bcftools_stats.txt").exists()
+                assert file("${outputDir}/DNA049572/DNA049572.haplotypecaller.g.vcf.gz").exists()
+                assert file("${outputDir}/DNA049572/DNA049572.haplotypecaller.g.vcf.gz.tbi").exists()
+                assert file("${outputDir}/DNA049572/DNA049572.bed").exists()
+                assert file("${outputDir}/multiqc/multiqc_report.html").exists()        
+                assert file("${outputDir}/DNA049572/validation/gatk4-joint/DNA049572.fn.vcf.gz").exists()
+                assert file("${outputDir}/DNA049572/validation/gatk4-joint/DNA049572.fn.vcf.gz.tbi").exists()
+                assert file("${outputDir}/DNA049572/validation/gatk4-joint/DNA049572.fp.vcf.gz").exists()
+                assert file("${outputDir}/DNA049572/validation/gatk4-joint/DNA049572.fp.vcf.gz.tbi").exists()
+                assert file("${outputDir}/DNA049572/validation/gatk4-joint/DNA049572.non_snp_roc.tsv.gz").exists()
+                assert file("${outputDir}/DNA049572/validation/gatk4-joint/DNA049572.phasing.txt").exists()
+                assert file("${outputDir}/DNA049572/validation/gatk4-joint/DNA049572.non_snp.png").exists()
+                assert file("${outputDir}/DNA049572/validation/gatk4-joint/DNA049572.non_snp.svg").exists()
+                assert file("${outputDir}/DNA049572/validation/gatk4-joint/DNA049572.snp.png").exists()
+                assert file("${outputDir}/DNA049572/validation/gatk4-joint/DNA049572.snp.svg").exists()
+                assert file("${outputDir}/DNA049572/validation/gatk4-joint/DNA049572.weighted.png").exists()
+                assert file("${outputDir}/DNA049572/validation/gatk4-joint/DNA049572.weighted.svg").exists()
+                assert file("${outputDir}/DNA049572/validation/gatk4-joint/DNA049572.snp_roc.tsv.gz").exists()
+                assert file("${outputDir}/DNA049572/validation/gatk4-joint/DNA049572.summary.txt").exists()
+                assert file("${outputDir}/DNA049572/validation/gatk4-joint/DNA049572.tp-baseline.vcf.gz").exists()
+                assert file("${outputDir}/DNA049572/validation/gatk4-joint/DNA049572.tp-baseline.vcf.gz.tbi").exists()
+                assert file("${outputDir}/DNA049572/validation/gatk4-joint/DNA049572.tp.vcf.gz").exists()
+                assert file("${outputDir}/DNA049572/validation/gatk4-joint/DNA049572.tp.vcf.gz.tbi").exists()
+                assert file("${outputDir}/DNA049572/validation/gatk4-joint/DNA049572.weighted_roc.tsv.gz").exists()            
+                assert file("${outputDir}/DNA049572/validation/vardict/DNA049572.fn.vcf.gz").exists()
+                assert file("${outputDir}/DNA049572/validation/vardict/DNA049572.fn.vcf.gz.tbi").exists()
+                assert file("${outputDir}/DNA049572/validation/vardict/DNA049572.fp.vcf.gz").exists()
+                assert file("${outputDir}/DNA049572/validation/vardict/DNA049572.fp.vcf.gz.tbi").exists()
+                assert file("${outputDir}/DNA049572/validation/vardict/DNA049572.non_snp_roc.tsv.gz").exists()
+                assert file("${outputDir}/DNA049572/validation/vardict/DNA049572.phasing.txt").exists()
+                assert file("${outputDir}/DNA049572/validation/vardict/DNA049572.non_snp.png").exists()
+                assert file("${outputDir}/DNA049572/validation/vardict/DNA049572.non_snp.svg").exists()
+                assert file("${outputDir}/DNA049572/validation/vardict/DNA049572.snp.png").exists()
+                assert file("${outputDir}/DNA049572/validation/vardict/DNA049572.snp.svg").exists()
+                assert file("${outputDir}/DNA049572/validation/vardict/DNA049572.weighted.png").exists()
+                assert file("${outputDir}/DNA049572/validation/vardict/DNA049572.weighted.svg").exists()
+                assert file("${outputDir}/DNA049572/validation/vardict/DNA049572.snp_roc.tsv.gz").exists()
+                assert file("${outputDir}/DNA049572/validation/vardict/DNA049572.summary.txt").exists()
+                assert file("${outputDir}/DNA049572/validation/vardict/DNA049572.tp-baseline.vcf.gz").exists()
+                assert file("${outputDir}/DNA049572/validation/vardict/DNA049572.tp-baseline.vcf.gz.tbi").exists()
+                assert file("${outputDir}/DNA049572/validation/vardict/DNA049572.tp.vcf.gz").exists()
+                assert file("${outputDir}/DNA049572/validation/vardict/DNA049572.tp.vcf.gz.tbi").exists()
+                assert file("${outputDir}/DNA049572/validation/vardict/DNA049572.weighted_roc.tsv.gz").exists()
+            }
         }
     }
 }

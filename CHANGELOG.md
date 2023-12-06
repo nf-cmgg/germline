@@ -3,6 +3,31 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.4.0 - Kingly Kortrijk - [December 6 2023]
+
+### New Features
+
+1. Added the `--callers` parameter to specify the variant caller to use. Currently only `haplotypecaller` and `vardict` are supported.
+2. Added the `vardict` variant caller.
+3. Added the `--vardict_min_af` parameter to specify the minimum allele frequency for `vardict`. This option is also available in the samplesheet as `vardict_min_af` to set it dynamically per sample.
+4. Added the `--output_genomicsdb` option to specify whether a GenomicsDB should be outputted or not. This will be `true` when using `only_merge`.
+5. Added `--normalize` options for decomposing and normalizing of variants after calling and genotyping.
+6. Added `WGS`, `WES`, `SeqCap`, `HyperCap` and `seqplorer` profiles that can be used to set the default parameters for these types of runs.
+
+### Improvements
+
+1. Refactored the pipeline to accomodate future additions of variant callers and genotypers
+2. Removed a lot of unnecessary bloat
+3. Improved GenomicsDBImport (can now be multithreaded and runs a lot faster). This will make very big runs more possible.
+4. Changed `coverage_fast` to `mosdepth_slow`, reversing the effect of the parameter. By default mosdepth will now be run with `--fast-mode`. This can be disabled using the new `mosdepth_slow` parameter.
+5. Automatically merge the regions that are within 150 bps of eachother for the variant calling. This way it's ensured that indel calling happens correctly.
+
+### Fixes
+
+1. Fixed an issue with the outputting of the validation PNG files, now all three types of PNGs are outputted.
+2. Fixed a small issue where VCFs without a sample created by the callers could not be used by `bcftools concat`, these files will now be filtered from the input of the command.
+3. Removed the `--maxentscan` parameter because this file is automatically present in the container
+
 ## v1.3.0 - Happy Hasselt - [July 10 2023]
 
 ### New Features

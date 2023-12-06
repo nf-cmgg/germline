@@ -3,7 +3,7 @@ process SOMALIER_RELATE {
     tag "$meta.id"
     label 'process_low'
 
-    conda "bioconda::somalier=0.2.15"
+    conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/somalier:0.2.15--h37c5b7d_0':
         'biocontainers/somalier:0.2.15--h37c5b7d_0' }"
@@ -37,7 +37,7 @@ process SOMALIER_RELATE {
         ${sample_groups_command} \\
         ${ped_command}
 
-    cut -f1-6 ${prefix}.samples.tsv > ${prefix}_somalier.ped
+    cut -f1-6 ${prefix}.samples.tsv | sed -e 's/-9/0/' > ${prefix}_somalier.ped
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -52,7 +52,7 @@ process SOMALIER_RELATE {
     touch ${prefix}.html
     touch ${prefix}.pairs.tsv
     touch ${prefix}.samples.tsv
-    touch ${prefix}.ped
+    touch ${prefix}_somalier.ped
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

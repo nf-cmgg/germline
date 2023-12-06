@@ -27,7 +27,8 @@ jobs:
           - "23.04.0"
           - "latest-everything"
         test:
-          - "default"
+          - "vardict"
+          - "haplotypecaller"
           - "fails"
           - "annotate_test"
           - "filter_test"
