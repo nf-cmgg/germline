@@ -154,8 +154,8 @@ workflow CMGGGERMLINE {
 
     ch_default_roi        = params.roi                 ? Channel.fromPath(params.roi).collect()                : []
 
-    ch_dbsnp_ready        = params.dbsnp               ? Channel.fromPath(params.dbsnp).collect()              : []
-    ch_dbsnp_tbi          = params.dbsnp_tbi           ? Channel.fromPath(params.dbsnp_tbi).collect()          : []
+    ch_dbsnp_ready        = params.dbsnp               ? Channel.fromPath(params.dbsnp).collect()              : Channel.value([])
+    ch_dbsnp_tbi          = params.dbsnp_tbi           ? Channel.fromPath(params.dbsnp_tbi).collect()          : Channel.value([])
 
     ch_somalier_sites     = params.somalier_sites      ? Channel.fromPath(params.somalier_sites).collect()     : []
 
