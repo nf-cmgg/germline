@@ -23,8 +23,7 @@ workflow VCF_CONCAT_BCFTOOLS {
         .set { ch_concat_input }
 
     BCFTOOLS_CONCAT(
-        ch_concat_input,
-        []
+        ch_concat_input
     )
     ch_versions = ch_versions.mix(BCFTOOLS_CONCAT.out.versions.first())
 

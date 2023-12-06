@@ -34,8 +34,8 @@ workflow CRAM_CALL_VARDICTJAVA {
 
         SAMTOOLS_CONVERT(
             ch_cram_bam.cram,
-            ch_fasta.map { it[1] },
-            ch_fai.map { it[1] }
+            ch_fasta,
+            ch_fai
         )
         ch_versions = ch_versions.mix(SAMTOOLS_CONVERT.out.versions.first())
 
@@ -76,7 +76,7 @@ workflow CRAM_CALL_VARDICTJAVA {
         VCF_CONCAT_BCFTOOLS.out.vcfs
             .combine(["${projectDir}/assets/vardict.header.vcf.gz"])
             .map { meta, vcf, header ->
-                [ meta, vcf, header ]
+                [ meta, vcf, header, [] ]
             }
             .set { ch_reheader_input}
 

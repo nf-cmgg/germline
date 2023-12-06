@@ -2,7 +2,7 @@ process RTGTOOLS_PEDFILTER {
     tag "$meta.id"
     label 'process_low'
 
-    conda "bioconda::rtg-tools=3.12.1"
+    conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/rtg-tools:3.12.1--hdfd78af_0':
         'biocontainers/rtg-tools:3.12.1--hdfd78af_0' }"
@@ -31,10 +31,11 @@ process RTGTOOLS_PEDFILTER {
     def postprocess = extension == "vcf.gz" ? "| rtg bgzip ${args2} -" : ""
 
     """
+    cut -f1-6 ${input} > ${prefix}.ped
 
     rtg pedfilter \\
         ${args} \\
-        ${input} \\
+        ${prefix}.ped \\
     | head -n -1 ${postprocess} > ${prefix}.${extension}
 
 
