@@ -239,6 +239,10 @@
                 "normalize": {
                     "type": "boolean",
                     "description": "Normalize the VCF after joint genotyping (will run on the decomposed VCF when --decompose is also used)"
+                },
+                "output_suffix": {
+                    "type": "string",
+                    "description": "A custom suffix to add to the basename of the output files"
                 }
             },
             "required": ["scatter_count"]
@@ -610,7 +614,7 @@
                 },
                 "vcfanno_resources": {
                     "type": "string",
-                    "description": "A comma-seperated list of resource files for VCFanno, please also supply their indices using this parameter"
+                    "description": "A semicolon-seperated list of resource files for VCFanno, please also supply their indices using this parameter"
                 }
             },
             "help_text": "Annotation will only run when `--annotate true` is specified."

@@ -17,24 +17,33 @@ include { fromSamplesheet } from 'plugin/nf-validation'
 //
 
 if(params.dbsnp_tbi && !params.dbsnp){
-    exit 1, "Please specify the dbsnp VCF with --dbsnp VCF"
+    error("Please specify the dbsnp VCF with --dbsnp VCF")
 }
 
 if (params.annotate) {
     // Check if a genome is given
-    if (!params.genome) { exit 1, "A genome should be supplied for annotation (use --genome)"}
+    if (!params.genome) { error("A genome should be supplied for annotation (use --genome)") }
 
     // Check if the VEP versions were given
-    if (!params.vep_version) { exit 1, "A VEP version should be supplied for annotation (use --vep_version)"}
-    if (!params.vep_cache_version) { exit 1, "A VEP cache version should be supplied for annotation (use --vep_cache_version)"}
+    if (!params.vep_version) { error("A VEP version should be supplied for annotation (use --vep_version)") }
+    if (!params.vep_cache_version) { error("A VEP cache version should be supplied for annotation (use --vep_cache_version)") }
 
     // Check if a species is entered
-    if (!params.species) { exit 1, "A species should be supplied for annotation (use --species)"}
+    if (!params.species) { error("A species should be supplied for annotation (use --species)") }
 
     // Check if all vcfanno files are supplied when vcfanno should be used
     if (params.vcfanno && (!params.vcfanno_config || !params.vcfanno_resources)) {
-        exit 1, "A TOML file and resource files should be supplied when using vcfanno (use --vcfanno_config and --vcfanno_resources)"
+        error("A TOML file and resource files should be supplied when using vcfanno (use --vcfanno_config and --vcfanno_resources)")
     }
+}
+
+callers = params.callers.tokenize(",")
+for(caller in callers) {
+    if(!(caller in GlobalVariables.availableCallers)) { error("\"${caller}\" is not a supported callers please use one or more of these instead: ${GlobalVariables.availableCallers}")}
+}
+
+if (params.output_suffix && callers.size() > 1) {
+    error("Cannot use --output_suffix with more than one caller")
 }
 
 /*
@@ -134,11 +143,6 @@ workflow CMGGGERMLINE {
 
     if (params.input) { ch_input = file(params.input, checkIfExists: true) } else { error('Input samplesheet not specified!') }
 
-    callers = params.callers.tokenize(",")
-    for(caller in callers) {
-        if(!(caller in GlobalVariables.availableCallers)) { error("\"${caller}\" is not a supported callers please use one or more of these instead: ${GlobalVariables.availableCallers}")}
-    }
-
     ch_versions = Channel.empty()
     ch_reports  = Channel.empty()
 
@@ -163,7 +167,7 @@ workflow CMGGGERMLINE {
 
     ch_vcfanno_config     = params.vcfanno_config      ? Channel.fromPath(params.vcfanno_config).collect()     : []
     ch_vcfanno_lua        = params.vcfanno_lua         ? Channel.fromPath(params.vcfanno_lua).collect()        : []
-    ch_vcfanno_resources  = params.vcfanno_resources   ? Channel.of(params.vcfanno_resources.split(",")).map({ file(it, checkIfExists:true) }).collect()   : []
+    ch_vcfanno_resources  = params.vcfanno_resources   ? Channel.of(params.vcfanno_resources.split(";")).map({ file(it, checkIfExists:true) }).collect()   : []
 
     //
     // Check for the presence of EnsemblVEP plugins that use extra files
@@ -333,7 +337,7 @@ workflow CMGGGERMLINE {
             // Infer the family ID from the PED file if no family ID was given.
             // If no PED is given, use the sample ID as family ID            
             def new_meta = meta + [
-                family: meta.family ?: ped ? get_family_id_from_ped(ped) : meta.sample, 
+                family: meta.family ?: ped ? get_family_id_from_ped(ped) : meta.sample
             ]
             [ new_meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ]
         }
