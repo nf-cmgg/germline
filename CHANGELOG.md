@@ -3,9 +3,17 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v1.5.0dev [date]
+## v1.4.1dev [date]
 
 ### New Features
+
+1. Added the `--output_suffix` option to add a custom suffix to the basename of the output files.
+
+### Improvements
+
+1. Updated the seqplorer profile so that the output filenames are correct for easy import
+2. Changed the separator in `--vcfanno_resources` to `;`
+instead of `,` to allow commas in glob patterns.
 
 ## v1.4.0 - Kingly Kortrijk - [December 6 2023]
 

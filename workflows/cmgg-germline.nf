@@ -163,7 +163,7 @@ workflow CMGGGERMLINE {
 
     ch_vcfanno_config     = params.vcfanno_config      ? Channel.fromPath(params.vcfanno_config).collect()     : []
     ch_vcfanno_lua        = params.vcfanno_lua         ? Channel.fromPath(params.vcfanno_lua).collect()        : []
-    ch_vcfanno_resources  = params.vcfanno_resources   ? Channel.of(params.vcfanno_resources.split(",")).map({ file(it, checkIfExists:true) }).collect()   : []
+    ch_vcfanno_resources  = params.vcfanno_resources   ? Channel.of(params.vcfanno_resources.split(";")).map({ file(it, checkIfExists:true) }).collect()   : []
 
     //
     // Check for the presence of EnsemblVEP plugins that use extra files
@@ -333,7 +333,7 @@ workflow CMGGGERMLINE {
             // Infer the family ID from the PED file if no family ID was given.
             // If no PED is given, use the sample ID as family ID            
             def new_meta = meta + [
-                family: meta.family ?: ped ? get_family_id_from_ped(ped) : meta.sample, 
+                family: meta.family ?: ped ? get_family_id_from_ped(ped) : meta.sample
             ]
             [ new_meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ]
         }

@@ -33,7 +33,8 @@ params.mastermind           = WorkflowMain.getGenomeAttribute(params, 'mastermin
 params.mastermind_tbi       = WorkflowMain.getGenomeAttribute(params, 'mastermind_tbi')
 params.eog                  = WorkflowMain.getGenomeAttribute(params, 'eog')
 params.eog_tbi              = WorkflowMain.getGenomeAttribute(params, 'eog_tbi')
-
+params.vcfanno_resources    = WorkflowMain.getGenomeAttribute(params, 'vcfanno_resources')
+params.vcfanno_config       = WorkflowMain.getGenomeAttribute(params, 'vcfanno_config')
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
