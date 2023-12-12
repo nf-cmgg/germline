@@ -182,7 +182,7 @@ workflow CMGGGERMLINE {
             ch_vep_extra_files.add(file(params.dbnsfp_tbi, checkIfExists: true))
         }
         else if (params.vep_dbnsfp) {
-            exit 1, "Please specify '--vep_dbsnfp true', '--dbnsfp PATH/TO/DBNSFP/FILE' and '--dbnspf_tbi PATH/TO/DBNSFP/INDEX/FILE' to use the dbnsfp VEP plugin."
+            error("Please specify '--vep_dbsnfp true', '--dbnsfp PATH/TO/DBNSFP/FILE' and '--dbnspf_tbi PATH/TO/DBNSFP/INDEX/FILE' to use the dbnsfp VEP plugin.")
         }
 
         // Check if all spliceai files are given
@@ -193,7 +193,7 @@ workflow CMGGGERMLINE {
             ch_vep_extra_files.add(file(params.spliceai_indel_tbi, checkIfExists: true))
         }
         else if (params.vep_spliceai) {
-            exit 1, "Please specify '--vep_spliceai true', '--spliceai_snv PATH/TO/SPLICEAI/SNV/FILE', '--spliceai_snv_tbi PATH/TO/SPLICEAI/SNV/INDEX/FILE', '--spliceai_indel PATH/TO/SPLICEAI/INDEL/FILE' and '--spliceai_indel_tbi PATH/TO/SPLICEAI/INDEL/INDEX/FILE' to use the SpliceAI VEP plugin."
+            error("Please specify '--vep_spliceai true', '--spliceai_snv PATH/TO/SPLICEAI/SNV/FILE', '--spliceai_snv_tbi PATH/TO/SPLICEAI/SNV/INDEX/FILE', '--spliceai_indel PATH/TO/SPLICEAI/INDEL/FILE' and '--spliceai_indel_tbi PATH/TO/SPLICEAI/INDEL/INDEX/FILE' to use the SpliceAI VEP plugin.")
         }
 
         // Check if all mastermind files are given
@@ -202,7 +202,7 @@ workflow CMGGGERMLINE {
             ch_vep_extra_files.add(file(params.mastermind_tbi, checkIfExists: true))
         }
         else if (params.vep_mastermind) {
-            exit 1, "Please specify '--vep_mastermind true', '--mastermind PATH/TO/MASTERMIND/FILE' and '--mastermind_tbi PATH/TO/MASTERMIND/INDEX/FILE' to use the mastermind VEP plugin."
+            error("Please specify '--vep_mastermind true', '--mastermind PATH/TO/MASTERMIND/FILE' and '--mastermind_tbi PATH/TO/MASTERMIND/INDEX/FILE' to use the mastermind VEP plugin.")
         }
 
         // Check if all EOG files are given
@@ -211,7 +211,16 @@ workflow CMGGGERMLINE {
             ch_vep_extra_files.add(file(params.eog_tbi, checkIfExists: true))
         }
         else if (params.vep_eog) {
-            exit 1, "Please specify '--vep_eog true', '--eog PATH/TO/EOG/FILE' and '--eog_tbi PATH/TO/EOG/INDEX/FILE' to use the EOG custom VEP plugin."
+            error("Please specify '--vep_eog true', '--eog PATH/TO/EOG/FILE' and '--eog_tbi PATH/TO/EOG/INDEX/FILE' to use the EOG custom VEP plugin.")
+        }
+
+        // Check if all AlphaMissense files are given
+        if (params.alphamissense && params.alphamissense_tbi && params.vep_alphamissense) {
+            ch_vep_extra_files.add(file(params.alphamissense, checkIfExists: true))
+            ch_vep_extra_files.add(file(params.alphamissense_tbi, checkIfExists: true))
+        }
+        else if (params.vep_alphamissense) {
+            error("Please specify '--vep_alphamissense true', '--alphamissense PATH/TO/ALPHAMISSENSE/FILE' and '--alphamissense_tbi PATH/TO/ALPHAMISSENSE/INDEX/FILE' to use the AlphaMissense VEP plugin.")
         }
     }
 
@@ -778,22 +787,22 @@ def get_family_id_from_ped(ped_file){
             continue
         }
         else if (line_count > 1 && line ==~ /^#.*$/) {
-            exit 1, "[PED file error] A commented line was found on line ${line_count} in ${ped_file}, the only commented line allowed is an optional header on line 1."
+            error("[PED file error] A commented line was found on line ${line_count} in ${ped_file}, the only commented line allowed is an optional header on line 1.")
         }
         else if (line_count == 1 && line ==~ /^#.* $/) {
-            exit 1, "[PED file error] The header in ${ped_file} contains a trailing space, please remove this."
+            error("[PED file error] The header in ${ped_file} contains a trailing space, please remove this.")
         }
         else if (line ==~ /^.+#.*$/) {
-            exit 1, "[PED file error] A '#' has been found as a non-starting character on line ${line_count} in ${ped_file}, this is an illegal character and should be removed."
+            error("[PED file error] A '#' has been found as a non-starting character on line ${line_count} in ${ped_file}, this is an illegal character and should be removed.")
         }
         else if (line ==~ /^[^#].* .*$/) {
-            exit 1, "[PED file error] A space has been found on line ${line_count} in ${ped_file}, please only use tabs to seperate the values (and change spaces in names to '_')."
+            error("[PED file error] A space has been found on line ${line_count} in ${ped_file}, please only use tabs to seperate the values (and change spaces in names to '_').")
         }
         else if ((line ==~ /^(\w+\t)+\w+$/) == false) {
-            exit 1, "[PED file error] An illegal character has been found on line ${line_count} in ${ped_file}, only a-z; A-Z; 0-9 and '_' are allowed as column values."
+            error("[PED file error] An illegal character has been found on line ${line_count} in ${ped_file}, only a-z; A-Z; 0-9 and '_' are allowed as column values.")
         }
         else if ((line ==~ /^(\w+\t){5}\w+$/) == false) {
-            exit 1, "[PED file error] ${ped_file} should contain exactly 6 tab-delimited columns (family_id    individual_id    paternal_id    maternal_id    sex    phenotype). This is not the case on line ${line_count}."
+            error("[PED file error] ${ped_file} should contain exactly 6 tab-delimited columns (family_id    individual_id    paternal_id    maternal_id    sex    phenotype). This is not the case on line ${line_count}.")
         }
     }
 
