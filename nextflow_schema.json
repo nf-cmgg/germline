@@ -508,6 +508,12 @@
                     "fa_icon": "fas fa-question-circle",
                     "help_text": "The '--eog' and '--eog_tbi' parameters need to be specified when using this parameter."
                 },
+                "vep_alphamissense": {
+                    "type": "boolean",
+                    "description": "Use the AlphaMissense plugin with Ensembl VEP",
+                    "fa_icon": "fas fa-question-circle",
+                    "help_text": "The '--alphamissense' and '--alphamissense_tbi' parameters need to be specified when using this parameter."
+                },
                 "vep_version": {
                     "type": "string",
                     "default": "105.0",
@@ -577,6 +583,20 @@
                     "type": "string",
                     "format": "file-path",
                     "description": "Path to the index of the VCF for Mastermind",
+                    "pattern": "^\\S+\\.(csi|tbi)$",
+                    "mimetype": "text/plain"
+                },
+                "alphamissense": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Path to the TSV for AlphaMissense",
+                    "pattern": "^\\S+\\.tsv\\.gz$",
+                    "mimetype": "text/plain"
+                },
+                "alphamissense_tbi": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Path to the index of the TSV for AlphaMissense",
                     "pattern": "^\\S+\\.(csi|tbi)$",
                     "mimetype": "text/plain"
                 },
