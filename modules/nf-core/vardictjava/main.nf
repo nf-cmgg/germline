@@ -39,6 +39,7 @@ process VARDICTJAVA {
     | ${filter} \\
     | ${convert_to_vcf} \\
         ${args2} \\
+    | sed -e 's/##FORMAT=<ID=AF,Number=A/##FORMAT=<ID=AF,Number=1/' \\
     > ${prefix}.vcf
 
     cat <<-END_VERSIONS > versions.yml

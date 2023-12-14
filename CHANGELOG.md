@@ -10,12 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 1. Added the `--output_suffix` parameter to add a custom suffix to the basename of the output files.
 2. Implemented files for the alphamissense plugin of VEP.
 3. Added the `--only_pass` parameter to only output variants that have the `PASS` flag in the FILTER column. (This is only applied when `--filter` is also given)
+4. Added the `--keep_alts` parameter. This will tell the pipeline to not filter out the alternate contigs, which will now be done by default.
 
 ### Improvements
 
 1. Updated the seqplorer profile so that the output filenames are correct for easy import
 2. Changed the separator in `--vcfanno_resources` to `;`
    instead of `,` to allow commas in glob patterns.
+3. Removed the reheader step from the vardict subworkflow and added a simple sed substitution to the vardictjava module
 
 ## v1.4.0 - Kingly Kortrijk - [December 6 2023]
 
