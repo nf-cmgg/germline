@@ -248,8 +248,7 @@
                     "type": "boolean",
                     "description": "Filter out all variants that don't have the PASS filter for vardict. This only works when --filter is also given"
                 }
-            },
-            "required": ["scatter_count"]
+            }
         },
         "institutional_config_options": {
             "title": "Institutional config options",
