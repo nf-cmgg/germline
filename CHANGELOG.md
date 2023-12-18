@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 1. Added the `--output_suffix` parameter to add a custom suffix to the basename of the output files.
 2. Implemented files for the alphamissense plugin of VEP.
 3. Added the `--only_pass` parameter to only output variants that have the `PASS` flag in the FILTER column. (This is only applied when `--filter` is also given)
-4. Added the `--keep_alts` parameter. This will tell the pipeline to not filter out the alternate contigs, which will now be done by default.
+4. Added the `--keep_alt_contigs` parameter. This will tell the pipeline to not filter out the alternate contigs, which will now be done by default.
 
 ### Improvements
 

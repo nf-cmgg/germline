@@ -248,7 +248,7 @@
                     "type": "boolean",
                     "description": "Filter out all variants that don't have the PASS filter for vardict. This only works when --filter is also given"
                 },
-                "keep_alts": {
+                "keep_alt_contigs": {
                     "type": "boolean",
                     "description": "Keep all aditional contigs for calling instead of filtering them out before"
                 }
