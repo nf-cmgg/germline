@@ -73,28 +73,15 @@ workflow CRAM_CALL_VARDICTJAVA {
         )
         ch_versions = ch_versions.mix(VCF_CONCAT_BCFTOOLS.out.versions)
 
-        VCF_CONCAT_BCFTOOLS.out.vcfs
-            .combine(["${projectDir}/assets/vardict.header.vcf.gz"])
-            .map { meta, vcf, header ->
-                [ meta, vcf, header, [] ]
-            }
-            .set { ch_reheader_input}
-
-        BCFTOOLS_REHEADER(
-            ch_reheader_input,
-            ch_fai
-        )
-        ch_versions = ch_versions.mix(BCFTOOLS_REHEADER.out.versions.first())
-
         if(params.filter) {
             VCF_FILTER_BCFTOOLS(
-                BCFTOOLS_REHEADER.out.vcf,
+                VCF_CONCAT_BCFTOOLS.out.vcfs,
                 false
             )
             ch_versions = ch_versions.mix(VCF_FILTER_BCFTOOLS.out.versions)
             ch_filter_output = VCF_FILTER_BCFTOOLS.out.vcfs
         } else {
-            ch_filter_output = BCFTOOLS_REHEADER.out.vcf
+            ch_filter_output = VCF_CONCAT_BCFTOOLS.out.vcfs
         }
 
         TABIX_TABIX(
