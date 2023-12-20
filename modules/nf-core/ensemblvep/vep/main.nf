@@ -16,7 +16,6 @@ process ENSEMBLVEP_VEP {
 
     output:
     tuple val(meta), path("*.vcf.gz")  , optional:true, emit: vcf
-    tuple val(meta), path("*.tbi")     , optional:true, emit: tbi
     tuple val(meta), path("*.tab.gz")  , optional:true, emit: tab
     tuple val(meta), path("*.json.gz") , optional:true, emit: json
     path "*.summary.html"              , emit: report
@@ -47,8 +46,6 @@ process ENSEMBLVEP_VEP {
         --fork $task.cpus \\
         --stats_file ${prefix}.summary.html \\
 
-    tabix ${prefix}.${file_extension}.gz
-
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         ensemblvep: \$( echo \$(vep --help 2>&1) | sed 's/^.*Versions:.*ensembl-vep : //;s/ .*\$//')
@@ -59,7 +56,6 @@ process ENSEMBLVEP_VEP {
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
     touch ${prefix}.vcf.gz
-    touch ${prefix}.tbi
     touch ${prefix}.tab.gz
     touch ${prefix}.json.gz
     touch ${prefix}.summary.html
