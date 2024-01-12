@@ -308,7 +308,8 @@
                         "git_sha": "527a80a28d9a54e5fd3626168ab72b063c11fbb2",
                         "installed_by": [
                             "modules"
-                        ]
+                        ],
+                        "patch": "modules/nf-core/vcf2db/vcf2db.diff"
                     },
                     "vcfanno": {
                         "branch": "master",
