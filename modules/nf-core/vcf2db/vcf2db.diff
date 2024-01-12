@@ -115,7 +115,7 @@ Changes in module 'nf-core/vcf2db'
 
 --- /dev/null
 +++ modules/nf-core/vcf2db/Dockerfile
-@@ -0,0 +1,8 @@
+@@ -0,0 +1,11 @@
 +FROM mambaorg/micromamba:1.4-focal
 +
 +COPY ./vcf2db_env.yaml .
@@ -124,4 +124,7 @@ Changes in module 'nf-core/vcf2db'
 +RUN micromamba install --yes --name base --no-deps -c bioconda vcf2db==2020.02.24
 +RUN micromamba install --yes --name base --no-deps -c conda-forge coreutils
 +RUN micromamba clean --all --yes
++
++ARG MAMBA_DOCKERFILE_ACTIVATE=1
++ENV PATH "$MAMBA_ROOT_PREFIX/bin:$PATH"
 ************************************************************
