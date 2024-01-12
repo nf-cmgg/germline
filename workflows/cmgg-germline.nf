@@ -241,8 +241,8 @@ workflow CMGGGERMLINE {
             }
             .collect()
             .set { ch_dbsnp_tbi_ready }
-    } else if (ch_dbsnp_ready) {
-        ch_dbsnp_tbi.set { ch_dbsnp_tbi_ready }
+    } else {
+        ch_dbsnp_tbi_ready = ch_dbsnp_tbi
     }
 
     // Reference fasta index
