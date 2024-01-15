@@ -3,7 +3,7 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v1.4.1dev [date]
+## v1.4.1 - Lively Leuven - [January 15 2024]
 
 ### New Features
 
@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 2. Implemented files for the alphamissense plugin of VEP.
 3. Added the `--only_pass` parameter to only output variants that have the `PASS` flag in the FILTER column. (This is only applied when `--filter` is also given)
 4. Added the `--keep_alt_contigs` parameter. This will tell the pipeline to not filter out the alternate contigs, which will now be done by default.
+5. Add dbsnp Ids to VCFs coming from vardict. This will be done automatically if a dbsnp VCF is given to the pipeline through the `--dbsnp` parameter.
 
 ### Improvements
 
@@ -18,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 2. Changed the separator in `--vcfanno_resources` to `;`
    instead of `,` to allow commas in glob patterns.
 3. Removed the reheader step from the vardict subworkflow and added a simple sed substitution to the vardictjava module
+4. `vcf2db` now uses a python 2 environment to increase it's stability
 
 ## v1.4.0 - Kingly Kortrijk - [December 6 2023]
 
