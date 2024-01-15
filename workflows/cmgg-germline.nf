@@ -158,8 +158,8 @@ workflow CMGGGERMLINE {
 
     ch_default_roi        = params.roi                 ? Channel.fromPath(params.roi).collect()                : []
 
-    ch_dbsnp_ready        = params.dbsnp               ? Channel.fromPath(params.dbsnp).collect()              : Channel.value([])
-    ch_dbsnp_tbi          = params.dbsnp_tbi           ? Channel.fromPath(params.dbsnp_tbi).collect()          : Channel.value([])
+    ch_dbsnp_ready        = params.dbsnp               ? Channel.fromPath(params.dbsnp).collect()              : []
+    ch_dbsnp_tbi          = params.dbsnp_tbi           ? Channel.fromPath(params.dbsnp_tbi).collect()          : []
 
     ch_somalier_sites     = params.somalier_sites      ? Channel.fromPath(params.somalier_sites).collect()     : []
 
@@ -241,10 +241,8 @@ workflow CMGGGERMLINE {
             }
             .collect()
             .set { ch_dbsnp_tbi_ready }
-    } else if (ch_dbsnp_ready) {
-        ch_dbsnp_tbi.set { ch_dbsnp_tbi_ready }
     } else {
-        ch_dbsnp_tbi_ready = []
+        ch_dbsnp_tbi_ready = ch_dbsnp_tbi
     }
 
     // Reference fasta index
@@ -467,7 +465,9 @@ workflow CMGGGERMLINE {
             CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_crams,
             INPUT_SPLIT_BEDTOOLS.out.split,
             ch_fasta_ready,
-            ch_fai_ready
+            ch_fai_ready,
+            ch_dbsnp_ready,
+            ch_dbsnp_tbi_ready
         )
         ch_versions = ch_versions.mix(CRAM_CALL_VARDICTJAVA.out.versions)
 

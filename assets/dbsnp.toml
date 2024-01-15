@@ -1,0 +1,15 @@
+[[annotation]]
+file="DBSNP_FILE"
+fields=["ID"]
+names=["rs_ids"]
+ops=["concat"]
+
+[[postannotation]]
+name="ID"
+fields=["rs_ids"]
+op="setid"
+type="String"
+
+[[postannotation]]
+fields=["rs_ids"]
+op="delete"
