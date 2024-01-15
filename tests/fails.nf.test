@@ -8,14 +8,14 @@ nextflow_pipeline {
 
         when {
             params {
-                scatter_count = null
+                fasta = null
                 outdir = "${outputDir}"
             }
         }
 
         then {
             assert workflow.failed
-            assert workflow.stderr.join("\n").contains("* Missing required parameter: --scatter_count")
+            assert workflow.stderr.join("\n").contains("* Missing required parameter: --fasta")
         }
 
     }

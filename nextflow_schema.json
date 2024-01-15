@@ -238,10 +238,21 @@
                 },
                 "normalize": {
                     "type": "boolean",
-                    "description": "Normalize the VCF after joint genotyping (will run on the decomposed VCF when --decompose is also used)"
+                    "description": "Normalize the VCFs"
+                },
+                "output_suffix": {
+                    "type": "string",
+                    "description": "A custom suffix to add to the basename of the output files"
+                },
+                "only_pass": {
+                    "type": "boolean",
+                    "description": "Filter out all variants that don't have the PASS filter for vardict. This only works when --filter is also given"
+                },
+                "keep_alt_contigs": {
+                    "type": "boolean",
+                    "description": "Keep all aditional contigs for calling instead of filtering them out before"
                 }
-            },
-            "required": ["scatter_count"]
+            }
         },
         "institutional_config_options": {
             "title": "Institutional config options",
@@ -504,6 +515,12 @@
                     "fa_icon": "fas fa-question-circle",
                     "help_text": "The '--eog' and '--eog_tbi' parameters need to be specified when using this parameter."
                 },
+                "vep_alphamissense": {
+                    "type": "boolean",
+                    "description": "Use the AlphaMissense plugin with Ensembl VEP",
+                    "fa_icon": "fas fa-question-circle",
+                    "help_text": "The '--alphamissense' and '--alphamissense_tbi' parameters need to be specified when using this parameter."
+                },
                 "vep_version": {
                     "type": "string",
                     "default": "105.0",
@@ -576,6 +593,20 @@
                     "pattern": "^\\S+\\.(csi|tbi)$",
                     "mimetype": "text/plain"
                 },
+                "alphamissense": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Path to the TSV for AlphaMissense",
+                    "pattern": "^\\S+\\.tsv\\.gz$",
+                    "mimetype": "text/plain"
+                },
+                "alphamissense_tbi": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Path to the index of the TSV for AlphaMissense",
+                    "pattern": "^\\S+\\.(csi|tbi)$",
+                    "mimetype": "text/plain"
+                },
                 "eog": {
                     "type": "string",
                     "format": "file-path",
@@ -610,7 +641,7 @@
                 },
                 "vcfanno_resources": {
                     "type": "string",
-                    "description": "A comma-seperated list of resource files for VCFanno, please also supply their indices using this parameter"
+                    "description": "A semicolon-seperated list of resource files for VCFanno, please also supply their indices using this parameter"
                 }
             },
             "help_text": "Annotation will only run when `--annotate true` is specified."

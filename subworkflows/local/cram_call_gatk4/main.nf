@@ -68,8 +68,8 @@ workflow CRAM_CALL_GATK4 {
         ch_fasta,
         ch_fai,
         ch_dict,
-        ch_dbsnp.map { [[], it] },
-        ch_dbsnp_tbi.map { [[], it] }
+        ch_dbsnp,
+        ch_dbsnp_tbi
     )
     ch_versions = ch_versions.mix(GATK4_HAPLOTYPECALLER.out.versions.first())
 

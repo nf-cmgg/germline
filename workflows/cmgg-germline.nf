@@ -17,24 +17,33 @@ include { fromSamplesheet } from 'plugin/nf-validation'
 //
 
 if(params.dbsnp_tbi && !params.dbsnp){
-    exit 1, "Please specify the dbsnp VCF with --dbsnp VCF"
+    error("Please specify the dbsnp VCF with --dbsnp VCF")
 }
 
 if (params.annotate) {
     // Check if a genome is given
-    if (!params.genome) { exit 1, "A genome should be supplied for annotation (use --genome)"}
+    if (!params.genome) { error("A genome should be supplied for annotation (use --genome)") }
 
     // Check if the VEP versions were given
-    if (!params.vep_version) { exit 1, "A VEP version should be supplied for annotation (use --vep_version)"}
-    if (!params.vep_cache_version) { exit 1, "A VEP cache version should be supplied for annotation (use --vep_cache_version)"}
+    if (!params.vep_version) { error("A VEP version should be supplied for annotation (use --vep_version)") }
+    if (!params.vep_cache_version) { error("A VEP cache version should be supplied for annotation (use --vep_cache_version)") }
 
     // Check if a species is entered
-    if (!params.species) { exit 1, "A species should be supplied for annotation (use --species)"}
+    if (!params.species) { error("A species should be supplied for annotation (use --species)") }
 
     // Check if all vcfanno files are supplied when vcfanno should be used
     if (params.vcfanno && (!params.vcfanno_config || !params.vcfanno_resources)) {
-        exit 1, "A TOML file and resource files should be supplied when using vcfanno (use --vcfanno_config and --vcfanno_resources)"
+        error("A TOML file and resource files should be supplied when using vcfanno (use --vcfanno_config and --vcfanno_resources)")
     }
+}
+
+callers = params.callers.tokenize(",")
+for(caller in callers) {
+    if(!(caller in GlobalVariables.availableCallers)) { error("\"${caller}\" is not a supported callers please use one or more of these instead: ${GlobalVariables.availableCallers}")}
+}
+
+if (params.output_suffix && callers.size() > 1) {
+    error("Cannot use --output_suffix with more than one caller")
 }
 
 /*
@@ -134,11 +143,6 @@ workflow CMGGGERMLINE {
 
     if (params.input) { ch_input = file(params.input, checkIfExists: true) } else { error('Input samplesheet not specified!') }
 
-    callers = params.callers.tokenize(",")
-    for(caller in callers) {
-        if(!(caller in GlobalVariables.availableCallers)) { error("\"${caller}\" is not a supported callers please use one or more of these instead: ${GlobalVariables.availableCallers}")}
-    }
-
     ch_versions = Channel.empty()
     ch_reports  = Channel.empty()
 
@@ -154,8 +158,8 @@ workflow CMGGGERMLINE {
 
     ch_default_roi        = params.roi                 ? Channel.fromPath(params.roi).collect()                : []
 
-    ch_dbsnp_ready        = params.dbsnp               ? Channel.fromPath(params.dbsnp).collect()              : Channel.value([])
-    ch_dbsnp_tbi          = params.dbsnp_tbi           ? Channel.fromPath(params.dbsnp_tbi).collect()          : Channel.value([])
+    ch_dbsnp_ready        = params.dbsnp               ? Channel.fromPath(params.dbsnp).collect()              : []
+    ch_dbsnp_tbi          = params.dbsnp_tbi           ? Channel.fromPath(params.dbsnp_tbi).collect()          : []
 
     ch_somalier_sites     = params.somalier_sites      ? Channel.fromPath(params.somalier_sites).collect()     : []
 
@@ -163,7 +167,7 @@ workflow CMGGGERMLINE {
 
     ch_vcfanno_config     = params.vcfanno_config      ? Channel.fromPath(params.vcfanno_config).collect()     : []
     ch_vcfanno_lua        = params.vcfanno_lua         ? Channel.fromPath(params.vcfanno_lua).collect()        : []
-    ch_vcfanno_resources  = params.vcfanno_resources   ? Channel.of(params.vcfanno_resources.split(",")).map({ file(it, checkIfExists:true) }).collect()   : []
+    ch_vcfanno_resources  = params.vcfanno_resources   ? Channel.of(params.vcfanno_resources.split(";")).map({ file(it, checkIfExists:true) }).collect()   : []
 
     //
     // Check for the presence of EnsemblVEP plugins that use extra files
@@ -178,7 +182,7 @@ workflow CMGGGERMLINE {
             ch_vep_extra_files.add(file(params.dbnsfp_tbi, checkIfExists: true))
         }
         else if (params.vep_dbnsfp) {
-            exit 1, "Please specify '--vep_dbsnfp true', '--dbnsfp PATH/TO/DBNSFP/FILE' and '--dbnspf_tbi PATH/TO/DBNSFP/INDEX/FILE' to use the dbnsfp VEP plugin."
+            error("Please specify '--vep_dbsnfp true', '--dbnsfp PATH/TO/DBNSFP/FILE' and '--dbnspf_tbi PATH/TO/DBNSFP/INDEX/FILE' to use the dbnsfp VEP plugin.")
         }
 
         // Check if all spliceai files are given
@@ -189,7 +193,7 @@ workflow CMGGGERMLINE {
             ch_vep_extra_files.add(file(params.spliceai_indel_tbi, checkIfExists: true))
         }
         else if (params.vep_spliceai) {
-            exit 1, "Please specify '--vep_spliceai true', '--spliceai_snv PATH/TO/SPLICEAI/SNV/FILE', '--spliceai_snv_tbi PATH/TO/SPLICEAI/SNV/INDEX/FILE', '--spliceai_indel PATH/TO/SPLICEAI/INDEL/FILE' and '--spliceai_indel_tbi PATH/TO/SPLICEAI/INDEL/INDEX/FILE' to use the SpliceAI VEP plugin."
+            error("Please specify '--vep_spliceai true', '--spliceai_snv PATH/TO/SPLICEAI/SNV/FILE', '--spliceai_snv_tbi PATH/TO/SPLICEAI/SNV/INDEX/FILE', '--spliceai_indel PATH/TO/SPLICEAI/INDEL/FILE' and '--spliceai_indel_tbi PATH/TO/SPLICEAI/INDEL/INDEX/FILE' to use the SpliceAI VEP plugin.")
         }
 
         // Check if all mastermind files are given
@@ -198,7 +202,7 @@ workflow CMGGGERMLINE {
             ch_vep_extra_files.add(file(params.mastermind_tbi, checkIfExists: true))
         }
         else if (params.vep_mastermind) {
-            exit 1, "Please specify '--vep_mastermind true', '--mastermind PATH/TO/MASTERMIND/FILE' and '--mastermind_tbi PATH/TO/MASTERMIND/INDEX/FILE' to use the mastermind VEP plugin."
+            error("Please specify '--vep_mastermind true', '--mastermind PATH/TO/MASTERMIND/FILE' and '--mastermind_tbi PATH/TO/MASTERMIND/INDEX/FILE' to use the mastermind VEP plugin.")
         }
 
         // Check if all EOG files are given
@@ -207,7 +211,16 @@ workflow CMGGGERMLINE {
             ch_vep_extra_files.add(file(params.eog_tbi, checkIfExists: true))
         }
         else if (params.vep_eog) {
-            exit 1, "Please specify '--vep_eog true', '--eog PATH/TO/EOG/FILE' and '--eog_tbi PATH/TO/EOG/INDEX/FILE' to use the EOG custom VEP plugin."
+            error("Please specify '--vep_eog true', '--eog PATH/TO/EOG/FILE' and '--eog_tbi PATH/TO/EOG/INDEX/FILE' to use the EOG custom VEP plugin.")
+        }
+
+        // Check if all AlphaMissense files are given
+        if (params.alphamissense && params.alphamissense_tbi && params.vep_alphamissense) {
+            ch_vep_extra_files.add(file(params.alphamissense, checkIfExists: true))
+            ch_vep_extra_files.add(file(params.alphamissense_tbi, checkIfExists: true))
+        }
+        else if (params.vep_alphamissense) {
+            error("Please specify '--vep_alphamissense true', '--alphamissense PATH/TO/ALPHAMISSENSE/FILE' and '--alphamissense_tbi PATH/TO/ALPHAMISSENSE/INDEX/FILE' to use the AlphaMissense VEP plugin.")
         }
     }
 
@@ -228,10 +241,8 @@ workflow CMGGGERMLINE {
             }
             .collect()
             .set { ch_dbsnp_tbi_ready }
-    } else if (ch_dbsnp_ready) {
-        ch_dbsnp_tbi.set { ch_dbsnp_tbi_ready }
     } else {
-        ch_dbsnp_tbi_ready = []
+        ch_dbsnp_tbi_ready = ch_dbsnp_tbi
     }
 
     // Reference fasta index
@@ -333,7 +344,7 @@ workflow CMGGGERMLINE {
             // Infer the family ID from the PED file if no family ID was given.
             // If no PED is given, use the sample ID as family ID            
             def new_meta = meta + [
-                family: meta.family ?: ped ? get_family_id_from_ped(ped) : meta.sample, 
+                family: meta.family ?: ped ? get_family_id_from_ped(ped) : meta.sample
             ]
             [ new_meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ]
         }
@@ -454,7 +465,9 @@ workflow CMGGGERMLINE {
             CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_crams,
             INPUT_SPLIT_BEDTOOLS.out.split,
             ch_fasta_ready,
-            ch_fai_ready
+            ch_fai_ready,
+            ch_dbsnp_ready,
+            ch_dbsnp_tbi_ready
         )
         ch_versions = ch_versions.mix(CRAM_CALL_VARDICTJAVA.out.versions)
 
@@ -774,22 +787,22 @@ def get_family_id_from_ped(ped_file){
             continue
         }
         else if (line_count > 1 && line ==~ /^#.*$/) {
-            exit 1, "[PED file error] A commented line was found on line ${line_count} in ${ped_file}, the only commented line allowed is an optional header on line 1."
+            error("[PED file error] A commented line was found on line ${line_count} in ${ped_file}, the only commented line allowed is an optional header on line 1.")
         }
         else if (line_count == 1 && line ==~ /^#.* $/) {
-            exit 1, "[PED file error] The header in ${ped_file} contains a trailing space, please remove this."
+            error("[PED file error] The header in ${ped_file} contains a trailing space, please remove this.")
         }
         else if (line ==~ /^.+#.*$/) {
-            exit 1, "[PED file error] A '#' has been found as a non-starting character on line ${line_count} in ${ped_file}, this is an illegal character and should be removed."
+            error("[PED file error] A '#' has been found as a non-starting character on line ${line_count} in ${ped_file}, this is an illegal character and should be removed.")
         }
         else if (line ==~ /^[^#].* .*$/) {
-            exit 1, "[PED file error] A space has been found on line ${line_count} in ${ped_file}, please only use tabs to seperate the values (and change spaces in names to '_')."
+            error("[PED file error] A space has been found on line ${line_count} in ${ped_file}, please only use tabs to seperate the values (and change spaces in names to '_').")
         }
         else if ((line ==~ /^(\w+\t)+\w+$/) == false) {
-            exit 1, "[PED file error] An illegal character has been found on line ${line_count} in ${ped_file}, only a-z; A-Z; 0-9 and '_' are allowed as column values."
+            error("[PED file error] An illegal character has been found on line ${line_count} in ${ped_file}, only a-z; A-Z; 0-9 and '_' are allowed as column values.")
         }
         else if ((line ==~ /^(\w+\t){5}\w+$/) == false) {
-            exit 1, "[PED file error] ${ped_file} should contain exactly 6 tab-delimited columns (family_id    individual_id    paternal_id    maternal_id    sex    phenotype). This is not the case on line ${line_count}."
+            error("[PED file error] ${ped_file} should contain exactly 6 tab-delimited columns (family_id    individual_id    paternal_id    maternal_id    sex    phenotype). This is not the case on line ${line_count}.")
         }
     }
 

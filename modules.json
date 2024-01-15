@@ -69,14 +69,13 @@
                     },
                     "custom/dumpsoftwareversions": {
                         "branch": "master",
-                        "git_sha": "bba7e362e4afead70653f84d8700588ea28d0f9e",
+                        "git_sha": "8ec825f465b9c17f9d83000022995b4f7de6fe93",
                         "installed_by": ["modules"]
                     },
                     "ensemblvep/download": {
                         "branch": "master",
                         "git_sha": "214d575774c172062924ad3564b4f66655600730",
-                        "installed_by": ["modules"],
-                        "patch": "modules/nf-core/ensemblvep/download/ensemblvep-download.diff"
+                        "installed_by": ["modules"]
                     },
                     "ensemblvep/vep": {
                         "branch": "master",
@@ -133,7 +132,7 @@
                     },
                     "multiqc": {
                         "branch": "master",
-                        "git_sha": "4ab13872435962dadc239979554d13709e20bf29",
+                        "git_sha": "8ec825f465b9c17f9d83000022995b4f7de6fe93",
                         "installed_by": ["modules"]
                     },
                     "rtgtools/format": {
@@ -211,7 +210,7 @@
                     },
                     "untar": {
                         "branch": "master",
-                        "git_sha": "3f5420aa22e00bd030a2556dfdffc9e164ec0ec5",
+                        "git_sha": "574074e6ea2497b53df1f226473a8c71524af0d0",
                         "installed_by": ["modules"]
                     },
                     "vardictjava": {
@@ -222,8 +221,9 @@
                     },
                     "vcf2db": {
                         "branch": "master",
-                        "git_sha": "3f5420aa22e00bd030a2556dfdffc9e164ec0ec5",
-                        "installed_by": ["modules"]
+                        "git_sha": "527a80a28d9a54e5fd3626168ab72b063c11fbb2",
+                        "installed_by": ["modules"],
+                        "patch": "modules/nf-core/vcf2db/vcf2db.diff"
                     },
                     "vcfanno": {
                         "branch": "master",

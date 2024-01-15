@@ -1,12 +1,14 @@
-include { SAMTOOLS_CONVERT      } from '../../../modules/nf-core/samtools/convert/main'
-include { VARDICTJAVA           } from '../../../modules/nf-core/vardictjava/main'
-include { TABIX_BGZIPTABIX      } from '../../../modules/nf-core/tabix/bgziptabix/main'
-include { BCFTOOLS_REHEADER     } from '../../../modules/nf-core/bcftools/reheader/main'
-include { TABIX_TABIX           } from '../../../modules/nf-core/tabix/tabix/main'
-include { BCFTOOLS_STATS        } from '../../../modules/nf-core/bcftools/stats/main'
+include { SAMTOOLS_CONVERT                  } from '../../../modules/nf-core/samtools/convert/main'
+include { VARDICTJAVA                       } from '../../../modules/nf-core/vardictjava/main'
+include { TABIX_BGZIPTABIX as TABIX_SPLIT   } from '../../../modules/nf-core/tabix/bgziptabix/main'
+include { TABIX_BGZIPTABIX as TABIX_VCFANNO } from '../../../modules/nf-core/tabix/bgziptabix/main'
+include { BCFTOOLS_REHEADER                 } from '../../../modules/nf-core/bcftools/reheader/main'
+include { VCFANNO                           } from '../../../modules/nf-core/vcfanno/main'
+include { TABIX_TABIX                       } from '../../../modules/nf-core/tabix/tabix/main'
+include { BCFTOOLS_STATS                    } from '../../../modules/nf-core/bcftools/stats/main'
 
-include { VCF_CONCAT_BCFTOOLS   } from '../vcf_concat_bcftools/main'
-include { VCF_FILTER_BCFTOOLS   } from '../vcf_filter_bcftools/main'
+include { VCF_CONCAT_BCFTOOLS               } from '../vcf_concat_bcftools/main'
+include { VCF_FILTER_BCFTOOLS               } from '../vcf_filter_bcftools/main'
 
 workflow CRAM_CALL_VARDICTJAVA {
     take:
@@ -14,6 +16,8 @@ workflow CRAM_CALL_VARDICTJAVA {
         ch_input             // channel: [mandatory] [ val(meta), path(cram), path(crai), path(bed) ] => sample CRAM files and their indexes
         ch_fasta             // channel: [mandatory] [ val(meta), path(fasta) ] => fasta reference
         ch_fai               // channel: [mandatory] [ val(meta), path(fai) ] => fasta reference index
+        ch_dbsnp             // channel: [optional]  [ path(vcf) ] => the dbnsp vcf file
+        ch_dbsnp_tbi         // channel: [optional]  [ path(tbi) ] => the dbsnp vcf index file
 
     main:
         ch_versions = Channel.empty()
@@ -62,39 +66,55 @@ workflow CRAM_CALL_VARDICTJAVA {
         )
         ch_versions = ch_versions.mix(VARDICTJAVA.out.versions.first())
 
-        TABIX_BGZIPTABIX(
+        TABIX_SPLIT(
             VARDICTJAVA.out.vcf
         )
-        ch_versions = ch_versions.mix(TABIX_BGZIPTABIX.out.versions.first())
+        ch_versions = ch_versions.mix(TABIX_SPLIT.out.versions.first())
         
         VCF_CONCAT_BCFTOOLS(
-            TABIX_BGZIPTABIX.out.gz_tbi,
+            TABIX_SPLIT.out.gz_tbi,
             false
         )
         ch_versions = ch_versions.mix(VCF_CONCAT_BCFTOOLS.out.versions)
 
-        VCF_CONCAT_BCFTOOLS.out.vcfs
-            .combine(["${projectDir}/assets/vardict.header.vcf.gz"])
-            .map { meta, vcf, header ->
-                [ meta, vcf, header, [] ]
-            }
-            .set { ch_reheader_input}
+        if(ch_dbsnp) {
+            ch_dbsnp
+                .map { [ get_vcfanno_config(it[0]) ] }
+                .collect()
+                .set { ch_vcfanno_toml }
 
-        BCFTOOLS_REHEADER(
-            ch_reheader_input,
-            ch_fai
-        )
-        ch_versions = ch_versions.mix(BCFTOOLS_REHEADER.out.versions.first())
+            ch_dbsnp
+                .combine(ch_dbsnp_tbi)
+                .collect()
+                .set { ch_vcfanno_resources }
+
+            VCFANNO(
+                VCF_CONCAT_BCFTOOLS.out.vcfs.map { meta, vcf -> [ meta, vcf, [], [] ] },
+                ch_vcfanno_toml,
+                [],
+                ch_vcfanno_resources
+            )
+            ch_versions = ch_versions.mix(VCFANNO.out.versions.first())
+
+            TABIX_VCFANNO(
+                VCFANNO.out.vcf
+            )
+            ch_versions = ch_versions.mix(TABIX_VCFANNO.out.versions.first())
+
+            TABIX_VCFANNO.out.gz_tbi.set { ch_dbsnp_annotated }
+        } else {
+            VCF_CONCAT_BCFTOOLS.out.vcfs.set { ch_dbsnp_annotated }
+        }
 
         if(params.filter) {
             VCF_FILTER_BCFTOOLS(
-                BCFTOOLS_REHEADER.out.vcf,
+                ch_dbsnp_annotated,
                 false
             )
             ch_versions = ch_versions.mix(VCF_FILTER_BCFTOOLS.out.versions)
             ch_filter_output = VCF_FILTER_BCFTOOLS.out.vcfs
         } else {
-            ch_filter_output = BCFTOOLS_REHEADER.out.vcf
+            ch_filter_output = ch_dbsnp_annotated
         }
 
         TABIX_TABIX(
@@ -111,4 +131,12 @@ workflow CRAM_CALL_VARDICTJAVA {
 
     versions = ch_versions  // channel: [ path(versions.yml) ]
 
+}
+
+def get_vcfanno_config(vcf) {
+    def old_toml = file("${projectDir}/assets/dbsnp.toml", checkIfExists: true)
+    old_toml.copyTo("${workDir}/vcfanno/dbsnp.toml")
+    def new_toml = file("${workDir}/vcfanno/dbsnp.toml")
+    new_toml.text = old_toml.text.replace("DBSNP_FILE", vcf.getName())
+    return new_toml
 }
