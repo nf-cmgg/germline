@@ -1,20 +1,21 @@
 Changes in module 'nf-core/ensemblvep/vep'
 --- modules/nf-core/ensemblvep/vep/main.nf
 +++ modules/nf-core/ensemblvep/vep/main.nf
-@@ -2,10 +2,8 @@
+@@ -2,10 +2,10 @@
      tag "$meta.id"
      label 'process_medium'
  
 -    conda "bioconda::ensembl-vep=109.3"
--    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
++    conda "${moduleDir}/environment.yml"
+     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
 -        'https://depot.galaxyproject.org/singularity/ensembl-vep:109.3--pl5321h2a3209d_1' :
 -        'biocontainers/ensembl-vep:109.3--pl5321h2a3209d_1' }"
-+    conda "${ DynamicContainers.findLatest('ensembl-vep', params.vep_version, 'conda') }"
-+    container "${ DynamicContainers.findLatest('ensembl-vep', params.vep_version, workflow.containerEngine) }"
++        'https://depot.galaxyproject.org/singularity/ensembl-vep:105.0--pl5321h4a94de4_1' :
++        'biocontainers/ensembl-vep:105.0--pl5321h4a94de4_1' }"
  
      input:
      tuple val(meta), path(vcf), path(custom_extra_files)
-@@ -48,7 +46,6 @@
+@@ -48,7 +48,6 @@
          --fork $task.cpus \\
          --stats_file ${prefix}.summary.html \\
  
@@ -22,5 +23,16 @@ Changes in module 'nf-core/ensemblvep/vep'
      cat <<-END_VERSIONS > versions.yml
      "${task.process}":
          ensemblvep: \$( echo \$(vep --help 2>&1) | sed 's/^.*Versions:.*ensembl-vep : //;s/ .*\$//')
+
+--- /dev/null
++++ modules/nf-core/ensemblvep/vep/environment.yml
+@@ -0,0 +1,7 @@
++name: ensemblvep_download
++channels:
++  - conda-forge
++  - bioconda
++  - defaults
++dependencies:
++  - bioconda::ensembl-vep=105.0
 
 ************************************************************

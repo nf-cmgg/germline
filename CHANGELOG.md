@@ -3,6 +3,12 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.4.2 - Vibrant Veurne - [January 25 2024]
+
+### Fixes
+
+1. Set the default ensembl VEP version to 105.0 instead of using dynamic container fetching
+
 ## v1.4.1 - Lively Leuven - [January 15 2024]
 
 ### New Features
