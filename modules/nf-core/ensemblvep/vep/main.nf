@@ -2,8 +2,10 @@ process ENSEMBLVEP_VEP {
     tag "$meta.id"
     label 'process_medium'
 
-    conda "${ DynamicContainers.findLatest('ensembl-vep', params.vep_version, 'conda') }"
-    container "${ DynamicContainers.findLatest('ensembl-vep', params.vep_version, workflow.containerEngine) }"
+    conda "bioconda::ensembl-vep=105.0"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/ensembl-vep:105.0--pl5321h4a94de4_1' :
+        'biocontainers/ensembl-vep:105.0--pl5321h4a94de4_1' }"
 
     input:
     tuple val(meta), path(vcf), path(custom_extra_files)
