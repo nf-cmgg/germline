@@ -2,7 +2,7 @@ process ENSEMBLVEP_VEP {
     tag "$meta.id"
     label 'process_medium'
 
-    conda "bioconda::ensembl-vep=105.0"
+    conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/ensembl-vep:105.0--pl5321h4a94de4_1' :
         'biocontainers/ensembl-vep:105.0--pl5321h4a94de4_1' }"
