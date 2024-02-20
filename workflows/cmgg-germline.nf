@@ -57,6 +57,17 @@ ch_multiqc_logo     = params.multiqc_logo   ? file(params.multiqc_logo, checkIfE
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    IMPORT FUNCTIONS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
+
+include { paramsSummaryMap                  } from 'plugin/nf-validation'
+include { paramsSummaryMultiqc              } from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { softwareVersionsToYAML            } from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { methodsDescriptionText            } from '../subworkflows/local/utils_nfcore_nf-cmgg-germline_pipeline'
+
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT SUBWORKFLOWS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
@@ -107,44 +118,9 @@ def multiqc_report = []
 // The main workflow
 workflow CMGGGERMLINE {
 
-    //
-    // Check input path parameters to see if they exist
-    //
-
-    def checkPathParamList = [
-        params.fasta,
-        params.fai,
-        params.dict,
-        params.strtablefile,
-        params.dbsnp,
-        params.dbsnp_tbi,
-        params.somalier_sites,
-        params.sdf,
-        params.roi,
-        params.vep_cache,
-        params.vcfanno_config,
-        params.vcfanno_lua,
-        params.dbnsfp,
-        params.dbnsfp_tbi,
-        params.spliceai_indel,
-        params.spliceai_indel_tbi,
-        params.spliceai_snv,
-        params.spliceai_snv_tbi,
-        params.mastermind,
-        params.mastermind_tbi,
-        params.eog,
-        params.eog_tbi
-    ]
-    for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
-
-    //
-    // Check the input samplesheet
-    //
-
-    if (params.input) { ch_input = file(params.input, checkIfExists: true) } else { error('Input samplesheet not specified!') }
-
-    ch_versions = Channel.empty()
-    ch_reports  = Channel.empty()
+    ch_versions      = Channel.empty()
+    ch_reports       = Channel.empty()
+    ch_multiqc_files = Channel.empty()
 
     //
     // Importing and convert the input files passed through the parameters to channels
@@ -718,28 +694,32 @@ workflow CMGGGERMLINE {
     }
 
     //
-    // Dump the software versions
+    // Collate and save software versions
     //
-
-    CUSTOM_DUMPSOFTWAREVERSIONS(
-        ch_versions.unique().collectFile(name: 'collated_versions.yml')
-    )
-
-    ch_versions_yaml = CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml.collect()
+    softwareVersionsToYAML(ch_versions)
+        .collectFile(storeDir: "${params.outdir}/pipeline_info", name: 'nf_core_pipeline_software_mqc_versions.yml', sort: true, newLine: true)
+        .set { ch_collated_versions }
 
     //
     // Perform multiQC on all QC data
     //
 
-    ch_multiqc_files = Channel.empty()
-
-    ch_multiqc_files = ch_multiqc_files.mix(ch_versions_yaml, ch_reports.collect())
-
-    MULTIQC(
+    ch_multiqc_config                     = Channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
+    ch_multiqc_custom_config              = params.multiqc_config ? Channel.fromPath(params.multiqc_config, checkIfExists: true) : Channel.empty()
+    ch_multiqc_logo                       = params.multiqc_logo ? Channel.fromPath(params.multiqc_logo, checkIfExists: true) : Channel.empty()
+    summary_params                        = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
+    ch_workflow_summary                   = Channel.value(paramsSummaryMultiqc(summary_params))
+    ch_multiqc_custom_methods_description = params.multiqc_methods_description ? file(params.multiqc_methods_description, checkIfExists: true) : file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
+    ch_methods_description                = Channel.value(methodsDescriptionText(ch_multiqc_custom_methods_description))
+    ch_multiqc_files                      = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
+    ch_multiqc_files                      = ch_multiqc_files.mix(ch_collated_versions)
+    ch_multiqc_files                      = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml', sort: false))
+    
+    MULTIQC (
         ch_multiqc_files.collect(),
-        ch_multiqc_config,
-        [],
-        ch_multiqc_logo
+        ch_multiqc_config.toList(),
+        ch_multiqc_custom_config.toList(),
+        ch_multiqc_logo.toList()
     )
 }
 
