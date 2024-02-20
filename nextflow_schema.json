@@ -15,8 +15,9 @@
                 "input": {
                     "type": "string",
                     "format": "file-path",
-                    "pattern": "^\\S+\\.(csv|tsv|yaml|yml)$",
+                    "exists": true,
                     "schema": "assets/schema_input.json",
+                    "pattern": "^\\S+\\.(csv|tsv|yaml|yml|json)$",
                     "description": "Path to comma-separated file containing information about the samples in the experiment.",
                     "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with samples, and a header row. See [usage docs](./usage.md).",
                     "fa_icon": "fas fa-file-csv",
