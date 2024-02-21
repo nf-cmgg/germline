@@ -80,24 +80,28 @@ workflow PIPELINE_INITIALISATION {
     //
     // Create channel from input file provided through params.input
     //
-    Channel
-        .fromSamplesheet("input")
-        .map {
-            meta, fastq_1, fastq_2 ->
-                if (!fastq_2) {
-                    return [ meta.id, meta + [ single_end:true ], [ fastq_1 ] ]
-                } else {
-                    return [ meta.id, meta + [ single_end:false ], [ fastq_1, fastq_2 ] ]
-                }
+
+    // Output the samplesheet
+    file(params.input).copyTo("${params.outdir}/samplesheet.csv")
+
+    Channel.fromSamplesheet("input")
+        .map { meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ->
+            // Infer the family ID from the PED file if no family ID was given.
+            // If no PED is given, use the sample ID as family ID            
+            def new_meta = meta + [
+                family: meta.family ?: ped ? get_family_id_from_ped(ped) : meta.sample
+            ]
+            [ new_meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ]
         }
-        .groupTuple()
-        .map {
-            validateInputSamplesheet(it)
+        .tap { ch_raw_inputs }
+        .map { [ "id":it[0].id, "family":it[0].family ] }
+        .reduce([:]) { families, v ->
+            // Count the unique samples in one family
+            families[v.family] = families[v.family] ? families[v.family] + [v.id] : [v.id]
+            families[v.family] = families[v.family].unique()
+            families
         }
-        .map {
-            meta, fastqs ->
-                return [ meta, fastqs.flatten() ]
-        }
+        .combine(ch_raw_inputs)
         .set { ch_samplesheet }
 
     emit:
@@ -244,4 +248,47 @@ def methodsDescriptionText(mqc_methods_yaml) {
     def description_html = engine.createTemplate(methods_text).make(meta)
 
     return description_html.toString()
+}
+
+def get_family_id_from_ped(ped_file){
+
+    // Check if there is a file
+    if (ped_file.isEmpty()){
+        return null
+    }
+
+    // Read the PED file
+    def ped = file(ped_file, checkIfExists: true).text
+
+    // Perform a validity check on the PED file since vcf2db is picky and not capable of giving good error messages
+    comment_count = 0
+    line_count = 0
+
+    for( line : ped.readLines()) {
+        line_count++
+        if (line_count == 1 && line ==~ /^#.*$/) {
+            continue
+        }
+        else if (line_count > 1 && line ==~ /^#.*$/) {
+            error("[PED file error] A commented line was found on line ${line_count} in ${ped_file}, the only commented line allowed is an optional header on line 1.")
+        }
+        else if (line_count == 1 && line ==~ /^#.* $/) {
+            error("[PED file error] The header in ${ped_file} contains a trailing space, please remove this.")
+        }
+        else if (line ==~ /^.+#.*$/) {
+            error("[PED file error] A '#' has been found as a non-starting character on line ${line_count} in ${ped_file}, this is an illegal character and should be removed.")
+        }
+        else if (line ==~ /^[^#].* .*$/) {
+            error("[PED file error] A space has been found on line ${line_count} in ${ped_file}, please only use tabs to seperate the values (and change spaces in names to '_').")
+        }
+        else if ((line ==~ /^(\w+\t)+\w+$/) == false) {
+            error("[PED file error] An illegal character has been found on line ${line_count} in ${ped_file}, only a-z; A-Z; 0-9 and '_' are allowed as column values.")
+        }
+        else if ((line ==~ /^(\w+\t){5}\w+$/) == false) {
+            error("[PED file error] ${ped_file} should contain exactly 6 tab-delimited columns (family_id    individual_id    paternal_id    maternal_id    sex    phenotype). This is not the case on line ${line_count}.")
+        }
+    }
+
+    // get family_id
+    return (ped =~ /\n([^#]\w+)/)[0][1]
 }
