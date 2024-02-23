@@ -28,7 +28,6 @@ nextflow_pipeline {
                 ).match()
                 }
             )
-    
         }
     }
 }
