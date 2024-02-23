@@ -30,7 +30,7 @@ nextflow_pipeline {
                 assert file("${outputDir}/DNA049572/reports/DNA049572.mosdepth.global.dist.txt").exists()
                 assert file("${outputDir}/DNA049572/reports/DNA049572.mosdepth.summary.txt").exists()
                 assert file("${outputDir}/DNA049572/DNA049572.bed").exists()
-                assert file("${outputDir}/multiqc/multiqc_report.html").exists()        
+                assert file("${outputDir}/multiqc/multiqc_report.html").exists()
             }
         }
     }

@@ -323,7 +323,7 @@ workflow CMGGGERMLINE {
             truth_variants: [new_meta_validation, truth_vcf, truth_tbi, truth_bed] // Optional channel containing the truth VCF, its index and the optional BED file
             gvcf:           [new_meta, gvcf, tbi] // Optional channel containing the GVCFs and their optional indices
             cram:           [new_meta, cram, crai]  // Mandatory channel containing the CRAM files and their optional indices
-            peds:           [new_meta_ped, ped] // Optional channel containing the PED files 
+            peds:           [new_meta_ped, ped] // Optional channel containing the PED files
             roi:            [new_meta, roi] // Optional channel containing the ROI BED files for WES samples
             family_samples: [meta.family, families[meta.family]] // A channel containing the samples per family
         }
@@ -381,7 +381,6 @@ workflow CMGGGERMLINE {
     ch_calls = Channel.empty()
 
     if("haplotypecaller" in callers) {
-            
         //
         // Call variants with GATK4 HaplotypeCaller
         //
@@ -404,7 +403,6 @@ workflow CMGGGERMLINE {
     }
 
     if("vardict" in callers) {
-            
         //
         // Call variants with VarDict
         //
@@ -420,7 +418,6 @@ workflow CMGGGERMLINE {
         ch_versions = ch_versions.mix(CRAM_CALL_VARDICTJAVA.out.versions)
 
         ch_calls = ch_calls.mix(CRAM_CALL_VARDICTJAVA.out.vcfs)
-    
     }
 
     ch_calls
@@ -578,11 +575,11 @@ workflow CMGGGERMLINE {
 
             // Create truth VCF indices if none were given
             TABIX_TRUTH(
-                ch_truths_input.no_tbi.map { meta, vcf, tbi, bed -> 
+                ch_truths_input.no_tbi.map { meta, vcf, tbi, bed ->
                     [ meta, vcf ]
                 }
             )
-            ch_versions = ch_versions.mix(TABIX_TRUTH.out.versions.first())         
+            ch_versions = ch_versions.mix(TABIX_TRUTH.out.versions.first())
 
             ch_truths_input.no_tbi
                 .join(TABIX_TRUTH.out.tbi, failOnDuplicate:true, failOnMismatch:true)
@@ -686,7 +683,7 @@ workflow CMGGGERMLINE {
     ch_multiqc_files                      = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
     ch_multiqc_files                      = ch_multiqc_files.mix(ch_collated_versions)
     ch_multiqc_files                      = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml', sort: false))
-    
+
     MULTIQC (
         ch_multiqc_files.collect(),
         ch_multiqc_config.toList(),

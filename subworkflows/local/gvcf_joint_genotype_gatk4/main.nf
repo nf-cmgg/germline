@@ -55,7 +55,7 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
         }
         .groupTuple()
         .combine(GAWK.out.output.map { it[1] })
-        .map { meta, gvcfs, tbis, bed -> 
+        .map { meta, gvcfs, tbis, bed ->
             [ meta, gvcfs, tbis, bed, [], [] ]
         }
         .set { ch_genomicsdbimport_input }

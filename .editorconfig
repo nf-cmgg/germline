@@ -35,3 +35,7 @@ indent_style = unset
 # ignore python
 [*.{py,md}]
 indent_style = unset
+
+# ignore CFF files
+[*.cff]
+indent_style = unset

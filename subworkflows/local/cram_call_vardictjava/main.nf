@@ -70,7 +70,7 @@ workflow CRAM_CALL_VARDICTJAVA {
             VARDICTJAVA.out.vcf
         )
         ch_versions = ch_versions.mix(TABIX_SPLIT.out.versions.first())
-        
+
         VCF_CONCAT_BCFTOOLS(
             TABIX_SPLIT.out.gz_tbi,
             false
