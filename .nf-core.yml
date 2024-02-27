@@ -1,42 +1,18 @@
 lint:
-  # files_exist:
-  #   - CODE_OF_CONDUCT.md
-  #   - assets/nf-core-germline_logo_light.png
-  #   - docs/images/nf-core-germline_logo_light.png
-  #   - docs/images/nf-core-germline_logo_dark.png
-  #   - .github/ISSUE_TEMPLATE/config.yml
-  #   - .github/workflows/awstest.yml
-  #   - .github/workflows/awsfulltest.yml
-  #   - lib/Workflowgermline.groovy
-  # nextflow_config:
-  #   - manifest.name
-  #   - manifest.homePage
-  # multiqc_config:
-  #   - report_comment
-  # readme:
-  #   - nextflow_badge
+  files_exist:
+    - CODE_OF_CONDUCT.md
+    - .github/ISSUE_TEMPLATE/config.yml
+    - .github/workflows/awstest.yml
+    - .github/workflows/awsfulltest.yml
+    - assets/nf-core-germline_logo_light.png
+    - docs/images/nf-core-germline_logo_light.png
+    - docs/images/nf-core-germline_logo_dark.png
   nextflow_config:
     - manifest.name
     - manifest.homePage
   files_unchanged:
-    - CODE_OF_CONDUCT.md
-    - .github/ISSUE_TEMPLATE/config.yml
-    - assets/nf-core-germline_logo_light.png
-    - docs/images/nf-core-germline_logo_light.png
-    - docs/images/nf-core-germline_logo_dark.png
-  #   - .github/ISSUE_TEMPLATE/bug_report.yml
-  #   - .github/CONTRIBUTING.md
-  #   - .github/ISSUE_TEMPLATE/bug_report.yml
-  #   - .github/ISSUE_TEMPLATE/feature_request.yml
-  #   - .github/PULL_REQUEST_TEMPLATE.md
-  #   - .github/workflows/linting.yml
-  #   - assets/email_template.txt
-  #   - assets/sendmail_template.txt
-  #   - lib/NfcoreTemplate.groovy
-  #   - .prettierignore
-  #   - LICENSE
-  # pipeline_name_conventions: false
-  # actions_ci: false
+    - LICENSE
+  actions_ci: false
 repository_type: pipeline
 template:
   author: nvnieuwk
