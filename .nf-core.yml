@@ -1,13 +1,13 @@
 lint:
   files_exist:
     - CODE_OF_CONDUCT.md
-    - assets/nf-core-nf-cmgg-germline_logo_light.png
-    - docs/images/nf-core-nf-cmgg-germline_logo_light.png
-    - docs/images/nf-core-nf-cmgg-germline_logo_dark.png
+    - assets/nf-core-germline_logo_light.png
+    - docs/images/nf-core-germline_logo_light.png
+    - docs/images/nf-core-germline_logo_dark.png
     - .github/ISSUE_TEMPLATE/config.yml
     - .github/workflows/awstest.yml
     - .github/workflows/awsfulltest.yml
-    - lib/WorkflowNf-cmgg-germline.groovy
+    - lib/Workflowgermline.groovy
   nextflow_config:
     - manifest.name
     - manifest.homePage
@@ -17,9 +17,9 @@ lint:
     - nextflow_badge
   files_unchanged:
     - CODE_OF_CONDUCT.md
-    - assets/nf-core-nf-cmgg-germline_logo_light.png
-    - docs/images/nf-core-nf-cmgg-germline_logo_light.png
-    - docs/images/nf-core-nf-cmgg-germline_logo_dark.png
+    - assets/nf-core-germline_logo_light.png
+    - docs/images/nf-core-germline_logo_light.png
+    - docs/images/nf-core-germline_logo_dark.png
     - .github/ISSUE_TEMPLATE/bug_report.yml
     - .github/CONTRIBUTING.md
     - .github/ISSUE_TEMPLATE/bug_report.yml
@@ -37,5 +37,5 @@ repository_type: pipeline
 template:
   author: nvnieuwk
   description: A nextflow pipeline for calling and annotating variants
-  name: nf-cmgg-germline
-  prefix: CenterForMedicalGeneticsGhent
+  name: germline
+  prefix: nf-cmgg

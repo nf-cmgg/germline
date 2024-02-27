@@ -1,9 +1,9 @@
 #!/usr/bin/env nextflow
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    CenterForMedicalGeneticsGhent/nf-cmgg-germline
+    nf-cmgg/germline
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Github : https://github.com/CenterForMedicalGeneticsGhent/nf-cmgg-germline
+    Github : https://github.com/nf-cmgg/germline
 ----------------------------------------------------------------------------------------
 */
 
@@ -15,7 +15,7 @@ nextflow.enable.dsl = 2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { CMGGGERMLINE            } from './workflows/cmgg-germline'
+include { GERMLINE                } from './workflows/germline'
 include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_cmgg_germline_pipeline'
 include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_cmgg_germline_pipeline'
 
@@ -53,7 +53,32 @@ params.vcfanno_config       = getGenomeAttribute('vcfanno_config')
 //
 // WORKFLOW: Run main analysis pipeline depending on type of input
 //
-workflow CMGG_CMGGGERMLINE {
+
+workflow NFCMGG_GERMLINE {
+
+    take:
+    samplesheet // channel: samplesheet read in from --input
+
+    main:
+
+    //
+    // WORKFLOW: Run pipeline
+    //
+    GERMLINE (
+        samplesheet
+    )
+
+    emit:
+    multiqc_report = GERMLINE.out.multiqc_report // channel: /path/to/multiqc_report.html
+
+}
+
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    RUN MAIN WORKFLOW
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
+workflow {
 
     //
     // SUBWORKFLOW: Run initialisation tasks
@@ -71,7 +96,7 @@ workflow CMGG_CMGGGERMLINE {
     //
     // WORKFLOW: Run main workflow
     //
-    CMGGGERMLINE (
+    NFCMGG_GERMLINE (
         PIPELINE_INITIALISATION.out.samplesheet
     )
 
@@ -85,18 +110,8 @@ workflow CMGG_CMGGGERMLINE {
         params.outdir,
         params.monochrome_logs,
         params.hook_url,
-        CMGGGERMLINE.out.multiqc_report
+        NFCMGG_GERMLINE.out.multiqc_report
     )
-}
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    RUN MAIN WORKFLOW
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-workflow {
-    CMGG_CMGGGERMLINE ()
 }
 
 /*

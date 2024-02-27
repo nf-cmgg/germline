@@ -1,4 +1,4 @@
-# CenterForMedicalGeneticsGhent/nf-cmgg-germline pipeline parameters
+# nf-cmgg/germline pipeline parameters
 
 A nextflow pipeline for calling and annotating variants
 

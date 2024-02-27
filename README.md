@@ -1,4 +1,4 @@
-# CenterForMedicalGeneticsGhent/nf-cmgg-germline
+# nf-cmgg/germline
 
 [![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-%E2%89%A522.10.5-23aa62.svg)](https://www.nextflow.io/)
 [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?logo=docker)](https://www.docker.com/)
@@ -7,13 +7,13 @@
 
 ## Introduction
 
-**nf-cmgg-germline** is a bioinformatics best-practice analysis pipeline for calling, joint-genotyping and annotating small variants variants for WGS and WES data. It uses HaplotypeCaller and/or Vardict to call variants, GenotypeGVCFs to genotype and EnsemblVEP to annotate.
+**germline** is a bioinformatics best-practice analysis pipeline for calling, joint-genotyping and annotating small variants variants for WGS and WES data. It uses HaplotypeCaller and/or Vardict to call variants, GenotypeGVCFs to genotype and EnsemblVEP to annotate.
 
 The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It uses Docker/Singularity containers making installation trivial and results highly reproducible. The [Nextflow DSL2](https://www.nextflow.io/docs/latest/dsl2.html) implementation of this pipeline uses one container per process which makes it much easier to maintain and update software dependencies. Where possible, these processes have been submitted to and installed from [nf-core/modules](https://github.com/nf-core/modules) in order to make them available to all nf-core pipelines, and to everyone within the Nextflow community!
 
 ## Pipeline summary
 
-![metro graph](docs/images/nf-cmgg-germline_metro.png)
+![metro graph](docs/images/germline_metro.png)
 
 :::note
 If you are new to Nextflow and nf-core, please refer to [this page](https://nf-co.re/docs/usage/installation) on how
@@ -40,7 +40,7 @@ Each row represents a single sample to be analysed. More information can be foun
 Now, you can run the pipeline using:
 
 ```bash
-nextflow run CenterForMedicalGeneticsGhent/nf-cmgg-germline --input samplesheet.csv --outdir <OUTDIR> --genome GRCh38 -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+nextflow run nf-cmgg/germline --input samplesheet.csv --outdir <OUTDIR> --genome GRCh38 -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
 ```
 
 > [!WARNING]
@@ -49,7 +49,7 @@ nextflow run CenterForMedicalGeneticsGhent/nf-cmgg-germline --input samplesheet.
 
 ## Credits
 
-nf-cmgg-germline was originally written and is maintained by [@nvnieuwk](https://github.com/nvnieuwk).
+germline was originally written and is maintained by [@nvnieuwk](https://github.com/nvnieuwk).
 
 Special thanks to [@matthdsm](https://github.com/matthdsm) for the many tips and feedback and to [@mvheetve](https://github.com/mvheetve) for testing the pipeline.
 

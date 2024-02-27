@@ -104,7 +104,7 @@ include { MULTIQC                                                    } from '../
 */
 
 // The main workflow
-workflow CMGGGERMLINE {
+workflow GERMLINE {
 
     take:
     ch_samplesheet
