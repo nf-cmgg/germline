@@ -33,7 +33,6 @@ workflow VCF_PED_RTGTOOLS {
             [ meta, vcf, [], [], [], ped_vcf ]
         }
         .set { ch_annotate_input }
-    
 
     BCFTOOLS_ANNOTATE(
         ch_annotate_input

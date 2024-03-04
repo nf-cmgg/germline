@@ -50,7 +50,7 @@ workflow VCF_ANNOTATION {
 
     //
     // Do the VEP annotation
-    //    
+    //
 
     VCF_ANNOTATE_ENSEMBLVEP(
         ch_vep_input,

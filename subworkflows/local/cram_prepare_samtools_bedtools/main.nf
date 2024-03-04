@@ -112,7 +112,7 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
     )
     ch_versions = ch_versions.mix(MERGE_ROI_SAMPLE.out.versions.first())
 
-    // Add the default ROI file to all samples without an ROI file 
+    // Add the default ROI file to all samples without an ROI file
     // if an ROI BED file has been given through the --roi parameter
     if (ch_default_roi) {
         MERGE_ROI_PARAMS(

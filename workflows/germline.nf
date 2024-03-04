@@ -1,13 +1,5 @@
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    IMPORT PLUGINS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-include { fromSamplesheet } from 'plugin/nf-validation'
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     VALIDATE INPUTS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
@@ -57,6 +49,17 @@ ch_multiqc_logo     = params.multiqc_logo   ? file(params.multiqc_logo, checkIfE
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    IMPORT FUNCTIONS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
+
+include { paramsSummaryMap                  } from 'plugin/nf-validation'
+include { paramsSummaryMultiqc              } from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { softwareVersionsToYAML            } from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { methodsDescriptionText            } from '../subworkflows/local/utils_cmgg_germline_pipeline'
+
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT SUBWORKFLOWS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
@@ -92,7 +95,6 @@ include { TABIX_TABIX as TABIX_TRUTH                                 } from '../
 include { TABIX_TABIX as TABIX_FINAL                                 } from '../modules/nf-core/tabix/tabix/main'
 include { BCFTOOLS_STATS as BCFTOOLS_STATS_FAMILY                    } from '../modules/nf-core/bcftools/stats/main'
 include { VCF2DB                                                     } from '../modules/nf-core/vcf2db/main'
-include { CUSTOM_DUMPSOFTWAREVERSIONS                                } from '../modules/nf-core/custom/dumpsoftwareversions/main'
 include { MULTIQC                                                    } from '../modules/nf-core/multiqc/main'
 
 /*
@@ -101,50 +103,16 @@ include { MULTIQC                                                    } from '../
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-// Info required for completion email and summary
-def multiqc_report = []
-
 // The main workflow
-workflow CMGGGERMLINE {
+workflow GERMLINE {
 
-    //
-    // Check input path parameters to see if they exist
-    //
+    take:
+    ch_samplesheet
 
-    def checkPathParamList = [
-        params.fasta,
-        params.fai,
-        params.dict,
-        params.strtablefile,
-        params.dbsnp,
-        params.dbsnp_tbi,
-        params.somalier_sites,
-        params.sdf,
-        params.roi,
-        params.vep_cache,
-        params.vcfanno_config,
-        params.vcfanno_lua,
-        params.dbnsfp,
-        params.dbnsfp_tbi,
-        params.spliceai_indel,
-        params.spliceai_indel_tbi,
-        params.spliceai_snv,
-        params.spliceai_snv_tbi,
-        params.mastermind,
-        params.mastermind_tbi,
-        params.eog,
-        params.eog_tbi
-    ]
-    for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
-
-    //
-    // Check the input samplesheet
-    //
-
-    if (params.input) { ch_input = file(params.input, checkIfExists: true) } else { error('Input samplesheet not specified!') }
-
-    ch_versions = Channel.empty()
-    ch_reports  = Channel.empty()
+    main:
+    ch_versions      = Channel.empty()
+    ch_reports       = Channel.empty()
+    ch_multiqc_files = Channel.empty()
 
     //
     // Importing and convert the input files passed through the parameters to channels
@@ -333,30 +301,10 @@ workflow CMGGGERMLINE {
     }
 
     //
-    // Read in samplesheet, validate and convert to a channel
+    // Split the input channel into the right channels
     //
 
-    // Output the samplesheet
-    file(params.input).copyTo("${params.outdir}/samplesheet.csv")
-
-    Channel.fromSamplesheet("input", immutable_meta: false)
-        .map { meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ->
-            // Infer the family ID from the PED file if no family ID was given.
-            // If no PED is given, use the sample ID as family ID            
-            def new_meta = meta + [
-                family: meta.family ?: ped ? get_family_id_from_ped(ped) : meta.sample
-            ]
-            [ new_meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ]
-        }
-        .tap { ch_raw_inputs }
-        .map { [ "id":it[0].id, "family":it[0].family ] }
-        .reduce([:]) { families, v ->
-            // Count the unique samples in one family
-            families[v.family] = families[v.family] ? families[v.family] + [v.id] : [v.id]
-            families[v.family] = families[v.family].unique()
-            families
-        }
-        .combine(ch_raw_inputs)
+    ch_samplesheet
         .multiMap { families, meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ->
             // Divide the input files into their corresponding channel
             def new_meta = meta + [
@@ -375,7 +323,7 @@ workflow CMGGGERMLINE {
             truth_variants: [new_meta_validation, truth_vcf, truth_tbi, truth_bed] // Optional channel containing the truth VCF, its index and the optional BED file
             gvcf:           [new_meta, gvcf, tbi] // Optional channel containing the GVCFs and their optional indices
             cram:           [new_meta, cram, crai]  // Mandatory channel containing the CRAM files and their optional indices
-            peds:           [new_meta_ped, ped] // Optional channel containing the PED files 
+            peds:           [new_meta_ped, ped] // Optional channel containing the PED files
             roi:            [new_meta, roi] // Optional channel containing the ROI BED files for WES samples
             family_samples: [meta.family, families[meta.family]] // A channel containing the samples per family
         }
@@ -433,7 +381,6 @@ workflow CMGGGERMLINE {
     ch_calls = Channel.empty()
 
     if("haplotypecaller" in callers) {
-            
         //
         // Call variants with GATK4 HaplotypeCaller
         //
@@ -456,7 +403,6 @@ workflow CMGGGERMLINE {
     }
 
     if("vardict" in callers) {
-            
         //
         // Call variants with VarDict
         //
@@ -472,7 +418,6 @@ workflow CMGGGERMLINE {
         ch_versions = ch_versions.mix(CRAM_CALL_VARDICTJAVA.out.versions)
 
         ch_calls = ch_calls.mix(CRAM_CALL_VARDICTJAVA.out.vcfs)
-    
     }
 
     ch_calls
@@ -630,11 +575,11 @@ workflow CMGGGERMLINE {
 
             // Create truth VCF indices if none were given
             TABIX_TRUTH(
-                ch_truths_input.no_tbi.map { meta, vcf, tbi, bed -> 
+                ch_truths_input.no_tbi.map { meta, vcf, tbi, bed ->
                     [ meta, vcf ]
                 }
             )
-            ch_versions = ch_versions.mix(TABIX_TRUTH.out.versions.first())         
+            ch_versions = ch_versions.mix(TABIX_TRUTH.out.versions.first())
 
             ch_truths_input.no_tbi
                 .join(TABIX_TRUTH.out.tbi, failOnDuplicate:true, failOnMismatch:true)
@@ -718,47 +663,37 @@ workflow CMGGGERMLINE {
     }
 
     //
-    // Dump the software versions
+    // Collate and save software versions
     //
-
-    CUSTOM_DUMPSOFTWAREVERSIONS(
-        ch_versions.unique().collectFile(name: 'collated_versions.yml')
-    )
-
-    ch_versions_yaml = CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml.collect()
+    softwareVersionsToYAML(ch_versions)
+        .collectFile(storeDir: "${params.outdir}/pipeline_info", name: 'nf_core_pipeline_software_mqc_versions.yml', sort: true, newLine: true)
+        .set { ch_collated_versions }
 
     //
     // Perform multiQC on all QC data
     //
 
-    ch_multiqc_files = Channel.empty()
+    ch_multiqc_config                     = Channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
+    ch_multiqc_custom_config              = params.multiqc_config ? Channel.fromPath(params.multiqc_config, checkIfExists: true) : Channel.empty()
+    ch_multiqc_logo                       = params.multiqc_logo ? Channel.fromPath(params.multiqc_logo, checkIfExists: true) : Channel.empty()
+    summary_params                        = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
+    ch_workflow_summary                   = Channel.value(paramsSummaryMultiqc(summary_params))
+    ch_multiqc_custom_methods_description = params.multiqc_methods_description ? file(params.multiqc_methods_description, checkIfExists: true) : file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
+    ch_methods_description                = Channel.value(methodsDescriptionText(ch_multiqc_custom_methods_description))
+    ch_multiqc_files                      = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
+    ch_multiqc_files                      = ch_multiqc_files.mix(ch_collated_versions)
+    ch_multiqc_files                      = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml', sort: false))
 
-    ch_multiqc_files = ch_multiqc_files.mix(ch_versions_yaml, ch_reports.collect())
-
-    MULTIQC(
+    MULTIQC (
         ch_multiqc_files.collect(),
-        ch_multiqc_config,
-        [],
-        ch_multiqc_logo
+        ch_multiqc_config.toList(),
+        ch_multiqc_custom_config.toList(),
+        ch_multiqc_logo.toList()
     )
-}
 
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    COMPLETION EMAIL AND SUMMARY
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-workflow.onComplete {
-    if (params.email || params.email_on_fail) {
-        NfcoreTemplate.email(workflow, params, summary_params, projectDir, log, multiqc_report)
-    }
-    NfcoreTemplate.dump_parameters(workflow, params)
-    if (params.hook_url) {
-        NfcoreTemplate.adaptivecard(workflow, params, summary_params, projectDir, log, multiqc_report)
-    }
-    NfcoreTemplate.summary(workflow, params, log)
+    emit:
+    multiqc_report = MULTIQC.out.report.toList() // channel: /path/to/multiqc_report.html
+    versions       = ch_versions                 // channel: [ path(versions.yml) ]
 }
 
 /*
@@ -767,48 +702,6 @@ workflow.onComplete {
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-def get_family_id_from_ped(ped_file){
-
-    // Check if there is a file
-    if (ped_file.isEmpty()){
-        return null
-    }
-
-    // Read the PED file
-    def ped = file(ped_file, checkIfExists: true).text
-
-    // Perform a validity check on the PED file since vcf2db is picky and not capable of giving good error messages
-    comment_count = 0
-    line_count = 0
-
-    for( line : ped.readLines()) {
-        line_count++
-        if (line_count == 1 && line ==~ /^#.*$/) {
-            continue
-        }
-        else if (line_count > 1 && line ==~ /^#.*$/) {
-            error("[PED file error] A commented line was found on line ${line_count} in ${ped_file}, the only commented line allowed is an optional header on line 1.")
-        }
-        else if (line_count == 1 && line ==~ /^#.* $/) {
-            error("[PED file error] The header in ${ped_file} contains a trailing space, please remove this.")
-        }
-        else if (line ==~ /^.+#.*$/) {
-            error("[PED file error] A '#' has been found as a non-starting character on line ${line_count} in ${ped_file}, this is an illegal character and should be removed.")
-        }
-        else if (line ==~ /^[^#].* .*$/) {
-            error("[PED file error] A space has been found on line ${line_count} in ${ped_file}, please only use tabs to seperate the values (and change spaces in names to '_').")
-        }
-        else if ((line ==~ /^(\w+\t)+\w+$/) == false) {
-            error("[PED file error] An illegal character has been found on line ${line_count} in ${ped_file}, only a-z; A-Z; 0-9 and '_' are allowed as column values.")
-        }
-        else if ((line ==~ /^(\w+\t){5}\w+$/) == false) {
-            error("[PED file error] ${ped_file} should contain exactly 6 tab-delimited columns (family_id    individual_id    paternal_id    maternal_id    sex    phenotype). This is not the case on line ${line_count}.")
-        }
-    }
-
-    // get family_id
-    return (ped =~ /\n([^#]\w+)/)[0][1]
-}
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -1,7 +1,19 @@
-# CenterForMedicalGeneticsGhent/nf-cmgg-germline: Changelog
+# nf-cmgg/germline: Changelog
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## v1.5.0 - Amazing Antwerp - [March 4 2024]
+
+### Improvements
+
+1. Updated to the nf-core template v2.13.0
+2. Updated all GATK modules to 4.5.0.0
+3. Moved the pipeline from [https://github.com/CenterForMedicalGeneticsGhent/nf-cmgg-germline](https://github.com/CenterForMedicalGeneticsGhent/nf-cmgg-germline) to [https://github.com/nf-cmgg/germline](https://github.com/nf-cmgg/germline)
+
+### Changes
+
+1. VCF files created with `haplotypecaller` no have the `haplotypecaller` tag in the filename instead of `gatk4-joint` to keep naming consistent
 
 ## v1.4.2 - Vibrant Veurne - [January 25 2024]
 
@@ -196,4 +208,4 @@ Changed the output directory structure to be more bcbio like
 
 ## v1.0dev - [May 31 2022]
 
-Initial release of CenterForMedicalGeneticsGhent/nf-cmgg-germline, created with the [nf-core](https://nf-co.re/) template.
+Initial release of nf-cmgg/germline, created with the [nf-core](https://nf-co.re/) template.

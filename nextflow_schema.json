@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$id": "https://raw.githubusercontent.com/CenterForMedicalGeneticsGhent/nf-cmgg-germline/master/nextflow_schema.json",
-    "title": "CenterForMedicalGeneticsGhent/nf-cmgg-germline pipeline parameters",
+    "$id": "https://raw.githubusercontent.com/nf-cmgg/germline/master/nextflow_schema.json",
+    "title": "nf-cmgg/germline pipeline parameters",
     "description": "A nextflow pipeline for calling and annotating variants",
     "type": "object",
     "definitions": {
@@ -15,8 +15,9 @@
                 "input": {
                     "type": "string",
                     "format": "file-path",
-                    "pattern": "^\\S+\\.(csv|tsv|yaml|yml)$",
+                    "exists": true,
                     "schema": "assets/schema_input.json",
+                    "pattern": "^\\S+\\.(csv|tsv|yaml|yml|json)$",
                     "description": "Path to comma-separated file containing information about the samples in the experiment.",
                     "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with samples, and a header row. See [usage docs](./usage.md).",
                     "fa_icon": "fas fa-file-csv",
@@ -111,7 +112,6 @@
                     "type": "string",
                     "format": "directory-path",
                     "description": "Directory / URL base for iGenomes references.",
-                    "default": "s3://ngi-igenomes/igenomes",
                     "fa_icon": "fas fa-cloud-download-alt",
                     "hidden": true
                 },
@@ -141,7 +141,7 @@
                 },
                 "merge_distance": {
                     "type": "integer",
-                    "default": 10000,
+                    "default": 100000,
                     "description": "The merge distance for genotype BED files",
                     "help_text": "Increase this parameter if GenomicsDBImport is running slow. This defines the maximum distance between intervals that should be merged. The less intervals GenomicsDBImport actually gets, the faster it will run."
                 },
@@ -444,7 +444,7 @@
                 },
                 "validationSchemaIgnoreParams": {
                     "type": "string",
-                    "default": "genomes,test_data",
+                    "default": "genomes,igenomes_base,test_data",
                     "hidden": true,
                     "description": "Comma-separated list of parameters to ignore when validating against the schema"
                 }
@@ -476,7 +476,6 @@
                 },
                 "vep_cache": {
                     "type": "string",
-                    "default": "None",
                     "description": "The path to the VEP cache",
                     "format": "path"
                 },
