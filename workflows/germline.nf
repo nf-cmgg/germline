@@ -216,7 +216,8 @@ workflow GERMLINE {
     // Reference fasta index
     if (!ch_fai) {
         FAIDX(
-            ch_fasta_ready
+            ch_fasta_ready,
+            [[],[]]
         )
         ch_versions = ch_versions.mix(FAIDX.out.versions)
 
