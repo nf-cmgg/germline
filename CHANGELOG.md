@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## v1.5.1 - Great Geraardsbergen - [March 5 2024]
 
 ### Fixes
+
 1. Fixed an issue with `igenomes` paths not being casted correctly to their corresponding parameter
 
 ## v1.5.0 - Amazing Antwerp - [March 4 2024]
