@@ -9,7 +9,7 @@ process UPDIO {
     tuple val(meta2), path(cnv)
 
     output:
-    tuple val(meta), path("${prefix}"), emit: bed
+    tuple val(meta), path("${prefix}"), emit: updio
     path  "versions.yml"              , emit: versions
 
     when:
