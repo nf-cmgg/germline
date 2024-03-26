@@ -27,6 +27,12 @@ process VCF2DB {
         ${prefix}.db \\
         $args
 
+    sqlite3 ${prefix}.db 'CREATE INDEX idx_variant_impacts_id ON variant_impacts (variant_id)' && \\
+    sqlite3 ${prefix}.db 'ALTER TABLE variants ADD COLUMN tags varchar(255)' && \\
+    sqlite3 ${prefix}.db 'ALTER TABLE variants ADD COLUMN tags_user varchar(255)' && \\
+    sqlite3 ${prefix}.db 'ALTER TABLE variants ADD COLUMN notes varchar(255)' && \\
+    sqlite3 ${prefix}.db 'ALTER TABLE variants ADD COLUMN notes_user varchar(255)'
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         vcf2db: $VERSION
