@@ -1,0 +1,29 @@
+nextflow_workflow {
+
+    name "Test Workflow VCF_FILTER_BCFTOOLS"
+    script "subworkflows/local/vcf_filter_bcftools/main.nf"
+    workflow "VCF_FILTER_BCFTOOLS"
+
+    tag "subworkflows"
+    tag "subworkflows_local"
+    tag "vcf_filter_bcftools"
+
+    test("vcf_filter_bcftools - default") {
+
+        when {
+            workflow {
+                """
+                // define inputs of the workflow here. Example:
+                // input[0] = file("test-file.txt")
+                """
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert snapshot(workflow.out).match()
+        }
+
+    }
+
+}
