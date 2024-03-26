@@ -72,6 +72,7 @@ include { VCF_EXTRACT_RELATE_SOMALIER       } from '../subworkflows/local/vcf_ex
 include { VCF_PED_RTGTOOLS                  } from '../subworkflows/local/vcf_ped_rtgtools/main'
 include { VCF_ANNOTATION                    } from '../subworkflows/local/vcf_annotation/main'
 include { VCF_VALIDATE_SMALL_VARIANTS       } from '../subworkflows/local/vcf_validate_small_variants/main'
+include { VCF_UPD_UPDIO                     } from '../subworkflows/local/vcf_upd_updio/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -136,6 +137,8 @@ workflow GERMLINE {
     ch_vcfanno_config     = params.vcfanno_config      ? Channel.fromPath(params.vcfanno_config).collect()     : []
     ch_vcfanno_lua        = params.vcfanno_lua         ? Channel.fromPath(params.vcfanno_lua).collect()        : []
     ch_vcfanno_resources  = params.vcfanno_resources   ? Channel.of(params.vcfanno_resources.split(";")).map({ file(it, checkIfExists:true) }).collect()   : []
+
+    ch_updio_common_cnvs  = params.updio_common_cnvs   ? Channel.fromPath(params.common_cnv_file).map { [[id:'updio_cnv'], it] } : [[],[]]
 
     //
     // Check for the presence of EnsemblVEP plugins that use extra files
@@ -660,6 +663,19 @@ workflow GERMLINE {
             ch_versions = ch_versions.mix(VCF2DB.out.versions.first())
 
             VCF2DB.out.db.dump(tag:'vcf2db_output', pretty:true)
+        }
+
+        //
+        // Run UPDio analysis
+        //
+
+        if(params.updio) {
+            VCF_UPD_UPDIO(
+                ch_final_vcfs,
+                VCF_EXTRACT_RELATE_SOMALIER.out.peds,
+                ch_updio_common_cnvs
+            )
+            ch_versions = ch_versions.mix(VCF_UPD_UPDIO.out.versions.first())
         }
     }
 

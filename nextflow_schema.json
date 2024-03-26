@@ -251,6 +251,17 @@
                 "keep_alt_contigs": {
                     "type": "boolean",
                     "description": "Keep all aditional contigs for calling instead of filtering them out before"
+                },
+                "updio": {
+                    "type": "boolean",
+                    "description": "Run UPDio analysis on the resulting VCFs"
+                },
+                "updio_common_cnvs": {
+                    "type": "string",
+                    "description": "A TSV file containing common CNVs to be used by UPDio",
+                    "format": "file-path",
+                    "exists": true,
+                    "pattern": "^\\S+\\.tsv$"
                 }
             }
         },
