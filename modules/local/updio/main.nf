@@ -41,6 +41,10 @@ process UPDIO {
     def VERSION = "1.0.0"
     """
     mkdir $prefix
+    touch ${prefix}/${meta.child}.events_list
+    touch ${prefix}/${meta.child}.log
+    touch ${prefix}/${meta.child}.table
+    touch ${prefix}/${meta.child}.upd
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
