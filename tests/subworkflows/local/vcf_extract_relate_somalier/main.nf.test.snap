@@ -1,0 +1,138 @@
+{
+    "default - peds": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "Ashkenazim",
+                        "family": "Ashkenazim",
+                        "family_count": 3,
+                        "caller": "haplotypecaller"
+                    },
+                    [
+                        "NA24143.somalier:md5,91282756b073ebdae0de0200c01654ad",
+                        "NA24149.somalier:md5,a70da683f7ed9ceba4684fa682f2dc03",
+                        "NA24385.somalier:md5,6cfe5cef652bdc7c20d13ec27b1a96d1"
+                    ]
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "Ashkenazim",
+                        "family": "Ashkenazim",
+                        "family_count": 3,
+                        "caller": "haplotypecaller"
+                    },
+                    "Ashkenazim.haplotypecaller.html:md5,a7cc550571c8543643d10b2e9db68a48"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "Ashkenazim",
+                        "family": "Ashkenazim",
+                        "family_count": 3,
+                        "caller": "haplotypecaller"
+                    },
+                    "Ashkenazim.haplotypecaller.pairs.tsv:md5,0c89abf63de67c9f0ee931e883a17a66"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "Ashkenazim",
+                        "family": "Ashkenazim",
+                        "family_count": 3,
+                        "caller": "haplotypecaller"
+                    },
+                    "Ashkenazim.haplotypecaller.samples.tsv:md5,26e108afb44bcbaf4c47e43eb5611d15"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "Ashkenazim",
+                        "family": "Ashkenazim",
+                        "family_count": 3,
+                        "caller": "haplotypecaller"
+                    },
+                    "Ashkenazim.haplotypecaller_somalier.ped:md5,689bb83118511ddcb09ae6d30d2d99b3"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.8.4",
+            "nextflow": "24.02.0"
+        },
+        "timestamp": "2024-03-27T13:17:18.055689163"
+    },
+    "default - no peds": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "Ashkenazim",
+                        "family": "Ashkenazim",
+                        "family_count": 3,
+                        "caller": "haplotypecaller"
+                    },
+                    [
+                        "NA24143.somalier:md5,91282756b073ebdae0de0200c01654ad",
+                        "NA24149.somalier:md5,a70da683f7ed9ceba4684fa682f2dc03",
+                        "NA24385.somalier:md5,6cfe5cef652bdc7c20d13ec27b1a96d1"
+                    ]
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "Ashkenazim",
+                        "family": "Ashkenazim",
+                        "family_count": 3,
+                        "caller": "haplotypecaller"
+                    },
+                    "Ashkenazim.haplotypecaller.html:md5,1622292889a889778f10ae037c051e44"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "Ashkenazim",
+                        "family": "Ashkenazim",
+                        "family_count": 3,
+                        "caller": "haplotypecaller"
+                    },
+                    "Ashkenazim.haplotypecaller.pairs.tsv:md5,fc51248691992f10a6b5176f5a2d6231"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "Ashkenazim",
+                        "family": "Ashkenazim",
+                        "family_count": 3,
+                        "caller": "haplotypecaller"
+                    },
+                    "Ashkenazim.haplotypecaller.samples.tsv:md5,1c12b44787ba9bc79943737fa54d3007"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "Ashkenazim",
+                        "family": "Ashkenazim",
+                        "family_count": 3,
+                        "caller": "haplotypecaller"
+                    },
+                    "Ashkenazim.haplotypecaller_somalier.ped:md5,f1a0cb22a941d0563fae2ca3c30dd0d4"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.8.4",
+            "nextflow": "24.02.0"
+        },
+        "timestamp": "2024-03-27T13:17:29.504749349"
+    }
+}
