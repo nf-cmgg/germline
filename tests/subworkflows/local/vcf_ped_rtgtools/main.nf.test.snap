@@ -1,0 +1,22 @@
+{
+    "default": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "Ashkenazim",
+                        "family": "Ashkenazim",
+                        "family_count": 3,
+                        "caller": "haplotypecaller"
+                    },
+                    "Ashkenazim.haplotypecaller.vcf.gz"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.8.4",
+            "nextflow": "24.02.0"
+        },
+        "timestamp": "2024-03-27T13:28:06.669606597"
+    }
+}
