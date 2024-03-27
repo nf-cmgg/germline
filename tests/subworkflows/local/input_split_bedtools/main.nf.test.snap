@@ -1,0 +1,49 @@
+{
+    "default - crams": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "NA24143.00001",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 1,
+                        "split_count": 3
+                    },
+                    "NA24143.cram",
+                    "NA24143.cram.crai",
+                    "NA24143.00001.bed:md5,ffd6f70b7fa85ffb46fb66a4cf9afb70"
+                ],
+                [
+                    {
+                        "id": "NA24143.00002",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 1,
+                        "split_count": 3
+                    },
+                    "NA24143.cram",
+                    "NA24143.cram.crai",
+                    "NA24143.00002.bed:md5,628a9845316c9bdf2e8c11c04bdd0f06"
+                ],
+                [
+                    {
+                        "id": "NA24143.00003",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 1,
+                        "split_count": 3
+                    },
+                    "NA24143.cram",
+                    "NA24143.cram.crai",
+                    "NA24143.00003.bed:md5,6eabb4f395fe99ff241aaa3391978b06"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.8.4",
+            "nextflow": "24.02.0"
+        },
+        "timestamp": "2024-03-27T11:15:19.235405576"
+    }
+}
