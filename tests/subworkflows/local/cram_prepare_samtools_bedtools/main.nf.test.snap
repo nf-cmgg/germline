@@ -1,0 +1,142 @@
+{
+    "default - merge": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 1
+                    },
+                    "NA24143.cram",
+                    "NA24143.cram.crai"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 1
+                    },
+                    "NA24143_intersect.bed:md5,b87069698afefb15282d069e56110046"
+                ]
+            ],
+            [
+                
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.8.4",
+            "nextflow": "24.02.0"
+        },
+        "timestamp": "2024-03-27T11:05:29.497234928"
+    },
+    "default - WGS": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 1
+                    },
+                    "NA24143.cram",
+                    "NA24143.cram.crai"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 1
+                    },
+                    "NA24143.filter.bed:md5,9fc0cc2e4403678f18bc8b18646abd66"
+                ]
+            ],
+            [
+                
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.8.4",
+            "nextflow": "24.02.0"
+        },
+        "timestamp": "2024-03-27T10:49:45.063311741"
+    },
+    "default - WES": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 1
+                    },
+                    "NA24143.cram",
+                    "NA24143.cram.crai"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 1
+                    },
+                    "NA24143_intersect.bed:md5,b87069698afefb15282d069e56110046"
+                ]
+            ],
+            [
+                
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.8.4",
+            "nextflow": "24.02.0"
+        },
+        "timestamp": "2024-03-27T11:02:27.487076852"
+    },
+    "default - WES common ROI": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 1
+                    },
+                    "NA24143.cram",
+                    "NA24143.cram.crai"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 1
+                    },
+                    "NA24143_intersect.bed:md5,b87069698afefb15282d069e56110046"
+                ]
+            ],
+            [
+                
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.8.4",
+            "nextflow": "24.02.0"
+        },
+        "timestamp": "2024-03-27T11:02:14.280224701"
+    }
+}
