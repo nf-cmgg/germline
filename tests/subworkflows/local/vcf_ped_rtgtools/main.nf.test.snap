@@ -9,7 +9,7 @@
                         "family_count": 3,
                         "caller": "haplotypecaller"
                     },
-                    "Ashkenazim.haplotypecaller_ped_annotated.vcf.gz"
+                    "Ashkenazim.haplotypecaller.vcf.gz"
                 ]
             ]
         ],
