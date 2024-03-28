@@ -4,7 +4,7 @@
 
 ## Samplesheet input
 
-You will need to create a samplesheet with information with the samples you would like to analyse before running the pipeline. Use this parameter to specify its location. It can be either a CSV, TSV or YAML file.
+You will need to create a samplesheet with information with the samples you would like to analyse before running the pipeline. Use this parameter to specify its location. It can be either a CSV, TSV, JSON or YAML file.
 
 ```bash
 --input '[path to samplesheet file]'
@@ -12,50 +12,68 @@ You will need to create a samplesheet with information with the samples you woul
 
 ### Example of the samplesheet
 
-The `sample` identifiers have to be the same when you have re-sequenced the same sample more than once e.g. to increase sequencing depth. Either the `ped` or `family` field can be used to specify the family name. The pipeline automatically extracts the family id from the `ped` file if the `family` field is empty. The `family` is used to specify on which samples the joint-genotyping should be performed. If neither the `ped` or `family` fields are used, the pipeline will default to a single-sample family with the sample name as its ID. Below is an example of how the samplesheet could look like in the three formats.
 
-> The order and presence of the fields is not set, you can arrange/remove these as you see fit. The only required fields are `sample` and `cram`.
+
+Below is an example of how the samplesheet could look like in the three formats.
+
+<!-- prettier-ignore -->
+!!!note
+    The order and presence of the fields is not set, you can arrange/remove these as you see fit. The only required fields are `sample` and `cram`.
 
 #### CSV
 
-```csv
-sample,family,cram,crai,ped,truth_vcf,truth_tbi,roi,vardict_min_af
-SAMPLE_1,FAMILY_1,SAMPLE_1.cram,SAMPLE_1.crai,FAMILY_1.ped,SAMPLE_1.truth.vcf.gz,SAMPLE_1.truth.vcf.gz.tbi,SAMPLE_1.bed,0.1
-SAMPLE_2,FAMILY_1,SAMPLE_2.cram,SAMPLE_2.crai,,SAMPLE_2.truth.vcf.gz,,SAMPLE_2.bed,0.01
-SAMPLE_3,,SAMPLE_3.cram,,,,,,
+```csv title="samplesheet.csv"
+sample,family,cram,crai
+SAMPLE_1,FAMILY_1,SAMPLE_1.cram,SAMPLE_1.crai
+SAMPLE_2,FAMILY_1,SAMPLE_2.cram,SAMPLE_2.crai
+SAMPLE_3,,SAMPLE_3.cram,
 ```
 
 #### TSV
 
-```tsv
-sample    family    cram   crai   ped truth_vcf truth_tbi roi vardict_min_af
-SAMPLE_1  FAMILY_1  SAMPLE_1.cram SAMPLE_1.crai FAMILY_1.ped  SAMPLE_1.truth.vcf.gz SAMPLE_1.truth.vcf.gz.tbi SAMPLE_1.bed  0.1
-SAMPLE_2  FAMILY_1  SAMPLE_2.cram SAMPLE_2.crai SAMPLE_2.truth.vcf.gz              SAMPLE_2.bed 0.01
+```tsv title="samplesheet.tsv"
+sample    family    cram   crai
+SAMPLE_1  FAMILY_1  SAMPLE_1.cram SAMPLE_1.crai
+SAMPLE_2  FAMILY_1  SAMPLE_2.cram SAMPLE_2.crai
 SAMPLE_3    SAMPLE_3.cram
 ```
 
 #### YAML/YML
 
-```yaml
+```yaml title="samplesheet.yaml"
 - sample: SAMPLE_1
   family: FAMILY_1
   cram: SAMPLE_1.cram
   crai: SAMPLE_1.crai
-  ped: FAMILY_1.ped
-  truth_vcf: SAMPLE_1.truth.vcf.gz
-  truth_tbi: SAMPLE_1.truth.vcf.gz.tbi
-  roi: SAMPLE_1.bed
-  vardict_min_af: 0.1
 - sample: SAMPLE_2
   family: FAMILY_1
   cram: SAMPLE_2.cram
   crai: SAMPLE_2.crai
-  ped: FAMILY_1.ped
-  truth_vcf: SAMPLE_2.truth.vcf.gz
-  roi: SAMPLE_2.bed
-  vardict_min_af: 0.01
 - sample: SAMPLE_3
   cram: SAMPLE_3.cram
+```
+
+#### JSON
+
+```json title="samplesheet.json"
+[
+    {
+        "sample": "SAMPLE_1",
+        "family": "FAMILY_1",
+        "cram": "SAMPLE_1.cram",
+        "crai": "SAMPLE_1.crai"
+    },
+    {
+        "sample": "SAMPLE_2",
+        "family": "FAMILY_1",
+        "cram": "SAMPLE_2.cram",
+        "crai": "SAMPLE_2.crai"
+    },
+    {
+        "sample": "SAMPLE_3",
+        "cram": "SAMPLE_3.cram"
+    }
+]
 ```
 
 ### Full samplesheet
@@ -74,7 +92,15 @@ The samplesheet can have following columns:
 | `roi`            | OPTIONAL - Full path to a BED file containing the regions of interest for the current sample to call on. When this file is given, the pipeline will run this sample in WES mode. (The flag `--roi <path>` can also be given to run WES mode for all samples using the file specified by the flag) File has to have the extension `.bed` or `.bed.gz`.                 |
 | `vardict_min_af` | OPTIONAL - The minimum AF value to use for the vardict variant caller (`--callers vardict`). This can be set in the samplesheet when it differs for all samples. A default can be set using the `--vardict_min_af` parameter (whichs defaults to 0.1)                                                                                                                 |
 
-An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
+<!-- prettier-ignore -->
+!!!note
+    The `sample` identifiers have to be the same when you have re-sequenced the same sample more than once e.g. to increase sequencing depth. Either the `ped` or `family` field can be used to specify the family name. The pipeline automatically extracts the family id from the `ped` file if the `family` field is empty. The `family` is used to specify on which samples the joint-genotyping should be performed. If neither the `ped` or `family` fields are used, the pipeline will default to a single-sample family with the sample name as its ID.
+
+This is an example of a working samplesheet used to test this pipeline:
+
+```csv title="samplesheet.csv"
+--8<-- "assets/samplesheet.csv"
+```
 
 ## Running the pipeline
 
@@ -89,19 +115,28 @@ This will launch the pipeline with the `docker` configuration profile. See below
 Note that the pipeline will create the following files in your working directory:
 
 ```bash
-work                # Directory containing the nextflow working files
-<OUTDIR>            # Finished results in specified location (defined with --outdir)
-.nextflow_log       # Log file from Nextflow
-# Other nextflow hidden files, eg. history of pipeline runs and old logs.
+work          #(1)!
+results       #(2)!
+.nextflow_log #(3)!
+...           #(4)!
 ```
+
+1. Directory containing the nextflow working files
+
+2. Finished results in specified location (defined with --outdir)
+
+3. Log file from Nextflow
+
+4. Other nextflow hidden files, eg. history of pipeline runs and old logs.
 
 If you wish to repeatedly use the same parameters for multiple runs, rather than specifying each flag in the command, you can specify these in a params file.
 
 Pipeline settings can be provided in a `yaml` or `json` file via `-params-file <file>`.
 
-:::warning
-Do not use `-c <file>` to specify parameters as this will result in errors. Custom config files specified with `-c` must only be used for [tuning process resource specifications](https://nf-co.re/docs/usage/configuration#tuning-workflow-resources), other infrastructural tweaks (such as output directories), or module arguments (args).
-:::
+<!-- prettier-ignore -->
+!!!warning
+    Do not use `-c <file>` to specify parameters as this will result in errors. Custom config files specified with `-c` must only be used for [tuning process resource specifications](https://nf-co.re/docs/usage/configuration#tuning-workflow-resources), other infrastructural tweaks (such as output directories), or module arguments (args).
+
 
 The above pipeline run specified with a params file in yaml format:
 
@@ -111,7 +146,7 @@ nextflow run nf-cmgg/germline -profile docker -params-file params.yaml
 
 with `params.yaml` containing:
 
-```yaml
+```yaml title="params.yaml"
 input: './samplesheet.csv'
 outdir: './results/'
 genome: 'GRCh38'
@@ -136,15 +171,15 @@ This version number will be logged in reports when you run the pipeline, so that
 
 To further assist in reproducbility, you can use share and re-use [parameter files](#running-the-pipeline) to repeat pipeline runs with the same settings without having to write out a command with every single parameter.
 
-:::tip
-If you wish to share such profile (such as upload as supplementary material for academic publications), make sure to NOT include cluster specific paths to files, nor institutional specific profiles.
-:::
+<!-- prettier-ignore -->
+!!!tip
+    If you wish to share such profile (such as upload as supplementary material for academic publications), make sure to NOT include cluster specific paths to files, nor institutional specific profiles.
 
 ## Core Nextflow arguments
 
-:::note
-These options are part of Nextflow and use a _single_ hyphen (pipeline parameters use a double-hyphen).
-:::
+<!-- prettier-ignore -->
+!!!note
+    These options are part of Nextflow and use a _single_ hyphen (pipeline parameters use a double-hyphen).
 
 ### `-profile`
 
@@ -152,9 +187,9 @@ Use this parameter to choose a configuration profile. Profiles can give configur
 
 Several generic profiles are bundled with the pipeline which instruct the pipeline to use software packaged using different methods (Docker, Singularity, Podman, Shifter, Charliecloud, Apptainer, Conda) - see below.
 
-:::info
-We highly recommend the use of Docker or Singularity containers for full pipeline reproducibility, however when this is not possible, Conda is also supported.
-:::
+<!-- prettier-ignore -->
+!!!info
+    We highly recommend the use of Docker or Singularity containers for full pipeline reproducibility, however when this is not possible, Conda is also supported.
 
 The pipeline also dynamically loads configurations from [https://github.com/nf-core/configs](https://github.com/nf-core/configs) when it runs, making multiple config profiles for various institutional clusters available at run time. For more information and to see if your system is available in these configs please see the [nf-core/configs documentation](https://github.com/nf-core/configs#documentation).
 
@@ -164,24 +199,24 @@ They are loaded in sequence, so later profiles can overwrite earlier profiles.
 If `-profile` is not specified, the pipeline will run locally and expect all software to be installed and available on the `PATH`. This is _not_ recommended, since it can lead to different results on different machines dependent on the computer enviroment.
 
 - `test`
-  - A profile with a complete configuration for automated testing
-  - Includes links to test data so needs no other parameters
+  > A profile with a complete configuration for automated testing
+  > Includes links to test data so needs no other parameters
 - `nf_test`
-  - The profile setting the default values for `nf-test`. When running `nf-test` this profile is automatically used.
+  > The profile setting the default values for `nf-test`. When running `nf-test` this profile is automatically used.
 - `docker`
-  - A generic configuration profile to be used with [Docker](https://docker.com/)
+  > A generic configuration profile to be used with [Docker](https://docker.com/)
 - `singularity`
-  - A generic configuration profile to be used with [Singularity](https://sylabs.io/docs/)
+  > A generic configuration profile to be used with [Singularity](https://sylabs.io/docs/)
 - `podman`
-  - A generic configuration profile to be used with [Podman](https://podman.io/)
+  > A generic configuration profile to be used with [Podman](https://podman.io/)
 - `shifter`
-  - A generic configuration profile to be used with [Shifter](https://nersc.gitlab.io/development/shifter/how-to-use/)
+  > A generic configuration profile to be used with [Shifter](https://nersc.gitlab.io/development/shifter/how-to-use/)
 - `charliecloud`
-  - A generic configuration profile to be used with [Charliecloud](https://hpc.github.io/charliecloud/)
+  > A generic configuration profile to be used with [Charliecloud](https://hpc.github.io/charliecloud/)
 - `apptainer`
-  - A generic configuration profile to be used with [Apptainer](https://apptainer.org/)
+  > A generic configuration profile to be used with [Apptainer](https://apptainer.org/)
 - `conda`
-  - A generic configuration profile to be used with [Conda](https://conda.io/docs/). Please only use Conda as a last resort i.e. when it's not possible to run the pipeline with Docker, Singularity, Podman, Shifter, Charliecloud, or Apptainer.
+  > A generic configuration profile to be used with [Conda](https://conda.io/docs/). Please only use Conda as a last resort i.e. when it's not possible to run the pipeline with Docker, Singularity, Podman, Shifter, Charliecloud, or Apptainer.
 
 ### `-resume`
 
