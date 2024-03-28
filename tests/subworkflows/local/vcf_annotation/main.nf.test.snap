@@ -4,13 +4,10 @@
             [
                 [
                     {
-                        "groupSize": 3,
-                        "groupTarget": {
-                            "id": "NA24143",
-                            "family": "NA24143",
-                            "family_count": 1,
-                            "caller": "haplotypecaller"
-                        }
+                        "id": "NA24143",
+                        "family": "NA24143",
+                        "family_count": 1,
+                        "caller": "haplotypecaller"
                     },
                     "NA24143.haplotypecaller.vcf.gz"
                 ]
@@ -25,20 +22,17 @@
             "nf-test": "0.8.4",
             "nextflow": "24.02.0"
         },
-        "timestamp": "2024-03-27T12:49:49.678729016"
+        "timestamp": "2024-03-28T09:26:20.34701886"
     },
     "vcfanno": {
         "content": [
             [
                 [
                     {
-                        "groupSize": 3,
-                        "groupTarget": {
-                            "id": "NA24143",
-                            "family": "NA24143",
-                            "family_count": 1,
-                            "caller": "haplotypecaller"
-                        }
+                        "id": "NA24143",
+                        "family": "NA24143",
+                        "family_count": 1,
+                        "caller": "haplotypecaller"
                     },
                     "NA24143.haplotypecaller.vcf.gz"
                 ]
@@ -53,6 +47,6 @@
             "nf-test": "0.8.4",
             "nextflow": "24.02.0"
         },
-        "timestamp": "2024-03-27T12:52:37.227604641"
+        "timestamp": "2024-03-28T09:26:37.223392102"
     }
 }
