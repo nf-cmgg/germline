@@ -14,6 +14,9 @@ nextflow_workflow {
 
 
         when {
+            params {
+                callers = "vardict"
+            }
             workflow {
                 """
                 input[0] = Channel.of([
@@ -68,6 +71,7 @@ nextflow_workflow {
         when {
             params {
                 filter = true
+                callers = "vardict"
             }
             workflow {
                 """
@@ -121,6 +125,9 @@ nextflow_workflow {
         // The family should not be merged here
 
         when {
+            params {
+                callers = "vardict"
+            }
             workflow {
                 """
                 input[0] = Channel.of([
