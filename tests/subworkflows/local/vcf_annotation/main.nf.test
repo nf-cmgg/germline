@@ -1,0 +1,96 @@
+nextflow_workflow {
+
+    name "Test Workflow VCF_ANNOTATION"
+    script "subworkflows/local/vcf_annotation/main.nf"
+    workflow "VCF_ANNOTATION"
+
+    tag "subworkflows"
+    tag "subworkflows_local"
+    tag "vcf_annotation"
+
+    options "-stub"
+
+    test("vcf_annotation - default") {
+
+        when {
+            params {
+                annotate = true
+            }
+            workflow {
+                """
+                input[0] = Channel.of([
+                    [id:"NA24143", family:"NA24143", family_count:1, caller:"haplotypecaller"],
+                    file(params.vcf1, checkIfExists:true)
+                ])
+                input[1] = Channel.value([
+                    [id:"fasta"],
+                    file(params.fasta, checkIfExists:true)
+                ])
+                input[2] = Channel.value([
+                    [id:"fai"],
+                    file(params.fai, checkIfExists:true)
+                ])
+                input[3] = Channel.value(file("vep_cache"))
+                input[4] = Channel.value([file("file1.txt"), file("file2.txt")])
+                input[5] = []
+                input[6] = []
+                input[7] = []
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.out.annotated_vcfs.collect { it.collect { it instanceof Map ? it.groupTarget : file(it).name } },
+                    workflow.out.reports
+                ).match("default") }
+            )
+        }
+
+    }
+
+    test("vcf_annotation - vcfanno") {
+
+        when {
+            params {
+                annotate = true
+                vcfanno = true
+            }
+            workflow {
+                """
+                input[0] = Channel.of([
+                    [id:"NA24143", family:"NA24143", family_count:1, caller:"haplotypecaller"],
+                    file(params.vcf1, checkIfExists:true)
+                ])
+                input[1] = Channel.value([
+                    [id:"fasta"],
+                    file(params.fasta, checkIfExists:true)
+                ])
+                input[2] = Channel.value([
+                    [id:"fai"],
+                    file(params.fai, checkIfExists:true)
+                ])
+                input[3] = Channel.value(file("vep_cache"))
+                input[4] = Channel.value([file("file1.txt"), file("file2.txt")])
+                input[5] = Channel.value(file("vcfanno.toml"))
+                input[6] = []
+                input[7] = Channel.value([file("file1.txt"), file("file2.txt")])
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.out.annotated_vcfs.collect { it.collect { it instanceof Map ? it.groupTarget : file(it).name } },
+                    workflow.out.reports
+                ).match("vcfanno") }
+            )
+        }
+
+    }
+
+}

@@ -1,0 +1,143 @@
+nextflow_pipeline {
+
+    name "Test Workflow main.nf"
+    script "main.nf"
+
+    tag "pipeline"
+    tag "pipeline_variations2"
+
+    options "-stub"
+
+    test("pipeline_variations - normalize") {
+
+        when {
+            params {
+                outdir = "${outputDir}"
+                normalize = true
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.stdout,
+                    path("${outputDir}")
+                        .list()
+                        .findAll { !it.toString().endsWith("pipeline_info") }
+                        .collect { getRecursiveFileNames(it, "${outputDir}") }
+                        .flatten()
+                ).match("normalize") }
+            )
+        }
+
+    }
+
+    test("pipeline_variations - updio") {
+
+        when {
+            params {
+                outdir = "${outputDir}"
+                updio = true
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.stdout,
+                    path("${outputDir}")
+                        .list()
+                        .findAll { !it.toString().endsWith("pipeline_info") }
+                        .collect { getRecursiveFileNames(it, "${outputDir}") }
+                        .flatten()
+                ).match("updio") }
+            )
+        }
+
+    }
+
+    test("pipeline_variations - gemini") {
+
+        when {
+            params {
+                outdir = "${outputDir}"
+                gemini = true
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.stdout,
+                    path("${outputDir}")
+                        .list()
+                        .findAll { !it.toString().endsWith("pipeline_info") }
+                        .collect { getRecursiveFileNames(it, "${outputDir}") }
+                        .flatten()
+                ).match("gemini") }
+            )
+        }
+
+    }
+
+    test("pipeline_variations - validate") {
+
+        when {
+            params {
+                outdir = "${outputDir}"
+                validate = true
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.stdout,
+                    path("${outputDir}")
+                        .list()
+                        .findAll { !it.toString().endsWith("pipeline_info") }
+                        .collect { getRecursiveFileNames(it, "${outputDir}") }
+                        .flatten()
+                ).match("validate") }
+            )
+        }
+
+    }
+
+    test("pipeline_variations - add_ped") {
+
+        when {
+            params {
+                outdir = "${outputDir}"
+                add_ped = true
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.stdout,
+                    path("${outputDir}")
+                        .list()
+                        .findAll { !it.toString().endsWith("pipeline_info") }
+                        .collect { getRecursiveFileNames(it, "${outputDir}") }
+                        .flatten()
+                ).match("add_ped") }
+            )
+        }
+
+    }
+
+}
+
+def getRecursiveFileNames(fileOrDir, outputDir) {
+    if(file(fileOrDir.toString()).isDirectory()) {
+        return fileOrDir.list().collect { getRecursiveFileNames(it, outputDir) }
+    }
+    return fileOrDir.toString().replace("${outputDir}/", "")
+}

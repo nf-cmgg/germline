@@ -1,0 +1,52 @@
+{
+    "default": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "family": "NA24143",
+                        "family_count": 1,
+                        "caller": "haplotypecaller"
+                    },
+                    "NA24143.haplotypecaller.vcf.gz"
+                ]
+            ],
+            [
+                "NA241431_annotated.summary.html:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "NA241432_annotated.summary.html:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "NA241433_annotated.summary.html:md5,d41d8cd98f00b204e9800998ecf8427e"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.8.4",
+            "nextflow": "24.02.0"
+        },
+        "timestamp": "2024-03-28T09:26:20.34701886"
+    },
+    "vcfanno": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "family": "NA24143",
+                        "family_count": 1,
+                        "caller": "haplotypecaller"
+                    },
+                    "NA24143.haplotypecaller.vcf.gz"
+                ]
+            ],
+            [
+                "NA241431_annotated.summary.html:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "NA241432_annotated.summary.html:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "NA241433_annotated.summary.html:md5,d41d8cd98f00b204e9800998ecf8427e"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.8.4",
+            "nextflow": "24.02.0"
+        },
+        "timestamp": "2024-03-28T09:26:37.223392102"
+    }
+}

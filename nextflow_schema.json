@@ -181,6 +181,10 @@
                     "description": "The name of the project.",
                     "help_text": "This will be used to specify the final output files folder in the output directory."
                 },
+                "skip_date_project": {
+                    "type": "boolean",
+                    "description": "Don't add the current date to the output project folder"
+                },
                 "roi": {
                     "type": "string",
                     "description": "Path to the default ROI (regions of interest) BED file to be used for WES analysis",

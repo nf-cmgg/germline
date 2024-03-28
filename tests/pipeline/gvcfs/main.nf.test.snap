@@ -1,0 +1,25 @@
+{
+    "gvcfs": {
+        "content": [
+            [
+                
+            ],
+            [
+                "multiqc/multiqc_plots",
+                "multiqc/multiqc_report.html",
+                "samplesheet.csv",
+                "test/Ashkenazim/Ashkenazim.bed",
+                "test/Ashkenazim/Ashkenazim.haplotypecaller.ped",
+                "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz",
+                "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz.tbi",
+                "test/Ashkenazim/reports/Ashkenazim.haplotypecaller.bcftools_stats.txt",
+                "test/Ashkenazim/reports/Ashkenazim.haplotypecaller.somalier.html"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.8.4",
+            "nextflow": "24.02.0"
+        },
+        "timestamp": "2024-03-27T17:18:10.515388658"
+    }
+}

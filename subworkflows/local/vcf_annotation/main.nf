@@ -13,8 +13,8 @@ include { VCF_ANNOTATE_ENSEMBLVEP_SNPEFF as VCF_ANNOTATE_ENSEMBLVEP } from '../.
 workflow VCF_ANNOTATION {
     take:
         ch_vcfs                 // channel: [mandatory] [ val(meta), path(vcf) ] => The post-processed VCFs
-        ch_fasta                // channel: [mandatory] [ path(fasta) ] => fasta reference
-        ch_fai                  // channel: [mandatory] [ path(fai) ] => fasta index
+        ch_fasta                // channel: [mandatory] [ val(meta2), path(fasta) ] => fasta reference
+        ch_fai                  // channel: [mandatory] [ val(meta3), path(fai) ] => fasta index
         ch_vep_cache            // channel: [optional]  [ path(vep_cache) ] => The VEP cache to use
         ch_vep_extra_files      // channel: [optional]  [ path(file_1, file_2, file_3, ...) ] => All files necessary for using the desired plugins
         ch_vcfanno_config       // channel: [mandatory if params.vcfanno == true] [ path(toml_config_file) ] => The TOML config file for VCFanno

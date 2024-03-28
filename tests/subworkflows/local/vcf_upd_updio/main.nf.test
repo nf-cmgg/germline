@@ -1,0 +1,77 @@
+nextflow_workflow {
+
+    name "Test Workflow VCF_UPD_UPDIO"
+    script "subworkflows/local/vcf_upd_updio/main.nf"
+    workflow "VCF_UPD_UPDIO"
+
+    tag "subworkflows"
+    tag "subworkflows_local"
+    tag "vcf_upd_updio"
+
+    test("vcf_upd_updio - default - family") {
+
+        when {
+            params {
+                updio = true
+            }
+            workflow {
+                """
+                input[0] = Channel.of([
+                    [id:"Ashkenazim", family:"Ashkenazim", family_count:3, caller:"haplotypecaller"],
+                    file(params.famvcf, checkIfExists:true),
+                    file(params.famtbi, checkIfExists:true)
+                ])
+                input[1] = Channel.of([
+                    [id:"Ashkenazim", family:"Ashkenazim", family_count:3, caller:"haplotypecaller"],
+                    file(params.ped, checkIfExists:true)
+                ])
+                input[2] = [[],[]]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.out.updio
+                ).match("default - family") }
+            )
+        }
+
+    }
+
+    test("vcf_upd_updio - default - sample") {
+        // This should output nothing
+        when {
+            params {
+                updio = true
+            }
+            workflow {
+                """
+                input[0] = Channel.of([
+                    [id:"Ashkenazim", family:"Ashkenazim", family_count:1, caller:"haplotypecaller"],
+                    file(params.vcf1, checkIfExists:true),
+                    file(params.tbi1, checkIfExists:true)
+                ])
+                input[1] = Channel.of([
+                    [id:"Ashkenazim", family:"Ashkenazim", family_count:1, caller:"haplotypecaller"],
+                    file(params.ped, checkIfExists:true)
+                ])
+                input[2] = [[],[]]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.out.updio
+                ).match("default - sample") }
+            )
+        }
+
+    }
+
+}
