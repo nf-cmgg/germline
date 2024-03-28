@@ -70,8 +70,8 @@
                 "samplesheet.csv",
                 "test/Ashkenazim/Ashkenazim.bed",
                 "test/Ashkenazim/Ashkenazim.haplotypecaller.ped",
-                "test/Ashkenazim/Ashkenazim.vcf.gz",
-                "test/Ashkenazim/Ashkenazim.vcf.gz.tbi",
+                "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz",
+                "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz.tbi",
                 "test/Ashkenazim/reports/Ashkenazim.haplotypecaller.bcftools_stats.txt",
                 "test/Ashkenazim/reports/Ashkenazim.haplotypecaller.somalier.html"
             ]
