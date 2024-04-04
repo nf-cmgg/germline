@@ -7,6 +7,8 @@ lint:
     - assets/nf-core-germline_logo_light.png
     - docs/images/nf-core-germline_logo_light.png
     - docs/images/nf-core-germline_logo_dark.png
+    - CITATIONS.md
+    - docs/README.md
   nextflow_config:
     - manifest.name
     - manifest.homePage
@@ -16,6 +18,6 @@ lint:
 repository_type: pipeline
 template:
   author: nvnieuwk
-  description: A nextflow pipeline for calling and annotating variants
+  description: A nextflow pipeline for calling and annotating small germline variants from short DNA reads for WES and WGS data
   name: germline
   prefix: nf-cmgg
