@@ -135,6 +135,30 @@ nextflow_pipeline {
 
     }
 
+    test("pipeline_variations - automap") {
+
+        when {
+            params {
+                outdir = "${outputDir}"
+                automap = true
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.stdout,
+                    path("${outputDir}")
+                        .list()
+                        .findAll { !it.toString().endsWith("pipeline_info") }
+                        .collect { getRecursiveFileNames(it, "${outputDir}") }
+                        .flatten()
+                ).match("automap") }
+            )
+        }
+
+    }
 }
 
 def getRecursiveFileNames(fileOrDir, outputDir) {

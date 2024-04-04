@@ -8,7 +8,7 @@ include { AUTOMAP_AUTOMAP    } from '../../../modules/local/automap/automap/main
 workflow VCF_ROH_AUTOMAP {
     take:
         ch_vcfs     // channel: [mandatory] [ val(meta), path(vcf), path(tbi) ] => The post-processed VCFs
-        ch_repeats  // value channel: [mandatory] [ val(meta), path(repeats) ] => A BED file with repeat regions in the genome
+        ch_repeats  // value channel: [optional] [ val(meta), path(repeats) ] => A BED file with repeat regions in the genome
         ch_panel    // value channel: [optional]  [ val(meta), path(panel) ] => A TXT file containing the locations of the genes to be analyzed
         val_genome  // value: [mandatory] => The genome to be used by automap
     main:

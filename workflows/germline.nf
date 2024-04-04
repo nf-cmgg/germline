@@ -693,7 +693,7 @@ workflow GERMLINE {
                 ch_automap_panel,
                 params.genome
             )
-            ch_versions = ch_versions.mix(VCF_UPD_UPDIO.out.versions.first())
+            ch_versions = ch_versions.mix(VCF_ROH_AUTOMAP.out.versions.first())
         }
     }
 
