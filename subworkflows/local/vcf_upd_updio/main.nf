@@ -36,10 +36,11 @@ workflow VCF_UPD_UPDIO {
         ch_trio_vcfs_family,
         ch_cnv
     )
+    ch_versions = ch_versions.mix(UPDIO.out.versions.first())
 
     emit:
-    // ped_vcfs = BCFTOOLS_ANNOTATE.out.vcf    // [ val(meta), path(vcf) ]
-    versions = ch_versions                  // [ path(versions) ]
+    updio = UPDIO.out.updio    // [ val(meta), path(updio_folder) ]
+    versions = ch_versions     // [ path(versions) ]
 }
 
 def get_family_data_from_ped(meta, ped) {
