@@ -12,8 +12,6 @@ You will need to create a samplesheet with information with the samples you woul
 
 ### Example of the samplesheet
 
-
-
 Below is an example of how the samplesheet could look like in the three formats.
 
 <!-- prettier-ignore -->
@@ -57,22 +55,22 @@ SAMPLE_3    SAMPLE_3.cram
 
 ```json title="samplesheet.json"
 [
-    {
-        "sample": "SAMPLE_1",
-        "family": "FAMILY_1",
-        "cram": "SAMPLE_1.cram",
-        "crai": "SAMPLE_1.crai"
-    },
-    {
-        "sample": "SAMPLE_2",
-        "family": "FAMILY_1",
-        "cram": "SAMPLE_2.cram",
-        "crai": "SAMPLE_2.crai"
-    },
-    {
-        "sample": "SAMPLE_3",
-        "cram": "SAMPLE_3.cram"
-    }
+  {
+    "sample": "SAMPLE_1",
+    "family": "FAMILY_1",
+    "cram": "SAMPLE_1.cram",
+    "crai": "SAMPLE_1.crai"
+  },
+  {
+    "sample": "SAMPLE_2",
+    "family": "FAMILY_1",
+    "cram": "SAMPLE_2.cram",
+    "crai": "SAMPLE_2.crai"
+  },
+  {
+    "sample": "SAMPLE_3",
+    "cram": "SAMPLE_3.cram"
+  }
 ]
 ```
 
@@ -136,7 +134,6 @@ Pipeline settings can be provided in a `yaml` or `json` file via `-params-file <
 <!-- prettier-ignore -->
 !!!warning
     Do not use `-c <file>` to specify parameters as this will result in errors. Custom config files specified with `-c` must only be used for [tuning process resource specifications](https://nf-co.re/docs/usage/configuration#tuning-workflow-resources), other infrastructural tweaks (such as output directories), or module arguments (args).
-
 
 The above pipeline run specified with a params file in yaml format:
 
