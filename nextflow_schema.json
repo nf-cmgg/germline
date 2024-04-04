@@ -266,6 +266,27 @@
                     "format": "file-path",
                     "exists": true,
                     "pattern": "^\\S+\\.tsv$"
+                },
+                "automap": {
+                    "type": "boolean",
+                    "description": "Run AutoMap analysis on the resulting VCFs"
+                },
+                "automap_repeats": {
+                    "type": "string",
+                    "description": "BED file with repeat regions in the genome.",
+                    "help_text": "This file will be automatically generated for hg38/GRCh38 and hg19/GRCh37 when this parameter has not been given.",
+                    "pattern": "^\\S+\\.bed$"
+                },
+                "automap_panel": {
+                    "type": "string",
+                    "description": "TXT file with gene panel regions to be used by AutoMap.",
+                    "help_text": "By default the CMGG gene panel list will be used.",
+                    "pattern": "^\\S+\\.txt$"
+                },
+                "automap_panel_name": {
+                    "type": "string",
+                    "default": "cmgg_bio",
+                    "description": "The panel name of the panel given with --automap_panel."
                 }
             }
         },
@@ -448,7 +469,6 @@
                 },
                 "validationLenientMode": {
                     "type": "boolean",
-                    "default": false,
                     "hidden": true,
                     "description": "Lenient mode for parameter validation"
                 },
@@ -537,14 +557,14 @@
                 },
                 "vep_version": {
                     "type": "string",
-                    "default": "105.0",
+                    "default": 105,
                     "description": "The version of the VEP tool to be used",
                     "fa_icon": "fas fa-code-branch",
                     "pattern": "^\\d\\d\\d?\\.\\d"
                 },
                 "vep_cache_version": {
                     "type": "string",
-                    "default": "105",
+                    "default": 105,
                     "description": "The version of the VEP cache to be used",
                     "fa_icon": "fas fa-code-branch"
                 },
