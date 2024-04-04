@@ -48,6 +48,10 @@
 
   > McKenna A, Hanna M, Banks E, et al.: The Genome Analysis Toolkit: a MapReduce framework for analyzing next-generation DNA sequencing data. Genome Res. 2010 Sep;20(9):1297-303. doi: 10.1101/gr.107524.110. Epub 2010 Jul 19. PubMed PMID: 20644199; PubMed Central PMCID: PMC2928508.
 
+- [Gawk](https://www.gnu.org/software/gawk/)
+
+- [GNU tar](https://www.gnu.org/software/tar/)
+
 - [Mosdepth](https://academic.oup.com/bioinformatics/article/34/5/867/4583630)
 
   > Brent S Pedersen, Aaron R Quinlan, Mosdepth: quick coverage calculation for genomes and exomes, Bioinformatics, Volume 34, Issue 5, 01 March 2018, Pages 867–868. doi: 10.1093/bioinformatics/btx699. PubMed PMID: 29096012. PubMed Central PMCID: PMC6030888.
@@ -69,6 +73,14 @@
 - [Tabix](https://academic.oup.com/bioinformatics/article/27/5/718/262743)
 
   > Li H, Tabix: fast retrieval of sequence features from generic TAB-delimited files, Bioinformatics, Volume 27, Issue 5, 1 March 2011, Pages 718–719, doi: 10.1093/bioinformatics/btq671. PubMed PMID: 21208982. PubMed Central PMCID: PMC3042176.
+
+- [UPDio](https://pubmed.ncbi.nlm.nih.gov/24356988/)
+
+  > King DA, Fitzgerald TW, Miller R, Canham N, Clayton-Smith J, Johnson D, Mansour S, Stewart F, Vasudevan P, Hurles ME; DDD Study. A novel method for detecting uniparental disomy from trio genotypes identifies a significant excess in children with developmental disorders. Genome Res. 2014 Apr;24(4):673-87. doi: 10.1101/gr.160465.113. Epub 2013 Dec 19. PMID: 24356988; PMCID: PMC3975066.
+
+- [Vardict](https://academic.oup.com/nar/article/44/11/e108/2468301)
+
+  > Zhongwu Lai, Aleksandra Markovets, Miika Ahdesmaki, Brad Chapman, Oliver Hofmann, Robert McEwen, Justin Johnson, Brian Dougherty, J. Carl Barrett, Jonathan R. Dry, VarDict: a novel and versatile variant caller for next-generation sequencing in cancer research, Nucleic Acids Research, Volume 44, Issue 11, 20 June 2016, Page e108, https://doi.org/10.1093/nar/gkw227
 
 - [VCF2DB](https://github.com/quinlan-lab/vcf2db)
 
