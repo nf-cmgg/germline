@@ -73,6 +73,7 @@ include { VCF_PED_RTGTOOLS                  } from '../subworkflows/local/vcf_pe
 include { VCF_ANNOTATION                    } from '../subworkflows/local/vcf_annotation/main'
 include { VCF_VALIDATE_SMALL_VARIANTS       } from '../subworkflows/local/vcf_validate_small_variants/main'
 include { VCF_UPD_UPDIO                     } from '../subworkflows/local/vcf_upd_updio/main'
+include { VCF_ROH_AUTOMAP                   } from '../subworkflows/local/vcf_roh_automap/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -139,6 +140,9 @@ workflow GERMLINE {
     ch_vcfanno_resources  = params.vcfanno_resources   ? Channel.of(params.vcfanno_resources.split(";")).map({ file(it, checkIfExists:true) }).collect()   : []
 
     ch_updio_common_cnvs  = params.updio_common_cnvs   ? Channel.fromPath(params.common_cnv_file).map { [[id:'updio_cnv'], it] } : [[],[]]
+
+    ch_automap_repeats    = params.automap_repeats     ? Channel.fromPath(params.automap_repeats).map { [[id:"${params.genome}_repeats"], it]}.collect() : []
+    ch_automap_panel      = params.automap_panel       ? Channel.fromPath(params.automap_panel).map { [[id:"automap_panel"], it]}.collect() : [[],[]]
 
     //
     // Check for the presence of EnsemblVEP plugins that use extra files
@@ -674,6 +678,20 @@ workflow GERMLINE {
                 ch_final_vcfs,
                 VCF_EXTRACT_RELATE_SOMALIER.out.peds,
                 ch_updio_common_cnvs
+            )
+            ch_versions = ch_versions.mix(VCF_UPD_UPDIO.out.versions.first())
+        }
+
+        //
+        // Run automap analysis
+        //
+
+        if(params.automap) {
+            VCF_ROH_AUTOMAP(
+                ch_final_vcfs,
+                ch_automap_repeats,
+                ch_automap_panel,
+                params.genome
             )
             ch_versions = ch_versions.mix(VCF_UPD_UPDIO.out.versions.first())
         }
