@@ -16,11 +16,11 @@ workflow VCF_UPD_UPDIO {
 
     // Filter out all families that don't have exactly 3 samples
     ch_vcfs
-        .filter { it[0].family_count == 3 }
+        .filter { it[0].family_count >= 3 }
         .set { ch_trio_vcfs }
 
     ch_peds
-        .filter { it[0].family_count == 3 }
+        .filter { it[0].family_count >= 3 }
         .set { ch_trio_peds }
 
     ch_trio_vcfs
