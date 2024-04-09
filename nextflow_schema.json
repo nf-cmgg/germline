@@ -556,14 +556,13 @@
                     "help_text": "The '--alphamissense' and '--alphamissense_tbi' parameters need to be specified when using this parameter."
                 },
                 "vep_version": {
-                    "type": "string",
-                    "default": 105,
+                    "type": "number",
+                    "default": 105.0,
                     "description": "The version of the VEP tool to be used",
-                    "fa_icon": "fas fa-code-branch",
-                    "pattern": "^\\d\\d\\d?\\.\\d"
+                    "fa_icon": "fas fa-code-branch"
                 },
                 "vep_cache_version": {
-                    "type": "string",
+                    "type": "integer",
                     "default": 105,
                     "description": "The version of the VEP cache to be used",
                     "fa_icon": "fas fa-code-branch"
