@@ -46,10 +46,10 @@ nextflow_workflow {
     }
 
     test("vcf_roh_automap - default - sample") {
-        
+
         // Stub because this fails due to small test data
         options "-stub"
-        
+
         when {
             params {
                 automap = true
