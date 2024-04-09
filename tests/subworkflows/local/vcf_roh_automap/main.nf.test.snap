@@ -1,0 +1,57 @@
+{
+    "default - family": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "Ashkenazim",
+                        "family": "Ashkenazim",
+                        "family_count": 3,
+                        "caller": "haplotypecaller"
+                    },
+                    [
+                        [
+                            "automap_haplotypecaller/NA24143/NA24143.individual.vcf"
+                        ],
+                        [
+                            "automap_haplotypecaller/NA24149/NA24149.individual.vcf"
+                        ],
+                        [
+                            "automap_haplotypecaller/NA24385/NA24385.individual.vcf"
+                        ]
+                    ]
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.8.4",
+            "nextflow": "24.02.0"
+        },
+        "timestamp": "2024-04-04T16:13:43.925198036"
+    },
+    "default - sample": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "family": "NA24143",
+                        "family_count": 1,
+                        "caller": "haplotypecaller"
+                    },
+                    [
+                        "NA24143.HomRegions.cmgg_bio.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                        "NA24143.HomRegions.pdf:md5,d41d8cd98f00b204e9800998ecf8427e",
+                        "NA24143.HomRegions.strict.cmgg_bio.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                        "NA24143.HomRegions.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.8.4",
+            "nextflow": "24.02.0"
+        },
+        "timestamp": "2024-04-04T16:03:23.276826691"
+    }
+}
