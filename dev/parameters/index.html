@@ -697,7 +697,7 @@
 <td><code>igenomes_base</code></td>
 <td>Directory / URL base for iGenomes references.</td>
 <td><code>string</code></td>
-<td>s3://ngi-igenomes/igenomes</td>
+<td></td>
 <td></td>
 <td>True</td>
 </tr>
@@ -737,7 +737,7 @@
 <td><code>merge_distance</code></td>
 <td>The merge distance for genotype BED files <details><summary>Help</summary><small>Increase this parameter if GenomicsDBImport is running slow. This defines the maximum distance between intervals that should be merged. The less intervals GenomicsDBImport actually gets, the faster it will run.</small></details></td>
 <td><code>integer</code></td>
-<td>10000</td>
+<td>100000</td>
 <td></td>
 <td></td>
 </tr>
@@ -801,6 +801,14 @@
 <td><code>project</code></td>
 <td>The name of the project. <details><summary>Help</summary><small>This will be used to specify the final output files folder in the output directory.</small></details></td>
 <td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>skip_date_project</code></td>
+<td>Don't add the current date to the output project folder</td>
+<td><code>boolean</code></td>
 <td></td>
 <td></td>
 <td></td>
@@ -906,6 +914,54 @@
 <td>Keep all aditional contigs for calling instead of filtering them out before</td>
 <td><code>boolean</code></td>
 <td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>updio</code></td>
+<td>Run UPDio analysis on the resulting VCFs</td>
+<td><code>boolean</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>updio_common_cnvs</code></td>
+<td>A TSV file containing common CNVs to be used by UPDio</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>automap</code></td>
+<td>Run AutoMap analysis on the resulting VCFs</td>
+<td><code>boolean</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>automap_repeats</code></td>
+<td>BED file with repeat regions in the genome. <details><summary>Help</summary><small>This file will be automatically generated for hg38/GRCh38 and hg19/GRCh37 when this parameter has not been given.</small></details></td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>automap_panel</code></td>
+<td>TXT file with gene panel regions to be used by AutoMap. <details><summary>Help</summary><small>By default the CMGG gene panel list will be used.</small></details></td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>automap_panel_name</code></td>
+<td>The panel name of the panel given with --automap_panel.</td>
+<td><code>string</code></td>
+<td>cmgg_bio</td>
 <td></td>
 <td></td>
 </tr>
@@ -1145,7 +1201,7 @@
 <td><code>validationLenientMode</code></td>
 <td>Lenient mode for parameter validation</td>
 <td><code>boolean</code></td>
-<td>False</td>
+<td></td>
 <td></td>
 <td>True</td>
 </tr>
@@ -1161,7 +1217,7 @@
 <td><code>validationSchemaIgnoreParams</code></td>
 <td>Comma-separated list of parameters to ignore when validating against the schema</td>
 <td><code>string</code></td>
-<td>genomes,test_data</td>
+<td>genomes,igenomes_base,test_data</td>
 <td></td>
 <td>True</td>
 </tr>
@@ -1209,7 +1265,7 @@
 <td><code>vep_cache</code></td>
 <td>The path to the VEP cache</td>
 <td><code>string</code></td>
-<td>None</td>
+<td></td>
 <td></td>
 <td></td>
 </tr>
@@ -1273,7 +1329,7 @@
 <td><code>vep_version</code></td>
 <td>The version of the VEP tool to be used</td>
 <td><code>string</code></td>
-<td>105.0</td>
+<td>105</td>
 <td></td>
 <td></td>
 </tr>
