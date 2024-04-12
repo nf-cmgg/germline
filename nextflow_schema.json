@@ -287,6 +287,20 @@
                     "type": "string",
                     "default": "cmgg_bio",
                     "description": "The panel name of the panel given with --automap_panel."
+                },
+                "background_vcf": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "pattern": "^\\S+\\.vcf(\\.gz)?$",
+                    "description": "The background VCF to check the created VCFs agains using [vcf_check](https://github.com/brentp/hts-nim-tools?tab=readme-ov-file#vcf-check)"
+                },
+                "background_tbi": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "pattern": "^\\S+\\.vcf(\\.gz)?\\.tbi$",
+                    "description": "The index of the background VCF to check the created VCFs agains using [vcf_check](https://github.com/brentp/hts-nim-tools?tab=readme-ov-file#vcf-check)"
                 }
             }
         },

@@ -12,6 +12,10 @@ if(params.dbsnp_tbi && !params.dbsnp){
     error("Please specify the dbsnp VCF with --dbsnp VCF")
 }
 
+if((params.background_vcf || params.background_tbi) && !(params.background_vcf && params.background_tbi)) {
+    error("Please supply the --background_vcf and --background_tbi to use the vcf check feature. (Only one was supplied)")
+}
+
 if (params.annotate) {
     // Check if a genome is given
     if (!params.genome) { error("A genome should be supplied for annotation (use --genome)") }
@@ -97,6 +101,7 @@ include { TABIX_TABIX as TABIX_TRUTH                                 } from '../
 include { TABIX_TABIX as TABIX_FINAL                                 } from '../modules/nf-core/tabix/tabix/main'
 include { BCFTOOLS_STATS as BCFTOOLS_STATS_FAMILY                    } from '../modules/nf-core/bcftools/stats/main'
 include { VCF2DB                                                     } from '../modules/nf-core/vcf2db/main'
+include { HTSNIMTOOLS_VCFCHECK                                       } from '../modules/nf-core/htsnimtools/vcfcheck/main'
 include { MULTIQC                                                    } from '../modules/nf-core/multiqc/main'
 
 /*
@@ -695,6 +700,25 @@ workflow GERMLINE {
             )
             ch_versions = ch_versions.mix(VCF_ROH_AUTOMAP.out.versions.first())
         }
+
+        //
+        // Run a vcf check based on a background vcf
+        //
+
+        if(params.background_vcf && params.background_tbi) {
+            HTSNIMTOOLS_VCFCHECK(
+                ch_final_vcfs,
+                Channel.value(
+                    [
+                        [id:"background"], 
+                        file(params.background_vcf, checkIfExists:true), 
+                        file(params.background_tbi, checkIfExists:true)
+                    ]
+                )
+            )
+            ch_versions = ch_versions.mix(HTSNIMTOOLS_VCFCHECK.out.versions.first())
+        }
+
     }
 
     //

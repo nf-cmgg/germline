@@ -121,6 +121,11 @@
                         "git_sha": "3f5420aa22e00bd030a2556dfdffc9e164ec0ec5",
                         "installed_by": ["modules"]
                     },
+                    "htsnimtools/vcfcheck": {
+                        "branch": "master",
+                        "git_sha": "0bef445dd73b0eb28d89b5778d7e35711428ac16",
+                        "installed_by": ["modules"]
+                    },
                     "mosdepth": {
                         "branch": "master",
                         "git_sha": "69e3eb17fb31b772b18f134d6e8f8b93ee980e65",
