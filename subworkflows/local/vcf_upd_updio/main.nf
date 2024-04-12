@@ -14,23 +14,28 @@ workflow VCF_UPD_UPDIO {
 
     ch_versions = Channel.empty()
 
-    // Filter out all families that don't have exactly 3 samples
+    // Filter out all families that have less than 3 samples
     ch_vcfs
         .filter { it[0].family_count >= 3 }
+        .view { "Trio VCFs: ${it}" }
         .set { ch_trio_vcfs }
 
     ch_peds
         .filter { it[0].family_count >= 3 }
+        .view { "Trio PEDs: ${it}" }
         .set { ch_trio_peds }
 
     ch_trio_vcfs
-        .join(ch_trio_peds)
+        .join(ch_trio_peds, failOnMismatch:true, failOnDuplicate:true)
+        .view { "VCFs & PEDs: ${it}" }
         .map { meta, vcf, tbi, ped ->
             def meta_list = get_family_data_from_ped(meta, ped)
             [ meta_list, vcf, tbi ]
         }
+        .view { "PED parsed: ${it}" }
         .filter { it[0] }
         .transpose(by:0)
+        .view { "UPDio input: ${it}" }
         .set { ch_trio_vcfs_family }
 
     UPDIO(
