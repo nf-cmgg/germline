@@ -10,7 +10,7 @@
 
 include { UTILS_NFVALIDATION_PLUGIN } from '../../nf-core/utils_nfvalidation_plugin'
 include { paramsSummaryMap          } from 'plugin/nf-validation'
-include { fromSamplesheet           } from 'plugin/nf-validation'
+include { samplesheetToList         } from 'plugin/nf-validation'
 include { UTILS_NEXTFLOW_PIPELINE   } from '../../nf-core/utils_nextflow_pipeline'
 include { completionEmail           } from '../../nf-core/utils_nfcore_pipeline'
 include { completionSummary         } from '../../nf-core/utils_nfcore_pipeline'
@@ -84,7 +84,7 @@ workflow PIPELINE_INITIALISATION {
     // Output the samplesheet
     file(params.input).copyTo("${params.outdir}/samplesheet.csv")
 
-    Channel.fromSamplesheet("input")
+    Channel.fromList(samplesheetToList(params.input, "assets/schema_input.json"))
         .map { meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ->
             // Infer the family ID from the PED file if no family ID was given.
             // If no PED is given, use the sample ID as family ID
