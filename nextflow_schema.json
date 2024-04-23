@@ -1,10 +1,10 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://raw.githubusercontent.com/nf-cmgg/germline/master/nextflow_schema.json",
     "title": "nf-cmgg/germline pipeline parameters",
     "description": "A nextflow pipeline for calling and annotating variants",
     "type": "object",
-    "definitions": {
+    "defs": {
         "input_output_options": {
             "title": "Input/output options",
             "type": "object",
@@ -682,25 +682,25 @@
     },
     "allOf": [
         {
-            "$ref": "#/definitions/input_output_options"
+            "$ref": "#/defs/input_output_options"
         },
         {
-            "$ref": "#/definitions/reference_genome_options"
+            "$ref": "#/defs/reference_genome_options"
         },
         {
-            "$ref": "#/definitions/pipeline_specific_parameters"
+            "$ref": "#/defs/pipeline_specific_parameters"
         },
         {
-            "$ref": "#/definitions/institutional_config_options"
+            "$ref": "#/defs/institutional_config_options"
         },
         {
-            "$ref": "#/definitions/max_job_request_options"
+            "$ref": "#/defs/max_job_request_options"
         },
         {
-            "$ref": "#/definitions/generic_options"
+            "$ref": "#/defs/generic_options"
         },
         {
-            "$ref": "#/definitions/annotation_parameters"
+            "$ref": "#/defs/annotation_parameters"
         }
     ]
 }
