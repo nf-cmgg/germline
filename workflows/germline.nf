@@ -1,54 +1,5 @@
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    VALIDATE INPUTS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-//
-// Check for dependencies between parameters
-//
-
-if(params.dbsnp_tbi && !params.dbsnp){
-    error("Please specify the dbsnp VCF with --dbsnp VCF")
-}
-
-if (params.annotate) {
-    // Check if a genome is given
-    if (!params.genome) { error("A genome should be supplied for annotation (use --genome)") }
-
-    // Check if the VEP versions were given
-    if (!params.vep_version) { error("A VEP version should be supplied for annotation (use --vep_version)") }
-    if (!params.vep_cache_version) { error("A VEP cache version should be supplied for annotation (use --vep_cache_version)") }
-
-    // Check if a species is entered
-    if (!params.species) { error("A species should be supplied for annotation (use --species)") }
-
-    // Check if all vcfanno files are supplied when vcfanno should be used
-    if (params.vcfanno && (!params.vcfanno_config || !params.vcfanno_resources)) {
-        error("A TOML file and resource files should be supplied when using vcfanno (use --vcfanno_config and --vcfanno_resources)")
-    }
-}
-
-callers = params.callers.tokenize(",")
-for(caller in callers) {
-    if(!(caller in GlobalVariables.availableCallers)) { error("\"${caller}\" is not a supported callers please use one or more of these instead: ${GlobalVariables.availableCallers}")}
-}
-
-if (params.output_suffix && callers.size() > 1) {
-    error("Cannot use --output_suffix with more than one caller")
-}
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    CONFIG FILES
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-ch_multiqc_config   = params.multiqc_config ? file(params.multiqc_config, checkIfExists: true) : file("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
-ch_multiqc_logo     = params.multiqc_logo   ? file(params.multiqc_logo, checkIfExists: true)   : file("$projectDir/assets/CMGG_logo.png", checkIfExists: true)
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
@@ -109,7 +60,66 @@ include { MULTIQC                                                    } from '../
 workflow GERMLINE {
 
     take:
-    ch_samplesheet
+    // Input channels
+    ch_samplesheet              // queue channel: The input channel
+
+    // File inputs
+    fasta                       // string: path to the reference fasta
+    fai                         // string: path to the index of the reference fasta
+    dict                        // string: path to the sequence dictionary file
+    strtablefile                // string: path to the strtable file
+    sdf                         // string: path to the SDF directory
+    dbsnp                       // string: path to the DBSNP VCF file
+    dbsnp_tbi                   // string: path to the index of the DBSNP VCF file
+    vep_cache                   // string: path to the VEP cache
+    dbnsfp                      // string: path to the DBNSFP file
+    dbnsfp_tbi                  // string: path to the index of the DBNSFP file
+    spliceai_indel              // string: path to the SpliceAI indels file
+    spliceai_indel_tbi          // string: path to the index of the SpliceAI indels file
+    spliceai_snv                // string: path to the SpliceAI SNV file
+    spliceai_snv_tbi            // string: path to the index of the SpliceAI SNV file
+    mastermind                  // string: path to the Mastermind file
+    mastermind_tbi              // string: path to the index of the Mastermind file
+    eog                         // string: path to the EOG file
+    eog_tbi                     // string: path to the index of the EOG file
+    alphamissense               // string: path to the Alphamissense file
+    alphamissense_tbi           // string: path to the index of the Alphamissense file
+    vcfanno_resources           // string: semicolon-separated paths/globs to the VCFanno resources
+    vcfanno_config              // string: path to VCFanno config TOML
+    multiqc_config              // string: path to the multiqc config file
+    multiqc_logo                // string: path to the multiqc logo
+    multiqc_methods_description // string: path to the multiqc methods description
+    default_roi                 // string: path to the default ROI BED file
+    somalier_sites              // string: path to the Somalier sites file
+    vcfanno_lua                 // string: path to the VCFanno Lua script
+    updio_common_cnvs           // string: path to the file containing common UPDio CNVs
+    automap_repeats             // string: path to the Automap repeats file
+    automap_panel               // string: path to the Automap panel file
+    outdir                      // string: path to the output directory
+
+    // Boolean inputs
+    dragstr                     // boolean: create a dragstr model and use it for haplotypecaller
+    annotate                    // boolean: perform annotation
+    only_call                   // boolean: only perform variant calling
+    only_merge                  // boolean: run the pipeline until after the family merge
+    normalize                   // boolean: perform normalization
+    add_ped                     // boolean: add ped headers to each VCF
+    gemini                      // boolean: convert the VCF to a gemini database
+    validate                    // boolean: validate the pipeline output when a truth set has been given
+    updio                       // boolean: run UPDio on the final VCFs
+    automap                     // boolean: run Automap on the final VCFs
+    vep_dbnsfp                  // boolean: use the DBNSFP VEP plugin
+    vep_spliceai                // boolean: use the SpliceAI VEP plugin
+    vep_mastermind              // boolean: use the Mastermind VEP plugin
+    vep_eog                     // boolean: use the EOG VEP plugin
+    vep_alphamissense           // boolean: use the AlphaMissense VEP plugin
+
+    // Value inputs
+    genome                      // string:  the genome used by the pipeline run
+    species                     // string:  the species used by the pipeline run
+    vep_cache_version           // integer: the vep cache version to be used
+    scatter_count               // integer: the amount of scattering performed on each file
+
 
     main:
     ch_versions      = Channel.empty()
@@ -120,29 +130,29 @@ workflow GERMLINE {
     // Importing and convert the input files passed through the parameters to channels
     //
 
-    ch_fasta_ready        = Channel.fromPath(params.fasta).map{ [[id:"reference"], it]}.collect()
-    ch_fai                = params.fai                 ? Channel.fromPath(params.fai).map{ [[id:"reference"], it]}.collect()                                        : null
-    ch_dict               = params.dict                ? Channel.fromPath(params.dict).map{ [[id:"reference"], it]}.collect()                                       : null
-    ch_strtablefile       = params.strtablefile        ? Channel.fromPath(params.strtablefile).map{ [[id:"reference"], it]}.collect()                               : null
-    ch_sdf                = params.sdf                 ? Channel.fromPath(params.sdf).map {sdf -> [[id:'reference'], sdf]}.collect()   : null
+    ch_fasta_ready        = Channel.fromPath(fasta).map{ [[id:"reference"], it]}.collect()
+    ch_fai                = fai                 ? Channel.fromPath(fai).map{ [[id:"reference"], it]}.collect()                                        : null
+    ch_dict               = dict                ? Channel.fromPath(dict).map{ [[id:"reference"], it]}.collect()                                       : null
+    ch_strtablefile       = strtablefile        ? Channel.fromPath(strtablefile).map{ [[id:"reference"], it]}.collect()                               : null
+    ch_sdf                = sdf                 ? Channel.fromPath(sdf).map {sdf -> [[id:'reference'], sdf]}.collect()   : null
 
-    ch_default_roi        = params.roi                 ? Channel.fromPath(params.roi).collect()                : []
+    ch_default_roi        = roi                 ? Channel.fromPath(roi).collect()                : []
 
-    ch_dbsnp_ready        = params.dbsnp               ? Channel.fromPath(params.dbsnp).collect()              : []
-    ch_dbsnp_tbi          = params.dbsnp_tbi           ? Channel.fromPath(params.dbsnp_tbi).collect()          : []
+    ch_dbsnp_ready        = dbsnp               ? Channel.fromPath(dbsnp).collect()              : []
+    ch_dbsnp_tbi          = dbsnp_tbi           ? Channel.fromPath(dbsnp_tbi).collect()          : []
 
-    ch_somalier_sites     = params.somalier_sites      ? Channel.fromPath(params.somalier_sites).collect()     : []
+    ch_somalier_sites     = somalier_sites      ? Channel.fromPath(somalier_sites).collect()     : []
 
-    ch_vep_cache          = params.vep_cache           ? Channel.fromPath(params.vep_cache).collect()          : []
+    ch_vep_cache          = vep_cache           ? Channel.fromPath(vep_cache).collect()          : []
 
-    ch_vcfanno_config     = params.vcfanno_config      ? Channel.fromPath(params.vcfanno_config).collect()     : []
-    ch_vcfanno_lua        = params.vcfanno_lua         ? Channel.fromPath(params.vcfanno_lua).collect()        : []
-    ch_vcfanno_resources  = params.vcfanno_resources   ? Channel.of(params.vcfanno_resources.split(";")).map({ file(it, checkIfExists:true) }).collect()   : []
+    ch_vcfanno_config     = vcfanno_config      ? Channel.fromPath(vcfanno_config).collect()     : []
+    ch_vcfanno_lua        = vcfanno_lua         ? Channel.fromPath(vcfanno_lua).collect()        : []
+    ch_vcfanno_resources  = vcfanno_resources   ? Channel.of(vcfanno_resources.split(";")).map({ file(it, checkIfExists:true) }).collect()   : []
 
-    ch_updio_common_cnvs  = params.updio_common_cnvs   ? Channel.fromPath(params.common_cnv_file).map { [[id:'updio_cnv'], it] } : [[],[]]
+    ch_updio_common_cnvs  = updio_common_cnvs   ? Channel.fromPath(common_cnv_file).map { [[id:'updio_cnv'], it] } : [[],[]]
 
-    ch_automap_repeats    = params.automap_repeats     ? Channel.fromPath(params.automap_repeats).map { [[id:"${params.genome}_repeats"], it]}.collect() : []
-    ch_automap_panel      = params.automap_panel       ? Channel.fromPath(params.automap_panel).map { [[id:"automap_panel"], it]}.collect() : [[],[]]
+    ch_automap_repeats    = automap_repeats     ? Channel.fromPath(automap_repeats).map { [[id:"repeats"], it]}.collect() : []
+    ch_automap_panel      = automap_panel       ? Channel.fromPath(automap_panel).map { [[id:"automap_panel"], it]}.collect() : [[],[]]
 
     //
     // Check for the presence of EnsemblVEP plugins that use extra files
@@ -150,51 +160,51 @@ workflow GERMLINE {
 
     ch_vep_extra_files = []
 
-    if(params.annotate){
+    if(annotate){
         // Check if all dbnsfp files are given
-        if (params.dbnsfp && params.dbnsfp_tbi && params.vep_dbnsfp) {
-            ch_vep_extra_files.add(file(params.dbnsfp, checkIfExists: true))
-            ch_vep_extra_files.add(file(params.dbnsfp_tbi, checkIfExists: true))
+        if (dbnsfp && dbnsfp_tbi && vep_dbnsfp) {
+            ch_vep_extra_files.add(file(dbnsfp, checkIfExists: true))
+            ch_vep_extra_files.add(file(dbnsfp_tbi, checkIfExists: true))
         }
-        else if (params.vep_dbnsfp) {
+        else if (vep_dbnsfp) {
             error("Please specify '--vep_dbsnfp true', '--dbnsfp PATH/TO/DBNSFP/FILE' and '--dbnspf_tbi PATH/TO/DBNSFP/INDEX/FILE' to use the dbnsfp VEP plugin.")
         }
 
         // Check if all spliceai files are given
-        if (params.spliceai_snv && params.spliceai_snv_tbi && params.spliceai_indel && params.spliceai_indel_tbi && params.vep_spliceai) {
-            ch_vep_extra_files.add(file(params.spliceai_snv, checkIfExists: true))
-            ch_vep_extra_files.add(file(params.spliceai_snv_tbi, checkIfExists: true))
-            ch_vep_extra_files.add(file(params.spliceai_indel, checkIfExists: true))
-            ch_vep_extra_files.add(file(params.spliceai_indel_tbi, checkIfExists: true))
+        if (spliceai_snv && spliceai_snv_tbi && spliceai_indel && spliceai_indel_tbi && vep_spliceai) {
+            ch_vep_extra_files.add(file(spliceai_snv, checkIfExists: true))
+            ch_vep_extra_files.add(file(spliceai_snv_tbi, checkIfExists: true))
+            ch_vep_extra_files.add(file(spliceai_indel, checkIfExists: true))
+            ch_vep_extra_files.add(file(spliceai_indel_tbi, checkIfExists: true))
         }
-        else if (params.vep_spliceai) {
+        else if (vep_spliceai) {
             error("Please specify '--vep_spliceai true', '--spliceai_snv PATH/TO/SPLICEAI/SNV/FILE', '--spliceai_snv_tbi PATH/TO/SPLICEAI/SNV/INDEX/FILE', '--spliceai_indel PATH/TO/SPLICEAI/INDEL/FILE' and '--spliceai_indel_tbi PATH/TO/SPLICEAI/INDEL/INDEX/FILE' to use the SpliceAI VEP plugin.")
         }
 
         // Check if all mastermind files are given
-        if (params.mastermind && params.mastermind_tbi && params.vep_mastermind) {
-            ch_vep_extra_files.add(file(params.mastermind, checkIfExists: true))
-            ch_vep_extra_files.add(file(params.mastermind_tbi, checkIfExists: true))
+        if (mastermind && mastermind_tbi && vep_mastermind) {
+            ch_vep_extra_files.add(file(mastermind, checkIfExists: true))
+            ch_vep_extra_files.add(file(mastermind_tbi, checkIfExists: true))
         }
-        else if (params.vep_mastermind) {
+        else if (vep_mastermind) {
             error("Please specify '--vep_mastermind true', '--mastermind PATH/TO/MASTERMIND/FILE' and '--mastermind_tbi PATH/TO/MASTERMIND/INDEX/FILE' to use the mastermind VEP plugin.")
         }
 
         // Check if all EOG files are given
-        if (params.eog && params.eog_tbi && params.vep_eog) {
-            ch_vep_extra_files.add(file(params.eog, checkIfExists: true))
-            ch_vep_extra_files.add(file(params.eog_tbi, checkIfExists: true))
+        if (eog && eog_tbi && vep_eog) {
+            ch_vep_extra_files.add(file(eog, checkIfExists: true))
+            ch_vep_extra_files.add(file(eog_tbi, checkIfExists: true))
         }
-        else if (params.vep_eog) {
+        else if (vep_eog) {
             error("Please specify '--vep_eog true', '--eog PATH/TO/EOG/FILE' and '--eog_tbi PATH/TO/EOG/INDEX/FILE' to use the EOG custom VEP plugin.")
         }
 
         // Check if all AlphaMissense files are given
-        if (params.alphamissense && params.alphamissense_tbi && params.vep_alphamissense) {
-            ch_vep_extra_files.add(file(params.alphamissense, checkIfExists: true))
-            ch_vep_extra_files.add(file(params.alphamissense_tbi, checkIfExists: true))
+        if (alphamissense && alphamissense_tbi && vep_alphamissense) {
+            ch_vep_extra_files.add(file(alphamissense, checkIfExists: true))
+            ch_vep_extra_files.add(file(alphamissense_tbi, checkIfExists: true))
         }
-        else if (params.vep_alphamissense) {
+        else if (vep_alphamissense) {
             error("Please specify '--vep_alphamissense true', '--alphamissense PATH/TO/ALPHAMISSENSE/FILE' and '--alphamissense_tbi PATH/TO/ALPHAMISSENSE/INDEX/FILE' to use the AlphaMissense VEP plugin.")
         }
     }
@@ -252,7 +262,7 @@ workflow GERMLINE {
     }
 
     // Reference STR table file
-    if (params.dragstr && !ch_strtablefile) {
+    if (dragstr && !ch_strtablefile) {
         COMPOSESTRTABLEFILE(
             ch_fasta_ready,
             ch_fai_ready,
@@ -264,14 +274,14 @@ workflow GERMLINE {
             .collect()
             .dump(tag:'strtablefile', pretty:true)
             .set { ch_strtablefile_ready }
-    } else if (params.dragstr) {
+    } else if (dragstr) {
         ch_strtablefile.set { ch_strtablefile_ready }
     } else {
         ch_strtablefile_ready = []
     }
 
     // Reference validation SDF
-    if (params.validate && !ch_sdf) {
+    if (validate && !ch_sdf) {
         RTGTOOLS_FORMAT(
             ch_fasta_ready.map { meta, fasta -> [meta, fasta, [], []]}
         )
@@ -282,7 +292,7 @@ workflow GERMLINE {
             .dump(tag:'sdf', pretty:true)
             .set { ch_sdf_ready }
     }
-    else if (params.validate && params.sdf.endsWith(".tar.gz")) {
+    else if (validate && sdf.endsWith(".tar.gz")) {
         UNTAR(
             ch_sdf
         )
@@ -291,15 +301,15 @@ workflow GERMLINE {
         UNTAR.out.untar
             .dump(tag:'sdf', pretty:true)
             .set { ch_sdf_ready }
-    } else if(params.validate) {
+    } else if(validate) {
         ch_sdf.set { ch_sdf_ready }
     } else {
         ch_sdf_ready = [[],[]]
     }
 
-    if (!ch_vep_cache && params.annotate) {
+    if (!ch_vep_cache && annotate) {
         ENSEMBLVEP_DOWNLOAD(
-            Channel.of([[id:"vep_cache"], params.genome == "hg38" ? "GRCh38" : params.genome, params.species, params.vep_cache_version]).collect()
+            Channel.of([[id:"vep_cache"], genome == "hg38" ? "GRCh38" : genome, species, vep_cache_version]).collect()
         )
         ch_versions = ch_versions.mix(ENSEMBLVEP_DOWNLOAD.out.versions)
 
@@ -381,7 +391,7 @@ workflow GERMLINE {
     //
 
     INPUT_SPLIT_BEDTOOLS(
-        CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_beds.map { it + [params.scatter_count] },
+        CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_beds.map { it + [scatter_count] },
         CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_crams
     )
     ch_versions = ch_versions.mix(INPUT_SPLIT_BEDTOOLS.out.versions)
@@ -446,7 +456,7 @@ workflow GERMLINE {
     ch_versions = ch_versions.mix(BCFTOOLS_STATS.out.versions.first())
     ch_reports = ch_reports.mix(BCFTOOLS_STATS.out.stats.collect { it[1] })
 
-    if(params.normalize) {
+    if(normalize) {
         BCFTOOLS_NORM(
             ch_called_variants,
             ch_fasta_ready,
@@ -465,7 +475,7 @@ workflow GERMLINE {
         ch_called_variants.set { ch_normalized_variants }
     }
 
-    if(!params.only_merge && !params.only_call) {
+    if(!only_merge && !only_call) {
 
         //
         // Preprocess the PED channel
@@ -503,7 +513,7 @@ workflow GERMLINE {
         // Add PED headers to the VCFs
         //
 
-        if(params.add_ped){
+        if(add_ped){
 
             VCF_PED_RTGTOOLS(
                 ch_normalized_variants,
@@ -525,7 +535,7 @@ workflow GERMLINE {
         // Annotation of the variants and creation of Gemini-compatible database files
         //
 
-        if (params.annotate) {
+        if (annotate) {
             VCF_ANNOTATION(
                 ch_ped_vcfs,
                 ch_fasta_ready,
@@ -563,7 +573,7 @@ workflow GERMLINE {
         // Validate the found variants
         //
 
-        if (params.validate){
+        if (validate){
 
             ch_input.truth_variants
                 .groupTuple() // No size needed here since it's being run before any process
@@ -652,7 +662,7 @@ workflow GERMLINE {
         // Create Gemini-compatible database files
         //
 
-        if(params.gemini){
+        if(gemini){
             CustomChannelOperators.joinOnKeys(
                 ch_final_vcfs.map { meta, vcf, tbi -> [ meta, vcf ]},
                 VCF_EXTRACT_RELATE_SOMALIER.out.peds,
@@ -673,7 +683,7 @@ workflow GERMLINE {
         // Run UPDio analysis
         //
 
-        if(params.updio) {
+        if(updio) {
             VCF_UPD_UPDIO(
                 ch_final_vcfs,
                 VCF_EXTRACT_RELATE_SOMALIER.out.peds,
@@ -686,12 +696,12 @@ workflow GERMLINE {
         // Run automap analysis
         //
 
-        if(params.automap) {
+        if(automap) {
             VCF_ROH_AUTOMAP(
                 ch_final_vcfs,
                 ch_automap_repeats,
                 ch_automap_panel,
-                params.genome
+                genome
             )
             ch_versions = ch_versions.mix(VCF_ROH_AUTOMAP.out.versions.first())
         }
@@ -701,7 +711,7 @@ workflow GERMLINE {
     // Collate and save software versions
     //
     softwareVersionsToYAML(ch_versions)
-        .collectFile(storeDir: "${params.outdir}/pipeline_info", name: 'nf_core_pipeline_software_mqc_versions.yml', sort: true, newLine: true)
+        .collectFile(storeDir: "${outdir}/pipeline_info", name: 'nf_core_pipeline_software_mqc_versions.yml', sort: true, newLine: true)
         .set { ch_collated_versions }
 
     //
@@ -709,11 +719,11 @@ workflow GERMLINE {
     //
 
     ch_multiqc_config                     = Channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
-    ch_multiqc_custom_config              = params.multiqc_config ? Channel.fromPath(params.multiqc_config, checkIfExists: true) : Channel.empty()
-    ch_multiqc_logo                       = params.multiqc_logo ? Channel.fromPath(params.multiqc_logo, checkIfExists: true) : Channel.empty()
+    ch_multiqc_custom_config              = multiqc_config ? Channel.fromPath(multiqc_config, checkIfExists: true) : Channel.empty()
+    ch_multiqc_logo                       = multiqc_logo ? Channel.fromPath(multiqc_logo, checkIfExists: true) : Channel.empty()
     summary_params                        = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
     ch_workflow_summary                   = Channel.value(paramsSummaryMultiqc(summary_params))
-    ch_multiqc_custom_methods_description = params.multiqc_methods_description ? file(params.multiqc_methods_description, checkIfExists: true) : file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
+    ch_multiqc_custom_methods_description = multiqc_methods_description ? file(multiqc_methods_description, checkIfExists: true) : file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
     ch_methods_description                = Channel.value(methodsDescriptionText(ch_multiqc_custom_methods_description))
     ch_multiqc_files                      = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
     ch_multiqc_files                      = ch_multiqc_files.mix(ch_collated_versions)
