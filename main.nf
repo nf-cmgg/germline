@@ -86,7 +86,6 @@ if (params.output_suffix && callers.size() > 1) {
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-multiqc_config   = params.multiqc_config ?: "$projectDir/assets/multiqc_config.yml"
 multiqc_logo     = params.multiqc_logo   ?: "$projectDir/assets/CMGG_logo.png"
 
 
@@ -141,19 +140,23 @@ workflow NFCMGG_GERMLINE {
         params.alphamissense_tbi,
         params.vcfanno_resources,
         params.vcfanno_config,
-        multiqc_config,
+        params.multiqc_config,
         multiqc_logo,
         params.multiqc_methods_description,
         params.roi,
         params.somalier_sites,
         params.vcfanno_lua,
         params.updio_common_cnvs,
+        params.automap_repeats,
+        params.automap_panel,
+        params.outdir,
 
         // Boolean inputs
         params.dragstr,
         params.annotate,
         params.only_call,
         params.only_merge,
+        params.filter,
         params.normalize,
         params.add_ped,
         params.gemini,
@@ -170,7 +173,8 @@ workflow NFCMGG_GERMLINE {
         params.genome,
         params.species,
         params.vep_cache_version,
-        params.scatter_count
+        params.scatter_count,
+        params.callers.tokenize(",")
     )
 
     emit:

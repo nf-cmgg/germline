@@ -89,7 +89,7 @@ workflow GERMLINE {
     multiqc_config              // string: path to the multiqc config file
     multiqc_logo                // string: path to the multiqc logo
     multiqc_methods_description // string: path to the multiqc methods description
-    default_roi                 // string: path to the default ROI BED file
+    roi                         // string: path to the default ROI BED file
     somalier_sites              // string: path to the Somalier sites file
     vcfanno_lua                 // string: path to the VCFanno Lua script
     updio_common_cnvs           // string: path to the file containing common UPDio CNVs
@@ -102,6 +102,7 @@ workflow GERMLINE {
     annotate                    // boolean: perform annotation
     only_call                   // boolean: only perform variant calling
     only_merge                  // boolean: run the pipeline until after the family merge
+    filter                      // boolean: filter the VCFs
     normalize                   // boolean: perform normalization
     add_ped                     // boolean: add ped headers to each VCF
     gemini                      // boolean: convert the VCF to a gemini database
@@ -119,6 +120,7 @@ workflow GERMLINE {
     species                     // string:  the species used by the pipeline run
     vep_cache_version           // integer: the vep cache version to be used
     scatter_count               // integer: the amount of scattering performed on each file
+    callers                     // list:    the callers to use
 
 
     main:
@@ -411,7 +413,12 @@ workflow GERMLINE {
             ch_dict_ready,
             ch_strtablefile_ready,
             ch_dbsnp_ready,
-            ch_dbsnp_tbi_ready
+            ch_dbsnp_tbi_ready,
+            dragstr,
+            only_call,
+            only_merge,
+            filter,
+            scatter_count
         )
         ch_versions = ch_versions.mix(CRAM_CALL_GENOTYPE_GATK4.out.versions)
         ch_reports  = ch_reports.mix(CRAM_CALL_GENOTYPE_GATK4.out.reports)
@@ -431,7 +438,8 @@ workflow GERMLINE {
             ch_fasta_ready,
             ch_fai_ready,
             ch_dbsnp_ready,
-            ch_dbsnp_tbi_ready
+            ch_dbsnp_tbi_ready,
+            filter
         )
         ch_versions = ch_versions.mix(CRAM_CALL_VARDICTJAVA.out.versions)
 

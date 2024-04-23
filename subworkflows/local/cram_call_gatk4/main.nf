@@ -10,13 +10,14 @@ include { VCF_CONCAT_BCFTOOLS           } from '../vcf_concat_bcftools/main'
 
 workflow CRAM_CALL_GATK4 {
     take:
-        ch_input             // channel: [mandatory] [ val(meta), path(cram), path(crai), path(bed) ] => sample CRAM files and their indexes with the split bed files
-        ch_fasta             // channel: [mandatory] [ val(meta), path(fasta) ] => fasta reference
-        ch_fai               // channel: [mandatory] [ val(meta), path(fai) ] => fasta reference index
-        ch_dict              // channel: [mandatory] [ val(meta), path(dict) ] => sequence dictionary
-        ch_strtablefile      // channel: [optional]  [ val(meta), path(strtablefile) ] => STR table file
-        ch_dbsnp             // channel: [optional]  [ path(dbsnp) ] => The VCF containing the dbsnp variants
-        ch_dbsnp_tbi         // channel: [optional]  [ path(dbsnp_tbi) ] => The index of the dbsnp VCF
+        ch_input            // channel: [mandatory] [ val(meta), path(cram), path(crai), path(bed) ] => sample CRAM files and their indexes with the split bed files
+        ch_fasta            // channel: [mandatory] [ val(meta), path(fasta) ] => fasta reference
+        ch_fai              // channel: [mandatory] [ val(meta), path(fai) ] => fasta reference index
+        ch_dict             // channel: [mandatory] [ val(meta), path(dict) ] => sequence dictionary
+        ch_strtablefile     // channel: [optional]  [ val(meta), path(strtablefile) ] => STR table file
+        ch_dbsnp            // channel: [optional]  [ path(dbsnp) ] => The VCF containing the dbsnp variants
+        ch_dbsnp_tbi        // channel: [optional]  [ path(dbsnp_tbi) ] => The index of the dbsnp VCF
+        dragstr             // boolean: create a DragSTR model and run haplotypecaller with it
 
     main:
 
@@ -26,7 +27,7 @@ workflow CRAM_CALL_GATK4 {
     // Generate DRAGSTR models (if --dragstr is specified)
     //
 
-    if (params.dragstr) {
+    if (dragstr) {
 
         ch_input
             .map { meta, cram, crai, bed ->
