@@ -75,5 +75,11 @@
             }
         },
         "required": ["sample"]
+    },
+    "dependentRequired": {
+        "truth_tbi": ["truth_vcf"],
+        "truth_bed": ["truth_vcf"],
+        "tbi": ["gvcf"],
+        "crai": ["cram"]
     }
 }
