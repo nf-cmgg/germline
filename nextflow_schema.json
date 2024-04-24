@@ -459,29 +459,6 @@
                     "default": true,
                     "fa_icon": "fas fa-check-square",
                     "hidden": true
-                },
-                "validationShowHiddenParams": {
-                    "type": "boolean",
-                    "fa_icon": "far fa-eye-slash",
-                    "description": "Show all params when using `--help`",
-                    "hidden": true,
-                    "help_text": "By default, parameters set as _hidden_ in the schema are not shown on the command line when a user runs with `--help`. Specifying this option will tell the pipeline to show all parameters."
-                },
-                "validationLenientMode": {
-                    "type": "boolean",
-                    "hidden": true,
-                    "description": "Lenient mode for parameter validation"
-                },
-                "validationFailUnrecognisedParams": {
-                    "type": "boolean",
-                    "hidden": true,
-                    "description": "Fail on unrecognised parameters"
-                },
-                "validationSchemaIgnoreParams": {
-                    "type": "string",
-                    "default": "genomes,igenomes_base,test_data",
-                    "hidden": true,
-                    "description": "Comma-separated list of parameters to ignore when validating against the schema"
                 }
             }
         },
