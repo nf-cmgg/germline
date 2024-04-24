@@ -154,6 +154,7 @@ workflow NFCMGG_GERMLINE {
         // Boolean inputs
         params.dragstr,
         params.annotate,
+        params.vcfanno,
         params.only_call,
         params.only_merge,
         params.filter,
@@ -173,6 +174,7 @@ workflow NFCMGG_GERMLINE {
         params.genome,
         params.species,
         params.vep_cache_version,
+        params.vep_chunk_size,
         params.scatter_count,
         params.callers.tokenize(",")
     )

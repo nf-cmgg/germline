@@ -100,6 +100,7 @@ workflow GERMLINE {
     // Boolean inputs
     dragstr                     // boolean: create a dragstr model and use it for haplotypecaller
     annotate                    // boolean: perform annotation
+    vcfanno                     // boolean: use vcfanno annotations
     only_call                   // boolean: only perform variant calling
     only_merge                  // boolean: run the pipeline until after the family merge
     filter                      // boolean: filter the VCFs
@@ -119,6 +120,7 @@ workflow GERMLINE {
     genome                      // string:  the genome used by the pipeline run
     species                     // string:  the species used by the pipeline run
     vep_cache_version           // integer: the vep cache version to be used
+    vep_chunk_size              // integer: the chunk size to split each VCF file into for VEP
     scatter_count               // integer: the amount of scattering performed on each file
     callers                     // list:    the callers to use
 
@@ -552,7 +554,12 @@ workflow GERMLINE {
                 ch_vep_extra_files,
                 ch_vcfanno_config,
                 ch_vcfanno_lua,
-                ch_vcfanno_resources
+                ch_vcfanno_resources,
+                genome,
+                species,
+                vep_cache_version,
+                vep_chunk_size,
+                vcfanno
             )
             ch_versions = ch_versions.mix(VCF_ANNOTATION.out.versions)
             ch_reports  = ch_reports.mix(VCF_ANNOTATION.out.reports)
