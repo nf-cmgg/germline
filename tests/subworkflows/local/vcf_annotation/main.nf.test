@@ -35,6 +35,11 @@ nextflow_workflow {
                 input[5] = []
                 input[6] = []
                 input[7] = []
+                input[8] = "GRCh38"
+                input[9] = "homo_sapiens"
+                input[10] = 105
+                input[11] = 50000
+                input[12] = false
                 """
             }
         }
@@ -77,6 +82,11 @@ nextflow_workflow {
                 input[5] = Channel.value(file("vcfanno.toml"))
                 input[6] = []
                 input[7] = Channel.value([file("file1.txt"), file("file2.txt")])
+                input[8] = "GRCh38"
+                input[9] = "homo_sapiens"
+                input[10] = 105
+                input[11] = 50000
+                input[12] = true
                 """
             }
         }

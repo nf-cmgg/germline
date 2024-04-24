@@ -50,6 +50,7 @@ nextflow_workflow {
                 ])
                 input[4] = []
                 input[5] = []
+                input[6] = false
                 """
             }
         }
@@ -106,6 +107,7 @@ nextflow_workflow {
                 ])
                 input[4] = []
                 input[5] = []
+                input[6] = true
                 """
             }
         }
@@ -180,6 +182,7 @@ nextflow_workflow {
                 ])
                 input[4] = []
                 input[5] = []
+                input[6] = false
                 """
             }
         }
