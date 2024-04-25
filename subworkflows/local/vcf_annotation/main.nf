@@ -20,6 +20,11 @@ workflow VCF_ANNOTATION {
         ch_vcfanno_config       // channel: [mandatory if params.vcfanno == true] [ path(toml_config_file) ] => The TOML config file for VCFanno
         ch_vcfanno_lua          // channel: [optional  if params.vcfanno == true] [ path(lua_file) ] => A VCFanno Lua file
         ch_vcfanno_resources    // channel: [mandatory if params.vcfanno == true] [ path(resource_dir) ] => The directory containing the reference files for VCFanno
+        genome                  // string:  The genome needed for VEP
+        species                 // string:  The species to use for VEP
+        vep_cache_version       // integer: The version of the VEP cache to use
+        vep_chunk_size          // integer: The size of each chunk to split VCFs into
+        vcfanno                 // boolean: Use VCFanno for annotation
 
     main:
 
@@ -55,14 +60,14 @@ workflow VCF_ANNOTATION {
     VCF_ANNOTATE_ENSEMBLVEP(
         ch_vep_input,
         ch_fasta,
-        params.genome == "hg38" ? "GRCh38" : params.genome,
-        params.species,
-        params.vep_cache_version,
+        genome == "hg38" ? "GRCh38" : genome,
+        species,
+        vep_cache_version,
         ch_vep_cache,
         ch_vep_extra_files,
         [], [],
         ["ensemblvep"],
-        params.vep_chunk_size
+        vep_chunk_size
     )
 
     ch_versions = ch_versions.mix(VCF_ANNOTATE_ENSEMBLVEP.out.versions)
@@ -72,7 +77,7 @@ workflow VCF_ANNOTATION {
     // Annotate the VCFs with VCFanno
     //
 
-    if (params.vcfanno) {
+    if (vcfanno) {
 
         VCF_ANNOTATE_ENSEMBLVEP.out.vcf_tbi
             .map { meta, vcf, tbi ->

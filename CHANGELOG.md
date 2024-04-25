@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changes
 
 1. Updated all tests to use snapshots instead.
+2. Made the pipeline pluggable to enable the use of it in a meta pipeline.
 
 ## v1.5.1 - Great Geraardsbergen - [March 7 2024]
 

@@ -16,7 +16,6 @@
                     "type": "string",
                     "format": "file-path",
                     "exists": true,
-                    "schema": "assets/schema_input.json",
                     "pattern": "^\\S+\\.(csv|tsv|yaml|yml|json)$",
                     "description": "Path to comma-separated file containing information about the samples in the experiment.",
                     "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with samples, and a header row. See [usage docs](./usage.md).",
@@ -459,29 +458,6 @@
                     "default": true,
                     "fa_icon": "fas fa-check-square",
                     "hidden": true
-                },
-                "validationShowHiddenParams": {
-                    "type": "boolean",
-                    "fa_icon": "far fa-eye-slash",
-                    "description": "Show all params when using `--help`",
-                    "hidden": true,
-                    "help_text": "By default, parameters set as _hidden_ in the schema are not shown on the command line when a user runs with `--help`. Specifying this option will tell the pipeline to show all parameters."
-                },
-                "validationLenientMode": {
-                    "type": "boolean",
-                    "hidden": true,
-                    "description": "Lenient mode for parameter validation"
-                },
-                "validationFailUnrecognisedParams": {
-                    "type": "boolean",
-                    "hidden": true,
-                    "description": "Fail on unrecognised parameters"
-                },
-                "validationSchemaIgnoreParams": {
-                    "type": "string",
-                    "default": "genomes,igenomes_base,test_data",
-                    "hidden": true,
-                    "description": "Comma-separated list of parameters to ignore when validating against the schema"
                 }
             }
         },
