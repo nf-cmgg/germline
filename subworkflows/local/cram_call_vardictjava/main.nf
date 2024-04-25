@@ -18,6 +18,7 @@ workflow CRAM_CALL_VARDICTJAVA {
         ch_fai               // channel: [mandatory] [ val(meta), path(fai) ] => fasta reference index
         ch_dbsnp             // channel: [optional]  [ path(vcf) ] => the dbnsp vcf file
         ch_dbsnp_tbi         // channel: [optional]  [ path(tbi) ] => the dbsnp vcf index file
+        filter               // boolean: filter the VCFs
 
     main:
         ch_versions = Channel.empty()
@@ -106,7 +107,7 @@ workflow CRAM_CALL_VARDICTJAVA {
             VCF_CONCAT_BCFTOOLS.out.vcfs.set { ch_dbsnp_annotated }
         }
 
-        if(params.filter) {
+        if(filter) {
             VCF_FILTER_BCFTOOLS(
                 ch_dbsnp_annotated,
                 false
