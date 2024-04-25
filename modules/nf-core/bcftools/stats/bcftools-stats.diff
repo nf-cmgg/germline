@@ -1,0 +1,24 @@
+Changes in module 'nf-core/bcftools/stats'
+--- modules/nf-core/bcftools/stats/main.nf
++++ modules/nf-core/bcftools/stats/main.nf
+@@ -31,6 +31,9 @@
+     def reference_fasta = fasta ? "--fasta-ref ${fasta}" : ""
+     def exons_file = exons      ? "--exons ${exons}" : ""
+     """
++    mv $vcf ${meta.id}.vcf.gz
++    mv $tbi ${meta.id}.vcf.gz.tbi
++
+     bcftools stats \\
+         $args \\
+         $regions_file \\
+@@ -38,7 +41,7 @@
+         $samples_file \\
+         $reference_fasta \\
+         $exons_file \\
+-        $vcf > ${prefix}.bcftools_stats.txt
++        ${meta.id}.vcf.gz > ${prefix}.bcftools_stats.txt
+ 
+     cat <<-END_VERSIONS > versions.yml
+     "${task.process}":
+
+************************************************************
