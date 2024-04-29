@@ -24,18 +24,23 @@ jobs:
     strategy:
       matrix:
         NXF_VER:
-          - "23.04.0"
+          - "23.10.0"
           - "latest-everything"
         test:
-          - "vardict"
-          - "haplotypecaller"
-          - "fails"
-          - "annotate_test"
-          - "filter_test"
-          - "gemini_test"
-          - "full_wes"
-          - "full_wgs"
-          - "only_call"
+          - "pipeline_default"
+          - "pipeline_callers"
+          - "pipeline_variations"
+          - "pipeline_variations2"
+          - "pipeline_gvcfs"
+          - "cram_call_genotype_gatk4"
+          - "cram_call_vardictjava"
+          - "cram_prepare_samtools_bedtools"
+          - "input_split_bedtools"
+          - "vcf_annotation"
+          - "vcf_extract_relate_somalier"
+          - "vcf_ped_rtgtools"
+          - "vcf_upd_updio"
+          - "vcf_validate_small_variants"
     steps:
       - name: Free some space
         run: |

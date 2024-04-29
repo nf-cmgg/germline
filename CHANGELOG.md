@@ -3,6 +3,19 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.6.0 - Offbeat Ostend - [April 29 2024]
+
+### New features
+
+1. Added UPDio for Uniparental Disomy detection in family samples. This introduces the `--updio` parameter to turn on this detection and `--updio_common_cnvs` to supply a common CNVs file to UPDio. The family needs to contain at least one child with its mother and father.
+2. Added docs built with MkDocs. See the documentation [site](https://nf-cmgg.github.io/germline/latest) here.
+3. Added AutoMap to find regions of homozygosity from human samples. This introduces the `--automap` parameter to turn on this feature and the `--automap_repeats`, `--automap_panel` and `--automap_panel_name` parameters to configure AutoMap (see the [parameters](https://nf-cmgg.github.io/germline/latest/parameters) docs for more information)
+
+### Changes
+
+1. Updated all tests to use snapshots instead.
+2. Made the pipeline pluggable to enable the use of it in a meta pipeline.
+
 ## v1.5.1 - Great Geraardsbergen - [March 7 2024]
 
 ### Fixes

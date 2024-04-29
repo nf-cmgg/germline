@@ -1,10 +1,10 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://raw.githubusercontent.com/nf-cmgg/germline/master/nextflow_schema.json",
     "title": "nf-cmgg/germline pipeline parameters",
     "description": "A nextflow pipeline for calling and annotating variants",
     "type": "object",
-    "definitions": {
+    "defs": {
         "input_output_options": {
             "title": "Input/output options",
             "type": "object",
@@ -16,7 +16,6 @@
                     "type": "string",
                     "format": "file-path",
                     "exists": true,
-                    "schema": "assets/schema_input.json",
                     "pattern": "^\\S+\\.(csv|tsv|yaml|yml|json)$",
                     "description": "Path to comma-separated file containing information about the samples in the experiment.",
                     "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with samples, and a header row. See [usage docs](./usage.md).",
@@ -181,6 +180,10 @@
                     "description": "The name of the project.",
                     "help_text": "This will be used to specify the final output files folder in the output directory."
                 },
+                "skip_date_project": {
+                    "type": "boolean",
+                    "description": "Don't add the current date to the output project folder"
+                },
                 "roi": {
                     "type": "string",
                     "description": "Path to the default ROI (regions of interest) BED file to be used for WES analysis",
@@ -251,6 +254,38 @@
                 "keep_alt_contigs": {
                     "type": "boolean",
                     "description": "Keep all aditional contigs for calling instead of filtering them out before"
+                },
+                "updio": {
+                    "type": "boolean",
+                    "description": "Run UPDio analysis on the resulting VCFs"
+                },
+                "updio_common_cnvs": {
+                    "type": "string",
+                    "description": "A TSV file containing common CNVs to be used by UPDio",
+                    "format": "file-path",
+                    "exists": true,
+                    "pattern": "^\\S+\\.tsv$"
+                },
+                "automap": {
+                    "type": "boolean",
+                    "description": "Run AutoMap analysis on the resulting VCFs"
+                },
+                "automap_repeats": {
+                    "type": "string",
+                    "description": "BED file with repeat regions in the genome.",
+                    "help_text": "This file will be automatically generated for hg38/GRCh38 and hg19/GRCh37 when this parameter has not been given.",
+                    "pattern": "^\\S+\\.bed$"
+                },
+                "automap_panel": {
+                    "type": "string",
+                    "description": "TXT file with gene panel regions to be used by AutoMap.",
+                    "help_text": "By default the CMGG gene panel list will be used.",
+                    "pattern": "^\\S+\\.txt$"
+                },
+                "automap_panel_name": {
+                    "type": "string",
+                    "default": "cmgg_bio",
+                    "description": "The panel name of the panel given with --automap_panel."
                 }
             }
         },
@@ -423,30 +458,6 @@
                     "default": true,
                     "fa_icon": "fas fa-check-square",
                     "hidden": true
-                },
-                "validationShowHiddenParams": {
-                    "type": "boolean",
-                    "fa_icon": "far fa-eye-slash",
-                    "description": "Show all params when using `--help`",
-                    "hidden": true,
-                    "help_text": "By default, parameters set as _hidden_ in the schema are not shown on the command line when a user runs with `--help`. Specifying this option will tell the pipeline to show all parameters."
-                },
-                "validationLenientMode": {
-                    "type": "boolean",
-                    "default": false,
-                    "hidden": true,
-                    "description": "Lenient mode for parameter validation"
-                },
-                "validationFailUnrecognisedParams": {
-                    "type": "boolean",
-                    "hidden": true,
-                    "description": "Fail on unrecognised parameters"
-                },
-                "validationSchemaIgnoreParams": {
-                    "type": "string",
-                    "default": "genomes,igenomes_base,test_data",
-                    "hidden": true,
-                    "description": "Comma-separated list of parameters to ignore when validating against the schema"
                 }
             }
         },
@@ -521,15 +532,14 @@
                     "help_text": "The '--alphamissense' and '--alphamissense_tbi' parameters need to be specified when using this parameter."
                 },
                 "vep_version": {
-                    "type": "string",
-                    "default": "105.0",
+                    "type": "number",
+                    "default": 105.0,
                     "description": "The version of the VEP tool to be used",
-                    "fa_icon": "fas fa-code-branch",
-                    "pattern": "^\\d\\d\\d?\\.\\d"
+                    "fa_icon": "fas fa-code-branch"
                 },
                 "vep_cache_version": {
-                    "type": "string",
-                    "default": "105",
+                    "type": "integer",
+                    "default": 105,
                     "description": "The version of the VEP cache to be used",
                     "fa_icon": "fas fa-code-branch"
                 },
@@ -648,25 +658,25 @@
     },
     "allOf": [
         {
-            "$ref": "#/definitions/input_output_options"
+            "$ref": "#/defs/input_output_options"
         },
         {
-            "$ref": "#/definitions/reference_genome_options"
+            "$ref": "#/defs/reference_genome_options"
         },
         {
-            "$ref": "#/definitions/pipeline_specific_parameters"
+            "$ref": "#/defs/pipeline_specific_parameters"
         },
         {
-            "$ref": "#/definitions/institutional_config_options"
+            "$ref": "#/defs/institutional_config_options"
         },
         {
-            "$ref": "#/definitions/max_job_request_options"
+            "$ref": "#/defs/max_job_request_options"
         },
         {
-            "$ref": "#/definitions/generic_options"
+            "$ref": "#/defs/generic_options"
         },
         {
-            "$ref": "#/definitions/annotation_parameters"
+            "$ref": "#/defs/annotation_parameters"
         }
     ]
 }

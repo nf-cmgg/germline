@@ -16,12 +16,14 @@ include { VCF_CONCAT_BCFTOOLS    } from '../vcf_concat_bcftools/main'
 
 workflow GVCF_JOINT_GENOTYPE_GATK4 {
     take:
-        ch_gvcfs     // channel: [mandatory] [ val(meta), path(gvcf), path(tbi) ] => The GVCFs called with HaplotypeCaller
-        ch_fasta     // channel: [mandatory] [ path(fasta) ] => fasta reference
-        ch_fai       // channel: [mandatory] [ path(fai) ] => fasta reference index
-        ch_dict      // channel: [mandatory] [ path(dict) ] => sequence dictionary
-        ch_dbsnp     // channel: [optional]  [ path(dbsnp) ] => The VCF containing the dbsnp variants
-        ch_dbsnp_tbi // channel: [optional]  [ path(dbsnp_tbi) ] => The index of the dbsnp VCF
+        ch_gvcfs        // channel: [mandatory] [ val(meta), path(gvcf), path(tbi) ] => The GVCFs called with HaplotypeCaller
+        ch_fasta        // channel: [mandatory] [ path(fasta) ] => fasta reference
+        ch_fai          // channel: [mandatory] [ path(fai) ] => fasta reference index
+        ch_dict         // channel: [mandatory] [ path(dict) ] => sequence dictionary
+        ch_dbsnp        // channel: [optional]  [ path(dbsnp) ] => The VCF containing the dbsnp variants
+        ch_dbsnp_tbi    // channel: [optional]  [ path(dbsnp_tbi) ] => The index of the dbsnp VCF
+        only_merge      // boolean: Only run until the merging of the VCFs
+        scatter_count   // integer: The amount of times each file should be scattered
 
     main:
 
@@ -68,7 +70,7 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
     )
     ch_versions = ch_versions.mix(GATK4_GENOMICSDBIMPORT.out.versions.first())
 
-    if(!params.only_merge) {
+    if(!only_merge) {
 
         BCFTOOLS_QUERY(
             ch_gvcfs,

@@ -7,7 +7,7 @@ include { BCFTOOLS_ANNOTATE     } from '../../../modules/nf-core/bcftools/annota
 
 workflow VCF_PED_RTGTOOLS {
     take:
-        ch_vcfs // channel: [mandatory] [ val(meta), path(vcf) ] => The post-processed VCFs
+        ch_vcfs // channel: [mandatory] [ val(meta), path(vcf), path(tbi) ] => The post-processed VCFs
         ch_peds // channel: [mandatory] [ val(meta), path(peds) ] => The PED files retrieved from SOMALIER_RELATE
 
     main:

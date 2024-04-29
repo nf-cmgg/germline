@@ -1,0 +1,93 @@
+nextflow_pipeline {
+
+    name "Test Workflow main.nf"
+    script "main.nf"
+
+    tag "pipeline"
+    tag "pipeline_callers"
+
+    options "-stub"
+
+    test("pipeline_callers - vardict") {
+
+        when {
+            params {
+                outdir = "${outputDir}"
+                callers = "vardict"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.stdout,
+                    path("${outputDir}")
+                        .list()
+                        .findAll { !it.toString().endsWith("pipeline_info") }
+                        .collect { getRecursiveFileNames(it, "${outputDir}") }
+                        .flatten()
+                ).match("vardict") }
+            )
+        }
+
+    }
+
+    test("pipeline_callers - haplotypecaller") {
+
+        when {
+            params {
+                outdir = "${outputDir}"
+                callers = "haplotypecaller"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.stdout,
+                    path("${outputDir}")
+                        .list()
+                        .findAll { !it.toString().endsWith("pipeline_info") }
+                        .collect { getRecursiveFileNames(it, "${outputDir}") }
+                        .flatten()
+                ).match("haplotypecaller") }
+            )
+        }
+
+    }
+
+    test("pipeline_callers - vardict + haplotypecaller") {
+
+        when {
+            params {
+                outdir = "${outputDir}"
+                callers = "haplotypecaller,vardict"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.stdout,
+                    path("${outputDir}")
+                        .list()
+                        .findAll { !it.toString().endsWith("pipeline_info") }
+                        .collect { getRecursiveFileNames(it, "${outputDir}") }
+                        .flatten()
+                ).match("vardict + haplotypecaller") }
+            )
+        }
+
+    }
+
+}
+
+def getRecursiveFileNames(fileOrDir, outputDir) {
+    if(file(fileOrDir.toString()).isDirectory()) {
+        return fileOrDir.list().collect { getRecursiveFileNames(it, outputDir) }
+    }
+    return fileOrDir.toString().replace("${outputDir}/", "")
+}

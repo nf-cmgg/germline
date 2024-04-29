@@ -1,0 +1,169 @@
+nextflow_pipeline {
+
+    name "Test Workflow main.nf"
+    script "main.nf"
+
+    tag "pipeline"
+    tag "pipeline_variations"
+
+    options "-stub"
+
+    test("pipeline_variations - annotate") {
+
+        when {
+            params {
+                outdir = "${outputDir}"
+                annotate = true
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.stdout,
+                    path("${outputDir}")
+                        .list()
+                        .findAll { !it.toString().endsWith("pipeline_info") }
+                        .collect { getRecursiveFileNames(it, "${outputDir}") }
+                        .flatten()
+                ).match("annotate") }
+            )
+        }
+
+    }
+
+    test("pipeline_variations - annotate + vcfanno") {
+
+        when {
+            params {
+                outdir = "${outputDir}"
+                annotate = true
+                vcfanno = true
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.stdout,
+                    path("${outputDir}")
+                        .list()
+                        .findAll { !it.toString().endsWith("pipeline_info") }
+                        .collect { getRecursiveFileNames(it, "${outputDir}") }
+                        .flatten()
+                ).match("annotate + vcfanno") }
+            )
+        }
+
+    }
+
+    test("pipeline_variations - filter") {
+
+        when {
+            params {
+                outdir = "${outputDir}"
+                filter = true
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.stdout,
+                    path("${outputDir}")
+                        .list()
+                        .findAll { !it.toString().endsWith("pipeline_info") }
+                        .collect { getRecursiveFileNames(it, "${outputDir}") }
+                        .flatten()
+                ).match("filter") }
+            )
+        }
+
+    }
+
+    test("pipeline_variations - only_call") {
+
+        when {
+            params {
+                outdir = "${outputDir}"
+                only_call = true
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.stdout,
+                    path("${outputDir}")
+                        .list()
+                        .findAll { !it.toString().endsWith("pipeline_info") }
+                        .collect { getRecursiveFileNames(it, "${outputDir}") }
+                        .flatten()
+                ).match("only_call") }
+            )
+        }
+
+    }
+
+    test("pipeline_variations - only_merge") {
+
+        when {
+            params {
+                outdir = "${outputDir}"
+                only_merge = true
+                output_genomicsdb = true
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.stdout,
+                    path("${outputDir}")
+                        .list()
+                        .findAll { !it.toString().endsWith("pipeline_info") }
+                        .collect { getRecursiveFileNames(it, "${outputDir}") }
+                        .flatten()
+                ).match("only_merge") }
+            )
+        }
+
+    }
+
+    test("pipeline_variations - automap") {
+
+        when {
+            params {
+                outdir = "${outputDir}"
+                automap = true
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.stdout,
+                    path("${outputDir}")
+                        .list()
+                        .findAll { !it.toString().endsWith("pipeline_info") }
+                        .collect { getRecursiveFileNames(it, "${outputDir}") }
+                        .flatten()
+                ).match("automap") }
+            )
+        }
+
+    }
+}
+
+def getRecursiveFileNames(fileOrDir, outputDir) {
+    if(file(fileOrDir.toString()).isDirectory()) {
+        return fileOrDir.list().collect { getRecursiveFileNames(it, outputDir) }
+    }
+    return fileOrDir.toString().replace("${outputDir}/", "")
+}
