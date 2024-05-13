@@ -18,9 +18,11 @@ lint:
   nextflow_config:
     - manifest.name
     - manifest.homePage
+nf_core_version: 2.14.1
 repository_type: pipeline
 template:
   author: nvnieuwk
-  description: A nextflow pipeline for calling and annotating variants
+  description: A nextflow pipeline for calling and annotating small germline variants
+    from short DNA reads for WES and WGS data
   name: germline
   prefix: nf-cmgg
