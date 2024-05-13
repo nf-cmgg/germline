@@ -1,4 +1,5 @@
 # nf-cmgg/germline: Usage
+
 # nf-cmgg/germline: Usage
 
 > _Documentation of pipeline parameters can be found in the [parameters documentation](./parameters.md)_
@@ -255,6 +256,7 @@ To use a different container from the default container or conda environment spe
 A pipeline might not always support every possible argument or option of a particular tool used in pipeline. Fortunately, nf-core pipelines provide some freedom to users to insert additional parameters that the pipeline does not include by default.
 
 To learn how to provide additional arguments to a particular tool of the pipeline, please see the [customising tool arguments](https://nf-co.re/docs/usage/configuration#customising-tool-arguments) section of the nf-core website.
+
 ### Custom Tool Arguments
 
 A pipeline might not always support every possible argument or option of a particular tool used in pipeline. Fortunately, nf-core pipelines provide some freedom to users to insert additional parameters that the pipeline does not include by default.

@@ -1,8 +1,6 @@
 {
     "name": "nf-cmgg/germline",
     "homePage": "https://github.com/nf-cmgg/germline",
-    "name": "nf-cmgg/germline",
-    "homePage": "https://github.com/nf-cmgg/germline",
     "repos": {
         "https://github.com/nf-core/modules.git": {
             "modules": {
