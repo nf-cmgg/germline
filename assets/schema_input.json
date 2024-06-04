@@ -1,8 +1,8 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://raw.githubusercontent.com/nf-cmgg/germline/master/assets/schema_input.json",
-    "title": "Samplesheet validation schema",
-    "description": "Schema for the samplesheet used in this pipeline",
+    "title": "nf-cmgg/germline pipeline - params.input schema",
+    "description": "Schema for the file provided with params.input",
     "type": "array",
     "items": {
         "type": "object",
