@@ -164,8 +164,8 @@ nextflow_workflow {
             assertAll(
                 { assert workflow.success },
                 { assert snapshot(
-                    workflow.out.ready_crams.collect { 
-                        [ it[0], cram(it[1], fasta).reads.size(), file(it[2]).name ]    
+                    workflow.out.ready_crams.collect {
+                        [ it[0], cram(it[1], fasta).reads.size(), file(it[2]).name ]
                     },
                     workflow.out.ready_beds,
                     workflow.out.reports
