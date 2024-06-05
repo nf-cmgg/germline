@@ -9,7 +9,7 @@
                         "family": "Ashkenazim",
                         "family_count": 1
                     },
-                    "NA24143.cram",
+                    899520,
                     "NA24143.cram.crai"
                 ]
             ],
@@ -30,9 +30,9 @@
         ],
         "meta": {
             "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nextflow": "24.04.1"
         },
-        "timestamp": "2024-03-27T11:05:29.497234928"
+        "timestamp": "2024-06-04T17:01:48.046624445"
     },
     "default - WGS": {
         "content": [
