@@ -96,6 +96,16 @@ workflow GERMLINE {
     automap_repeats             // string: path to the Automap repeats file
     automap_panel               // string: path to the Automap panel file
     outdir                      // string: path to the output directory
+    hapmap                      // string: path to the hapmap VCF
+    hapmap_tbi                  // string: path to the hapmap VCF index
+    omni_1000G                   // string: path to the 1000 Genomes omni VCF
+    omni_1000G_tbi               // string: path to the 1000 Genomes omni VCF index
+    snps_1000G                   // string: path to the 1000 Genomes SNPs VCF
+    snps_1000G_tbi               // string: path to the 1000 Genomes SNPs VCF index
+    indels_1000G                 // string: path to the 1000 Genomes indels VCF
+    indels_1000G_tbi             // string: path to the 1000 Genomes indels VCF index
+    known_indels                // string: path to the known indels VCF
+    known_indels_tbi            // string: path to the known indels VCF index
 
     // Boolean inputs
     dragstr                     // boolean: create a dragstr model and use it for haplotypecaller
@@ -115,6 +125,7 @@ workflow GERMLINE {
     vep_mastermind              // boolean: use the Mastermind VEP plugin
     vep_eog                     // boolean: use the EOG VEP plugin
     vep_alphamissense           // boolean: use the AlphaMissense VEP plugin
+    vqsr                        // boolean: perform variant recalibration on GATK output
 
     // Value inputs
     genome                      // string:  the genome used by the pipeline run
