@@ -4,6 +4,7 @@
 
 include { CRAM_CALL_GATK4               } from '../cram_call_gatk4/main'
 include { GVCF_JOINT_GENOTYPE_GATK4     } from '../gvcf_joint_genotype_gatk4/main'
+include { VCF_VQSR_GATK4                } from '../vcf_vqsr_gatk4/main'
 include { VCF_FILTER_BCFTOOLS           } from '../vcf_filter_bcftools/main'
 
 workflow CRAM_CALL_GENOTYPE_GATK4 {
@@ -16,9 +17,14 @@ workflow CRAM_CALL_GENOTYPE_GATK4 {
         ch_strtablefile     // channel: [optional]  [ path(strtablefile) ] => STR table file
         ch_dbsnp            // channel: [optional]  [ path(dbsnp) ] => The VCF containing the dbsnp variants
         ch_dbsnp_tbi        // channel: [optional]  [ path(dbsnp_tbi) ] => The index of the dbsnp VCF
+        ch_hapmap           // channel: [mandatory] [ path(vcf), path(tbi) ]
+        ch_omni_1000G       // channel: [mandatory] [ path(vcf), path(tbi) ]
+        ch_snps_1000G       // channel: [mandatory] [ path(vcf), path(tbi) ]
+        ch_indels_1000G     // channel: [mandatory] [ path(vcf), path(tbi) ]
         dragstr             // boolean: create a DragSTR model and run haplotypecaller with it
         only_call           // boolean: only run the variant calling
         only_merge          // boolean: run until the family merging
+        vqsr                // boolean: run variant recalibration
         filter              // boolean: filter the VCFs
         scatter_count       // integer: the amount of times the VCFs should be scattered
 
@@ -66,9 +72,30 @@ workflow CRAM_CALL_GENOTYPE_GATK4 {
 
     if(!only_call && !only_merge) {
 
+        if(vqsr) {
+            VCF_VQSR_GATK4(
+                GVCF_JOINT_GENOTYPE_GATK4.out.vcfs,
+                ch_fasta,
+                ch_fai,
+                ch_dict,
+                ch_hapmap,
+                ch_omni_1000G,
+                ch_snps_1000G,
+                ch_dbsnp.combine(ch_dbsnp_tbi).collect(),
+                ch_indels_1000G,
+            )
+            ch_versions = ch_versions.mix(VCF_VQSR_GATK4.out.versions)
+
+            VCF_VQSR_GATK4.out.vcfs.set { ch_vqsr_vcfs }
+
+        } else {
+            GVCF_JOINT_GENOTYPE_GATK4.out.vcfs
+                .set { ch_vqsr_vcfs }
+        }
+
         if(filter) {
             VCF_FILTER_BCFTOOLS(
-                GVCF_JOINT_GENOTYPE_GATK4.out.vcfs,
+                ch_vqsr_vcfs,
                 true
             )
             ch_versions = ch_versions.mix(VCF_FILTER_BCFTOOLS.out.versions)
@@ -76,7 +103,7 @@ workflow CRAM_CALL_GENOTYPE_GATK4 {
             VCF_FILTER_BCFTOOLS.out.vcfs
                 .set { ch_vcfs }
         } else {
-            GVCF_JOINT_GENOTYPE_GATK4.out.vcfs
+            ch_vqsr_vcfs
                 .set { ch_vcfs }
         }
 

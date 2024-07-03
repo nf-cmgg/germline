@@ -47,8 +47,6 @@ params.snps_1000G            = getGenomeAttribute('snps_1000G')
 params.snps_1000G_tbi        = getGenomeAttribute('snps_1000G_tbi')
 params.indels_1000G          = getGenomeAttribute('indels_1000G')
 params.indels_1000G_tbi      = getGenomeAttribute('indels_1000G_tbi')
-params.known_indels         = getGenomeAttribute('known_indels')
-params.known_indels_tbi     = getGenomeAttribute('known_indels_tbi')
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -103,9 +101,9 @@ if(params.vqsr) {
     if(!params.indels_1000G || !params.indels_1000G_tbi) {
         error("Please provide --indels_1000G and --indels_1000G_tbi when using --vqsr")
     }
-    if(!params.known_indels || !params.known_indels_tbi) {
-        error("Please provide --known_indels and --known_indels_tbi when using --vqsr")
-    }
+    if(!params.dbsnp || !params.dbsnp_tbi) {
+        error("Please provide --dbsnp and --dbsnp_tbi when using --vqsr")
+    }    
 }
 
 /*
@@ -186,8 +184,6 @@ workflow NFCMGG_GERMLINE {
         params.snps_1000G_tbi,
         params.indels_1000G,
         params.indels_1000G_tbi,
-        params.known_indels,
-        params.known_indels_tbi,
 
         // Boolean inputs
         params.dragstr,

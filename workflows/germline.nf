@@ -104,8 +104,6 @@ workflow GERMLINE {
     snps_1000G_tbi               // string: path to the 1000 Genomes SNPs VCF index
     indels_1000G                 // string: path to the 1000 Genomes indels VCF
     indels_1000G_tbi             // string: path to the 1000 Genomes indels VCF index
-    known_indels                // string: path to the known indels VCF
-    known_indels_tbi            // string: path to the known indels VCF index
 
     // Boolean inputs
     dragstr                     // boolean: create a dragstr model and use it for haplotypecaller
@@ -168,6 +166,26 @@ workflow GERMLINE {
 
     ch_automap_repeats    = automap_repeats     ? Channel.fromPath(automap_repeats).map { [[id:"repeats"], it]}.collect() : []
     ch_automap_panel      = automap_panel       ? Channel.fromPath(automap_panel).map { [[id:"automap_panel"], it]}.collect() : [[],[]]
+
+    if(vqsr) {
+        ch_hapmap = Channel.of(
+            file(hapmap), file(hapmap_tbi)
+        ).collect()
+        ch_omni_1000G = Channel.of(
+            file(omni_1000G), file(omni_1000G_tbi)
+        ).collect()
+        ch_snps_1000G = Channel.of(
+            file(snps_1000G), file(snps_1000G_tbi)
+        ).collect()
+        ch_indels_1000G = Channel.of(
+            file(indels_1000G), file(indels_1000G_tbi)
+        ).collect()
+    } else {
+        ch_hapmap = []
+        ch_omni_1000G = []
+        ch_snps_1000G = []
+        ch_indels_1000G = []
+    }
 
     //
     // Check for the presence of EnsemblVEP plugins that use extra files
@@ -427,9 +445,14 @@ workflow GERMLINE {
             ch_strtablefile_ready,
             ch_dbsnp_ready,
             ch_dbsnp_tbi_ready,
+            ch_hapmap,
+            ch_omni_1000G,
+            ch_snps_1000G,
+            ch_indels_1000G,
             dragstr,
             only_call,
             only_merge,
+            vqsr,
             filter,
             scatter_count
         )

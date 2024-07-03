@@ -214,7 +214,8 @@
                     "description": "Path to the HapMap VCF file",
                     "pattern": "^\\S+\\.vcf\\.gz",
                     "format": "file-path",
-                    "mimetype": "text/plain"
+                    "mimetype": "text/plain",
+                    "exists": true
                 },
                 "hapmap_tbi": {
                     "type": "string",
@@ -222,7 +223,8 @@
                     "description": "Path to the HapMap VCF index file",
                     "pattern": "^\\S+\\.vcf\\.gz\\.tbi",
                     "format": "file-path",
-                    "mimetype": "text/plain"
+                    "mimetype": "text/plain",
+                    "exists": true
                 },
                 "omni_1000G": {
                     "type": "string",
@@ -230,7 +232,8 @@
                     "description": "Path to the 1000 Genomes omni VCF file",
                     "pattern": "^\\S+\\.vcf\\.gz",
                     "format": "file-path",
-                    "mimetype": "text/plain"
+                    "mimetype": "text/plain",
+                    "exists": true
                 },
                 "omni_1000G_tbi": {
                     "type": "string",
@@ -238,7 +241,8 @@
                     "description": "Path to the 1000 Genomes omni VCF index file",
                     "pattern": "^\\S+\\.vcf\\.gz\\.tbi",
                     "format": "file-path",
-                    "mimetype": "text/plain"
+                    "mimetype": "text/plain",
+                    "exists": true
                 },
                 "snps_1000G": {
                     "type": "string",
@@ -246,7 +250,8 @@
                     "description": "Path to the 1000 Genomes SNPs VCF file",
                     "pattern": "^\\S+\\.vcf\\.gz",
                     "format": "file-path",
-                    "mimetype": "text/plain"
+                    "mimetype": "text/plain",
+                    "exists": true
                 },
                 "snps_1000G_tbi": {
                     "type": "string",
@@ -254,7 +259,8 @@
                     "description": "Path to the 1000 Genomes SNPs VCF index file",
                     "pattern": "^\\S+\\.vcf\\.gz\\.tbi",
                     "format": "file-path",
-                    "mimetype": "text/plain"
+                    "mimetype": "text/plain",
+                    "exists": true
                 },
                 "indels_1000G": {
                     "type": "string",
@@ -262,7 +268,8 @@
                     "description": "Path to the 1000 Genomes indels VCF file",
                     "pattern": "^\\S+\\.vcf\\.gz",
                     "format": "file-path",
-                    "mimetype": "text/plain"
+                    "mimetype": "text/plain",
+                    "exists": true
                 },
                 "indels_1000G_tbi": {
                     "type": "string",
@@ -270,23 +277,8 @@
                     "description": "Path to the 1000 Genomes indels VCF index file",
                     "pattern": "^\\S+\\.vcf\\.gz\\.tbi",
                     "format": "file-path",
-                    "mimetype": "text/plain"
-                },
-                "known_indels": {
-                    "type": "string",
-                    "fa_icon": "far fa-file-alt",
-                    "description": "Path to the known indels VCF file",
-                    "pattern": "^\\S+\\.vcf\\.gz",
-                    "format": "file-path",
-                    "mimetype": "text/plain"
-                },
-                "known_indels_tbi": {
-                    "type": "string",
-                    "fa_icon": "far fa-file-alt",
-                    "description": "Path to the known indels VCF index file",
-                    "pattern": "^\\S+\\.vcf\\.gz\\.tbi",
-                    "format": "file-path",
-                    "mimetype": "text/plain"
+                    "mimetype": "text/plain",
+                    "exists": true
                 },
                 "somalier_sites": {
                     "type": "string",
