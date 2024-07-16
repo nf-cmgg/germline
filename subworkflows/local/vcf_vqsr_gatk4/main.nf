@@ -46,11 +46,11 @@ workflow VCF_VQSR_GATK4 {
     .set { ch_snp_resources }
 
     ch_indels_1000G.map { vcf, tbi ->
-        def label = "--resource 1000G,known=false,truth=true,training=true:${vcf.name}"
+        def label = "--resource 1000G,known=false,truth=true,training=true,prior=10.0:${vcf.name}"
         [ label, vcf, tbi ]
     }.mix(
         ch_dbsnp.map { vcf, tbi ->
-            def label = "--resource dbsnp,known=true,truth=false,training=false:${vcf.name}"
+            def label = "--resource dbsnp,known=true,truth=false,training=false,prior=2.0:${vcf.name}"
             [ label, vcf, tbi ]
         }
     ).multiMap { label, vcf, tbi ->
@@ -61,9 +61,9 @@ workflow VCF_VQSR_GATK4 {
 
     GATK4_VARIANTRECALIBRATOR_SNPS(
         ch_vcfs,
-        ch_snp_resources.resources,
+        ch_snp_resources.resources.collect(),
         [],
-        ch_snp_resources.labels,
+        ch_snp_resources.labels.collect().view(),
         ch_fasta.map { it[1] },
         ch_fai.map { it[1] },
         ch_dict.map { it[1] }
@@ -72,9 +72,9 @@ workflow VCF_VQSR_GATK4 {
 
     GATK4_VARIANTRECALIBRATOR_INDELS(
         ch_vcfs,
-        ch_indel_resources.resources,
+        ch_indel_resources.resources.collect(),
         [],
-        ch_indel_resources.labels,
+        ch_indel_resources.labels.collect().view(),
         ch_fasta.map { it[1] },
         ch_fai.map { it[1] },
         ch_dict.map { it[1] }
