@@ -24,19 +24,19 @@ workflow VCF_VQSR_GATK4 {
     ch_versions = Channel.empty()
 
     ch_hapmap.map { vcf, tbi ->
-        def label = "--resource hapmap,known=false,training=true,truth=true,prior=15.0:${vcf.name}"
+        def label = "--resource:hapmap,known=false,training=true,truth=true,prior=15.0 ${vcf.name}"
         [ label, vcf, tbi ]
     }.mix(
         ch_omni_1000G.map { vcf, tbi ->
-            def label = "--resource omni,known=false,training=true,truth=false,prior=12.0:${vcf.name}"
+            def label = "--resource:omni,known=false,training=true,truth=false,prior=12.0 ${vcf.name}"
             [ label, vcf, tbi ]
         },
         ch_snps_1000G.map { vcf, tbi ->
-            def label = "--resource 1000G,known=false,training=true,truth=false,prior=10.0:${vcf.name}"
+            def label = "--resource:1000G,known=false,training=true,truth=false,prior=10.0 ${vcf.name}"
             [ label, vcf, tbi ]
         },
         ch_dbsnp.map { vcf, tbi ->
-            def label = "--resource dbsnp,known=true,training=false,truth=false,prior=2.0:${vcf.name}"
+            def label = "--resource:dbsnp,known=true,training=false,truth=false,prior=2.0 ${vcf.name}"
             [ label, vcf, tbi ]
         }
     ).multiMap { label, vcf, tbi ->
@@ -46,11 +46,11 @@ workflow VCF_VQSR_GATK4 {
     .set { ch_snp_resources }
 
     ch_indels_1000G.map { vcf, tbi ->
-        def label = "--resource 1000G,known=false,truth=true,training=true,prior=10.0:${vcf.name}"
+        def label = "--resource:1000G,known=false,truth=true,training=true,prior=10.0 ${vcf.name}"
         [ label, vcf, tbi ]
     }.mix(
         ch_dbsnp.map { vcf, tbi ->
-            def label = "--resource dbsnp,known=true,truth=false,training=false,prior=2.0:${vcf.name}"
+            def label = "--resource:dbsnp,known=true,truth=false,training=false,prior=2.0 ${vcf.name}"
             [ label, vcf, tbi ]
         }
     ).multiMap { label, vcf, tbi ->
