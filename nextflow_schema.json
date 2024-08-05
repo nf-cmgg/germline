@@ -208,6 +208,78 @@
                     "pattern": "^\\S+\\.tbi$",
                     "mimetype": "text/plain"
                 },
+                "hapmap": {
+                    "type": "string",
+                    "fa_icon": "far fa-file-alt",
+                    "description": "Path to the HapMap VCF file",
+                    "pattern": "^\\S+\\.vcf\\.gz",
+                    "format": "file-path",
+                    "mimetype": "text/plain",
+                    "exists": true
+                },
+                "hapmap_tbi": {
+                    "type": "string",
+                    "fa_icon": "far fa-file-alt",
+                    "description": "Path to the HapMap VCF index file",
+                    "pattern": "^\\S+\\.vcf\\.gz\\.tbi",
+                    "format": "file-path",
+                    "mimetype": "text/plain",
+                    "exists": true
+                },
+                "omni_1000G": {
+                    "type": "string",
+                    "fa_icon": "far fa-file-alt",
+                    "description": "Path to the 1000 Genomes omni VCF file",
+                    "pattern": "^\\S+\\.vcf\\.gz",
+                    "format": "file-path",
+                    "mimetype": "text/plain",
+                    "exists": true
+                },
+                "omni_1000G_tbi": {
+                    "type": "string",
+                    "fa_icon": "far fa-file-alt",
+                    "description": "Path to the 1000 Genomes omni VCF index file",
+                    "pattern": "^\\S+\\.vcf\\.gz\\.tbi",
+                    "format": "file-path",
+                    "mimetype": "text/plain",
+                    "exists": true
+                },
+                "snps_1000G": {
+                    "type": "string",
+                    "fa_icon": "far fa-file-alt",
+                    "description": "Path to the 1000 Genomes SNPs VCF file",
+                    "pattern": "^\\S+\\.vcf\\.gz",
+                    "format": "file-path",
+                    "mimetype": "text/plain",
+                    "exists": true
+                },
+                "snps_1000G_tbi": {
+                    "type": "string",
+                    "fa_icon": "far fa-file-alt",
+                    "description": "Path to the 1000 Genomes SNPs VCF index file",
+                    "pattern": "^\\S+\\.vcf\\.gz\\.tbi",
+                    "format": "file-path",
+                    "mimetype": "text/plain",
+                    "exists": true
+                },
+                "indels_1000G": {
+                    "type": "string",
+                    "fa_icon": "far fa-file-alt",
+                    "description": "Path to the 1000 Genomes indels VCF file",
+                    "pattern": "^\\S+\\.vcf\\.gz",
+                    "format": "file-path",
+                    "mimetype": "text/plain",
+                    "exists": true
+                },
+                "indels_1000G_tbi": {
+                    "type": "string",
+                    "fa_icon": "far fa-file-alt",
+                    "description": "Path to the 1000 Genomes indels VCF index file",
+                    "pattern": "^\\S+\\.vcf\\.gz\\.tbi",
+                    "format": "file-path",
+                    "mimetype": "text/plain",
+                    "exists": true
+                },
                 "somalier_sites": {
                     "type": "string",
                     "default": "https://github.com/brentp/somalier/files/3412456/sites.hg38.vcf.gz",
@@ -216,6 +288,10 @@
                     "pattern": "^\\S+\\.vcf\\.gz",
                     "format": "file-path",
                     "mimetype": "text/plain"
+                },
+                "vqsr": {
+                    "type": "boolean",
+                    "description": "Perform variant recalibration on the VCFs created by GATK tooling"
                 },
                 "only_call": {
                     "type": "boolean",

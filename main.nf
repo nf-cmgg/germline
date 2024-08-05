@@ -39,6 +39,14 @@ params.alphamissense        = getGenomeAttribute('alphamissense')
 params.alphamissense_tbi    = getGenomeAttribute('alphamissense_tbi')
 params.vcfanno_resources    = getGenomeAttribute('vcfanno_resources')
 params.vcfanno_config       = getGenomeAttribute('vcfanno_config')
+params.hapmap               = getGenomeAttribute('hapmap')           
+params.hapmap_tbi           = getGenomeAttribute('hapmap_tbi')
+params.omni_1000G            = getGenomeAttribute('omni_1000G')
+params.omni_1000G_tbi        = getGenomeAttribute('omni_1000G_tbi')
+params.snps_1000G            = getGenomeAttribute('snps_1000G')
+params.snps_1000G_tbi        = getGenomeAttribute('snps_1000G_tbi')
+params.indels_1000G          = getGenomeAttribute('indels_1000G')
+params.indels_1000G_tbi      = getGenomeAttribute('indels_1000G_tbi')
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -78,6 +86,24 @@ for(caller in callers) {
 
 if (params.output_suffix && callers.size() > 1) {
     error("Cannot use --output_suffix with more than one caller")
+}
+
+if(params.vqsr) {
+    if(!params.hapmap || !params.hapmap_tbi) {
+        error("Please provide --hapmap and --hapmap_tbi when using --vqsr")
+    }
+    if(!params.omni_1000G || !params.omni_1000G_tbi) {
+        error("Please provide --omni_1000G and --omni_1000G_tbi when using --vqsr")
+    }
+    if(!params.snps_1000G || !params.snps_1000G_tbi) {
+        error("Please provide --snps_1000G and --snps_1000G_tbi when using --vqsr")
+    }
+    if(!params.indels_1000G || !params.indels_1000G_tbi) {
+        error("Please provide --indels_1000G and --indels_1000G_tbi when using --vqsr")
+    }
+    if(!params.dbsnp || !params.dbsnp_tbi) {
+        error("Please provide --dbsnp and --dbsnp_tbi when using --vqsr")
+    }    
 }
 
 /*
@@ -150,6 +176,14 @@ workflow NFCMGG_GERMLINE {
         params.automap_repeats,
         params.automap_panel,
         params.outdir,
+        params.hapmap,
+        params.hapmap_tbi,
+        params.omni_1000G,
+        params.omni_1000G_tbi,
+        params.snps_1000G,
+        params.snps_1000G_tbi,
+        params.indels_1000G,
+        params.indels_1000G_tbi,
 
         // Boolean inputs
         params.dragstr,
@@ -169,6 +203,7 @@ workflow NFCMGG_GERMLINE {
         params.vep_mastermind,
         params.vep_eog,
         params.vep_alphamissense,
+        params.vqsr,
 
         // Value inputs
         params.genome,

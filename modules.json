@@ -79,6 +79,11 @@
                         "installed_by": ["vcf_annotate_ensemblvep_snpeff"],
                         "patch": "modules/nf-core/ensemblvep/vep/ensemblvep-vep.diff"
                     },
+                    "gatk4/applyvqsr": {
+                        "branch": "master",
+                        "git_sha": "cee8fe33d3ef1a220dee67dac75a32f7c872f63f",
+                        "installed_by": ["modules"]
+                    },
                     "gatk4/calibratedragstrmodel": {
                         "branch": "master",
                         "git_sha": "d742e3143f2ccb8853c29b35cfcf50b5e5026980",
@@ -110,6 +115,11 @@
                         "git_sha": "d742e3143f2ccb8853c29b35cfcf50b5e5026980",
                         "installed_by": ["modules"],
                         "patch": "modules/nf-core/gatk4/haplotypecaller/gatk4-haplotypecaller.diff"
+                    },
+                    "gatk4/variantrecalibrator": {
+                        "branch": "master",
+                        "git_sha": "d742e3143f2ccb8853c29b35cfcf50b5e5026980",
+                        "installed_by": ["modules"]
                     },
                     "gawk": {
                         "branch": "master",
