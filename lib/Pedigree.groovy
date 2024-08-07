@@ -18,7 +18,7 @@ class Pedigree {
         pedFile.readLines().each { line ->
             lineCount++
             if (line.startsWith('#')) { return }
-            def PedigreeEntry entry 
+            def PedigreeEntry entry
             try {
                 entry = new PedigreeEntry(line)
             } catch(Exception e) {
