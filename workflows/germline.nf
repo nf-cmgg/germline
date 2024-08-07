@@ -492,7 +492,7 @@ workflow GERMLINE {
 
         ch_normalized_variants
             .map { meta, vcf, tbi ->
-                [ meta, pedFiles.containsKey(meta.family) ? pedFiles[meta.family] : []] ]
+                [ meta, pedFiles.containsKey(meta.family) ? pedFiles[meta.family] : [] ]
             }
             .set { ch_somalier_input }
 
