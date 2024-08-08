@@ -150,6 +150,7 @@ workflow NFCMGG_GERMLINE {
         params.automap_repeats,
         params.automap_panel,
         params.outdir,
+        GlobalVariables.pedFiles,
 
         // Boolean inputs
         params.dragstr,
