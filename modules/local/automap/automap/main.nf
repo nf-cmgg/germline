@@ -29,7 +29,7 @@ process AUTOMAP_AUTOMAP {
     automap \\
         --vcf $vcf \\
         --genome $hg_genome \\
-        --out $prefix \\
+        --out $prefix/ \\
         --repeats $repeats \\
         $panel_file \\
         $args

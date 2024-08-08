@@ -5,6 +5,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v1.7.0dev
 
+## Fixes
+
+1. Automap analysis should now give the correct output files for individuals.
+
 ## v1.6.0 - Offbeat Ostend - [April 29 2024]
 
 ### New features

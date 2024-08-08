@@ -24,7 +24,8 @@
                         "family": "Ashkenazim",
                         "id": "Ashkenazim",
                         "family_count": 3,
-                        "caller": "haplotypecaller"
+                        "caller": "haplotypecaller",
+                        "samples": "NA24143,NA24149,NA24835"
                     },
                     "Ashkenazim.haplotypecaller.vcf.gz",
                     "Ashkenazim.haplotypecaller.vcf.gz.tbi"
@@ -37,10 +38,10 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.3"
         },
-        "timestamp": "2024-03-27T10:07:15.389498873"
+        "timestamp": "2024-08-06T13:01:36.711373912"
     },
     "filter - family": {
         "content": [
@@ -50,7 +51,8 @@
                         "family": "Ashkenazim",
                         "id": "Ashkenazim",
                         "family_count": 3,
-                        "caller": "haplotypecaller"
+                        "caller": "haplotypecaller",
+                        "samples": "NA24143,NA24149,NA24835"
                     },
                     "Ashkenazim.haplotypecaller.vcf.gz",
                     "Ashkenazim.haplotypecaller.vcf.gz.tbi"
@@ -63,10 +65,10 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.3"
         },
-        "timestamp": "2024-03-27T10:11:00.537979751"
+        "timestamp": "2024-08-06T13:02:26.651064532"
     },
     "default - gvcfs": {
         "content": [
@@ -76,7 +78,8 @@
                         "family": "Ashkenazim",
                         "id": "Ashkenazim",
                         "family_count": 1,
-                        "caller": "haplotypecaller"
+                        "caller": "haplotypecaller",
+                        "samples": "NA24143"
                     },
                     "Ashkenazim.haplotypecaller.vcf.gz",
                     "Ashkenazim.haplotypecaller.vcf.gz.tbi"
@@ -87,10 +90,10 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.3"
         },
-        "timestamp": "2024-03-27T10:09:15.858225835"
+        "timestamp": "2024-08-06T12:56:23.435795439"
     },
     "default - crams": {
         "content": [
@@ -100,7 +103,8 @@
                         "family": "Ashkenazim",
                         "id": "Ashkenazim",
                         "family_count": 1,
-                        "caller": "haplotypecaller"
+                        "caller": "haplotypecaller",
+                        "samples": "NA24143"
                     },
                     "Ashkenazim.haplotypecaller.vcf.gz",
                     "Ashkenazim.haplotypecaller.vcf.gz.tbi"
@@ -113,10 +117,10 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.3"
         },
-        "timestamp": "2024-03-27T10:06:11.00007181"
+        "timestamp": "2024-08-06T12:55:51.608812907"
     },
     "only_call - family": {
         "content": [
@@ -143,7 +147,8 @@
                         "family": "Ashkenazim",
                         "id": "Ashkenazim",
                         "family_count": 2,
-                        "caller": "haplotypecaller"
+                        "caller": "haplotypecaller",
+                        "samples": "NA24143,NA24835"
                     },
                     "Ashkenazim.haplotypecaller.vcf.gz",
                     "Ashkenazim.haplotypecaller.vcf.gz.tbi"
@@ -156,9 +161,9 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.3"
         },
-        "timestamp": "2024-03-27T10:22:47.471505664"
+        "timestamp": "2024-08-06T13:04:20.473178165"
     }
 }

@@ -8,7 +8,8 @@
                         "sample": "NA24143",
                         "family": "Ashkenazim",
                         "family_count": 1,
-                        "caller": "vardict"
+                        "caller": "vardict",
+                        "samples": "NA24143"
                     },
                     "NA24143.vardict.vcf.gz",
                     "NA24143.vardict.vcf.gz.tbi"
@@ -16,10 +17,10 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.3"
         },
-        "timestamp": "2024-03-27T10:30:53.553985963"
+        "timestamp": "2024-08-06T13:05:31.562298546"
     },
     "default": {
         "content": [
@@ -30,7 +31,8 @@
                         "sample": "NA24143",
                         "family": "Ashkenazim",
                         "family_count": 1,
-                        "caller": "vardict"
+                        "caller": "vardict",
+                        "samples": "NA24143"
                     },
                     "NA24143.vardict.vcf.gz",
                     "NA24143.vardict.vcf.gz.tbi"
@@ -38,10 +40,10 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.3"
         },
-        "timestamp": "2024-03-27T10:31:27.5084132"
+        "timestamp": "2024-08-06T13:05:04.322416692"
     },
     "family": {
         "content": [
@@ -52,7 +54,8 @@
                         "sample": "NA24143",
                         "family": "Ashkenazim",
                         "family_count": 2,
-                        "caller": "vardict"
+                        "caller": "vardict",
+                        "samples": "NA24143"
                     },
                     "NA24143.vardict.vcf.gz",
                     "NA24143.vardict.vcf.gz.tbi"
@@ -63,7 +66,8 @@
                         "sample": "NA24149",
                         "family": "Ashkenazim",
                         "family_count": 2,
-                        "caller": "vardict"
+                        "caller": "vardict",
+                        "samples": "NA24149"
                     },
                     "NA24149.vardict.vcf.gz",
                     "NA24149.vardict.vcf.gz.tbi"
@@ -71,9 +75,9 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.3"
         },
-        "timestamp": "2024-03-27T10:33:57.915748864"
+        "timestamp": "2024-08-06T13:06:05.012625054"
     }
 }
