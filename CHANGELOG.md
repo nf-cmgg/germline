@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Changes
 
 1. Haplotypecaller will not perform phasing by default now. This can still be turned back on using the `--hc_phasing` parameter.
+2. Removed the WES and WGS profiles.
 
 ## v1.6.0 - Offbeat Ostend - [April 29 2024]
 
