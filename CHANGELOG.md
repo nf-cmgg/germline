@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 1. Automap analysis should now give the correct output files for individuals.
 
+## Changes
+
+1. Haplotypecaller will not perform phasing by default now. This can still be turned back on using the `--hc_phasing` parameter.
+
 ## v1.6.0 - Offbeat Ostend - [April 29 2024]
 
 ### New features
