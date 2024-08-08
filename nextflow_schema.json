@@ -286,6 +286,10 @@
                     "type": "string",
                     "default": "cmgg_bio",
                     "description": "The panel name of the panel given with --automap_panel."
+                },
+                "hc_phasing": {
+                    "type": "boolean",
+                    "description": "Perform phasing with HaplotypeCaller"
                 }
             }
         },
