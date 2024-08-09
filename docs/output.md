@@ -1,5 +1,7 @@
 # nf-cmgg/germline: Output
 
+# nf-cmgg/germline: Output
+
 ## Introduction
 
 This page describes the output produced by the pipeline.

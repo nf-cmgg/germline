@@ -53,9 +53,13 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
                 family_count:   meta.family_count,
                 caller:         meta.caller
             ]
-            [ groupKey(new_meta, meta.family_count.toInteger()), gvcf, tbi ]
+            [ groupKey(new_meta, meta.family_count.toInteger()), gvcf, tbi, meta.sample ]
         }
         .groupTuple()
+        .map { meta, gvcf, tbi, samples ->
+            def new_meta = meta + [samples: "${samples.sort(false).join(',')}"] // Having a comma-separated string ensures that joins don't fail
+            [ new_meta, gvcf, tbi ]
+        }
         .combine(GAWK.out.output.map { it[1] })
         .map { meta, gvcfs, tbis, bed ->
             [ meta, gvcfs, tbis, bed, [], [] ]
@@ -89,9 +93,13 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
                     family_count:   meta.family_count,
                     caller:         meta.caller
                 ]
-                [ groupKey(new_meta, meta.family_count.toInteger()), bed ]
+                [ groupKey(new_meta, meta.family_count.toInteger()), bed, meta.sample ]
             }
             .groupTuple()
+            .map { meta, bed, samples ->
+                def new_meta = meta + [samples: "${samples.sort(false).join(',')}"] // Having a comma-separated string ensures that joins don't fail
+                [ new_meta, bed ]
+            }
             .dump(tag:'merge_beds_input', pretty: true)
             .set { ch_merge_beds_input }
 
