@@ -96,6 +96,7 @@ workflow GERMLINE {
     automap_repeats             // string: path to the Automap repeats file
     automap_panel               // string: path to the Automap panel file
     outdir                      // string: path to the output directory
+    pedFiles                    // map:    a map that has the family ID as key and a PED file as value
 
     // Boolean inputs
     dragstr                     // boolean: create a dragstr model and use it for haplotypecaller
@@ -327,14 +328,12 @@ workflow GERMLINE {
     //
 
     ch_samplesheet
-        .multiMap { families, meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ->
+        .multiMap { families, meta, cram, crai, gvcf, tbi, roi, truth_vcf, truth_tbi, truth_bed ->
             // Divide the input files into their corresponding channel
             def new_meta = meta + [
                 family_count:   families[meta.family].size(), // Contains the amount of samples in the family from this sample
                 type: gvcf && cram ? "gvcf_cram" : gvcf ? "gvcf" : "cram" // Define the type of input data
             ]
-
-            def new_meta_ped = meta - meta.subMap(["type", "family_count", "vardict_min_af"])
 
             def new_meta_validation = [
                 id: meta.id,
@@ -345,7 +344,6 @@ workflow GERMLINE {
             truth_variants: [new_meta_validation, truth_vcf, truth_tbi, truth_bed] // Optional channel containing the truth VCF, its index and the optional BED file
             gvcf:           [new_meta, gvcf, tbi] // Optional channel containing the GVCFs and their optional indices
             cram:           [new_meta, cram, crai]  // Mandatory channel containing the CRAM files and their optional indices
-            peds:           [new_meta_ped, ped] // Optional channel containing the PED files
             roi:            [new_meta, roi] // Optional channel containing the ROI BED files for WES samples
             family_samples: [meta.family, families[meta.family]] // A channel containing the samples per family
         }
@@ -491,18 +489,10 @@ workflow GERMLINE {
         // Preprocess the PED channel
         //
 
-        ch_input.peds
-            .map { meta, ped ->
-                [ meta.family, ped ]
-            }
-            .groupTuple() // No size needed here because no process has been run with PED files before this
-            .map { meta, peds ->
-                // Find the first PED file and return that one for the family ([] if no PED is given for the family)
-                [ meta, peds.find { it != [] } ?: [] ]
-            }
-            .combine(ch_normalized_variants.map { meta, vcf, tbi -> [ meta.family, meta, vcf, tbi ]}, by:0)
-            .map { family, ped, meta, vcf, tbi ->
-                [ meta, ped ]
+
+        ch_normalized_variants
+            .map { meta, vcf, tbi ->
+                [ meta, pedFiles.containsKey(meta.family) ? pedFiles[meta.family] : [] ]
             }
             .set { ch_somalier_input }
 
