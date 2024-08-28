@@ -128,6 +128,12 @@
                     "hidden": true,
                     "help_text": "Do not load `igenomes.config` when running the pipeline. You may choose this option if you observe clashes between custom parameters and those supplied in `igenomes.config`.",
                     "default": true
+                },
+                "genomes": {
+                    "type": "object",
+                    "description": "A map structure containing the paths to all genome references",
+                    "hidden": true,
+                    "default": {}
                 }
             },
             "required": ["fasta"]
