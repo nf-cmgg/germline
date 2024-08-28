@@ -76,11 +76,12 @@ workflow PIPELINE_INITIALISATION {
     //
 
     // Output the samplesheet
-    file(input).copyTo("${outdir}/samplesheet.csv")
+    def input_file = file(input)
+    input_file.copyTo("${outdir}/samplesheet.csv")
 
     def pedigree = new Pedigree(pedFile)
 
-    def samplesheetList = samplesheetToList(input, "assets/schema_input.json")
+    def samplesheetList = samplesheetToList(input_file, "assets/schema_input.json")
     samplesheetList.each { row ->
         def ped = row[6]
         if(ped) { pedigree.addPedContent(ped) }

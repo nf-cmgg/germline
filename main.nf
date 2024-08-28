@@ -192,7 +192,7 @@ workflow {
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
 
-    def multiqc_logo     = params.multiqc_logo   ?: "$projectDir/assets/CMGG_logo.png"
+    def multiqc_logo = params.multiqc_logo   ?: "$projectDir/assets/CMGG_logo.png"
 
 
     //

@@ -60,7 +60,7 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
             def new_meta = meta + [samples: "${samples.sort(false).join(',')}"] // Having a comma-separated string ensures that joins don't fail
             [ new_meta, gvcf, tbi ]
         }
-        .combine(GAWK.out.output.map { it[1] })
+        .combine(GAWK.out.output.map { meta, bed -> bed })
         .map { meta, gvcfs, tbis, bed ->
             [ meta, gvcfs, tbis, bed, [], [] ]
         }
@@ -116,7 +116,7 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
         INPUT_SPLIT_BEDTOOLS(
             MERGE_BEDS.out.bed.map { meta, bed ->
                 // Multiply the scatter count by the family size to better scatter big families
-                [meta, bed, (params.scatter_count * meta.family_count)]
+                [meta, bed, (scatter_count * meta.family_count)]
             },
             GATK4_GENOMICSDBIMPORT.out.genomicsdb.map { meta, genomicsdb -> [ meta, genomicsdb, [] ]}
         )
@@ -134,9 +134,9 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
 
         GATK4_GENOTYPEGVCFS(
             ch_genotypegvcfs_input,
-            ch_fasta.map { it[1] },
-            ch_fai.map { it[1] },
-            ch_dict.map { it[1] },
+            ch_fasta.map { meta, fasta -> fasta },
+            ch_fai.map { meta, fai -> fai },
+            ch_dict.map { meta, dict -> dict },
             ch_dbsnp,
             ch_dbsnp_tbi
         )
