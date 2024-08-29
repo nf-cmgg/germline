@@ -50,6 +50,7 @@ params.vcfanno_config       = getGenomeAttribute('vcfanno_config', params.genome
 include { GERMLINE                } from './workflows/germline'
 include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_cmgg_germline_pipeline'
 include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_cmgg_germline_pipeline'
+include { samplesheetToList       } from 'plugin/nf-schema'
 
 //
 // WORKFLOW: Run main analysis pipeline depending on type of input
@@ -135,16 +136,18 @@ workflow NFCMGG_GERMLINE {
     )
 
     emit:
-    vcf_tbi         = GERMLINE.out.vcf_tbi        // channel: [ val(meta), path(vcf), path(tbi) ]
-    multiqc_report  = GERMLINE.out.multiqc_report // channel: /path/to/multiqc/report.html
-    validation      = GERMLINE.out.validation
-    reports         = GERMLINE.out.reports
-    bed             = GERMLINE.out.bed
-    gvcf_tbi        = GERMLINE.out.gvcf_tbi
-    updio           = GERMLINE.out.updio
-    automap         = GERMLINE.out.automap
-    db              = GERMLINE.out.db
-    ped             = GERMLINE.out.ped
+    vcf_tbi             = GERMLINE.out.vcf_tbi        // channel: [ val(meta), path(vcf), path(tbi) ]
+    multiqc_report      = GERMLINE.out.multiqc_report // channel: /path/to/multiqc/report.html
+    validation          = GERMLINE.out.validation
+    individual_reports  = GERMLINE.out.individual_reports
+    family_reports      = GERMLINE.out.family_reports
+    individuals_bed     = GERMLINE.out.individuals_bed
+    family_bed          = GERMLINE.out.family_bed
+    gvcf_tbi            = GERMLINE.out.gvcf_tbi
+    updio               = GERMLINE.out.updio
+    automap             = GERMLINE.out.automap
+    db                  = GERMLINE.out.db
+    ped                 = GERMLINE.out.ped
 
 }
 
@@ -244,24 +247,84 @@ workflow {
         NFCMGG_GERMLINE.out.multiqc_report
     )
 
-    publish:
-    NFCMGG_GERMLINE.out.vcf_tbi >> 'vcfs/'
-    NFCMGG_GERMLINE.out.validation >> 'validation/'
-    NFCMGG_GERMLINE.out.reports >> 'reports/'
-    NFCMGG_GERMLINE.out.bed >> 'beds/'
-    NFCMGG_GERMLINE.out.gvcf_tbi >> 'gvcfs/'
-    NFCMGG_GERMLINE.out.multiqc_report >> 'multiqc/'
-    NFCMGG_GERMLINE.out.updio >> 'updio/'
-    NFCMGG_GERMLINE.out.automap >> 'automap/'
-    NFCMGG_GERMLINE.out.db >> 'db/'
-    NFCMGG_GERMLINE.out.ped >> 'ped/'
-}
+    // TODO: remove this once dynamic publish paths have been added to nextflow
+    workflow.onComplete = {
+        def date = params.skip_date_project ? "" : "${new Date().format("yyyy-MM-dd")}_"
+        def final_output = "${params.outdir}/${params.project ? "${date}${params.project}" : "${date}${workflow.runName}"}"
+        def ids = samplesheetToList(params.input, "assets/schema_input.json").collect { entry ->
+                [ entry[0].id, entry[0].family ]
+            }
+            .flatten()
+            .findAll { id -> id instanceof String && id.length() > 0 }
+            .unique()
 
-// TODO: remove this once dynamic publish paths have been added to nextflow
-// workflow.onComplete {
-//     // Move around the output directory
-//     println(file(params.outdir).eachFileRecurse())
-// }
+        // Move around the output directory
+        file(params.outdir).eachFileRecurse { file ->
+            if (file.isDirectory()) {
+                return
+            }
+            def file_name = file.name
+            def file_full_name = file.toString()
+            def caller = file_full_name.contains("haplotypecaller") ? "haplotypecaller" :
+                file_full_name.contains("vardict") ? "vardict" : ""
+            def id = ids.find { id_ss -> file_name.contains(id_ss) } ?: ""
+            def extension = file_name.replace("${id}.", "").replace("${caller}.", "")
+            if (file_full_name.contains("/temp/vcfs/")) {
+                file.moveTo("${final_output}/${id}/${id}.${caller}.${extension}")
+            }
+            else if (file_full_name.contains("/temp/validation/")) {
+                def validation_file = file_name.replace("${caller}.", "")
+                file.moveTo("${params.outdir}/${id}/validation/${caller}/${validation_file}")
+            }
+            else if (file_full_name.contains("/temp/individuals_reports/")) {
+                file.moveTo("${params.outdir}/${id}/reports/${file_name}")
+            }
+            else if (file_full_name.contains("/temp/family_reports/")) {
+                file.moveTo("${final_output}/${id}/reports/${file_name}")
+            }
+            else if (file_full_name.contains("/temp/individuals_beds/")) {
+                file.moveTo("${params.outdir}/${id}/${id}.bed")
+            }
+            else if (file_full_name.contains("/temp/family_beds/")) {
+                file.moveTo("${final_output}/${id}/${id}.bed")
+            }
+            else if (file_full_name.contains("/temp/gvcfs/")) {
+                file.moveTo("${params.outdir}/${id}/${id}.${caller}.${extension}")
+            }
+            else if (file_full_name.contains("/temp/updio/")) {
+                def sample = id
+                id = file_full_name.split("/temp/updio/")[-1].split("/")[0].replace("updio_${caller}_", "")
+                file.moveTo("${final_output}/${id}/updio_${caller}/${sample}/${file_name}")
+            }
+            else if (file_full_name.contains("/temp/automap/")) {
+                def sample = id
+                id = file_full_name.split("/temp/automap/")[-1].split("/")[0].replace("automap_${caller}_", "")
+                file.moveTo("${final_output}/${id}/automap_${caller}/${sample}/${file_name}")
+            }
+            else if (file_full_name.contains("/temp/ped/")) {
+                file.moveTo("${final_output}/${id}/${id}.${caller}.ped")
+            }
+            else if (file_full_name.contains("/temp/db/")) {
+                file.moveTo("${final_output}/${id}/${id}.${caller}.db")
+            }
+        }
+        file("${params.outdir}/temp").deleteDir()
+    }
+
+    publish:
+    NFCMGG_GERMLINE.out.vcf_tbi             >> 'temp/vcfs/'
+    NFCMGG_GERMLINE.out.validation          >> 'temp/validation/'
+    NFCMGG_GERMLINE.out.individual_reports  >> 'temp/individuals_reports/'
+    NFCMGG_GERMLINE.out.family_reports      >> 'temp/family_reports/'
+    NFCMGG_GERMLINE.out.individuals_bed     >> 'temp/individuals_beds/'
+    NFCMGG_GERMLINE.out.family_bed          >> 'temp/family_beds/'
+    NFCMGG_GERMLINE.out.gvcf_tbi            >> 'temp/gvcfs/'
+    NFCMGG_GERMLINE.out.multiqc_report      >> 'multiqc/'
+    NFCMGG_GERMLINE.out.updio               >> 'temp/updio/'
+    NFCMGG_GERMLINE.out.automap             >> 'temp/automap/'
+    NFCMGG_GERMLINE.out.db                  >> 'temp/db/'
+    NFCMGG_GERMLINE.out.ped                 >> 'temp/ped/'
+}
 
 output {
     directory "${params.outdir}"

@@ -127,9 +127,11 @@ workflow GERMLINE {
 
 
     main:
-    ch_versions      = Channel.empty()
-    ch_reports       = Channel.empty()
-    ch_multiqc_files = Channel.empty()
+    ch_versions             = Channel.empty()
+    ch_reports              = Channel.empty()
+    ch_individuals_reports  = Channel.empty()
+    ch_family_reports       = Channel.empty()
+    ch_multiqc_files        = Channel.empty()
 
     //
     // Importing and convert the input files passed through the parameters to channels
@@ -384,7 +386,7 @@ workflow GERMLINE {
     // Run sample preparation
     //
 
-    ch_beds_output = Channel.empty()
+    ch_individuals_bed = Channel.empty()
     CRAM_PREPARE_SAMTOOLS_BEDTOOLS(
         ch_input.cram.filter { meta, cram, crai -> 
             // Filter out files that already have a called GVCF when only GVCF callers are used
@@ -399,7 +401,8 @@ workflow GERMLINE {
         ch_default_roi
     )
     ch_versions = ch_versions.mix(CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.versions)
-    ch_beds_output = ch_beds_output.mix(CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_beds)
+    ch_individuals_bed = CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_beds
+    ch_individuals_reports = ch_individuals_reports.mix(CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.reports)
 
     //
     // Split the BED files
@@ -416,6 +419,7 @@ workflow GERMLINE {
     ch_calls = Channel.empty()
 
     ch_gvcf_output = Channel.empty()
+    ch_family_bed = Channel.empty()
     if("haplotypecaller" in callers) {
         //
         // Call variants with GATK4 HaplotypeCaller
@@ -441,7 +445,8 @@ workflow GERMLINE {
         )
         ch_versions = ch_versions.mix(CRAM_CALL_GENOTYPE_GATK4.out.versions)
         ch_reports  = ch_reports.mix(CRAM_CALL_GENOTYPE_GATK4.out.reports)
-        ch_beds_output = ch_beds_output.mix(CRAM_CALL_GENOTYPE_GATK4.out.joint_beds)
+        ch_individuals_reports = ch_individuals_reports.mix(CRAM_CALL_GENOTYPE_GATK4.out.reports)
+        ch_family_bed = CRAM_CALL_GENOTYPE_GATK4.out.joint_beds
         ch_calls = ch_calls.mix(CRAM_CALL_GENOTYPE_GATK4.out.vcfs)
         ch_gvcf_output = CRAM_CALL_GENOTYPE_GATK4.out.gvcfs
 
@@ -483,6 +488,7 @@ workflow GERMLINE {
     )
     ch_versions = ch_versions.mix(BCFTOOLS_STATS.out.versions.first())
     ch_reports = ch_reports.mix(BCFTOOLS_STATS.out.stats.collect { meta, report -> report })
+    ch_family_reports = ch_family_reports.mix(BCFTOOLS_STATS.out.stats.collect { meta, report -> report })
 
     ch_normalized_variants = Channel.empty()
     if(normalize) {
@@ -530,6 +536,7 @@ workflow GERMLINE {
         )
         ch_versions = ch_versions.mix(VCF_EXTRACT_RELATE_SOMALIER.out.versions)
         ch_peds_output = VCF_EXTRACT_RELATE_SOMALIER.out.peds
+        ch_family_reports = ch_family_reports.mix(VCF_EXTRACT_RELATE_SOMALIER.out.html)
 
         //
         // Add PED headers to the VCFs
@@ -577,6 +584,7 @@ workflow GERMLINE {
             )
             ch_versions = ch_versions.mix(VCF_ANNOTATION.out.versions)
             ch_reports  = ch_reports.mix(VCF_ANNOTATION.out.reports)
+            ch_family_reports = ch_family_reports.mix(VCF_ANNOTATION.out.reports)
 
             VCF_ANNOTATION.out.annotated_vcfs.set { ch_annotation_output }
         } else {
@@ -817,17 +825,19 @@ workflow GERMLINE {
     )
 
     emit:
-    vcf_tbi        = ch_final_vcfs               // channel: [ val(meta), path(vcf), path(tbi) ]
-    multiqc_report = MULTIQC.out.report.toList() // channel: /path/to/multiqc_report.html
-    validation     = ch_validation_output
-    reports        = ch_reports
-    bed            = ch_beds_output
-    gvcf_tbi       = ch_gvcf_output
-    updio          = ch_updio_output
-    automap        = ch_automap_output
-    db             = ch_db_output
-    ped            = ch_peds_output
-    versions       = ch_versions                 // channel: [ path(versions.yml) ]
+    vcf_tbi             = ch_final_vcfs               // channel: [ val(meta), path(vcf), path(tbi) ]
+    multiqc_report      = MULTIQC.out.report.toList() // channel: /path/to/multiqc_report.html
+    validation          = ch_validation_output
+    individual_reports  = ch_individuals_reports
+    family_reports      = ch_family_reports
+    individuals_bed     = ch_individuals_bed
+    family_bed          = ch_family_bed
+    gvcf_tbi            = ch_gvcf_output
+    updio               = ch_updio_output
+    automap             = ch_automap_output
+    db                  = ch_db_output
+    ped                 = ch_peds_output
+    versions            = ch_versions                 // channel: [ path(versions.yml) ]
 }
 
 /*
