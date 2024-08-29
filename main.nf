@@ -7,6 +7,9 @@
 ----------------------------------------------------------------------------------------
 */
 
+// Enables the workflow output definition: https://www.nextflow.io/docs/latest/workflow.html#workflow-output-def
+nextflow.preview.output = true
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT FUNCTIONS / MODULES / SUBWORKFLOWS / WORKFLOWS
@@ -132,7 +135,8 @@ workflow NFCMGG_GERMLINE {
     )
 
     emit:
-    multiqc_report = GERMLINE.out.multiqc_report // channel: /path/to/multiqc_report.html
+    vcf_tbi        = GERMLINE.out.vcf_tbi        // channel: [ val(meta), path(vcf), path(tbi) ]
+    multiqc_report = GERMLINE.out.multiqc_report // channel: /path/to/multiqc/report.html
 
 }
 
@@ -232,6 +236,19 @@ workflow {
         params.hook_url,
         NFCMGG_GERMLINE.out.multiqc_report
     )
+
+
+    publish:
+    NFCMGG_GERMLINE.out.vcf_tbi >> 'vcfs/'
+}
+
+output {
+    directory "${params.outdir}"
+    // index {
+    //     path 'index.csv'
+    //     header []
+    // }
+    
 }
 
 /*

@@ -500,6 +500,7 @@ workflow GERMLINE {
         ch_called_variants.set { ch_normalized_variants }
     }
 
+    ch_final_vcfs = Channel.empty()
     if(!only_merge && !only_call) {
 
         //
@@ -781,6 +782,7 @@ workflow GERMLINE {
     )
 
     emit:
+    vcf_tbi        = ch_final_vcfs               // channel: [ val(meta), path(vcf), path(tbi) ]
     multiqc_report = MULTIQC.out.report.toList() // channel: /path/to/multiqc_report.html
     versions       = ch_versions                 // channel: [ path(versions.yml) ]
 }
