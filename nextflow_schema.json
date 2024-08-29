@@ -132,8 +132,7 @@
                 "genomes": {
                     "type": "object",
                     "description": "A map structure containing the paths to all genome references",
-                    "hidden": true,
-                    "default": {}
+                    "hidden": true
                 }
             },
             "required": ["fasta"]
