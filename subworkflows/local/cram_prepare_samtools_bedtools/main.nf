@@ -95,7 +95,7 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
                 if(entry != []){
                     output_roi.add(entry)
                     is_present = true
-                }            
+                }
             }
             found:      is_present
                 return [ meta, output_roi ]
