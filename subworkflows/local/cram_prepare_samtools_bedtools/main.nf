@@ -32,14 +32,12 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
 
     ch_crams
         .groupTuple() // No size needed here because this runs before any process
-        .branch(
-            { meta, cram, crai ->
-                multiple: cram.size() > 1
-                    return [meta, cram]
-                single:   cram.size() == 1
-                    return [meta, cram[0], crai[0]]
-            }
-        )
+        .branch { meta, cram, crai ->
+            multiple: cram.size() > 1
+                return [meta, cram]
+            single:   cram.size() == 1
+                return [meta, cram[0], crai[0]]
+        }
         .set { ch_cram_branch }
 
     ch_cram_branch.multiple.dump(tag:'cram_branch_multiple', pretty:true)
@@ -93,7 +91,7 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
             // sample contains an ROI file
             def is_present = false
             def output_roi = []
-            for( entry : roi) {
+            roi.each { entry ->
                 if(entry != []){
                     output_roi.add(entry)
                     is_present = true
@@ -114,16 +112,19 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
 
     // Add the default ROI file to all samples without an ROI file
     // if an ROI BED file has been given through the --roi parameter
+    ch_missing_rois = Channel.empty()
     if (ch_default_roi) {
         MERGE_ROI_PARAMS(
-            ch_default_roi.map { [[id:"default_roi"], it]},
+            ch_default_roi.map { bed ->
+                [[id:"default_roi"], bed]
+            },
             ch_fai
         )
         ch_versions = ch_versions.mix(MERGE_ROI_PARAMS.out.versions)
 
         ch_roi_branch.missing
             .groupTuple() // A specified size isn't needed here since this runs before any process using the default ROI file is executed
-            .combine(MERGE_ROI_PARAMS.out.bed.map { it[1] })
+            .combine(MERGE_ROI_PARAMS.out.bed.map { meta, bed -> bed })
             .map { meta, missing, default_roi ->
                 [ meta, default_roi ]
             }

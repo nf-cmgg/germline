@@ -27,6 +27,7 @@ workflow CRAM_CALL_GATK4 {
     // Generate DRAGSTR models (if --dragstr is specified)
     //
 
+    ch_cram_models = Channel.empty()
     if (dragstr) {
 
         ch_input
@@ -43,10 +44,10 @@ workflow CRAM_CALL_GATK4 {
 
         GATK4_CALIBRATEDRAGSTRMODEL(
             ch_dragstr_input.map { meta, cram, crai, beds -> [ meta, cram, crai ] },
-            ch_fasta.map { it[1] },
-            ch_fai.map { it[1] },
-            ch_dict.map { it[1] },
-            ch_strtablefile.map { it[1] }
+            ch_fasta.map { meta, fasta -> fasta },
+            ch_fai.map { meta, fai -> fai },
+            ch_dict.map { meta, dict -> dict },
+            ch_strtablefile.map { meta, str -> str }
         )
         ch_versions = ch_versions.mix(GATK4_CALIBRATEDRAGSTRMODEL.out.versions.first())
 
@@ -98,10 +99,11 @@ workflow CRAM_CALL_GATK4 {
     )
     ch_versions = ch_versions.mix(BCFTOOLS_STATS_SINGLE.out.versions.first())
 
-    emit:
-    gvcfs = VCF_CONCAT_BCFTOOLS.out.vcfs                // channel: [ val(meta), path(vcf), path(tbi) ]
+    reports = BCFTOOLS_STATS_SINGLE.out.stats.collect{ meta, report -> report}
 
-    reports = BCFTOOLS_STATS_SINGLE.out.stats.collect{it[1]}   // channel: [ path(stats) ]
-    versions = ch_versions                              // channel: [ versions.yml ]
+    emit:
+    gvcfs = VCF_CONCAT_BCFTOOLS.out.vcfs    // channel: [ val(meta), path(vcf), path(tbi) ]
+    reports                                 // channel: [ path(stats) ]
+    versions = ch_versions                  // channel: [ versions.yml ]
 
 }

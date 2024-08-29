@@ -135,11 +135,11 @@ workflow GERMLINE {
     // Importing and convert the input files passed through the parameters to channels
     //
 
-    ch_fasta_ready        = Channel.fromPath(fasta).map{ [[id:"reference"], it]}.collect()
-    ch_fai                = fai                 ? Channel.fromPath(fai).map{ [[id:"reference"], it]}.collect()                                        : null
-    ch_dict               = dict                ? Channel.fromPath(dict).map{ [[id:"reference"], it]}.collect()                                       : null
-    ch_strtablefile       = strtablefile        ? Channel.fromPath(strtablefile).map{ [[id:"reference"], it]}.collect()                               : null
-    ch_sdf                = sdf                 ? Channel.fromPath(sdf).map {sdf -> [[id:'reference'], sdf]}.collect()   : null
+    ch_fasta_ready        = Channel.fromPath(fasta).map{ fasta_file -> [[id:"reference"], fasta_file] }.collect()
+    ch_fai                = fai                 ? Channel.fromPath(fai).map{ fai_file -> [[id:"reference"], fai_file] }.collect()                                        : null
+    ch_dict               = dict                ? Channel.fromPath(dict).map{ dict_file -> [[id:"reference"], dict_file] }.collect()                                       : null
+    ch_strtablefile       = strtablefile        ? Channel.fromPath(strtablefile).map{ str_file -> [[id:"reference"], str_file] }.collect()                               : null
+    ch_sdf                = sdf                 ? Channel.fromPath(sdf).map { sdf_file -> [[id:'reference'], sdf_file] }.collect()   : null
 
     ch_default_roi        = roi                 ? Channel.fromPath(roi).collect()                : []
 
@@ -152,12 +152,12 @@ workflow GERMLINE {
 
     ch_vcfanno_config     = vcfanno_config      ? Channel.fromPath(vcfanno_config).collect()     : []
     ch_vcfanno_lua        = vcfanno_lua         ? Channel.fromPath(vcfanno_lua).collect()        : []
-    ch_vcfanno_resources  = vcfanno_resources   ? Channel.of(vcfanno_resources.split(";")).map({ file(it, checkIfExists:true) }).collect()   : []
+    ch_vcfanno_resources  = vcfanno_resources   ? Channel.of(vcfanno_resources.split(";")).collect{ res -> file(res, checkIfExists:true) } : []
 
-    ch_updio_common_cnvs  = updio_common_cnvs   ? Channel.fromPath(common_cnv_file).map { [[id:'updio_cnv'], it] } : [[],[]]
+    ch_updio_common_cnvs  = updio_common_cnvs   ? Channel.fromPath(updio_common_cnvs).map{ common_cnvs -> [[id:'updio_cnv'], common_cnvs] } : [[],[]]
 
-    ch_automap_repeats    = automap_repeats     ? Channel.fromPath(automap_repeats).map { [[id:"repeats"], it]}.collect() : []
-    ch_automap_panel      = automap_panel       ? Channel.fromPath(automap_panel).map { [[id:"automap_panel"], it]}.collect() : [[],[]]
+    ch_automap_repeats    = automap_repeats     ? Channel.fromPath(automap_repeats).map{ repeats ->  [[id:"repeats"], repeats] }.collect() : []
+    ch_automap_panel      = automap_panel       ? Channel.fromPath(automap_panel).map{ panel -> [[id:"automap_panel"], panel] }.collect() : [[],[]]
 
     //
     // Check for the presence of EnsemblVEP plugins that use extra files
@@ -221,7 +221,7 @@ workflow GERMLINE {
     // DBSNP index
     if (ch_dbsnp_ready && !ch_dbsnp_tbi) {
         TABIX_DBSNP(
-            ch_dbsnp_ready.map { [[id:'dbsnp'], it] }
+            ch_dbsnp_ready.map { dbnsp -> [[id:'dbsnp'], dbsnp] }
         )
         ch_versions = ch_versions.mix(TABIX_DBSNP.out.versions)
 
@@ -236,6 +236,7 @@ workflow GERMLINE {
     }
 
     // Reference fasta index
+    ch_fai_ready = Channel.empty()
     if (!ch_fai) {
         FAIDX(
             ch_fasta_ready,
@@ -252,6 +253,7 @@ workflow GERMLINE {
     }
 
     // Reference sequence dictionary
+    ch_dict_ready = Channel.empty()
     if (!ch_dict) {
         CREATESEQUENCEDICTIONARY(
             ch_fasta_ready
@@ -288,7 +290,7 @@ workflow GERMLINE {
     // Reference validation SDF
     if (validate && !ch_sdf) {
         RTGTOOLS_FORMAT(
-            ch_fasta_ready.map { meta, fasta -> [meta, fasta, [], []]}
+            ch_fasta_ready.map { meta, fasta_file -> [meta, fasta_file, [], []] }
         )
         ch_versions  = ch_versions.mix(RTGTOOLS_FORMAT.out.versions)
 
@@ -318,7 +320,7 @@ workflow GERMLINE {
         )
         ch_versions = ch_versions.mix(ENSEMBLVEP_DOWNLOAD.out.versions)
 
-        ch_vep_cache_ready = ENSEMBLVEP_DOWNLOAD.out.cache.map{it[1]}.collect()
+        ch_vep_cache_ready = ENSEMBLVEP_DOWNLOAD.out.cache.collect{ meta, cache -> cache }
     } else {
         ch_vep_cache_ready = ch_vep_cache
     }
@@ -328,7 +330,7 @@ workflow GERMLINE {
     //
 
     ch_samplesheet
-        .multiMap { families, meta, cram, crai, gvcf, tbi, roi, truth_vcf, truth_tbi, truth_bed ->
+        .multiMap { families, meta, cram, crai, gvcf, tbi, roi_file, truth_vcf, truth_tbi, truth_bed ->
             // Divide the input files into their corresponding channel
             def new_meta = meta + [
                 family_count:   families[meta.family].size(), // Contains the amount of samples in the family from this sample
@@ -344,7 +346,7 @@ workflow GERMLINE {
             truth_variants: [new_meta_validation, truth_vcf, truth_tbi, truth_bed] // Optional channel containing the truth VCF, its index and the optional BED file
             gvcf:           [new_meta, gvcf, tbi] // Optional channel containing the GVCFs and their optional indices
             cram:           [new_meta, cram, crai]  // Mandatory channel containing the CRAM files and their optional indices
-            roi:            [new_meta, roi] // Optional channel containing the ROI BED files for WES samples
+            roi:            [new_meta, roi_file] // Optional channel containing the ROI BED files for WES samples
             family_samples: [meta.family, families[meta.family]] // A channel containing the samples per family
         }
         .set { ch_input }
@@ -356,7 +358,10 @@ workflow GERMLINE {
     //
 
     ch_input.gvcf
-        .filter { it[0].type == "gvcf" || it[0].type == "gvcf_cram" } // Filter out samples that have no GVCF
+        .filter { meta, gvcf, tbi ->
+            // Filter out samples that have no GVCF
+            meta.type == "gvcf" || meta.type == "gvcf_cram" 
+        }
         .branch { meta, gvcf, tbi ->
             no_tbi: !tbi
                 return [ meta, gvcf ]
@@ -380,8 +385,14 @@ workflow GERMLINE {
     //
 
     CRAM_PREPARE_SAMTOOLS_BEDTOOLS(
-        ch_input.cram.filter { it[0].type == "cram" || (it[0].type == "gvcf_cram" && callers - GlobalVariables.gvcfCallers) }, // Filter out files that already have a called GVCF when only GVCF callers are used
-        ch_input.roi.filter { it[0].type == "cram" || (it[0].type == "gvcf_cram" && callers - GlobalVariables.gvcfCallers) }, // Filter out files that already have a called GVCF when only GVCF callers are used
+        ch_input.cram.filter { meta, cram, crai -> 
+            // Filter out files that already have a called GVCF when only GVCF callers are used
+            meta.type == "cram" || (meta.type == "gvcf_cram" && callers - GlobalVariables.gvcfCallers) 
+        }, 
+        ch_input.roi.filter { meta, roi_file ->
+            // Filter out files that already have a called GVCF when only GVCF callers are used
+            meta.type == "cram" || (meta.type == "gvcf_cram" && callers - GlobalVariables.gvcfCallers) 
+        },
         ch_fasta_ready,
         ch_fai_ready,
         ch_default_roi
@@ -393,7 +404,9 @@ workflow GERMLINE {
     //
 
     INPUT_SPLIT_BEDTOOLS(
-        CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_beds.map { it + [scatter_count] },
+        CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_beds.map { meta, bed ->
+            [meta, bed, scatter_count]
+        },
         CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_crams
     )
     ch_versions = ch_versions.mix(INPUT_SPLIT_BEDTOOLS.out.versions)
@@ -406,7 +419,10 @@ workflow GERMLINE {
         //
 
         CRAM_CALL_GENOTYPE_GATK4(
-            INPUT_SPLIT_BEDTOOLS.out.split.filter { it[0].type == "cram" }, // Filter out the entries that already have a GVCF
+            INPUT_SPLIT_BEDTOOLS.out.split.filter { meta, cram, crai, bed ->
+                // Filter out the entries that already have a GVCF
+                meta.type == "cram"
+            },
             ch_gvcfs_ready,
             ch_fasta_ready,
             ch_fai_ready,
@@ -462,8 +478,9 @@ workflow GERMLINE {
         [[],[]]
     )
     ch_versions = ch_versions.mix(BCFTOOLS_STATS.out.versions.first())
-    ch_reports = ch_reports.mix(BCFTOOLS_STATS.out.stats.collect { it[1] })
+    ch_reports = ch_reports.mix(BCFTOOLS_STATS.out.stats.collect { meta, report -> report })
 
+    ch_normalized_variants = Channel.empty()
     if(normalize) {
         BCFTOOLS_NORM(
             ch_called_variants,
@@ -489,7 +506,6 @@ workflow GERMLINE {
         // Preprocess the PED channel
         //
 
-
         ch_normalized_variants
             .map { meta, vcf, tbi ->
                 [ meta, pedFiles.containsKey(meta.family) ? pedFiles[meta.family] : [] ]
@@ -502,8 +518,8 @@ workflow GERMLINE {
 
         VCF_EXTRACT_RELATE_SOMALIER(
             ch_normalized_variants,
-            ch_fasta_ready.map { it[1] },
-            ch_fai_ready.map { it[1] },
+            ch_fasta_ready.map { meta, fasta_file -> fasta_file },
+            ch_fai_ready.map { meta, fai_file -> fai_file },
             ch_somalier_sites,
             ch_somalier_input
         )
@@ -513,6 +529,7 @@ workflow GERMLINE {
         // Add PED headers to the VCFs
         //
 
+        ch_ped_vcfs = Channel.empty()
         if(add_ped){
 
             VCF_PED_RTGTOOLS(
@@ -535,6 +552,7 @@ workflow GERMLINE {
         // Annotation of the variants and creation of Gemini-compatible database files
         //
 
+        ch_annotation_output = Channel.empty()
         if (annotate) {
             VCF_ANNOTATION(
                 ch_ped_vcfs,
@@ -584,9 +602,9 @@ workflow GERMLINE {
                 .groupTuple() // No size needed here since it's being run before any process
                 .map { meta, vcf, tbi, bed ->
                     // Get only one VCF for samples that were given multiple times
-                    one_vcf = vcf.find { it != [] } ?: []
-                    one_tbi = tbi.find { it != [] } ?: []
-                    one_bed = bed.find { it != [] } ?: []
+                    one_vcf = vcf.find { vcf_file -> vcf_file != [] } ?: []
+                    one_tbi = tbi.find { tbi_file -> tbi_file != [] } ?: []
+                    one_bed = bed.find { bed_file -> bed_file != [] } ?: []
                     [ meta, one_vcf, one_tbi, one_bed ]
                 }
                 .branch { meta, vcf, tbi, bed ->
@@ -757,7 +775,9 @@ workflow GERMLINE {
         ch_multiqc_files.collect(),
         ch_multiqc_config.toList(),
         ch_multiqc_custom_config.toList(),
-        ch_multiqc_logo.toList()
+        ch_multiqc_logo.toList(),
+        [],
+        []
     )
 
     emit:

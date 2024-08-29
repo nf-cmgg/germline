@@ -27,6 +27,7 @@ workflow VCF_CONCAT_BCFTOOLS {
     )
     ch_versions = ch_versions.mix(BCFTOOLS_CONCAT.out.versions.first())
 
+    ch_vcf_tbi = Channel.empty()
     if(val_tabix) {
         TABIX_TABIX(
             BCFTOOLS_CONCAT.out.vcf

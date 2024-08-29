@@ -35,6 +35,6 @@ workflow INPUT_SPLIT_BEDTOOLS {
         .set { ch_split_output }
 
     emit:
-        split = ch_split_output // channel: [ val(meta), path(input), path(input_index), path(bed) ]
-        versions = ch_versions  // channel: [ versions.yml ]
+    split = ch_split_output // channel: [ val(meta), path(input), path(input_index), path(bed) ]
+    versions = ch_versions  // channel: [ versions.yml ]
 }

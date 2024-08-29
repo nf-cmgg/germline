@@ -25,6 +25,7 @@ workflow VCF_FILTER_BCFTOOLS {
     )
     ch_versions = ch_versions.mix(FILTER_2.out.versions.first())
 
+    ch_filter_vcfs = Channel.empty()
     if(val_tabix) {
         TABIX_TABIX(
             FILTER_2.out.vcf
