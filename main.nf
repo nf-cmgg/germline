@@ -135,8 +135,16 @@ workflow NFCMGG_GERMLINE {
     )
 
     emit:
-    vcf_tbi        = GERMLINE.out.vcf_tbi        // channel: [ val(meta), path(vcf), path(tbi) ]
-    multiqc_report = GERMLINE.out.multiqc_report // channel: /path/to/multiqc/report.html
+    vcf_tbi         = GERMLINE.out.vcf_tbi        // channel: [ val(meta), path(vcf), path(tbi) ]
+    multiqc_report  = GERMLINE.out.multiqc_report // channel: /path/to/multiqc/report.html
+    validation      = GERMLINE.out.validation
+    reports         = GERMLINE.out.reports
+    bed             = GERMLINE.out.bed
+    gvcf_tbi        = GERMLINE.out.gvcf_tbi
+    updio           = GERMLINE.out.updio
+    automap         = GERMLINE.out.automap
+    db              = GERMLINE.out.db
+    ped             = GERMLINE.out.ped
 
 }
 
@@ -198,7 +206,6 @@ workflow {
 
     def multiqc_logo = params.multiqc_logo   ?: "$projectDir/assets/CMGG_logo.png"
 
-
     //
     // SUBWORKFLOW: Run initialisation tasks
     //
@@ -237,16 +244,30 @@ workflow {
         NFCMGG_GERMLINE.out.multiqc_report
     )
 
-
     publish:
     NFCMGG_GERMLINE.out.vcf_tbi >> 'vcfs/'
+    NFCMGG_GERMLINE.out.validation >> 'validation/'
+    NFCMGG_GERMLINE.out.reports >> 'reports/'
+    NFCMGG_GERMLINE.out.bed >> 'beds/'
+    NFCMGG_GERMLINE.out.gvcf_tbi >> 'gvcfs/'
+    NFCMGG_GERMLINE.out.multiqc_report >> 'multiqc/'
+    NFCMGG_GERMLINE.out.updio >> 'updio/'
+    NFCMGG_GERMLINE.out.automap >> 'automap/'
+    NFCMGG_GERMLINE.out.db >> 'db/'
+    NFCMGG_GERMLINE.out.ped >> 'ped/'
 }
+
+// TODO: remove this once dynamic publish paths have been added to nextflow
+// workflow.onComplete {
+//     // Move around the output directory
+//     println(file(params.outdir).eachFileRecurse())
+// }
 
 output {
     directory "${params.outdir}"
+    // TODO: add index once dynamic publish paths have been added to nextflow
     // index {
     //     path 'index.csv'
-    //     header []
     // }
     
 }

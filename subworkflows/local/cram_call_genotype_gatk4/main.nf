@@ -48,6 +48,7 @@ workflow CRAM_CALL_GENOTYPE_GATK4 {
         }
         .mix(CRAM_CALL_GATK4.out.gvcfs)
 
+    ch_joint_beds = Channel.empty()
     if(!only_call) {
 
         GVCF_JOINT_GENOTYPE_GATK4(
@@ -61,7 +62,7 @@ workflow CRAM_CALL_GENOTYPE_GATK4 {
             scatter_count
         )
         ch_versions = ch_versions.mix(GVCF_JOINT_GENOTYPE_GATK4.out.versions)
-
+        ch_joint_beds = GVCF_JOINT_GENOTYPE_GATK4.out.joint_beds
     }
 
     if(!only_call && !only_merge) {
@@ -83,9 +84,11 @@ workflow CRAM_CALL_GENOTYPE_GATK4 {
     }
 
     emit:
-    vcfs = ch_vcfs         // channel: [ val(meta), path(vcf), path(tbi) ]
+    gvcfs = ch_gvcfs_ready
+    vcfs = ch_vcfs              // channel: [ val(meta), path(vcf), path(tbi) ]
+    joint_beds = ch_joint_beds  // channel: [ val(meta), path(bed) ]
 
-    reports = ch_reports   // channel: [ path(reports) ]
-    versions = ch_versions // channel: [ versions.yml ]
+    reports = ch_reports        // channel: [ path(reports) ]
+    versions = ch_versions      // channel: [ versions.yml ]
 
 }
