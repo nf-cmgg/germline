@@ -267,20 +267,24 @@ workflow {
             def file_full_name = file.toString()
             def caller = file_full_name.contains("haplotypecaller") ? "haplotypecaller" :
                 file_full_name.contains("vardict") ? "vardict" : ""
+            def dot_caller = caller ? ".${caller}" ""
             def id = ids.find { id_ss -> file_name.contains(id_ss) } ?: ""
-            def extension = file_name.replace("${id}.", "").replace("${caller}.", "")
+            def custom_suffix = "${params.output_suffix ?: dot_caller}"
             if (file_full_name.contains("/temp/vcfs/")) {
-                file.moveTo("${final_output}/${id}/${id}.${caller}.${extension}")
+                def extension = file_name.endsWith(".tbi") ? "vcf.gz.tbi" : "vcf.gz"
+                file.moveTo("${final_output}/${id}/${id}${custom_suffix}.${extension}")
             }
             else if (file_full_name.contains("/temp/validation/")) {
                 def validation_file = file_name.replace("${caller}.", "")
                 file.moveTo("${params.outdir}/${id}/validation/${caller}/${validation_file}")
             }
             else if (file_full_name.contains("/temp/individuals_reports/")) {
-                file.moveTo("${params.outdir}/${id}/reports/${file_name}")
+                def report_extension = file_name.replace(dot_caller, "").replace(id, "")
+                file.moveTo("${params.outdir}/${id}/reports/${id}${custom_suffix}${report_extension}")
             }
             else if (file_full_name.contains("/temp/family_reports/")) {
-                file.moveTo("${final_output}/${id}/reports/${file_name}")
+                def report_extension = file_name.replace(dot_caller, "").replace(id, "")
+                file.moveTo("${final_output}/${id}/reports/${id}${custom_suffix}${report_extension}")
             }
             else if (file_full_name.contains("/temp/individuals_beds/")) {
                 file.moveTo("${params.outdir}/${id}/${id}.bed")
@@ -289,6 +293,7 @@ workflow {
                 file.moveTo("${final_output}/${id}/${id}.bed")
             }
             else if (file_full_name.contains("/temp/gvcfs/")) {
+                def extension = file_name.endsWith(".tbi") ? "g.vcf.gz.tbi" : "g.vcf.gz"
                 file.moveTo("${params.outdir}/${id}/${id}.${caller}.${extension}")
             }
             else if (file_full_name.contains("/temp/updio/")) {
@@ -302,10 +307,10 @@ workflow {
                 file.moveTo("${final_output}/${id}/automap_${caller}/${sample}/${file_name}")
             }
             else if (file_full_name.contains("/temp/ped/")) {
-                file.moveTo("${final_output}/${id}/${id}.${caller}.ped")
+                file.moveTo("${final_output}/${id}/${id}${custom_suffix}.ped")
             }
             else if (file_full_name.contains("/temp/db/")) {
-                file.moveTo("${final_output}/${id}/${id}.${caller}.db")
+                file.moveTo("${final_output}/${id}/${id}${custom_suffix}.db")
             }
         }
         file("${params.outdir}/temp").deleteDir()
