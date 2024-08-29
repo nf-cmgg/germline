@@ -81,16 +81,6 @@ Parameters used to describe centralised config profiles. These should not be edi
 | `config_profile_contact`     | Institutional config contact information.                                                                                                                                                                                                                                                                                                                                                         | `string` |                                                          |          | True   |
 | `config_profile_url`         | Institutional config URL link.                                                                                                                                                                                                                                                                                                                                                                    | `string` |                                                          |          | True   |
 
-## Max job request options
-
-Set the top limit for requested resources for any single job.
-
-| Parameter    | Description                                                                                                                                                                                                                                                                 | Type      | Default | Required | Hidden |
-| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------- | -------- | ------ |
-| `max_cpus`   | Maximum number of CPUs that can be requested for any single job. <details><summary>Help</summary><small>Use to set an upper-limit for the CPU requirement for each process. Should be an integer e.g. `--max_cpus 1`</small></details>                                      | `integer` | 16      |          | True   |
-| `max_memory` | Maximum amount of memory that can be requested for any single job. <details><summary>Help</summary><small>Use to set an upper-limit for the memory requirement for each process. Should be a string in the format integer-unit e.g. `--max_memory '8.GB'`</small></details> | `string`  | 128.GB  |          | True   |
-| `max_time`   | Maximum amount of time that can be requested for any single job. <details><summary>Help</summary><small>Use to set an upper-limit for the time requirement for each process. Should be a string in the format integer-unit e.g. `--max_time '2.h'`</small></details>        | `string`  | 240.h   |          | True   |
-
 ## Generic options
 
 Less common options for the pipeline, typically set in a config file.
