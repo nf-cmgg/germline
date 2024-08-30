@@ -31,14 +31,14 @@ nextflow_workflow {
             workflow {
                 """
                 input[0] = Channel.of([
-                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_count:3],
+                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_count:3, caller:"haplotypecaller"],
                     file(params.famvcf, checkIfExists:true),
                     file(params.famtbi, checkIfExists:true),
                     file(params.vcf1, checkIfExists:true),
                     file(params.tbi1, checkIfExists:true)
                 ])
                 input[1] = Channel.of([
-                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_count:3],
+                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_count:3, caller:"haplotypecaller"],
                     file(params.bed, checkIfExists:true),
                     []
                 ])

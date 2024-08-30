@@ -7,6 +7,9 @@
 ----------------------------------------------------------------------------------------
 */
 
+// Enables the workflow output definition: https://www.nextflow.io/docs/latest/workflow.html#workflow-output-def
+nextflow.preview.output = true
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT FUNCTIONS / MODULES / SUBWORKFLOWS / WORKFLOWS
@@ -47,6 +50,7 @@ params.vcfanno_config       = getGenomeAttribute('vcfanno_config', params.genome
 include { GERMLINE                } from './workflows/germline'
 include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_cmgg_germline_pipeline'
 include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_cmgg_germline_pipeline'
+include { samplesheetToList       } from 'plugin/nf-schema'
 
 //
 // WORKFLOW: Run main analysis pipeline depending on type of input
@@ -132,7 +136,18 @@ workflow NFCMGG_GERMLINE {
     )
 
     emit:
-    multiqc_report = GERMLINE.out.multiqc_report // channel: /path/to/multiqc_report.html
+    vcf_tbi             = GERMLINE.out.vcf_tbi        // channel: [ val(meta), path(vcf), path(tbi) ]
+    multiqc_report      = GERMLINE.out.multiqc_report // channel: /path/to/multiqc/report.html
+    validation          = GERMLINE.out.validation
+    individual_reports  = GERMLINE.out.individual_reports
+    family_reports      = GERMLINE.out.family_reports
+    individuals_bed     = GERMLINE.out.individuals_bed
+    family_bed          = GERMLINE.out.family_bed
+    gvcf_tbi            = GERMLINE.out.gvcf_tbi
+    updio               = GERMLINE.out.updio
+    automap             = GERMLINE.out.automap
+    db                  = GERMLINE.out.db
+    ped                 = GERMLINE.out.ped
 
 }
 
@@ -194,7 +209,6 @@ workflow {
 
     def multiqc_logo = params.multiqc_logo   ?: "$projectDir/assets/CMGG_logo.png"
 
-
     //
     // SUBWORKFLOW: Run initialisation tasks
     //
@@ -232,6 +246,98 @@ workflow {
         params.hook_url,
         NFCMGG_GERMLINE.out.multiqc_report
     )
+
+    // TODO: remove this once dynamic publish paths have been added to nextflow
+    workflow.onComplete = {
+        def date = params.skip_date_project ? "" : "${new Date().format("yyyy-MM-dd")}_"
+        def final_output = "${params.outdir}/${params.project ? "${date}${params.project}" : "${date}${workflow.runName}"}"
+        def ids = samplesheetToList(params.input, "assets/schema_input.json").collect { entry ->
+                [ entry[0].id, entry[0].family ]
+            }
+            .flatten()
+            .findAll { id -> id instanceof String && id.length() > 0 }
+            .unique()
+
+        // Move around the output directory
+        file(params.outdir).eachFileRecurse { file ->
+            if (file.isDirectory()) {
+                return
+            }
+            def file_name = file.name
+            def file_full_name = file.toString()
+            def caller = file_full_name.contains("haplotypecaller") ? "haplotypecaller" :
+                file_full_name.contains("vardict") ? "vardict" : ""
+            def dot_caller = caller ? ".${caller}" : ""
+            def id = ids.find { id_ss -> file_name.contains(id_ss) } ?: ""
+            def custom_suffix = "${params.output_suffix ?: dot_caller}"
+            if (file_full_name.contains("/temp/vcfs/")) {
+                def extension = file_name.endsWith(".tbi") ? "vcf.gz.tbi" : "vcf.gz"
+                file.moveTo("${final_output}/${id}/${id}${custom_suffix}.${extension}")
+            }
+            else if (file_full_name.contains("/temp/validation/")) {
+                def validation_file = file_name.replace("${dot_caller}", "")
+                file.moveTo("${params.outdir}/${id}/validation/${caller}/${validation_file}")
+            }
+            else if (file_full_name.contains("/temp/individuals_reports/")) {
+                def report_extension = file_name.replace(dot_caller, "").replace(id, "")
+                file.moveTo("${params.outdir}/${id}/reports/${id}${custom_suffix}${report_extension}")
+            }
+            else if (file_full_name.contains("/temp/family_reports/")) {
+                def report_extension = file_name.replace(dot_caller, "").replace(id, "")
+                file.moveTo("${final_output}/${id}/reports/${id}${custom_suffix}${report_extension}")
+            }
+            else if (file_full_name.contains("/temp/individuals_beds/")) {
+                file.moveTo("${params.outdir}/${id}/${id}.bed")
+            }
+            else if (file_full_name.contains("/temp/family_beds/")) {
+                file.moveTo("${final_output}/${id}/${id}.bed")
+            }
+            else if (file_full_name.contains("/temp/gvcfs/")) {
+                def extension = file_name.endsWith(".tbi") ? "g.vcf.gz.tbi" : "g.vcf.gz"
+                file.moveTo("${params.outdir}/${id}/${id}.${caller}.${extension}")
+            }
+            else if (file_full_name.contains("/temp/updio/")) {
+                def sample = id
+                id = file_full_name.split("/temp/updio/")[-1].split("/")[0].replace("updio_${caller}_", "")
+                file.moveTo("${final_output}/${id}/updio_${caller}/${sample}/${file_name}")
+            }
+            else if (file_full_name.contains("/temp/automap/")) {
+                def sample = id
+                id = file_full_name.split("/temp/automap/")[-1].split("/")[0].replace("automap_${caller}_", "")
+                file.moveTo("${final_output}/${id}/automap_${caller}/${sample}/${file_name}")
+            }
+            else if (file_full_name.contains("/temp/ped/")) {
+                file.moveTo("${final_output}/${id}/${id}${custom_suffix}.ped")
+            }
+            else if (file_full_name.contains("/temp/db/")) {
+                file.moveTo("${final_output}/${id}/${id}${custom_suffix}.db")
+            }
+        }
+        file("${params.outdir}/temp").deleteDir()
+    }
+
+    publish:
+    NFCMGG_GERMLINE.out.vcf_tbi             >> 'temp/vcfs/'
+    NFCMGG_GERMLINE.out.validation          >> 'temp/validation/'
+    NFCMGG_GERMLINE.out.individual_reports  >> 'temp/individuals_reports/'
+    NFCMGG_GERMLINE.out.family_reports      >> 'temp/family_reports/'
+    NFCMGG_GERMLINE.out.individuals_bed     >> 'temp/individuals_beds/'
+    NFCMGG_GERMLINE.out.family_bed          >> 'temp/family_beds/'
+    NFCMGG_GERMLINE.out.gvcf_tbi            >> 'temp/gvcfs/'
+    NFCMGG_GERMLINE.out.multiqc_report      >> 'multiqc/'
+    NFCMGG_GERMLINE.out.updio               >> 'temp/updio/'
+    NFCMGG_GERMLINE.out.automap             >> 'temp/automap/'
+    NFCMGG_GERMLINE.out.db                  >> 'temp/db/'
+    NFCMGG_GERMLINE.out.ped                 >> 'temp/ped/'
+}
+
+output {
+    directory "${params.outdir}"
+    // TODO: add index once dynamic publish paths have been added to nextflow
+    // index {
+    //     path 'index.csv'
+    // }
+    
 }
 
 /*

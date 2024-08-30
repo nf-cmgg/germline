@@ -150,6 +150,7 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
         ch_fasta
     )
     ch_versions = ch_versions.mix(MOSDEPTH.out.versions.first())
+    ch_reports = ch_reports.mix(MOSDEPTH.out.global_txt, MOSDEPTH.out.summary_txt)
 
     ch_ready_rois
         .join(MOSDEPTH.out.quantized_bed, failOnDuplicate:true, failOnMismatch:true)

@@ -127,9 +127,11 @@ workflow GERMLINE {
 
 
     main:
-    ch_versions      = Channel.empty()
-    ch_reports       = Channel.empty()
-    ch_multiqc_files = Channel.empty()
+    ch_versions             = Channel.empty()
+    ch_reports              = Channel.empty()
+    ch_individuals_reports  = Channel.empty()
+    ch_family_reports       = Channel.empty()
+    ch_multiqc_files        = Channel.empty()
 
     //
     // Importing and convert the input files passed through the parameters to channels
@@ -384,6 +386,7 @@ workflow GERMLINE {
     // Run sample preparation
     //
 
+    ch_individuals_bed = Channel.empty()
     CRAM_PREPARE_SAMTOOLS_BEDTOOLS(
         ch_input.cram.filter { meta, cram, crai -> 
             // Filter out files that already have a called GVCF when only GVCF callers are used
@@ -398,6 +401,8 @@ workflow GERMLINE {
         ch_default_roi
     )
     ch_versions = ch_versions.mix(CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.versions)
+    ch_individuals_bed = CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_beds
+    ch_individuals_reports = ch_individuals_reports.mix(CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.reports)
 
     //
     // Split the BED files
@@ -413,6 +418,8 @@ workflow GERMLINE {
 
     ch_calls = Channel.empty()
 
+    ch_gvcf_output = Channel.empty()
+    ch_family_bed = Channel.empty()
     if("haplotypecaller" in callers) {
         //
         // Call variants with GATK4 HaplotypeCaller
@@ -438,8 +445,10 @@ workflow GERMLINE {
         )
         ch_versions = ch_versions.mix(CRAM_CALL_GENOTYPE_GATK4.out.versions)
         ch_reports  = ch_reports.mix(CRAM_CALL_GENOTYPE_GATK4.out.reports)
-
+        ch_individuals_reports = ch_individuals_reports.mix(CRAM_CALL_GENOTYPE_GATK4.out.reports)
+        ch_family_bed = CRAM_CALL_GENOTYPE_GATK4.out.joint_beds
         ch_calls = ch_calls.mix(CRAM_CALL_GENOTYPE_GATK4.out.vcfs)
+        ch_gvcf_output = CRAM_CALL_GENOTYPE_GATK4.out.gvcfs
 
     }
 
@@ -479,6 +488,7 @@ workflow GERMLINE {
     )
     ch_versions = ch_versions.mix(BCFTOOLS_STATS.out.versions.first())
     ch_reports = ch_reports.mix(BCFTOOLS_STATS.out.stats.collect { meta, report -> report })
+    ch_family_reports = ch_family_reports.mix(BCFTOOLS_STATS.out.stats.collect { meta, report -> report })
 
     ch_normalized_variants = Channel.empty()
     if(normalize) {
@@ -499,6 +509,13 @@ workflow GERMLINE {
     } else {
         ch_called_variants.set { ch_normalized_variants }
     }
+
+    ch_final_vcfs = Channel.empty()
+    ch_validation_output = Channel.empty()
+    ch_peds_output = Channel.empty()
+    ch_db_output = Channel.empty()
+    ch_updio_output = Channel.empty()
+    ch_automap_output = Channel.empty()
 
     if(!only_merge && !only_call) {
 
@@ -524,6 +541,8 @@ workflow GERMLINE {
             ch_somalier_input
         )
         ch_versions = ch_versions.mix(VCF_EXTRACT_RELATE_SOMALIER.out.versions)
+        ch_peds_output = VCF_EXTRACT_RELATE_SOMALIER.out.peds
+        ch_family_reports = ch_family_reports.mix(VCF_EXTRACT_RELATE_SOMALIER.out.html)
 
         //
         // Add PED headers to the VCFs
@@ -571,6 +590,7 @@ workflow GERMLINE {
             )
             ch_versions = ch_versions.mix(VCF_ANNOTATION.out.versions)
             ch_reports  = ch_reports.mix(VCF_ANNOTATION.out.reports)
+            ch_family_reports = ch_family_reports.mix(VCF_ANNOTATION.out.reports)
 
             VCF_ANNOTATION.out.annotated_vcfs.set { ch_annotation_output }
         } else {
@@ -679,6 +699,28 @@ workflow GERMLINE {
                 "vcfeval" //Only VCFeval for now, awaiting the conda fix for happy (https://github.com/bioconda/bioconda-recipes/pull/39267)
             )
             ch_versions = ch_versions.mix(VCF_VALIDATE_SMALL_VARIANTS.out.versions)
+
+            ch_validation_output = VCF_VALIDATE_SMALL_VARIANTS.out.vcfeval_true_positive_vcf
+                .mix(
+                    VCF_VALIDATE_SMALL_VARIANTS.out.vcfeval_true_positive_vcf_tbi,
+                    VCF_VALIDATE_SMALL_VARIANTS.out.vcfeval_false_negative_vcf,
+                    VCF_VALIDATE_SMALL_VARIANTS.out.vcfeval_false_negative_vcf_tbi,
+                    VCF_VALIDATE_SMALL_VARIANTS.out.vcfeval_false_positive_vcf,
+                    VCF_VALIDATE_SMALL_VARIANTS.out.vcfeval_false_positive_vcf_tbi,
+                    VCF_VALIDATE_SMALL_VARIANTS.out.vcfeval_true_positive_baseline_vcf,
+                    VCF_VALIDATE_SMALL_VARIANTS.out.vcfeval_true_positive_baseline_vcf_tbi,
+                    VCF_VALIDATE_SMALL_VARIANTS.out.vcfeval_summary,
+                    VCF_VALIDATE_SMALL_VARIANTS.out.vcfeval_phasing,
+                    VCF_VALIDATE_SMALL_VARIANTS.out.vcfeval_snp_roc,
+                    VCF_VALIDATE_SMALL_VARIANTS.out.vcfeval_non_snp_roc,
+                    VCF_VALIDATE_SMALL_VARIANTS.out.vcfeval_weighted_roc,
+                    VCF_VALIDATE_SMALL_VARIANTS.out.rtgtools_snp_png_rocplot,
+                    VCF_VALIDATE_SMALL_VARIANTS.out.rtgtools_non_snp_png_rocplot,
+                    VCF_VALIDATE_SMALL_VARIANTS.out.rtgtools_weighted_png_rocplot,
+                    VCF_VALIDATE_SMALL_VARIANTS.out.rtgtools_snp_svg_rocplot,
+                    VCF_VALIDATE_SMALL_VARIANTS.out.rtgtools_non_snp_svg_rocplot,
+                    VCF_VALIDATE_SMALL_VARIANTS.out.rtgtools_weighted_svg_rocplot
+                )
         }
 
         //
@@ -699,6 +741,8 @@ workflow GERMLINE {
             )
             ch_versions = ch_versions.mix(VCF2DB.out.versions.first())
 
+            ch_db_output = VCF2DB.out.db
+
             VCF2DB.out.db.dump(tag:'vcf2db_output', pretty:true)
         }
 
@@ -713,6 +757,7 @@ workflow GERMLINE {
                 ch_updio_common_cnvs
             )
             ch_versions = ch_versions.mix(VCF_UPD_UPDIO.out.versions.first())
+            ch_updio_output = VCF_UPD_UPDIO.out.updio
         }
 
         //
@@ -727,6 +772,7 @@ workflow GERMLINE {
                 genome
             )
             ch_versions = ch_versions.mix(VCF_ROH_AUTOMAP.out.versions.first())
+            ch_automap_output = VCF_ROH_AUTOMAP.out.automap
         }
     }
 
@@ -781,8 +827,19 @@ workflow GERMLINE {
     )
 
     emit:
-    multiqc_report = MULTIQC.out.report.toList() // channel: /path/to/multiqc_report.html
-    versions       = ch_versions                 // channel: [ path(versions.yml) ]
+    vcf_tbi             = ch_final_vcfs               // channel: [ val(meta), path(vcf), path(tbi) ]
+    multiqc_report      = MULTIQC.out.report.toList() // channel: /path/to/multiqc_report.html
+    validation          = ch_validation_output
+    individual_reports  = ch_individuals_reports
+    family_reports      = ch_family_reports
+    individuals_bed     = ch_individuals_bed
+    family_bed          = ch_family_bed
+    gvcf_tbi            = ch_gvcf_output
+    updio               = ch_updio_output
+    automap             = ch_automap_output
+    db                  = ch_db_output
+    ped                 = ch_peds_output
+    versions            = ch_versions                 // channel: [ path(versions.yml) ]
 }
 
 /*

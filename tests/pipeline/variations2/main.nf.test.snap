@@ -23,7 +23,6 @@
                 "NA24385/reports/NA24385.global.dist.txt",
                 "NA24385/reports/NA24385.haplotypecaller.bcftools_stats.txt",
                 "NA24385/reports/NA24385.summary.txt",
-                "multiqc/multiqc_plots",
                 "multiqc/multiqc_report.html",
                 "samplesheet.csv",
                 "test/Ashkenazim/Ashkenazim.bed",
@@ -65,7 +64,6 @@
                 "NA24385/reports/NA24385.global.dist.txt",
                 "NA24385/reports/NA24385.haplotypecaller.bcftools_stats.txt",
                 "NA24385/reports/NA24385.summary.txt",
-                "multiqc/multiqc_plots",
                 "multiqc/multiqc_report.html",
                 "samplesheet.csv",
                 "test/Ashkenazim/Ashkenazim.bed",
@@ -77,10 +75,10 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-03-27T17:04:19.112262269"
+        "timestamp": "2024-08-30T12:37:01.037679014"
     },
     "updio": {
         "content": [
@@ -106,7 +104,6 @@
                 "NA24385/reports/NA24385.global.dist.txt",
                 "NA24385/reports/NA24385.haplotypecaller.bcftools_stats.txt",
                 "NA24385/reports/NA24385.summary.txt",
-                "multiqc/multiqc_plots",
                 "multiqc/multiqc_report.html",
                 "samplesheet.csv",
                 "test/Ashkenazim/Ashkenazim.bed",
@@ -147,7 +144,6 @@
                 "NA24385/reports/NA24385.global.dist.txt",
                 "NA24385/reports/NA24385.haplotypecaller.bcftools_stats.txt",
                 "NA24385/reports/NA24385.summary.txt",
-                "multiqc/multiqc_plots",
                 "multiqc/multiqc_report.html",
                 "samplesheet.csv",
                 "test/Ashkenazim/Ashkenazim.bed",
@@ -245,7 +241,6 @@
                 "NA24385/validation/haplotypecaller/NA24385.weighted.png",
                 "NA24385/validation/haplotypecaller/NA24385.weighted.svg",
                 "NA24385/validation/haplotypecaller/NA24385.weighted_roc.tsv.gz",
-                "multiqc/multiqc_plots",
                 "multiqc/multiqc_report.html",
                 "samplesheet.csv",
                 "test/Ashkenazim/Ashkenazim.bed",

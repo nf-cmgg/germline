@@ -34,141 +34,10 @@
                         "id": "NA24143",
                         "sample": "NA24143",
                         "family": "Ashkenazim",
-                        "family_count": 3
+                        "family_count": 3,
+                        "caller": "haplotypecaller"
                     },
-                    "NA24143.tp.vcf.gz:md5,b28d3e84a6efa95bfbf673de310f62c1"
-                ]
-            ],
-            [
-                [
-                    {
-                        "id": "NA24143",
-                        "sample": "NA24143",
-                        "family": "Ashkenazim",
-                        "family_count": 3
-                    },
-                    "NA24143.tp.vcf.gz.tbi:md5,8f8356fd93e093e9deb1c2c4c72cb65e"
-                ]
-            ],
-            [
-                [
-                    {
-                        "id": "NA24143",
-                        "sample": "NA24143",
-                        "family": "Ashkenazim",
-                        "family_count": 3
-                    },
-                    "NA24143.fn.vcf.gz:md5,99830701ae0191110b706b20abe56857"
-                ]
-            ],
-            [
-                [
-                    {
-                        "id": "NA24143",
-                        "sample": "NA24143",
-                        "family": "Ashkenazim",
-                        "family_count": 3
-                    },
-                    "NA24143.fn.vcf.gz.tbi:md5,092a7a3162e7cff25d273525751eb284"
-                ]
-            ],
-            [
-                [
-                    {
-                        "id": "NA24143",
-                        "sample": "NA24143",
-                        "family": "Ashkenazim",
-                        "family_count": 3
-                    },
-                    "NA24143.fp.vcf.gz:md5,2769bf65afefc821fe54a8b314b5d2be"
-                ]
-            ],
-            [
-                [
-                    {
-                        "id": "NA24143",
-                        "sample": "NA24143",
-                        "family": "Ashkenazim",
-                        "family_count": 3
-                    },
-                    "NA24143.fp.vcf.gz.tbi:md5,092a7a3162e7cff25d273525751eb284"
-                ]
-            ],
-            [
-                [
-                    {
-                        "id": "NA24143",
-                        "sample": "NA24143",
-                        "family": "Ashkenazim",
-                        "family_count": 3
-                    },
-                    "NA24143.tp-baseline.vcf.gz:md5,6de63c7e2fa458ca88ea78c36f579056"
-                ]
-            ],
-            [
-                [
-                    {
-                        "id": "NA24143",
-                        "sample": "NA24143",
-                        "family": "Ashkenazim",
-                        "family_count": 3
-                    },
-                    "NA24143.tp-baseline.vcf.gz.tbi:md5,8d399004d8c45fa795b70da32e23a6d5"
-                ]
-            ],
-            [
-                [
-                    {
-                        "id": "NA24143",
-                        "sample": "NA24143",
-                        "family": "Ashkenazim",
-                        "family_count": 3
-                    },
-                    "NA24143.summary.txt:md5,11416903ca828b22bd64cf297f2db999"
-                ]
-            ],
-            [
-                [
-                    {
-                        "id": "NA24143",
-                        "sample": "NA24143",
-                        "family": "Ashkenazim",
-                        "family_count": 3
-                    },
-                    "NA24143.phasing.txt:md5,38920536b8c3e241e873c07ba61762e6"
-                ]
-            ],
-            [
-                [
-                    {
-                        "id": "NA24143",
-                        "sample": "NA24143",
-                        "family": "Ashkenazim",
-                        "family_count": 3
-                    },
-                    "NA24143.snp_roc.tsv.gz:md5,d29e7796d37dada43378e466af98c35a"
-                ]
-            ],
-            [
-                [
-                    {
-                        "id": "NA24143",
-                        "sample": "NA24143",
-                        "family": "Ashkenazim",
-                        "family_count": 3
-                    },
-                    "NA24143.non_snp_roc.tsv.gz:md5,121b8b67d40efcaf1aad5064c6f3bfe9"
-                ]
-            ],
-            [
-                [
-                    {
-                        "id": "NA24143",
-                        "sample": "NA24143",
-                        "family": "Ashkenazim",
-                        "family_count": 3
-                    },
-                    "NA24143.weighted_roc.tsv.gz:md5,f016f9a10e793836b9b53d702e591454"
+                    "NA24143.haplotypecaller.tp.vcf.gz:md5,b28d3e84a6efa95bfbf673de310f62c1"
                 ]
             ],
             [
@@ -178,9 +47,154 @@
                         "sample": "NA24143",
                         "family": "Ashkenazim",
                         "family_count": 3,
+                        "caller": "haplotypecaller"
+                    },
+                    "NA24143.haplotypecaller.tp.vcf.gz.tbi:md5,8f8356fd93e093e9deb1c2c4c72cb65e"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 3,
+                        "caller": "haplotypecaller"
+                    },
+                    "NA24143.haplotypecaller.fn.vcf.gz:md5,99830701ae0191110b706b20abe56857"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 3,
+                        "caller": "haplotypecaller"
+                    },
+                    "NA24143.haplotypecaller.fn.vcf.gz.tbi:md5,092a7a3162e7cff25d273525751eb284"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 3,
+                        "caller": "haplotypecaller"
+                    },
+                    "NA24143.haplotypecaller.fp.vcf.gz:md5,2769bf65afefc821fe54a8b314b5d2be"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 3,
+                        "caller": "haplotypecaller"
+                    },
+                    "NA24143.haplotypecaller.fp.vcf.gz.tbi:md5,092a7a3162e7cff25d273525751eb284"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 3,
+                        "caller": "haplotypecaller"
+                    },
+                    "NA24143.haplotypecaller.tp-baseline.vcf.gz:md5,6de63c7e2fa458ca88ea78c36f579056"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 3,
+                        "caller": "haplotypecaller"
+                    },
+                    "NA24143.haplotypecaller.tp-baseline.vcf.gz.tbi:md5,8d399004d8c45fa795b70da32e23a6d5"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 3,
+                        "caller": "haplotypecaller"
+                    },
+                    "NA24143.haplotypecaller.summary.txt:md5,11416903ca828b22bd64cf297f2db999"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 3,
+                        "caller": "haplotypecaller"
+                    },
+                    "NA24143.haplotypecaller.phasing.txt:md5,38920536b8c3e241e873c07ba61762e6"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 3,
+                        "caller": "haplotypecaller"
+                    },
+                    "NA24143.haplotypecaller.snp_roc.tsv.gz:md5,d29e7796d37dada43378e466af98c35a"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 3,
+                        "caller": "haplotypecaller"
+                    },
+                    "NA24143.haplotypecaller.non_snp_roc.tsv.gz:md5,121b8b67d40efcaf1aad5064c6f3bfe9"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 3,
+                        "caller": "haplotypecaller"
+                    },
+                    "NA24143.haplotypecaller.weighted_roc.tsv.gz:md5,f016f9a10e793836b9b53d702e591454"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 3,
+                        "caller": "haplotypecaller",
                         "roc_type": "snp"
                     },
-                    "NA24143.snp.png"
+                    "NA24143.haplotypecaller.snp.png"
                 ]
             ],
             [
@@ -190,9 +204,10 @@
                         "sample": "NA24143",
                         "family": "Ashkenazim",
                         "family_count": 3,
+                        "caller": "haplotypecaller",
                         "roc_type": "non_snp"
                     },
-                    "NA24143.non_snp.png"
+                    "NA24143.haplotypecaller.non_snp.png"
                 ]
             ],
             [
@@ -202,9 +217,10 @@
                         "sample": "NA24143",
                         "family": "Ashkenazim",
                         "family_count": 3,
+                        "caller": "haplotypecaller",
                         "roc_type": "weighted"
                     },
-                    "NA24143.weighted.png"
+                    "NA24143.haplotypecaller.weighted.png"
                 ]
             ],
             [
@@ -214,9 +230,10 @@
                         "sample": "NA24143",
                         "family": "Ashkenazim",
                         "family_count": 3,
+                        "caller": "haplotypecaller",
                         "roc_type": "snp"
                     },
-                    "NA24143.snp.svg"
+                    "NA24143.haplotypecaller.snp.svg"
                 ]
             ],
             [
@@ -226,9 +243,10 @@
                         "sample": "NA24143",
                         "family": "Ashkenazim",
                         "family_count": 3,
+                        "caller": "haplotypecaller",
                         "roc_type": "non_snp"
                     },
-                    "NA24143.non_snp.svg"
+                    "NA24143.haplotypecaller.non_snp.svg"
                 ]
             ],
             [
@@ -238,16 +256,17 @@
                         "sample": "NA24143",
                         "family": "Ashkenazim",
                         "family_count": 3,
+                        "caller": "haplotypecaller",
                         "roc_type": "weighted"
                     },
-                    "NA24143.weighted.svg"
+                    "NA24143.haplotypecaller.weighted.svg"
                 ]
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-03-27T14:02:50.290466115"
+        "timestamp": "2024-08-30T09:08:30.296761651"
     }
 }

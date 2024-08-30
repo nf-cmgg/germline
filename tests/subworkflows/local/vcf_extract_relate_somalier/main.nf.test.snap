@@ -24,7 +24,7 @@
                         "family_count": 3,
                         "caller": "haplotypecaller"
                     },
-                    "Ashkenazim.haplotypecaller.html:md5,a7cc550571c8543643d10b2e9db68a48"
+                    "Ashkenazim.haplotypecaller.somalier.html:md5,a7cc550571c8543643d10b2e9db68a48"
                 ]
             ],
             [
@@ -35,7 +35,7 @@
                         "family_count": 3,
                         "caller": "haplotypecaller"
                     },
-                    "Ashkenazim.haplotypecaller.pairs.tsv:md5,0c89abf63de67c9f0ee931e883a17a66"
+                    "Ashkenazim.haplotypecaller.somalier.pairs.tsv:md5,0c89abf63de67c9f0ee931e883a17a66"
                 ]
             ],
             [
@@ -46,7 +46,7 @@
                         "family_count": 3,
                         "caller": "haplotypecaller"
                     },
-                    "Ashkenazim.haplotypecaller.samples.tsv:md5,26e108afb44bcbaf4c47e43eb5611d15"
+                    "Ashkenazim.haplotypecaller.somalier.samples.tsv:md5,26e108afb44bcbaf4c47e43eb5611d15"
                 ]
             ],
             [
@@ -57,15 +57,15 @@
                         "family_count": 3,
                         "caller": "haplotypecaller"
                     },
-                    "Ashkenazim.haplotypecaller_somalier.ped:md5,689bb83118511ddcb09ae6d30d2d99b3"
+                    "Ashkenazim.haplotypecaller.somalier_somalier.ped:md5,689bb83118511ddcb09ae6d30d2d99b3"
                 ]
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-03-27T13:17:18.055689163"
+        "timestamp": "2024-08-30T11:43:21.785231745"
     },
     "default - no peds": {
         "content": [
@@ -92,7 +92,7 @@
                         "family_count": 3,
                         "caller": "haplotypecaller"
                     },
-                    "Ashkenazim.haplotypecaller.html:md5,1622292889a889778f10ae037c051e44"
+                    "Ashkenazim.haplotypecaller.somalier.html:md5,1622292889a889778f10ae037c051e44"
                 ]
             ],
             [
@@ -103,7 +103,7 @@
                         "family_count": 3,
                         "caller": "haplotypecaller"
                     },
-                    "Ashkenazim.haplotypecaller.pairs.tsv:md5,fc51248691992f10a6b5176f5a2d6231"
+                    "Ashkenazim.haplotypecaller.somalier.pairs.tsv:md5,fc51248691992f10a6b5176f5a2d6231"
                 ]
             ],
             [
@@ -114,7 +114,7 @@
                         "family_count": 3,
                         "caller": "haplotypecaller"
                     },
-                    "Ashkenazim.haplotypecaller.samples.tsv:md5,1c12b44787ba9bc79943737fa54d3007"
+                    "Ashkenazim.haplotypecaller.somalier.samples.tsv:md5,1c12b44787ba9bc79943737fa54d3007"
                 ]
             ],
             [
@@ -125,14 +125,14 @@
                         "family_count": 3,
                         "caller": "haplotypecaller"
                     },
-                    "Ashkenazim.haplotypecaller_somalier.ped:md5,f1a0cb22a941d0563fae2ca3c30dd0d4"
+                    "Ashkenazim.haplotypecaller.somalier_somalier.ped:md5,f1a0cb22a941d0563fae2ca3c30dd0d4"
                 ]
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-03-27T13:17:29.504749349"
+        "timestamp": "2024-08-30T11:43:38.843154224"
     }
 }

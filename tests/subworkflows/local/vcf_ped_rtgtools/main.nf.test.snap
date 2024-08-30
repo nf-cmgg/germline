@@ -9,14 +9,14 @@
                         "family_count": 3,
                         "caller": "haplotypecaller"
                     },
-                    "Ashkenazim.haplotypecaller.vcf.gz"
+                    "Ashkenazim.haplotypecaller_ped_annotated.vcf.gz"
                 ]
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-03-27T17:28:32.40423584"
+        "timestamp": "2024-08-30T09:19:51.02676975"
     }
 }
