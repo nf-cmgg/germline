@@ -511,6 +511,12 @@ workflow GERMLINE {
     }
 
     ch_final_vcfs = Channel.empty()
+    ch_validation_output = Channel.empty()
+    ch_peds_output = Channel.empty()
+    ch_db_output = Channel.empty()
+    ch_updio_output = Channel.empty()
+    ch_automap_output = Channel.empty()
+
     if(!only_merge && !only_call) {
 
         //
@@ -610,7 +616,6 @@ workflow GERMLINE {
         // Validate the found variants
         //
 
-        ch_validation_output = Channel.empty()
         if (validate){
 
             ch_input.truth_variants
@@ -722,7 +727,6 @@ workflow GERMLINE {
         // Create Gemini-compatible database files
         //
 
-        ch_db_output = Channel.empty()
         if(gemini){
             CustomChannelOperators.joinOnKeys(
                 ch_final_vcfs.map { meta, vcf, tbi -> [ meta, vcf ]},
@@ -746,7 +750,6 @@ workflow GERMLINE {
         // Run UPDio analysis
         //
 
-        ch_updio_output = Channel.empty()
         if(updio) {
             VCF_UPD_UPDIO(
                 ch_final_vcfs,
@@ -761,7 +764,6 @@ workflow GERMLINE {
         // Run automap analysis
         //
 
-        ch_automap_output = Channel.empty()
         if(automap) {
             VCF_ROH_AUTOMAP(
                 ch_final_vcfs,

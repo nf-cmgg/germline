@@ -34,10 +34,10 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-03-27T15:57:27.216291382"
+        "timestamp": "2024-08-30T14:36:42.066218044"
     },
     "only_call": {
         "content": [
@@ -68,10 +68,10 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-03-27T15:58:10.801784853"
+        "timestamp": "2024-08-30T14:15:44.411074891"
     },
     "annotate + vcfanno": {
         "content": [
@@ -96,21 +96,25 @@
                 "NA24385/NA24385.haplotypecaller.g.vcf.gz.tbi",
                 "NA24385/reports/NA24385.global.dist.txt",
                 "NA24385/reports/NA24385.haplotypecaller.bcftools_stats.txt",
-                "NA24385/reports/NA24385.summary.txt",                "multiqc/multiqc_report.html",
+                "NA24385/reports/NA24385.summary.txt",
+                "multiqc/multiqc_report.html",
                 "samplesheet.csv",
                 "test/Ashkenazim/Ashkenazim.bed",
                 "test/Ashkenazim/Ashkenazim.haplotypecaller.ped",
                 "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz",
                 "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz.tbi",
                 "test/Ashkenazim/reports/Ashkenazim.haplotypecaller.bcftools_stats.txt",
-                "test/Ashkenazim/reports/Ashkenazim.haplotypecaller.somalier.html"
+                "test/Ashkenazim/reports/Ashkenazim.haplotypecaller.somalier.html",
+                "test/Ashkenazim/reports/Ashkenazim.haplotypecaller1_annotated.annotated.summary.html",
+                "test/Ashkenazim/reports/Ashkenazim.haplotypecaller2_annotated.annotated.summary.html",
+                "test/Ashkenazim/reports/Ashkenazim.haplotypecaller3_annotated.annotated.summary.html"
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-03-27T15:56:25.391105365"
+        "timestamp": "2024-08-30T14:33:27.758317034"
     },
     "automap": {
         "content": [
@@ -135,33 +139,34 @@
                 "NA24385/NA24385.haplotypecaller.g.vcf.gz.tbi",
                 "NA24385/reports/NA24385.global.dist.txt",
                 "NA24385/reports/NA24385.haplotypecaller.bcftools_stats.txt",
-                "NA24385/reports/NA24385.summary.txt",                "multiqc/multiqc_report.html",
+                "NA24385/reports/NA24385.summary.txt",
+                "multiqc/multiqc_report.html",
                 "samplesheet.csv",
                 "test/Ashkenazim/Ashkenazim.bed",
                 "test/Ashkenazim/Ashkenazim.haplotypecaller.ped",
                 "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz",
                 "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz.tbi",
-                "test/Ashkenazim/automap_haplotypecaller/sample1/sample1.HomRegions.cmgg_bio.tsv",
-                "test/Ashkenazim/automap_haplotypecaller/sample1/sample1.HomRegions.pdf",
-                "test/Ashkenazim/automap_haplotypecaller/sample1/sample1.HomRegions.strict.cmgg_bio.tsv",
-                "test/Ashkenazim/automap_haplotypecaller/sample1/sample1.HomRegions.tsv",
-                "test/Ashkenazim/automap_haplotypecaller/sample2/sample2.HomRegions.cmgg_bio.tsv",
-                "test/Ashkenazim/automap_haplotypecaller/sample2/sample2.HomRegions.pdf",
-                "test/Ashkenazim/automap_haplotypecaller/sample2/sample2.HomRegions.strict.cmgg_bio.tsv",
-                "test/Ashkenazim/automap_haplotypecaller/sample2/sample2.HomRegions.tsv",
-                "test/Ashkenazim/automap_haplotypecaller/sample3/sample3.HomRegions.cmgg_bio.tsv",
-                "test/Ashkenazim/automap_haplotypecaller/sample3/sample3.HomRegions.pdf",
-                "test/Ashkenazim/automap_haplotypecaller/sample3/sample3.HomRegions.strict.cmgg_bio.tsv",
-                "test/Ashkenazim/automap_haplotypecaller/sample3/sample3.HomRegions.tsv",
+                "test/Ashkenazim/automap_haplotypecaller/sample1.HomRegions.cmgg_bio.tsv",
+                "test/Ashkenazim/automap_haplotypecaller/sample1.HomRegions.pdf",
+                "test/Ashkenazim/automap_haplotypecaller/sample1.HomRegions.strict.cmgg_bio.tsv",
+                "test/Ashkenazim/automap_haplotypecaller/sample1.HomRegions.tsv",
+                "test/Ashkenazim/automap_haplotypecaller/sample2.HomRegions.cmgg_bio.tsv",
+                "test/Ashkenazim/automap_haplotypecaller/sample2.HomRegions.pdf",
+                "test/Ashkenazim/automap_haplotypecaller/sample2.HomRegions.strict.cmgg_bio.tsv",
+                "test/Ashkenazim/automap_haplotypecaller/sample2.HomRegions.tsv",
+                "test/Ashkenazim/automap_haplotypecaller/sample3.HomRegions.cmgg_bio.tsv",
+                "test/Ashkenazim/automap_haplotypecaller/sample3.HomRegions.pdf",
+                "test/Ashkenazim/automap_haplotypecaller/sample3.HomRegions.strict.cmgg_bio.tsv",
+                "test/Ashkenazim/automap_haplotypecaller/sample3.HomRegions.tsv",
                 "test/Ashkenazim/reports/Ashkenazim.haplotypecaller.bcftools_stats.txt",
                 "test/Ashkenazim/reports/Ashkenazim.haplotypecaller.somalier.html"
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-04-04T16:27:21.116595696"
+        "timestamp": "2024-08-30T14:44:06.892782752"
     },
     "only_merge": {
         "content": [
@@ -186,16 +191,16 @@
                 "NA24385/NA24385.haplotypecaller.g.vcf.gz.tbi",
                 "NA24385/reports/NA24385.global.dist.txt",
                 "NA24385/reports/NA24385.haplotypecaller.bcftools_stats.txt",
-                "NA24385/reports/NA24385.summary.txt",                "multiqc/multiqc_report.html",
-                "samplesheet.csv",
-                "test/Ashkenazim/genomicsdb_Ashkenazim"
+                "NA24385/reports/NA24385.summary.txt",
+                "multiqc/multiqc_report.html",
+                "samplesheet.csv"
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-03-27T16:28:12.406463008"
+        "timestamp": "2024-08-30T14:18:00.616199747"
     },
     "annotate": {
         "content": [
@@ -220,20 +225,24 @@
                 "NA24385/NA24385.haplotypecaller.g.vcf.gz.tbi",
                 "NA24385/reports/NA24385.global.dist.txt",
                 "NA24385/reports/NA24385.haplotypecaller.bcftools_stats.txt",
-                "NA24385/reports/NA24385.summary.txt",                "multiqc/multiqc_report.html",
+                "NA24385/reports/NA24385.summary.txt",
+                "multiqc/multiqc_report.html",
                 "samplesheet.csv",
                 "test/Ashkenazim/Ashkenazim.bed",
                 "test/Ashkenazim/Ashkenazim.haplotypecaller.ped",
                 "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz",
                 "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz.tbi",
                 "test/Ashkenazim/reports/Ashkenazim.haplotypecaller.bcftools_stats.txt",
-                "test/Ashkenazim/reports/Ashkenazim.haplotypecaller.somalier.html"
+                "test/Ashkenazim/reports/Ashkenazim.haplotypecaller.somalier.html",
+                "test/Ashkenazim/reports/Ashkenazim.haplotypecaller1_annotated.annotated.summary.html",
+                "test/Ashkenazim/reports/Ashkenazim.haplotypecaller2_annotated.annotated.summary.html",
+                "test/Ashkenazim/reports/Ashkenazim.haplotypecaller3_annotated.annotated.summary.html"
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-03-27T15:47:35.270453118"
+        "timestamp": "2024-08-30T14:29:48.759514203"
     }
 }
