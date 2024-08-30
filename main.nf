@@ -267,7 +267,7 @@ workflow {
             def file_full_name = file.toString()
             def caller = file_full_name.contains("haplotypecaller") ? "haplotypecaller" :
                 file_full_name.contains("vardict") ? "vardict" : ""
-            def dot_caller = caller ? ".${caller}" ""
+            def dot_caller = caller ? ".${caller}" : ""
             def id = ids.find { id_ss -> file_name.contains(id_ss) } ?: ""
             def custom_suffix = "${params.output_suffix ?: dot_caller}"
             if (file_full_name.contains("/temp/vcfs/")) {
@@ -275,7 +275,7 @@ workflow {
                 file.moveTo("${final_output}/${id}/${id}${custom_suffix}.${extension}")
             }
             else if (file_full_name.contains("/temp/validation/")) {
-                def validation_file = file_name.replace("${caller}.", "")
+                def validation_file = file_name.replace("${dot_caller}", "")
                 file.moveTo("${params.outdir}/${id}/validation/${caller}/${validation_file}")
             }
             else if (file_full_name.contains("/temp/individuals_reports/")) {
