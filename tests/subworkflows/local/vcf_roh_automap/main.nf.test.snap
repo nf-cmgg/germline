@@ -12,13 +12,13 @@
                     },
                     [
                         [
-                            "automap_haplotypecaller/NA24143/NA24143.individual.vcf"
+                            "automap_haplotypecaller_Ashkenazim/NA24143/NA24143.individual.vcf"
                         ],
                         [
-                            "automap_haplotypecaller/NA24149/NA24149.individual.vcf"
+                            "automap_haplotypecaller_Ashkenazim/NA24149/NA24149.individual.vcf"
                         ],
                         [
-                            "automap_haplotypecaller/NA24385/NA24385.individual.vcf"
+                            "automap_haplotypecaller_Ashkenazim/NA24385/NA24385.individual.vcf"
                         ]
                     ]
                 ]
@@ -26,9 +26,9 @@
         ],
         "meta": {
             "nf-test": "0.9.0",
-            "nextflow": "24.04.3"
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-08-06T13:06:37.322068108"
+        "timestamp": "2024-08-30T09:13:41.945304598"
     },
     "default - sample": {
         "content": [
