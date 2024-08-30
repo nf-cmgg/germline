@@ -27,8 +27,8 @@
                         "caller": "haplotypecaller",
                         "samples": "NA24143,NA24149,NA24835"
                     },
-                    "Ashkenazim.haplotypecaller.vcf.gz",
-                    "Ashkenazim.haplotypecaller.vcf.gz.tbi"
+                    "Ashkenazim.haplotypecaller.concat.vcf.gz",
+                    "Ashkenazim.haplotypecaller.concat.vcf.gz.tbi"
                 ]
             ],
             [
@@ -39,9 +39,9 @@
         ],
         "meta": {
             "nf-test": "0.9.0",
-            "nextflow": "24.04.3"
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-08-06T13:01:36.711373912"
+        "timestamp": "2024-08-30T09:30:46.4437702"
     },
     "filter - family": {
         "content": [
@@ -54,8 +54,8 @@
                         "caller": "haplotypecaller",
                         "samples": "NA24143,NA24149,NA24835"
                     },
-                    "Ashkenazim.haplotypecaller.vcf.gz",
-                    "Ashkenazim.haplotypecaller.vcf.gz.tbi"
+                    "Ashkenazim.haplotypecaller.filtered.vcf.gz",
+                    "Ashkenazim.haplotypecaller.filtered.vcf.gz.tbi"
                 ]
             ],
             [
@@ -66,9 +66,9 @@
         ],
         "meta": {
             "nf-test": "0.9.0",
-            "nextflow": "24.04.3"
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-08-06T13:02:26.651064532"
+        "timestamp": "2024-08-30T09:32:20.180414535"
     },
     "default - gvcfs": {
         "content": [
@@ -81,8 +81,8 @@
                         "caller": "haplotypecaller",
                         "samples": "NA24143"
                     },
-                    "Ashkenazim.haplotypecaller.vcf.gz",
-                    "Ashkenazim.haplotypecaller.vcf.gz.tbi"
+                    "Ashkenazim.haplotypecaller.concat.vcf.gz",
+                    "Ashkenazim.haplotypecaller.concat.vcf.gz.tbi"
                 ]
             ],
             [
@@ -91,9 +91,9 @@
         ],
         "meta": {
             "nf-test": "0.9.0",
-            "nextflow": "24.04.3"
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-08-06T12:56:23.435795439"
+        "timestamp": "2024-08-30T09:29:22.152156491"
     },
     "default - crams": {
         "content": [
@@ -106,8 +106,8 @@
                         "caller": "haplotypecaller",
                         "samples": "NA24143"
                     },
-                    "Ashkenazim.haplotypecaller.vcf.gz",
-                    "Ashkenazim.haplotypecaller.vcf.gz.tbi"
+                    "Ashkenazim.haplotypecaller.concat.vcf.gz",
+                    "Ashkenazim.haplotypecaller.concat.vcf.gz.tbi"
                 ]
             ],
             [
@@ -118,9 +118,9 @@
         ],
         "meta": {
             "nf-test": "0.9.0",
-            "nextflow": "24.04.3"
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-08-06T12:55:51.608812907"
+        "timestamp": "2024-08-30T09:28:39.431495628"
     },
     "only_call - family": {
         "content": [
@@ -150,8 +150,8 @@
                         "caller": "haplotypecaller",
                         "samples": "NA24143,NA24835"
                     },
-                    "Ashkenazim.haplotypecaller.vcf.gz",
-                    "Ashkenazim.haplotypecaller.vcf.gz.tbi"
+                    "Ashkenazim.haplotypecaller.concat.vcf.gz",
+                    "Ashkenazim.haplotypecaller.concat.vcf.gz.tbi"
                 ]
             ],
             [
@@ -162,8 +162,8 @@
         ],
         "meta": {
             "nf-test": "0.9.0",
-            "nextflow": "24.04.3"
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-08-06T13:04:20.473178165"
+        "timestamp": "2024-08-30T09:35:23.034016912"
     }
 }

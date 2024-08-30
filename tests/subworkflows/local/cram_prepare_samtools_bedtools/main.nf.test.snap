@@ -25,14 +25,31 @@
                 ]
             ],
             [
-                
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 1
+                    },
+                    "NA24143.mosdepth.global.dist.txt:md5,829e35d21a090070afc7214e3f1da6d9"
+                ],
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 1
+                    },
+                    "NA24143.mosdepth.summary.txt:md5,09606c9a37e6cf179282ba9909c48f4b"
+                ]
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.04.1"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-06-04T17:01:48.046624445"
+        "timestamp": "2024-08-30T09:44:54.848604933"
     },
     "default - WGS": {
         "content": [
@@ -60,14 +77,31 @@
                 ]
             ],
             [
-                
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 1
+                    },
+                    "NA24143.mosdepth.global.dist.txt:md5,c4ea93892ab8a719abfb4c2ab3ad7f80"
+                ],
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 1
+                    },
+                    "NA24143.mosdepth.summary.txt:md5,19d2d22dca7ce7cf665711a59d1c437b"
+                ]
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-03-27T10:49:45.063311741"
+        "timestamp": "2024-08-30T09:43:28.666808432"
     },
     "default - WES": {
         "content": [
@@ -95,14 +129,31 @@
                 ]
             ],
             [
-                
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 1
+                    },
+                    "NA24143.mosdepth.global.dist.txt:md5,c4ea93892ab8a719abfb4c2ab3ad7f80"
+                ],
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 1
+                    },
+                    "NA24143.mosdepth.summary.txt:md5,81c8294c15457f2234b2fadb52aea405"
+                ]
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-03-27T11:02:27.487076852"
+        "timestamp": "2024-08-30T09:44:13.821669809"
     },
     "default - WES common ROI": {
         "content": [
@@ -130,13 +181,30 @@
                 ]
             ],
             [
-                
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 1
+                    },
+                    "NA24143.mosdepth.global.dist.txt:md5,c4ea93892ab8a719abfb4c2ab3ad7f80"
+                ],
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_count": 1
+                    },
+                    "NA24143.mosdepth.summary.txt:md5,81c8294c15457f2234b2fadb52aea405"
+                ]
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-03-27T11:02:14.280224701"
+        "timestamp": "2024-08-30T09:43:51.755587247"
     }
 }
