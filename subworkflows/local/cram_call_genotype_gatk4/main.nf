@@ -84,7 +84,7 @@ workflow CRAM_CALL_GENOTYPE_GATK4 {
     }
 
     emit:
-    gvcfs = ch_gvcfs_ready
+    gvcfs = CRAM_CALL_GATK4.out.gvcfs
     vcfs = ch_vcfs              // channel: [ val(meta), path(vcf), path(tbi) ]
     joint_beds = ch_joint_beds  // channel: [ val(meta), path(bed) ]
 
