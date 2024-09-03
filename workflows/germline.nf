@@ -672,11 +672,7 @@ workflow GERMLINE {
                 ch_validation_input.bed,
                 ch_fasta_ready,
                 ch_fai_ready,
-                ch_sdf_ready.collect(),
-                [[],[]],
-                [[],[]],
-                [[],[]],
-                "vcfeval" //Only VCFeval for now, awaiting the conda fix for happy (https://github.com/bioconda/bioconda-recipes/pull/39267)
+                ch_sdf_ready.collect()
             )
             ch_versions = ch_versions.mix(VCF_VALIDATE_SMALL_VARIANTS.out.versions)
         }
