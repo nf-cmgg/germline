@@ -134,9 +134,9 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
 
         GATK4_GENOTYPEGVCFS(
             ch_genotypegvcfs_input,
-            ch_fasta.map { meta, fasta -> fasta },
-            ch_fai.map { meta, fai -> fai },
-            ch_dict.map { meta, dict -> dict },
+            ch_fasta,
+            ch_fai,
+            ch_dict,
             ch_dbsnp,
             ch_dbsnp_tbi
         )

@@ -136,17 +136,17 @@ workflow GERMLINE {
     //
 
     ch_fasta_ready        = Channel.fromPath(fasta).map{ fasta_file -> [[id:"reference"], fasta_file] }.collect()
-    ch_fai                = fai                 ? Channel.fromPath(fai).map{ fai_file -> [[id:"reference"], fai_file] }.collect()                                        : null
-    ch_dict               = dict                ? Channel.fromPath(dict).map{ dict_file -> [[id:"reference"], dict_file] }.collect()                                       : null
-    ch_strtablefile       = strtablefile        ? Channel.fromPath(strtablefile).map{ str_file -> [[id:"reference"], str_file] }.collect()                               : null
-    ch_sdf                = sdf                 ? Channel.fromPath(sdf).map { sdf_file -> [[id:'reference'], sdf_file] }.collect()   : null
+    ch_fai                = fai                 ? Channel.fromPath(fai).map{ fai_file -> [[id:"reference"], fai_file] }.collect() : null
+    ch_dict               = dict                ? Channel.fromPath(dict).map{ dict_file -> [[id:"reference"], dict_file] }.collect() : null
+    ch_strtablefile       = strtablefile        ? Channel.fromPath(strtablefile).map{ str_file -> [[id:"reference"], str_file] }.collect() : null
+    ch_sdf                = sdf                 ? Channel.fromPath(sdf).map { sdf_file -> [[id:'reference'], sdf_file] }.collect() : null
 
     ch_default_roi        = roi                 ? Channel.fromPath(roi).collect()                : []
 
-    ch_dbsnp_ready        = dbsnp               ? Channel.fromPath(dbsnp).collect()              : []
-    ch_dbsnp_tbi          = dbsnp_tbi           ? Channel.fromPath(dbsnp_tbi).collect()          : []
+    ch_dbsnp_ready        = dbsnp               ? Channel.fromPath(dbsnp).collect { dbsnp_file -> [[id:"dbsnp"], dbsnp_file] } : [[],[]]
+    ch_dbsnp_tbi          = dbsnp_tbi           ? Channel.fromPath(dbsnp_tbi).collect { dbsnp_file -> [[id:"dbsnp"], dbsnp_file] } : [[],[]]
 
-    ch_somalier_sites     = somalier_sites      ? Channel.fromPath(somalier_sites).collect()     : []
+    ch_somalier_sites     = somalier_sites      ? Channel.fromPath(somalier_sites).collect { sites_file -> [[id:"somalier_sites"], sites_file] } : [[],[]]
 
     ch_vep_cache          = vep_cache           ? Channel.fromPath(vep_cache).collect()          : []
 
@@ -518,8 +518,8 @@ workflow GERMLINE {
 
         VCF_EXTRACT_RELATE_SOMALIER(
             ch_normalized_variants,
-            ch_fasta_ready.map { meta, fasta_file -> fasta_file },
-            ch_fai_ready.map { meta, fai_file -> fai_file },
+            ch_fasta_ready,
+            ch_fai_ready,
             ch_somalier_sites,
             ch_somalier_input
         )
