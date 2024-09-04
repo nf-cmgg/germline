@@ -360,7 +360,7 @@ workflow GERMLINE {
     ch_input.gvcf
         .filter { meta, gvcf, tbi ->
             // Filter out samples that have no GVCF
-            meta.type == "gvcf" || meta.type == "gvcf_cram" 
+            meta.type == "gvcf" || meta.type == "gvcf_cram"
         }
         .branch { meta, gvcf, tbi ->
             no_tbi: !tbi
@@ -385,13 +385,13 @@ workflow GERMLINE {
     //
 
     CRAM_PREPARE_SAMTOOLS_BEDTOOLS(
-        ch_input.cram.filter { meta, cram, crai -> 
+        ch_input.cram.filter { meta, cram, crai ->
             // Filter out files that already have a called GVCF when only GVCF callers are used
-            meta.type == "cram" || (meta.type == "gvcf_cram" && callers - GlobalVariables.gvcfCallers) 
-        }, 
+            meta.type == "cram" || (meta.type == "gvcf_cram" && callers - GlobalVariables.gvcfCallers)
+        },
         ch_input.roi.filter { meta, roi_file ->
             // Filter out files that already have a called GVCF when only GVCF callers are used
-            meta.type == "cram" || (meta.type == "gvcf_cram" && callers - GlobalVariables.gvcfCallers) 
+            meta.type == "cram" || (meta.type == "gvcf_cram" && callers - GlobalVariables.gvcfCallers)
         },
         ch_fasta_ready,
         ch_fai_ready,
