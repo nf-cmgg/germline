@@ -1,33 +1,33 @@
 lint:
-    files_exist:
-      - "CODE_OF_CONDUCT.md"
-      - "assets/nf-core-germline_logo_light.png"
-      - "docs/images/nf-core-germline_logo_light.png"
-      - "docs/images/nf-core-germline_logo_dark.png"
-      - ".github/ISSUE_TEMPLATE/config.yml"
-      - ".github/workflows/awstest.yml"
-      - ".github/workflows/awsfulltest.yml"
-      - "docs/README.md"
-    files_unchanged:
-      - ".github/CONTRIBUTING.md"
-      - ".github/PULL_REQUEST_TEMPLATE.md"
-      - ".github/workflows/linting_comment.yml"
-      - ".github/linting.yml"
-      - "CODE_OF_CONDUCT.md"
-      - ".github/ISSUE_TEMPLATE/bug_report.yml"
-      - ".prettierignore"
-    nextflow_config:
-      - "custom_config" # TODO Remove this once the new methods are supported
-      - "manifest.name"
-      - "manifest.homePage"
-      - "params.genomes"
-      - "validation.help.beforeText"
-      - "validation.help.afterText"
-      - "validation.summary.beforeText"
-      - "validation.summary.afterText"
-    multiqc_config:
-      - "report_comment"
-    actions_ci: false # TODO readd this once the linting doesn't act up
+  files_exist:
+    - "CODE_OF_CONDUCT.md"
+    - "assets/nf-core-germline_logo_light.png"
+    - "docs/images/nf-core-germline_logo_light.png"
+    - "docs/images/nf-core-germline_logo_dark.png"
+    - ".github/ISSUE_TEMPLATE/config.yml"
+    - ".github/workflows/awstest.yml"
+    - ".github/workflows/awsfulltest.yml"
+    - "docs/README.md"
+  files_unchanged:
+    - ".github/CONTRIBUTING.md"
+    - ".github/PULL_REQUEST_TEMPLATE.md"
+    - ".github/workflows/linting_comment.yml"
+    - ".github/linting.yml"
+    - "CODE_OF_CONDUCT.md"
+    - ".github/ISSUE_TEMPLATE/bug_report.yml"
+    - ".prettierignore"
+  nextflow_config:
+    - "custom_config" # TODO Remove this once the new methods are supported
+    - "manifest.name"
+    - "manifest.homePage"
+    - "params.genomes"
+    - "validation.help.beforeText"
+    - "validation.help.afterText"
+    - "validation.summary.beforeText"
+    - "validation.summary.afterText"
+  multiqc_config:
+    - "report_comment"
+  actions_ci: false # TODO readd this once the linting doesn't act up
 nf_core_version: 3.0.0dev
 repository_type: pipeline
 template:
