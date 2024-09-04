@@ -34,7 +34,6 @@ process RTGTOOLS_PEDFILTER {
     rtg pedfilter \\
         ${args} \\
         ${input} \\
-        | head -n -1 \\
     ${postprocess} > ${prefix}.${extension}
 
 
