@@ -1,6 +1,6 @@
 include { SAMTOOLS_CONVERT                  } from '../../../modules/nf-core/samtools/convert/main'
 include { VARDICTJAVA                       } from '../../../modules/nf-core/vardictjava/main'
-include { TABIX_BGZIPTABIX as TABIX_SPLIT   } from '../../../modules/nf-core/tabix/bgziptabix/main'
+include { TABIX_TABIX      as TABIX_SPLIT   } from '../../../modules/nf-core/tabix/tabix/main'
 include { TABIX_BGZIPTABIX as TABIX_VCFANNO } from '../../../modules/nf-core/tabix/bgziptabix/main'
 include { BCFTOOLS_REHEADER                 } from '../../../modules/nf-core/bcftools/reheader/main'
 include { VCFANNO                           } from '../../../modules/nf-core/vcfanno/main'
@@ -52,7 +52,7 @@ workflow CRAM_CALL_VARDICTJAVA {
             .set { ch_vardict_crams }
 
         ch_cram_bam.bam
-            .mix(SAMTOOLS_CONVERT.out.alignment_index)
+            .mix(SAMTOOLS_CONVERT.out.bam.join(SAMTOOLS_CONVERT.out.bai, failOnMismatch:true, failOnDuplicate:true))
             .combine(ch_vardict_crams, by:0)
             .map { meta, bam, bai, cram, crai, bed, split_count ->
                 def new_meta = meta + [id:bed.baseName, split_count:split_count]
@@ -73,7 +73,7 @@ workflow CRAM_CALL_VARDICTJAVA {
         ch_versions = ch_versions.mix(TABIX_SPLIT.out.versions.first())
 
         VCF_CONCAT_BCFTOOLS(
-            TABIX_SPLIT.out.gz_tbi,
+            VARDICTJAVA.out.vcf.join(TABIX_SPLIT.out.tbi, failOnMismatch:true, failOnDuplicate:true),
             false
         )
         ch_versions = ch_versions.mix(VCF_CONCAT_BCFTOOLS.out.versions)
