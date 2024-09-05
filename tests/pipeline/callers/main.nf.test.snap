@@ -2,23 +2,26 @@
     "haplotypecaller": {
         "content": [
             [
-                
+                "[:]"
             ],
             [
                 "NA24143/NA24143.bed",
                 "NA24143/NA24143.haplotypecaller.g.vcf.gz",
+                "NA24143/NA24143.haplotypecaller.g.vcf.gz.csi",
                 "NA24143/NA24143.haplotypecaller.g.vcf.gz.tbi",
                 "NA24143/reports/NA24143.global.dist.txt",
                 "NA24143/reports/NA24143.haplotypecaller.bcftools_stats.txt",
                 "NA24143/reports/NA24143.summary.txt",
                 "NA24149/NA24149.bed",
                 "NA24149/NA24149.haplotypecaller.g.vcf.gz",
+                "NA24149/NA24149.haplotypecaller.g.vcf.gz.csi",
                 "NA24149/NA24149.haplotypecaller.g.vcf.gz.tbi",
                 "NA24149/reports/NA24149.global.dist.txt",
                 "NA24149/reports/NA24149.haplotypecaller.bcftools_stats.txt",
                 "NA24149/reports/NA24149.summary.txt",
                 "NA24385/NA24385.bed",
                 "NA24385/NA24385.haplotypecaller.g.vcf.gz",
+                "NA24385/NA24385.haplotypecaller.g.vcf.gz.csi",
                 "NA24385/NA24385.haplotypecaller.g.vcf.gz.tbi",
                 "NA24385/reports/NA24385.global.dist.txt",
                 "NA24385/reports/NA24385.haplotypecaller.bcftools_stats.txt",
@@ -29,37 +32,41 @@
                 "test/Ashkenazim/Ashkenazim.bed",
                 "test/Ashkenazim/Ashkenazim.haplotypecaller.ped",
                 "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz",
+                "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz.csi",
                 "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz.tbi",
                 "test/Ashkenazim/reports/Ashkenazim.haplotypecaller.bcftools_stats.txt",
                 "test/Ashkenazim/reports/Ashkenazim.haplotypecaller.somalier.html"
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-03-27T15:40:41.593827142"
+        "timestamp": "2024-09-05T11:39:15.537730988"
     },
     "vardict + haplotypecaller": {
         "content": [
             [
-                
+                "[:]"
             ],
             [
                 "NA24143/NA24143.bed",
                 "NA24143/NA24143.haplotypecaller.g.vcf.gz",
+                "NA24143/NA24143.haplotypecaller.g.vcf.gz.csi",
                 "NA24143/NA24143.haplotypecaller.g.vcf.gz.tbi",
                 "NA24143/reports/NA24143.global.dist.txt",
                 "NA24143/reports/NA24143.haplotypecaller.bcftools_stats.txt",
                 "NA24143/reports/NA24143.summary.txt",
                 "NA24149/NA24149.bed",
                 "NA24149/NA24149.haplotypecaller.g.vcf.gz",
+                "NA24149/NA24149.haplotypecaller.g.vcf.gz.csi",
                 "NA24149/NA24149.haplotypecaller.g.vcf.gz.tbi",
                 "NA24149/reports/NA24149.global.dist.txt",
                 "NA24149/reports/NA24149.haplotypecaller.bcftools_stats.txt",
                 "NA24149/reports/NA24149.summary.txt",
                 "NA24385/NA24385.bed",
                 "NA24385/NA24385.haplotypecaller.g.vcf.gz",
+                "NA24385/NA24385.haplotypecaller.g.vcf.gz.csi",
                 "NA24385/NA24385.haplotypecaller.g.vcf.gz.tbi",
                 "NA24385/reports/NA24385.global.dist.txt",
                 "NA24385/reports/NA24385.haplotypecaller.bcftools_stats.txt",
@@ -70,15 +77,19 @@
                 "test/Ashkenazim/Ashkenazim.bed",
                 "test/Ashkenazim/Ashkenazim.haplotypecaller.ped",
                 "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz",
+                "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz.csi",
                 "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz.tbi",
                 "test/Ashkenazim/NA24143.vardict.ped",
                 "test/Ashkenazim/NA24143.vardict.vcf.gz",
+                "test/Ashkenazim/NA24143.vardict.vcf.gz.csi",
                 "test/Ashkenazim/NA24143.vardict.vcf.gz.tbi",
                 "test/Ashkenazim/NA24149.vardict.ped",
                 "test/Ashkenazim/NA24149.vardict.vcf.gz",
+                "test/Ashkenazim/NA24149.vardict.vcf.gz.csi",
                 "test/Ashkenazim/NA24149.vardict.vcf.gz.tbi",
                 "test/Ashkenazim/NA24385.vardict.ped",
                 "test/Ashkenazim/NA24385.vardict.vcf.gz",
+                "test/Ashkenazim/NA24385.vardict.vcf.gz.csi",
                 "test/Ashkenazim/NA24385.vardict.vcf.gz.tbi",
                 "test/Ashkenazim/reports/Ashkenazim.haplotypecaller.bcftools_stats.txt",
                 "test/Ashkenazim/reports/Ashkenazim.haplotypecaller.somalier.html",
@@ -91,15 +102,15 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-03-27T15:41:56.768447097"
+        "timestamp": "2024-09-05T11:56:32.019963111"
     },
     "vardict": {
         "content": [
             [
-                
+                "[:]"
             ],
             [
                 "NA24143/NA24143.bed",
@@ -116,12 +127,15 @@
                 "samplesheet.csv",
                 "test/Ashkenazim/NA24143.vardict.ped",
                 "test/Ashkenazim/NA24143.vardict.vcf.gz",
+                "test/Ashkenazim/NA24143.vardict.vcf.gz.csi",
                 "test/Ashkenazim/NA24143.vardict.vcf.gz.tbi",
                 "test/Ashkenazim/NA24149.vardict.ped",
                 "test/Ashkenazim/NA24149.vardict.vcf.gz",
+                "test/Ashkenazim/NA24149.vardict.vcf.gz.csi",
                 "test/Ashkenazim/NA24149.vardict.vcf.gz.tbi",
                 "test/Ashkenazim/NA24385.vardict.ped",
                 "test/Ashkenazim/NA24385.vardict.vcf.gz",
+                "test/Ashkenazim/NA24385.vardict.vcf.gz.csi",
                 "test/Ashkenazim/NA24385.vardict.vcf.gz.tbi",
                 "test/Ashkenazim/reports/NA24143.vardict.bcftools_stats.txt",
                 "test/Ashkenazim/reports/NA24143.vardict.somalier.html",
@@ -132,9 +146,9 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-03-27T15:39:37.704366119"
+        "timestamp": "2024-09-05T11:54:10.944847435"
     }
 }

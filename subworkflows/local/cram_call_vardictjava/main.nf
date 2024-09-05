@@ -79,7 +79,7 @@ workflow CRAM_CALL_VARDICTJAVA {
         ch_versions = ch_versions.mix(VCF_CONCAT_BCFTOOLS.out.versions)
 
         ch_dbsnp_annotated = Channel.empty()
-        if(ch_dbsnp) {
+        if(ch_dbsnp != [[],[]]) {
             ch_dbsnp
                 .map { meta, dbsnp -> [ get_vcfanno_config(dbsnp) ] }
                 .collect()
