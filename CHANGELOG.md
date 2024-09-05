@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Changes
 
 1. Bumped the minimal support nextflow version to `24.04.0`
+2. Bumped all modules to the newest versions
+3. The pipeline now also outputs `csi` indices
 
 ## Refactors
 
