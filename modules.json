@@ -179,7 +179,8 @@
                         "git_sha": "c1c2a770cfb0bfbf093a2434a27f091ebbc65987",
                         "installed_by": [
                             "modules"
-                        ]
+                        ],
+                        "patch": "modules/nf-core/rtgtools/pedfilter/rtgtools-pedfilter.diff"
                     },
                     "rtgtools/rocplot": {
                         "branch": "master",
