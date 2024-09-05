@@ -13,16 +13,16 @@
                 ]
             ],
             [
-                "NA241431_annotated.summary.html:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "NA241432_annotated.summary.html:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "NA241433_annotated.summary.html:md5,d41d8cd98f00b204e9800998ecf8427e"
+                "NA241430_annotated_summary.html:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "NA241431_annotated_summary.html:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "NA241432_annotated_summary.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-03-28T09:26:20.34701886"
+        "timestamp": "2024-09-05T12:53:05.739638954"
     },
     "vcfanno": {
         "content": [
@@ -38,15 +38,15 @@
                 ]
             ],
             [
-                "NA241431_annotated.summary.html:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "NA241432_annotated.summary.html:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "NA241433_annotated.summary.html:md5,d41d8cd98f00b204e9800998ecf8427e"
+                "NA241430_annotated_summary.html:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "NA241431_annotated_summary.html:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "NA241432_annotated_summary.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-03-28T09:26:37.223392102"
+        "timestamp": "2024-09-05T12:53:27.894947052"
     }
 }
