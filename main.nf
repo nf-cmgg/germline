@@ -208,7 +208,8 @@ workflow {
         params.input,
         params.ped,
         params.genomes,
-        params.genome
+        params.genome,
+        params.watchdir
     )
 
     //
