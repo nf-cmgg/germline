@@ -98,7 +98,7 @@
                     },
                     "gatk4/genotypegvcfs": {
                         "branch": "master",
-                        "git_sha": "d742e3143f2ccb8853c29b35cfcf50b5e5026980",
+                        "git_sha": "8b74c800af3d91e0d7bfbecb902308dc4369071c",
                         "installed_by": ["modules"]
                     },
                     "gatk4/haplotypecaller": {
