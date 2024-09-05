@@ -171,6 +171,11 @@
                         "git_sha": "458c882987320e27fc90723ec96c127a243a5497",
                         "installed_by": ["modules"]
                     },
+                    "somalier/relate": {
+                        "branch": "master",
+                        "git_sha": "458c882987320e27fc90723ec96c127a243a5497",
+                        "installed_by": ["modules"]
+                    },
                     "tabix/bgzip": {
                         "branch": "master",
                         "git_sha": "b20be35facfc5acdc1259f132ed79339d79e989f",
