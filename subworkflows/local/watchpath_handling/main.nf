@@ -27,6 +27,8 @@ workflow WATCHPATH_HANDLING {
     def pedigree = new Pedigree(pedFile)
     GlobalVariables.pedFiles = pedigree.writePeds(workflow)
 
+    def errors = []
+
     def families = [:]
     def sample_counts = [:]
 
@@ -47,6 +49,9 @@ workflow WATCHPATH_HANDLING {
             }
             if (is_watch) {
                 watch_lines[row[0].id] = row
+                if (!watchdir) {
+                    errors.add("Found a `watch:` prefix in the samplesheet for '${row[0].id}', but no watch directory has been set.")
+                }
             }
 
             // Pipeline logic
@@ -55,17 +60,19 @@ workflow WATCHPATH_HANDLING {
                 pedigree.addPedContent(ped)
             }
             def family = row[0].family ?: pedigree.getFamily(row[0].sample)
+            def sample_id = row[0].id
 
             if (!families.containsKey(family)) {
-                families[family] = [row[0].id]
-            } else {
-                families[family].add(row[0].id)
+                families[family] = [sample_id]
+            } else if(!families[family].contains(sample_id)) {
+                families[family].add(sample_id)
             }
 
-            if (!sample_counts.containsKey(row[0].id)) {
-                sample_counts[row[0].id] = 1
+
+            if (!sample_counts.containsKey(sample_id)) {
+                sample_counts[sample_id] = 1
             } else {
-                sample_counts[row[0].id] += 1
+                sample_counts[sample_id] += 1
             }
 
             def new_meta = row[0] + [family:family]
@@ -74,7 +81,9 @@ workflow WATCHPATH_HANDLING {
             return row
         }
 
-    println(sample_counts)
+    if (errors.size() > 0) {
+        error(errors.join("\n"))
+    }
 
     Channel.fromList(samplesheet_list).set { ch_samplesheet_all }
 
@@ -129,6 +138,7 @@ workflow WATCHPATH_HANDLING {
 
     } else {
         ch_samplesheet_watched = ch_samplesheet_all
+                
     }
 
     ch_samplesheet_watched
@@ -138,7 +148,7 @@ workflow WATCHPATH_HANDLING {
                     duplicate_count:sample_counts[row[0].id]
                 ]
             return row
-        }
+        }.view()
         .set { samplesheet }
 
     emit:
