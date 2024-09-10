@@ -129,7 +129,8 @@
                     "rtgtools/pedfilter": {
                         "branch": "master",
                         "git_sha": "c1c2a770cfb0bfbf093a2434a27f091ebbc65987",
-                        "installed_by": ["modules"]
+                        "installed_by": ["modules"],
+                        "patch": "modules/nf-core/rtgtools/pedfilter/rtgtools-pedfilter.diff"
                     },
                     "rtgtools/rocplot": {
                         "branch": "master",
@@ -170,6 +171,12 @@
                         "branch": "master",
                         "git_sha": "458c882987320e27fc90723ec96c127a243a5497",
                         "installed_by": ["modules"]
+                    },
+                    "somalier/relate": {
+                        "branch": "master",
+                        "git_sha": "458c882987320e27fc90723ec96c127a243a5497",
+                        "installed_by": ["modules"],
+                        "patch": "modules/nf-core/somalier/relate/somalier-relate.diff"
                     },
                     "tabix/bgzip": {
                         "branch": "master",
