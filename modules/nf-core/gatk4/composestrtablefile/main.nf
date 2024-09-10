@@ -4,8 +4,8 @@ process GATK4_COMPOSESTRTABLEFILE {
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'broadinstitute/gatk:4.6.0.0':
-        'broadinstitute/gatk:4.6.0.0' }"
+        'docker.io/broadinstitute/gatk:4.6.0.0':
+        'docker.io/broadinstitute/gatk:4.6.0.0' }"
 
     input:
     path(fasta)
