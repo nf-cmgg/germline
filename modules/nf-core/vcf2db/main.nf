@@ -4,7 +4,9 @@ process VCF2DB {
 
     // WARN: Version information not provided by tool on CLI. Please update version string below when bumping container versions.
     conda "${moduleDir}/environment.yml"
-    container "cmgg/vcf2db:2020.02.24"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/vcf2db:2020.02.24--pl5321hdfd78af_3':
+        'biocontainers/vcf2db:2020.02.24--pl5321hdfd78af_3' }"
 
     input:
     tuple val(meta), path(vcf), path(ped)
@@ -26,12 +28,6 @@ process VCF2DB {
         $ped \\
         ${prefix}.db \\
         $args
-
-    sqlite3 ${prefix}.db 'CREATE INDEX idx_variant_impacts_id ON variant_impacts (variant_id)' && \\
-    sqlite3 ${prefix}.db 'ALTER TABLE variants ADD COLUMN tags varchar(255)' && \\
-    sqlite3 ${prefix}.db 'ALTER TABLE variants ADD COLUMN tags_user varchar(255)' && \\
-    sqlite3 ${prefix}.db 'ALTER TABLE variants ADD COLUMN notes varchar(255)' && \\
-    sqlite3 ${prefix}.db 'ALTER TABLE variants ADD COLUMN notes_user varchar(255)'
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

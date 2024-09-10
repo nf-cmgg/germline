@@ -1,4 +1,5 @@
 Changes in module 'nf-core/somalier/relate'
+Changes in 'somalier/relate/main.nf':
 --- modules/nf-core/somalier/relate/main.nf
 +++ modules/nf-core/somalier/relate/main.nf
 @@ -16,6 +16,7 @@
@@ -27,4 +28,9 @@ Changes in module 'nf-core/somalier/relate'
      cat <<-END_VERSIONS > versions.yml
      "${task.process}":
 
+'modules/nf-core/somalier/relate/environment.yml' is unchanged
+'modules/nf-core/somalier/relate/meta.yml' is unchanged
+'modules/nf-core/somalier/relate/tests/tags.yml' is unchanged
+'modules/nf-core/somalier/relate/tests/main.nf.test' is unchanged
+'modules/nf-core/somalier/relate/tests/main.nf.test.snap' is unchanged
 ************************************************************
