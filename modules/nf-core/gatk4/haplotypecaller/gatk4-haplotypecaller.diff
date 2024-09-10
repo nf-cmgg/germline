@@ -1,6 +1,17 @@
 Changes in module 'nf-core/gatk4/haplotypecaller'
+'modules/nf-core/gatk4/haplotypecaller/environment.yml' is unchanged
+'modules/nf-core/gatk4/haplotypecaller/meta.yml' is unchanged
+Changes in 'gatk4/haplotypecaller/main.nf':
 --- modules/nf-core/gatk4/haplotypecaller/main.nf
 +++ modules/nf-core/gatk4/haplotypecaller/main.nf
+@@ -1,6 +1,6 @@
+ process GATK4_HAPLOTYPECALLER {
+     tag "$meta.id"
+-    label 'process_medium'
++    label 'process_single'
+ 
+     conda "${moduleDir}/environment.yml"
+     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
 @@ -12,8 +12,8 @@
      tuple val(meta2), path(fasta)
      tuple val(meta3), path(fai)
@@ -13,4 +24,7 @@ Changes in module 'nf-core/gatk4/haplotypecaller'
      output:
      tuple val(meta), path("*.vcf.gz")       , emit: vcf
 
+'modules/nf-core/gatk4/haplotypecaller/tests/main.nf.test.snap' is unchanged
+'modules/nf-core/gatk4/haplotypecaller/tests/tags.yml' is unchanged
+'modules/nf-core/gatk4/haplotypecaller/tests/main.nf.test' is unchanged
 ************************************************************
