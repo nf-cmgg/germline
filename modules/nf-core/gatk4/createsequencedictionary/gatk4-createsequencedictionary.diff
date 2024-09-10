@@ -1,0 +1,22 @@
+Changes in module 'nf-core/gatk4/createsequencedictionary'
+'modules/nf-core/gatk4/createsequencedictionary/environment.yml' is unchanged
+'modules/nf-core/gatk4/createsequencedictionary/meta.yml' is unchanged
+Changes in 'gatk4/createsequencedictionary/main.nf':
+--- modules/nf-core/gatk4/createsequencedictionary/main.nf
++++ modules/nf-core/gatk4/createsequencedictionary/main.nf
+@@ -4,8 +4,8 @@
+ 
+     conda "${moduleDir}/environment.yml"
+     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+-        'https://depot.galaxyproject.org/singularity/gatk4:4.5.0.0--py36hdfd78af_0':
+-        'biocontainers/gatk4:4.5.0.0--py36hdfd78af_0' }"
++        'broadinstitute/gatk:4.6.0.0':
++        'broadinstitute/gatk:4.6.0.0' }"
+ 
+     input:
+     tuple val(meta), path(fasta)
+
+'modules/nf-core/gatk4/createsequencedictionary/tests/main.nf.test.snap' is unchanged
+'modules/nf-core/gatk4/createsequencedictionary/tests/tags.yml' is unchanged
+'modules/nf-core/gatk4/createsequencedictionary/tests/main.nf.test' is unchanged
+************************************************************
