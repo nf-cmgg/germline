@@ -21,7 +21,7 @@ workflow WATCHPATH_HANDLING {
     def expected_files = [done_file.name]
 
     // Initialize samplesheet to keep the linter happy
-    ch_samplesheet_watched = Channel.empty()
+    def ch_samplesheet_watched = Channel.empty()
 
     // Pedigree handling
     def pedigree = new Pedigree(pedFile)
@@ -40,7 +40,7 @@ workflow WATCHPATH_HANDLING {
             // Watchpath logic
             def is_watch = false
             row = row.collect { input ->
-                input_name = input instanceof Path ? input.name : input as String
+                def input_name = input instanceof Path ? input.name : input as String
                 if (input_name.startsWith("watch:")) {
                     is_watch = true
                     expected_files.add(input_name.replace("watch:", ""))
@@ -102,7 +102,7 @@ workflow WATCHPATH_HANDLING {
 
     if (watchdir && expected_files.size() > 1) {
 
-        watchdir_path = file(watchdir)
+        def watchdir_path = file(watchdir)
         if (!watchdir_path.exists()) {
             // Create the watchdir if it doesn't exist (this is a failsafe)
             watchdir_path.mkdir()
@@ -151,7 +151,6 @@ workflow WATCHPATH_HANDLING {
 
     } else {
         ch_samplesheet_watched = ch_samplesheet_all
-                
     }
 
     ch_samplesheet_watched
