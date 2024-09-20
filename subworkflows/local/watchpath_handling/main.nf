@@ -31,6 +31,7 @@ workflow WATCHPATH_HANDLING {
 
     def families = [:]
     def sample_counts = [:]
+    def sample_metas = [:]
 
     // Determine which files to watch for
     def samplesheet_list = samplesheetToList(input_samplesheet, samplesheet_schema)
@@ -71,8 +72,19 @@ workflow WATCHPATH_HANDLING {
 
             if (!sample_counts.containsKey(sample_id)) {
                 sample_counts[sample_id] = 1
+                sample_metas[sample_id] = row[0]
             } else {
                 sample_counts[sample_id] += 1
+                if(sample_metas[sample_id] != row[0]) {
+                    def other_meta = sample_metas[sample_id]
+                    def diff_keys = []
+                    other_meta.each { k,v ->
+                        if (v != row[0][k]) {
+                            diff_keys.add(k)
+                        }
+                    }
+                    errors.add("Found multiple entries for sample '${sample_id}' in the samplesheet with differing meta values (`${diff_keys.join(' ')}`).")
+                }
             }
 
             def new_meta = row[0] + [family:family]
@@ -81,13 +93,14 @@ workflow WATCHPATH_HANDLING {
             return row
         }
 
+    // Stop the pipeline if extra validation errors have been detected
     if (errors.size() > 0) {
         error(errors.join("\n"))
     }
 
     Channel.fromList(samplesheet_list).set { ch_samplesheet_all }
 
-    if (watchdir) {
+    if (watchdir && expected_files.size() > 1) {
 
         watchdir_path = file(watchdir)
         if (!watchdir_path.exists()) {
@@ -148,7 +161,7 @@ workflow WATCHPATH_HANDLING {
                     duplicate_count:sample_counts[row[0].id]
                 ]
             return row
-        }.view()
+        }
         .set { samplesheet }
 
     emit:

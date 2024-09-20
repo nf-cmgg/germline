@@ -6,7 +6,7 @@
                     {
                         "id": "Ashkenazim",
                         "family": "Ashkenazim",
-                        "family_count": 3,
+                        "family_samples": "NA24143,NA24149,NA24385",
                         "caller": "haplotypecaller"
                     },
                     [
@@ -21,7 +21,7 @@
                     {
                         "id": "Ashkenazim",
                         "family": "Ashkenazim",
-                        "family_count": 3,
+                        "family_samples": "NA24143,NA24149,NA24385",
                         "caller": "haplotypecaller"
                     },
                     "Ashkenazim.haplotypecaller.html:md5,a7cc550571c8543643d10b2e9db68a48"
@@ -32,7 +32,7 @@
                     {
                         "id": "Ashkenazim",
                         "family": "Ashkenazim",
-                        "family_count": 3,
+                        "family_samples": "NA24143,NA24149,NA24385",
                         "caller": "haplotypecaller"
                     },
                     "Ashkenazim.haplotypecaller.pairs.tsv:md5,0c89abf63de67c9f0ee931e883a17a66"
@@ -43,7 +43,7 @@
                     {
                         "id": "Ashkenazim",
                         "family": "Ashkenazim",
-                        "family_count": 3,
+                        "family_samples": "NA24143,NA24149,NA24385",
                         "caller": "haplotypecaller"
                     },
                     "Ashkenazim.haplotypecaller.samples.tsv:md5,26e108afb44bcbaf4c47e43eb5611d15"
@@ -54,7 +54,7 @@
                     {
                         "id": "Ashkenazim",
                         "family": "Ashkenazim",
-                        "family_count": 3,
+                        "family_samples": "NA24143,NA24149,NA24385",
                         "caller": "haplotypecaller"
                     },
                     "Ashkenazim.haplotypecaller_somalier.ped:md5,689bb83118511ddcb09ae6d30d2d99b3"
@@ -62,10 +62,10 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-03-27T13:17:18.055689163"
+        "timestamp": "2024-09-05T17:39:52.526057891"
     },
     "default - no peds": {
         "content": [
@@ -74,7 +74,7 @@
                     {
                         "id": "Ashkenazim",
                         "family": "Ashkenazim",
-                        "family_count": 3,
+                        "family_samples": "NA24143,NA24149,NA24385",
                         "caller": "haplotypecaller"
                     },
                     [
@@ -89,7 +89,7 @@
                     {
                         "id": "Ashkenazim",
                         "family": "Ashkenazim",
-                        "family_count": 3,
+                        "family_samples": "NA24143,NA24149,NA24385",
                         "caller": "haplotypecaller"
                     },
                     "Ashkenazim.haplotypecaller.html:md5,1622292889a889778f10ae037c051e44"
@@ -100,7 +100,7 @@
                     {
                         "id": "Ashkenazim",
                         "family": "Ashkenazim",
-                        "family_count": 3,
+                        "family_samples": "NA24143,NA24149,NA24385",
                         "caller": "haplotypecaller"
                     },
                     "Ashkenazim.haplotypecaller.pairs.tsv:md5,fc51248691992f10a6b5176f5a2d6231"
@@ -111,7 +111,7 @@
                     {
                         "id": "Ashkenazim",
                         "family": "Ashkenazim",
-                        "family_count": 3,
+                        "family_samples": "NA24143,NA24149,NA24385",
                         "caller": "haplotypecaller"
                     },
                     "Ashkenazim.haplotypecaller.samples.tsv:md5,1c12b44787ba9bc79943737fa54d3007"
@@ -122,7 +122,7 @@
                     {
                         "id": "Ashkenazim",
                         "family": "Ashkenazim",
-                        "family_count": 3,
+                        "family_samples": "NA24143,NA24149,NA24385",
                         "caller": "haplotypecaller"
                     },
                     "Ashkenazim.haplotypecaller_somalier.ped:md5,f1a0cb22a941d0563fae2ca3c30dd0d4"
@@ -130,9 +130,9 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-03-27T13:17:29.504749349"
+        "timestamp": "2024-09-05T17:40:03.603049023"
     }
 }

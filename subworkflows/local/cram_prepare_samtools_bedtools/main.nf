@@ -37,9 +37,9 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
         .groupTuple()
         .branch { meta, cram, crai ->
             multiple: cram.size() > 1
-                return [meta, cram]
+                return [meta.target, cram]
             single:   cram.size() == 1
-                return [meta, cram[0], crai[0]]
+                return [meta.target, cram[0], crai[0]]
         }
         .set { ch_cram_branch }
 
@@ -104,9 +104,9 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
                 }
             }
             found:      is_present
-                return [ meta, output_roi ]
+                return [ meta.target, output_roi ]
             missing:    !is_present
-                return [ meta, [] ]
+                return [ meta.target, [] ]
         }
         .set { ch_roi_branch }
 
@@ -135,7 +135,7 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
             .groupTuple()
             .combine(MERGE_ROI_PARAMS.out.bed.map { meta, bed -> bed })
             .map { meta, missing, default_roi ->
-                [ meta, default_roi ]
+                [ meta.target, default_roi ]
             }
             .set { ch_missing_rois }
     } else {
