@@ -42,7 +42,7 @@ process AUTOMAP_AUTOMAP {
     def panel_name = args.contains("--panelname") ? args.split("--panelname")[-1].trim().split(" ")[0] : ""
     prefix = task.ext.prefix ?: "${meta.id}"
 
-    def create_outputs = meta.family_count > 1 ? (1..meta.family_count).collect { number ->
+    def create_outputs = meta.family_samples.tokenize(",").size() > 1 ? (1..meta.family_samples.tokenize(",").size()).collect { number ->
         def cmd_prefix = "touch ${prefix}/sample${number}"
         [
             "mkdir ${prefix}/sample${number}",

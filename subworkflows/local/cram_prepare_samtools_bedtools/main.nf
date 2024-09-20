@@ -31,12 +31,15 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
     //
 
     ch_crams
-        .groupTuple() // No size needed here because this runs before any process
+        .map { meta, cram, crai ->
+            [ groupKey(meta, meta.duplicate_count), cram, crai]
+        }
+        .groupTuple()
         .branch { meta, cram, crai ->
             multiple: cram.size() > 1
-                return [meta, cram]
+                return [meta.target, cram]
             single:   cram.size() == 1
-                return [meta, cram[0], crai[0]]
+                return [meta.target, cram[0], crai[0]]
         }
         .set { ch_cram_branch }
 
@@ -83,7 +86,10 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
     //
 
     ch_roi
-        .groupTuple() // A specified size isn't needed here since this runs before any process using ROI files is executed
+        .map { meta, roi ->
+            [ groupKey(meta, meta.duplicate_count), roi ]
+        }
+        .groupTuple()
         .branch { meta, roi ->
             // Determine whether there is an ROI file given to the current sample
             // It's possible that a sample is given multiple times in the samplesheet, in which
@@ -98,9 +104,9 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
                 }
             }
             found:      is_present
-                return [ meta, output_roi ]
+                return [ meta.target, output_roi ]
             missing:    !is_present
-                return [ meta, [] ]
+                return [ meta.target, [] ]
         }
         .set { ch_roi_branch }
 
@@ -123,10 +129,13 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
         ch_versions = ch_versions.mix(MERGE_ROI_PARAMS.out.versions)
 
         ch_roi_branch.missing
-            .groupTuple() // A specified size isn't needed here since this runs before any process using the default ROI file is executed
+            .map { meta, bed ->
+                [ groupKey(meta, meta.duplicate_count), bed ]
+            }
+            .groupTuple()
             .combine(MERGE_ROI_PARAMS.out.bed.map { meta, bed -> bed })
             .map { meta, missing, default_roi ->
-                [ meta, default_roi ]
+                [ meta.target, default_roi ]
             }
             .set { ch_missing_rois }
     } else {

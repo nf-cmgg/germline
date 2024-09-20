@@ -20,22 +20,22 @@ nextflow_workflow {
             workflow {
                 """
                 input[0] = Channel.of([
-                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_count:1],
+                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143"],
                     file(params.cram1, checkIfExists:true),
                     file(params.crai1, checkIfExists:true)
                 ])
                 input[1] = Channel.of([
-                    [id:"NA24143.00001", sample:"NA24143", family:"Ashkenazim", family_count:1, split_count:3],
+                    [id:"NA24143.00001", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
                     file(params.cram1, checkIfExists:true),
                     file(params.crai1, checkIfExists:true),
                     file(params.split1, checkIfExists:true)
                 ],[
-                    [id:"NA24143.00002", sample:"NA24143", family:"Ashkenazim", family_count:1, split_count:3],
+                    [id:"NA24143.00002", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
                     file(params.cram1, checkIfExists:true),
                     file(params.crai1, checkIfExists:true),
                     file(params.split2, checkIfExists:true)
                 ],[
-                    [id:"NA24143.00003", sample:"NA24143", family:"Ashkenazim", family_count:1, split_count:3],
+                    [id:"NA24143.00003", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
                     file(params.cram1, checkIfExists:true),
                     file(params.crai1, checkIfExists:true),
                     file(params.split3, checkIfExists:true)
@@ -77,22 +77,22 @@ nextflow_workflow {
             workflow {
                 """
                 input[0] = Channel.of([
-                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_count:1],
+                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143"],
                     file(params.cram1, checkIfExists:true),
                     file(params.crai1, checkIfExists:true)
                 ])
                 input[1] = Channel.of([
-                    [id:"NA24143.00001", sample:"NA24143", family:"Ashkenazim", family_count:1, split_count:3],
+                    [id:"NA24143.00001", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
                     file(params.cram1, checkIfExists:true),
                     file(params.crai1, checkIfExists:true),
                     file(params.split1, checkIfExists:true)
                 ],[
-                    [id:"NA24143.00002", sample:"NA24143", family:"Ashkenazim", family_count:1, split_count:3],
+                    [id:"NA24143.00002", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
                     file(params.cram1, checkIfExists:true),
                     file(params.crai1, checkIfExists:true),
                     file(params.split2, checkIfExists:true)
                 ],[
-                    [id:"NA24143.00003", sample:"NA24143", family:"Ashkenazim", family_count:1, split_count:3],
+                    [id:"NA24143.00003", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
                     file(params.cram1, checkIfExists:true),
                     file(params.crai1, checkIfExists:true),
                     file(params.split3, checkIfExists:true)
@@ -133,41 +133,41 @@ nextflow_workflow {
             workflow {
                 """
                 input[0] = Channel.of([
-                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_count:2],
+                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143,NA24149"],
                     file(params.cram1, checkIfExists:true),
                     file(params.crai1, checkIfExists:true)
                 ],[
-                    [id:"NA24149", sample:"NA24149", family:"Ashkenazim", family_count:2],
+                    [id:"NA24149", sample:"NA24149", family:"Ashkenazim", family_samples:"NA24143,NA24149"],
                     file(params.cram2, checkIfExists:true),
                     file(params.crai2, checkIfExists:true)
                 ])
                 input[1] = Channel.of([
-                    [id:"NA24143.00001", sample:"NA24143", family:"Ashkenazim", family_count:2, split_count:3],
+                    [id:"NA24143.00001", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143,NA24149", split_count:3],
                     file(params.cram1, checkIfExists:true),
                     file(params.crai1, checkIfExists:true),
                     file(params.split1, checkIfExists:true)
                 ],[
-                    [id:"NA24143.00002", sample:"NA24143", family:"Ashkenazim", family_count:2, split_count:3],
+                    [id:"NA24143.00002", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143,NA24149", split_count:3],
                     file(params.cram1, checkIfExists:true),
                     file(params.crai1, checkIfExists:true),
                     file(params.split2, checkIfExists:true)
                 ],[
-                    [id:"NA24143.00003", sample:"NA24143", family:"Ashkenazim", family_count:2, split_count:3],
+                    [id:"NA24143.00003", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143,NA24149", split_count:3],
                     file(params.cram1, checkIfExists:true),
                     file(params.crai1, checkIfExists:true),
                     file(params.split3, checkIfExists:true)
                 ],[
-                    [id:"NA24149.00001", sample:"NA24149", family:"Ashkenazim", family_count:2, split_count:3],
+                    [id:"NA24149.00001", sample:"NA24149", family:"Ashkenazim", family_samples:"NA24143,NA24149", split_count:3],
                     file(params.cram2, checkIfExists:true),
                     file(params.crai2, checkIfExists:true),
                     file(params.split1, checkIfExists:true)
                 ],[
-                    [id:"NA24149.00002", sample:"NA24149", family:"Ashkenazim", family_count:2, split_count:3],
+                    [id:"NA24149.00002", sample:"NA24149", family:"Ashkenazim", family_samples:"NA24143,NA24149", split_count:3],
                     file(params.cram2, checkIfExists:true),
                     file(params.crai2, checkIfExists:true),
                     file(params.split2, checkIfExists:true)
                 ],[
-                    [id:"NA24149.00003", sample:"NA24149", family:"Ashkenazim", family_count:2, split_count:3],
+                    [id:"NA24149.00003", sample:"NA24149", family:"Ashkenazim", family_samples:"NA24143,NA24149", split_count:3],
                     file(params.cram2, checkIfExists:true),
                     file(params.crai2, checkIfExists:true),
                     file(params.split3, checkIfExists:true)

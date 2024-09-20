@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+name: ensemblvep_vep
+>>>>>>> 3726a041a4fa98d73748421c2a5e8a5b3cd6e7c1
 channels:
   - conda-forge
   - bioconda

@@ -28,6 +28,12 @@
                     "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
                     "fa_icon": "fas fa-folder-open"
                 },
+                "watchdir": {
+                    "type": "string",
+                    "format": "directory-path",
+                    "description": "A folder to watch for the creation of files that start with `watch:` in the samplesheet",
+                    "fa_icon": "fas fa-folder-open"
+                },
                 "email": {
                     "type": "string",
                     "description": "Email address for completion summary.",

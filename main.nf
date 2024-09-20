@@ -194,7 +194,10 @@ workflow {
 
     def multiqc_logo = params.multiqc_logo   ?: "$projectDir/assets/CMGG_logo.png"
 
+<<<<<<< HEAD
     print(params.genomes)
+=======
+>>>>>>> 3726a041a4fa98d73748421c2a5e8a5b3cd6e7c1
     //
     // SUBWORKFLOW: Run initialisation tasks
     //
@@ -208,7 +211,8 @@ workflow {
         params.input,
         params.ped,
         params.genomes,
-        params.genome
+        params.genome,
+        params.watchdir
     )
 
     //

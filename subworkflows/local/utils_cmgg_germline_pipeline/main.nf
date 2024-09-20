@@ -10,12 +10,12 @@
 
 include { UTILS_NFSCHEMA_PLUGIN     } from '../../nf-core/utils_nfschema_plugin'
 include { paramsSummaryMap          } from 'plugin/nf-schema'
-include { samplesheetToList         } from 'plugin/nf-schema'
 include { UTILS_NEXTFLOW_PIPELINE   } from '../../nf-core/utils_nextflow_pipeline'
 include { completionEmail           } from '../../nf-core/utils_nfcore_pipeline'
 include { completionSummary         } from '../../nf-core/utils_nfcore_pipeline'
 include { imNotification            } from '../../nf-core/utils_nfcore_pipeline'
 include { UTILS_NFCORE_PIPELINE     } from '../../nf-core/utils_nfcore_pipeline'
+include { WATCHPATH_HANDLING        } from '../watchpath_handling'
 
 /*
 ========================================================================================
@@ -36,6 +36,7 @@ workflow PIPELINE_INITIALISATION {
     pedFile           //  string: Path to the common PED file
     genomesMap        //     map: A map structure containing the references for each genome
     genome            //  string: The genome to use
+    watchdir          //  string: The path to watch for input files
 
     main:
 
@@ -75,43 +76,18 @@ workflow PIPELINE_INITIALISATION {
     // Create channel from input file provided through params.input
     //
 
+    WATCHPATH_HANDLING(
+        input,
+        watchdir,
+        "assets/schema_input.json",
+        pedFile
+    )
+
     // Output the samplesheet
-    def input_file = file(input)
-    input_file.copyTo("${outdir}/samplesheet.csv")
-
-    def pedigree = new Pedigree(pedFile)
-
-    def samplesheetList = samplesheetToList(input_file, "assets/schema_input.json")
-    samplesheetList.each { row ->
-        def ped = row[6]
-        if(ped) { pedigree.addPedContent(ped) }
-    }
-    GlobalVariables.pedFiles = pedigree.writePeds(workflow)
-
-    Channel.fromList(samplesheetList)
-        .map { meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ->
-            // Infer the family ID from the PED file if no family ID was given.
-            // If no PED is given, use the sample ID as family ID
-            def new_meta = meta + [
-                family: meta.family ?: pedigree.getFamily(meta.sample)
-            ]
-            [ new_meta, cram, crai, gvcf, tbi, roi, truth_vcf, truth_tbi, truth_bed ]
-        }
-        .tap { ch_raw_inputs }
-        .map { row ->
-            [ "id":row[0].id, "family":row[0].family ]
-        }
-        .reduce([:]) { families, v ->
-            // Count the unique samples in one family
-            families[v.family] = families[v.family] ? families[v.family] + [v.id] : [v.id]
-            families[v.family] = families[v.family].unique()
-            families
-        }
-        .combine(ch_raw_inputs)
-        .set { ch_samplesheet }
+    file(input).copyTo("${outdir}/samplesheet.csv")
 
     emit:
-    samplesheet = ch_samplesheet
+    samplesheet = WATCHPATH_HANDLING.out.samplesheet
     versions    = ch_versions
 }
 

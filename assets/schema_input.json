@@ -16,28 +16,64 @@
                 "meta": ["family"]
             },
             "cram": {
-                "type": "string",
-                "pattern": "^\\S+\\.cram$",
-                "format": "file-path",
-                "exists": true
+                "oneOf": [
+                    {
+                        "type": "string",
+                        "pattern": "^\\S+\\.cram$",
+                        "format": "file-path",
+                        "exists": true
+                    },
+                    {
+                        "type": "string",
+                        "pattern": "^watch:\\S+\\.cram$",
+                        "format": "file-path"
+                    }
+                ]
             },
             "crai": {
-                "type": "string",
-                "pattern": "^\\S+\\.crai$",
-                "format": "file-path",
-                "exists": true
+                "oneOf": [
+                    {
+                        "type": "string",
+                        "pattern": "^\\S+\\.cram\\.crai$",
+                        "format": "file-path",
+                        "exists": true
+                    },
+                    {
+                        "type": "string",
+                        "pattern": "^watch:\\S+\\.cram\\.crai$",
+                        "format": "file-path"
+                    }
+                ]
             },
             "gvcf": {
-                "type": "string",
-                "pattern": "^\\S+vcf(.gz)?$",
-                "format": "file-path",
-                "exists": true
+                "oneOf": [
+                    {
+                        "type": "string",
+                        "pattern": "^\\S+\\.g\\.vcf(\\.gz)?$",
+                        "format": "file-path",
+                        "exists": true
+                    },
+                    {
+                        "type": "string",
+                        "pattern": "^watch:\\S+\\.g\\.vcf(\\.gz)?$",
+                        "format": "file-path"
+                    }
+                ]
             },
             "tbi": {
-                "type": "string",
-                "pattern": "^\\S+\\.tbi$",
-                "format": "file-path",
-                "exists": true
+                "oneOf": [
+                    {
+                        "type": "string",
+                        "pattern": "^\\S+\\.g\\.vcf\\.gz\\.tbi$",
+                        "format": "file-path",
+                        "exists": true
+                    },
+                    {
+                        "type": "string",
+                        "pattern": "^watch:\\S+\\.g\\.vcf\\.gz\\.tbi?$",
+                        "format": "file-path"
+                    }
+                ]
             },
             "roi": {
                 "type": "string",

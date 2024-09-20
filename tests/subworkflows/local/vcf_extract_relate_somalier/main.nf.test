@@ -14,7 +14,7 @@ nextflow_workflow {
             workflow {
                 """
                 input[0] = Channel.of([
-                    [id:"Ashkenazim", family:"Ashkenazim", family_count:3, caller:"haplotypecaller"],
+                    [id:"Ashkenazim", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385", caller:"haplotypecaller"],
                     file(params.famvcf, checkIfExists:true),
                     file(params.famtbi, checkIfExists:true)
                 ])
@@ -22,7 +22,7 @@ nextflow_workflow {
                 input[2] = Channel.value([[id:"ref"], file(params.fai, checkIfExists:true)])
                 input[3] = Channel.value([[id:"ref"], file(params.somalier_sites, checkIfExists:true)])
                 input[4] = Channel.of([
-                    [id:"Ashkenazim", family:"Ashkenazim", family_count:3, caller:"haplotypecaller"],
+                    [id:"Ashkenazim", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385", caller:"haplotypecaller"],
                     file(params.ped, checkIfExists:true)
                 ])
                 """
@@ -50,7 +50,7 @@ nextflow_workflow {
             workflow {
                 """
                 input[0] = Channel.of([
-                    [id:"Ashkenazim", family:"Ashkenazim", family_count:3, caller:"haplotypecaller"],
+                    [id:"Ashkenazim", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385", caller:"haplotypecaller"],
                     file(params.famvcf, checkIfExists:true),
                     file(params.famtbi, checkIfExists:true)
                 ])
@@ -58,7 +58,7 @@ nextflow_workflow {
                 input[2] = Channel.value([[id:"ref"], file(params.fai, checkIfExists:true)])
                 input[3] = Channel.value([[id:"ref"], file(params.somalier_sites, checkIfExists:true)])
                 input[4] = Channel.of([
-                    [id:"Ashkenazim", family:"Ashkenazim", family_count:3, caller:"haplotypecaller"],
+                    [id:"Ashkenazim", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385", caller:"haplotypecaller"],
                     []
                 ])
                 """
