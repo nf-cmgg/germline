@@ -14,7 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 1. Bumped the minimal support nextflow version to `24.04.0`
 2. Bumped all modules to the newest versions
 3. The pipeline now also outputs `csi` indices
-4. Low coverage regions (regions with less than 5 reads) are no longer considered for variant calling
+4. Rename the `master` branch to `main`
+5. Low coverage regions (regions with less than 5 reads) are no longer considered for variant calling
 
 ## Refactors
 
