@@ -2,7 +2,7 @@
     "filter": {
         "content": [
             [
-                "[:]"
+
             ],
             [
                 "NA24143/NA24143.bed",
@@ -47,7 +47,7 @@
     "only_call": {
         "content": [
             [
-                "[:]"
+
             ],
             [
                 "NA24143/NA24143.bed",
@@ -85,7 +85,7 @@
     "annotate + vcfanno": {
         "content": [
             [
-                "[:]"
+
             ],
             [
                 "NA24143/NA24143.bed",
@@ -131,7 +131,7 @@
     "automap": {
         "content": [
             [
-                "[:]"
+
             ],
             [
                 "NA24143/NA24143.bed",
@@ -188,7 +188,7 @@
     "only_merge": {
         "content": [
             [
-                "[:]"
+
             ],
             [
                 "NA24143/NA24143.bed",
@@ -227,7 +227,7 @@
     "annotate": {
         "content": [
             [
-                "[:]"
+
             ],
             [
                 "NA24143/NA24143.bed",

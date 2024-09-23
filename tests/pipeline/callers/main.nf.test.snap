@@ -2,7 +2,7 @@
     "haplotypecaller": {
         "content": [
             [
-                "[:]"
+
             ],
             [
                 "NA24143/NA24143.bed",
@@ -47,7 +47,7 @@
     "vardict + haplotypecaller": {
         "content": [
             [
-                "[:]"
+
             ],
             [
                 "NA24143/NA24143.bed",
@@ -110,7 +110,7 @@
     "vardict": {
         "content": [
             [
-                "[:]"
+
             ],
             [
                 "NA24143/NA24143.bed",
