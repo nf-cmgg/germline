@@ -8,17 +8,14 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { UTILS_NFVALIDATION_PLUGIN } from '../../nf-core/utils_nfvalidation_plugin'
+include { UTILS_NFSCHEMA_PLUGIN     } from '../../nf-core/utils_nfschema_plugin'
 include { paramsSummaryMap          } from 'plugin/nf-schema'
-include { samplesheetToList         } from 'plugin/nf-schema'
 include { UTILS_NEXTFLOW_PIPELINE   } from '../../nf-core/utils_nextflow_pipeline'
 include { completionEmail           } from '../../nf-core/utils_nfcore_pipeline'
 include { completionSummary         } from '../../nf-core/utils_nfcore_pipeline'
-include { dashedLine                } from '../../nf-core/utils_nfcore_pipeline'
-include { nfCoreLogo                } from '../../nf-core/utils_nfcore_pipeline'
 include { imNotification            } from '../../nf-core/utils_nfcore_pipeline'
 include { UTILS_NFCORE_PIPELINE     } from '../../nf-core/utils_nfcore_pipeline'
-include { workflowCitation          } from '../../nf-core/utils_nfcore_pipeline'
+include { WATCHPATH_HANDLING        } from '../watchpath_handling'
 
 /*
 ========================================================================================
@@ -36,6 +33,10 @@ workflow PIPELINE_INITIALISATION {
     nextflow_cli_args //   array: List of positional nextflow CLI args
     outdir            //  string: The output directory where the results will be saved
     input             //  string: Path to input samplesheet
+    pedFile           //  string: Path to the common PED file
+    genomesMap        //     map: A map structure containing the references for each genome
+    genome            //  string: The genome to use
+    watchdir          //  string: The path to watch for input files
 
     main:
 
@@ -54,16 +55,10 @@ workflow PIPELINE_INITIALISATION {
     //
     // Validate parameters and generate parameter summary to stdout
     //
-    pre_help_text = nfCoreLogo(monochrome_logs)
-    post_help_text = '\n' + workflowCitation() + '\n' + dashedLine(monochrome_logs)
-    def String workflow_command = "nextflow run ${workflow.manifest.name} -profile <docker/singularity/.../institute> --input samplesheet.csv --outdir <OUTDIR>"
-    UTILS_NFVALIDATION_PLUGIN (
-        help,
-        workflow_command,
-        pre_help_text,
-        post_help_text,
+    UTILS_NFSCHEMA_PLUGIN (
+        workflow,
         validate_params,
-        "nextflow_schema.json"
+        null
     )
 
     //
@@ -75,46 +70,24 @@ workflow PIPELINE_INITIALISATION {
     //
     // Custom validation for pipeline parameters
     //
-    validateInputParameters()
+    validateInputParameters(genomesMap, genome)
 
     //
     // Create channel from input file provided through params.input
     //
 
+    WATCHPATH_HANDLING(
+        input,
+        watchdir,
+        "assets/schema_input.json",
+        pedFile
+    )
+
     // Output the samplesheet
-    file(params.input).copyTo("${params.outdir}/samplesheet.csv")
-
-    def Pedigree pedigree = new Pedigree(params.ped)
-
-    def List<List> samplesheetList = samplesheetToList(params.input, "assets/schema_input.json")
-    samplesheetList.each {
-        ped = it[6]
-        if(ped) { pedigree.addPedContent(ped) }
-    }
-    GlobalVariables.pedFiles = pedigree.writePeds(workflow)
-
-    Channel.fromList(samplesheetList)
-        .map { meta, cram, crai, gvcf, tbi, roi, ped, truth_vcf, truth_tbi, truth_bed ->
-            // Infer the family ID from the PED file if no family ID was given.
-            // If no PED is given, use the sample ID as family ID
-            def new_meta = meta + [
-                family: meta.family ?: pedigree.getFamily(meta.sample)
-            ]
-            [ new_meta, cram, crai, gvcf, tbi, roi, truth_vcf, truth_tbi, truth_bed ]
-        }
-        .tap { ch_raw_inputs }
-        .map { [ "id":it[0].id, "family":it[0].family ] }
-        .reduce([:]) { families, v ->
-            // Count the unique samples in one family
-            families[v.family] = families[v.family] ? families[v.family] + [v.id] : [v.id]
-            families[v.family] = families[v.family].unique()
-            families
-        }
-        .combine(ch_raw_inputs)
-        .set { ch_samplesheet }
+    file(input).copyTo("${outdir}/samplesheet.csv")
 
     emit:
-    samplesheet = ch_samplesheet
+    samplesheet = WATCHPATH_HANDLING.out.samplesheet
     versions    = ch_versions
 }
 
@@ -167,17 +140,17 @@ workflow PIPELINE_COMPLETION {
 //
 // Check and validate pipeline parameters
 //
-def validateInputParameters() {
-    genomeExistsError()
+def validateInputParameters(genomesMap, genome) {
+    genomeExistsError(genomesMap, genome)
 }
 
 //
 // Get attribute from genome config file e.g. fasta
 //
-def getGenomeAttribute(attribute) {
-    if (params.genomes && params.genome && params.genomes.containsKey(params.genome)) {
-        if (params.genomes[ params.genome ].containsKey(attribute)) {
-            return params.genomes[ params.genome ][ attribute ]
+def getGenomeAttribute(attribute, genomesMap, genome) {
+    if (genomesMap && genome && genomesMap.containsKey(genome)) {
+        if (genomesMap[ genome ].containsKey(attribute)) {
+            return genomesMap[ genome ][ attribute ]
         }
     }
     return null
@@ -186,12 +159,12 @@ def getGenomeAttribute(attribute) {
 //
 // Exit pipeline if incorrect --genome key provided
 //
-def genomeExistsError() {
-    if (params.genomes && params.genome && !params.genomes.containsKey(params.genome)) {
+def genomeExistsError(genomesMap, genome) {
+    if (genomesMap && genome && !genomesMap.containsKey(genome)) {
         def error_string = "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
-            "  Genome '${params.genome}' not found in any config files provided to the pipeline.\n" +
+            "  Genome '${genome}' not found in any config files provided to the pipeline.\n" +
             "  Currently, the available genome keys are:\n" +
-            "  ${params.genomes.keySet().join(", ")}\n" +
+            "  ${genomesMap.keySet().join(", ")}\n" +
             "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
         error(error_string)
     }
@@ -231,8 +204,10 @@ def methodsDescriptionText(mqc_methods_yaml) {
         // Removing `https://doi.org/` to handle pipelines using DOIs vs DOI resolvers
         // Removing ` ` since the manifest.doi is a string and not a proper list
         def temp_doi_ref = ""
-        String[] manifest_doi = meta.manifest_map.doi.tokenize(",")
-        for (String doi_ref: manifest_doi) temp_doi_ref += "(doi: <a href=\'https://doi.org/${doi_ref.replace("https://doi.org/", "").replace(" ", "")}\'>${doi_ref.replace("https://doi.org/", "").replace(" ", "")}</a>), "
+        def manifest_doi = meta.manifest_map.doi.tokenize(",")
+        manifest_doi.each { doi_ref ->
+            temp_doi_ref += "(doi: <a href=\'https://doi.org/${doi_ref.replace("https://doi.org/", "").replace(" ", "")}\'>${doi_ref.replace("https://doi.org/", "").replace(" ", "")}</a>), "
+        }
         meta["doi_text"] = temp_doi_ref.substring(0, temp_doi_ref.length() - 2)
     } else meta["doi_text"] = ""
     meta["nodoi_text"] = meta.manifest_map.doi ? "" : "<li>If available, make sure to update the text to include the Zenodo DOI of version of the pipeline used. </li>"

@@ -14,9 +14,6 @@ process FILTER_BEDS {
     tuple val(meta), path('*.bed'), emit: bed
     path  "versions.yml"          , emit: versions
 
-    when:
-    task.ext.when == null || task.ext.when
-
     script:
     // Remove regions with no coverage from the callable regions BED file
     def args = task.ext.args ?: ''

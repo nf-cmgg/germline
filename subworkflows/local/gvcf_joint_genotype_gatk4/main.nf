@@ -47,20 +47,11 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
     ch_gvcfs
         .map { meta, gvcf, tbi ->
             // Create the family meta
-            def new_meta = [
-                family:         meta.family,
-                id:             meta.family,
-                family_count:   meta.family_count,
-                caller:         meta.caller
-            ]
-            [ groupKey(new_meta, meta.family_count.toInteger()), gvcf, tbi, meta.sample ]
+            def new_meta = meta.subMap(["family", "family_samples", "caller"]) + [id:meta.family]
+            [ groupKey(new_meta, meta.family_samples.tokenize(",").size()), gvcf, tbi ]
         }
         .groupTuple()
-        .map { meta, gvcf, tbi, samples ->
-            def new_meta = meta + [samples: "${samples.sort(false).join(',')}"] // Having a comma-separated string ensures that joins don't fail
-            [ new_meta, gvcf, tbi ]
-        }
-        .combine(GAWK.out.output.map { it[1] })
+        .combine(GAWK.out.output.map { meta, bed -> bed })
         .map { meta, gvcfs, tbis, bed ->
             [ meta, gvcfs, tbis, bed, [], [] ]
         }
@@ -87,19 +78,10 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
         BCFTOOLS_QUERY.out.output
             .map { meta, bed ->
                 // Create the family meta
-                def new_meta = [
-                    family:         meta.family,
-                    id:             meta.family,
-                    family_count:   meta.family_count,
-                    caller:         meta.caller
-                ]
-                [ groupKey(new_meta, meta.family_count.toInteger()), bed, meta.sample ]
+                def new_meta = meta.subMap(["family", "family_samples", "caller"]) + [id:meta.family]
+                [ groupKey(new_meta, meta.family_samples.tokenize(",").size()), bed ]
             }
             .groupTuple()
-            .map { meta, bed, samples ->
-                def new_meta = meta + [samples: "${samples.sort(false).join(',')}"] // Having a comma-separated string ensures that joins don't fail
-                [ new_meta, bed ]
-            }
             .dump(tag:'merge_beds_input', pretty: true)
             .set { ch_merge_beds_input }
 
@@ -116,7 +98,7 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
         INPUT_SPLIT_BEDTOOLS(
             MERGE_BEDS.out.bed.map { meta, bed ->
                 // Multiply the scatter count by the family size to better scatter big families
-                [meta, bed, (params.scatter_count * meta.family_count)]
+                [meta, bed, (scatter_count * meta.family_samples.tokenize(",").size())]
             },
             GATK4_GENOMICSDBIMPORT.out.genomicsdb.map { meta, genomicsdb -> [ meta, genomicsdb, [] ]}
         )
@@ -134,9 +116,9 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
 
         GATK4_GENOTYPEGVCFS(
             ch_genotypegvcfs_input,
-            ch_fasta.map { it[1] },
-            ch_fai.map { it[1] },
-            ch_dict.map { it[1] },
+            ch_fasta,
+            ch_fai,
+            ch_dict,
             ch_dbsnp,
             ch_dbsnp_tbi
         )

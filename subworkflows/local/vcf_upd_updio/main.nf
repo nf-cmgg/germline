@@ -16,24 +16,30 @@ workflow VCF_UPD_UPDIO {
 
     // Filter out all families that have less than 3 samples
     ch_vcfs
-        .filter { it[0].family_count >= 3 }
+        .filter { meta, vcf, tbi ->
+            meta.family_samples.tokenize(",").size() >= 3
+        }
         .set { ch_trio_vcfs }
 
     ch_peds
-        .filter { it[0].family_count >= 3 }
+        .filter { meta, ped ->
+            meta.family_samples.tokenize(",").size() >= 3
+        }
         .set { ch_trio_peds }
 
     CustomChannelOperators.joinOnKeys(
         [failOnDuplicate:true, failOnMismatch:true],
         ch_trio_vcfs,
         ch_trio_peds,
-        ["id", "family", "family_count", "caller"]
+        ["id", "family", "family_samples", "caller"]
     )
         .map { meta, vcf, tbi, ped ->
             def meta_list = get_family_data_from_ped(meta, ped)
             [ meta_list, vcf, tbi ]
         }
-        .filter { it[0] }
+        .filter { meta, vcf, tbi ->
+            meta
+        }
         .transpose(by:0)
         .set { ch_trio_vcfs_family }
 

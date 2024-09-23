@@ -14,12 +14,12 @@ nextflow_workflow {
             workflow {
                 """
                 input[0] = Channel.of([
-                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_count:1],
+                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143"],
                     file(params.bed, checkIfExists:true),
                     3
                 ])
                 input[1] = Channel.of([
-                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_count:1],
+                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143"],
                     file(params.cram1, checkIfExists:true),
                     file(params.crai1, checkIfExists:true),
                 ])

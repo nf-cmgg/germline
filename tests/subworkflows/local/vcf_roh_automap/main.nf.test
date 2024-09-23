@@ -18,7 +18,7 @@ nextflow_workflow {
             workflow {
                 """
                 input[0] = Channel.of([
-                    [id:"Ashkenazim", family:"Ashkenazim", family_count:3, caller:"haplotypecaller", samples: "NA24143,NA24835,NA24149"],
+                    [id:"Ashkenazim", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385", caller:"haplotypecaller", samples: "NA24143,NA24835,NA24149"],
                     file(params.famvcf, checkIfExists:true),
                     file(params.famtbi, checkIfExists:true)
                 ])
@@ -58,7 +58,7 @@ nextflow_workflow {
             workflow {
                 """
                 input[0] = Channel.of([
-                    [id:"NA24143", family:"NA24143", family_count:1, caller:"haplotypecaller", samples: "NA24143,NA24835,NA24149"],
+                    [id:"NA24143", family:"NA24143", family_samples:"NA24143", caller:"haplotypecaller", samples: "NA24143,NA24835,NA24149"],
                     file(params.vcf1, checkIfExists:true),
                     file(params.tbi1, checkIfExists:true)
                 ])

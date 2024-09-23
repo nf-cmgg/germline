@@ -21,17 +21,17 @@ nextflow_workflow {
             workflow {
                 """
                 input[0] = Channel.of([
-                    [id:"NA24143.00001", sample:"NA24143", family:"Ashkenazim", family_count:1, split_count:3],
+                    [id:"NA24143.00001", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
                     file(params.cram1, checkIfExists:true),
                     file(params.crai1, checkIfExists:true),
                     file(params.split1, checkIfExists:true)
                 ],[
-                    [id:"NA24143.00002", sample:"NA24143", family:"Ashkenazim", family_count:1, split_count:3],
+                    [id:"NA24143.00002", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
                     file(params.cram1, checkIfExists:true),
                     file(params.crai1, checkIfExists:true),
                     file(params.split2, checkIfExists:true)
                 ],[
-                    [id:"NA24143.00003", sample:"NA24143", family:"Ashkenazim", family_count:1, split_count:3],
+                    [id:"NA24143.00003", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
                     file(params.cram1, checkIfExists:true),
                     file(params.crai1, checkIfExists:true),
                     file(params.split3, checkIfExists:true)
@@ -53,8 +53,8 @@ nextflow_workflow {
                     [id:"strtablefile"],
                     file(params.strtablefile, checkIfExists:true)
                 ])
-                input[6] = []
-                input[7] = []
+                input[6] = [[],[]]
+                input[7] = [[],[]]
                 input[8] = false
                 input[9] = false
                 input[10] = false
@@ -86,7 +86,7 @@ nextflow_workflow {
                 """
                 input[0] = Channel.empty()
                 input[1] = Channel.of([
-                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_count:1],
+                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143"],
                     file(params.gvcf1, checkIfExists:true),
                     file(params.gtbi1, checkIfExists:true)
                 ])
@@ -106,10 +106,8 @@ nextflow_workflow {
                     [id:"strtablefile"],
                     file(params.strtablefile, checkIfExists:true)
                 ])
-                input[6] = []
-                input[7] = []
-                input[6] = []
-                input[7] = []
+                input[6] = [[],[]]
+                input[7] = [[],[]]
                 input[8] = false
                 input[9] = false
                 input[10] = false
@@ -140,27 +138,27 @@ nextflow_workflow {
             workflow {
                 """
                 input[0] = Channel.of([
-                    [id:"NA24835.00001", sample:"NA24835", family:"Ashkenazim", family_count:3, split_count:3],
+                    [id:"NA24835.00001", sample:"NA24835", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385", split_count:3],
                     file(params.cram3, checkIfExists:true),
                     file(params.crai3, checkIfExists:true),
                     file(params.split1, checkIfExists:true)
                 ],[
-                    [id:"NA24835.00002", sample:"NA24835", family:"Ashkenazim", family_count:3, split_count:3],
+                    [id:"NA24835.00002", sample:"NA24835", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385", split_count:3],
                     file(params.cram3, checkIfExists:true),
                     file(params.crai3, checkIfExists:true),
                     file(params.split2, checkIfExists:true)
                 ],[
-                    [id:"NA24835.00003", sample:"NA24835", family:"Ashkenazim", family_count:3, split_count:3],
+                    [id:"NA24835.00003", sample:"NA24835", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385", split_count:3],
                     file(params.cram3, checkIfExists:true),
                     file(params.crai3, checkIfExists:true),
                     file(params.split3, checkIfExists:true)
                 ])
                 input[1] = Channel.of([
-                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_count:3],
+                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385"],
                     file(params.gvcf1, checkIfExists:true),
                     file(params.gtbi1, checkIfExists:true)
                 ],[
-                    [id:"NA24149", sample:"NA24149", family:"Ashkenazim", family_count:3],
+                    [id:"NA24149", sample:"NA24149", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385"],
                     file(params.gvcf2, checkIfExists:true),
                     file(params.gtbi2, checkIfExists:true)
                 ])
@@ -180,10 +178,8 @@ nextflow_workflow {
                     [id:"strtablefile"],
                     file(params.strtablefile, checkIfExists:true)
                 ])
-                input[6] = []
-                input[7] = []
-                input[6] = []
-                input[7] = []
+                input[6] = [[],[]]
+                input[7] = [[],[]]
                 input[8] = false
                 input[9] = false
                 input[10] = false
@@ -215,27 +211,27 @@ nextflow_workflow {
             workflow {
                 """
                 input[0] = Channel.of([
-                    [id:"NA24835.00001", sample:"NA24835", family:"Ashkenazim", family_count:3, split_count:3],
+                    [id:"NA24835.00001", sample:"NA24835", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385", split_count:3],
                     file(params.cram3, checkIfExists:true),
                     file(params.crai3, checkIfExists:true),
                     file(params.split1, checkIfExists:true)
                 ],[
-                    [id:"NA24835.00002", sample:"NA24835", family:"Ashkenazim", family_count:3, split_count:3],
+                    [id:"NA24835.00002", sample:"NA24835", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385", split_count:3],
                     file(params.cram3, checkIfExists:true),
                     file(params.crai3, checkIfExists:true),
                     file(params.split2, checkIfExists:true)
                 ],[
-                    [id:"NA24835.00003", sample:"NA24835", family:"Ashkenazim", family_count:3, split_count:3],
+                    [id:"NA24835.00003", sample:"NA24835", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385", split_count:3],
                     file(params.cram3, checkIfExists:true),
                     file(params.crai3, checkIfExists:true),
                     file(params.split3, checkIfExists:true)
                 ])
                 input[1] = Channel.of([
-                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_count:3],
+                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385"],
                     file(params.gvcf1, checkIfExists:true),
                     file(params.gtbi1, checkIfExists:true)
                 ],[
-                    [id:"NA24149", sample:"NA24149", family:"Ashkenazim", family_count:3],
+                    [id:"NA24149", sample:"NA24149", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385"],
                     file(params.gvcf2, checkIfExists:true),
                     file(params.gtbi2, checkIfExists:true)
                 ])
@@ -255,10 +251,8 @@ nextflow_workflow {
                     [id:"strtablefile"],
                     file(params.strtablefile, checkIfExists:true)
                 ])
-                input[6] = []
-                input[7] = []
-                input[6] = []
-                input[7] = []
+                input[6] = [[],[]]
+                input[7] = [[],[]]
                 input[8] = false
                 input[9] = false
                 input[10] = false
@@ -290,27 +284,27 @@ nextflow_workflow {
             workflow {
                 """
                 input[0] = Channel.of([
-                    [id:"NA24835.00001", sample:"NA24835", family:"Ashkenazim", family_count:3, split_count:3],
+                    [id:"NA24835.00001", sample:"NA24835", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385", split_count:3],
                     file(params.cram3, checkIfExists:true),
                     file(params.crai3, checkIfExists:true),
                     file(params.split1, checkIfExists:true)
                 ],[
-                    [id:"NA24835.00002", sample:"NA24835", family:"Ashkenazim", family_count:3, split_count:3],
+                    [id:"NA24835.00002", sample:"NA24835", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385", split_count:3],
                     file(params.cram3, checkIfExists:true),
                     file(params.crai3, checkIfExists:true),
                     file(params.split2, checkIfExists:true)
                 ],[
-                    [id:"NA24835.00003", sample:"NA24835", family:"Ashkenazim", family_count:3, split_count:3],
+                    [id:"NA24835.00003", sample:"NA24835", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385", split_count:3],
                     file(params.cram3, checkIfExists:true),
                     file(params.crai3, checkIfExists:true),
                     file(params.split3, checkIfExists:true)
                 ])
                 input[1] = Channel.of([
-                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_count:3],
+                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385"],
                     file(params.gvcf1, checkIfExists:true),
                     file(params.gtbi1, checkIfExists:true)
                 ],[
-                    [id:"NA24149", sample:"NA24149", family:"Ashkenazim", family_count:3],
+                    [id:"NA24149", sample:"NA24149", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385"],
                     file(params.gvcf2, checkIfExists:true),
                     file(params.gtbi2, checkIfExists:true)
                 ])
@@ -330,10 +324,8 @@ nextflow_workflow {
                     [id:"strtablefile"],
                     file(params.strtablefile, checkIfExists:true)
                 ])
-                input[6] = []
-                input[7] = []
-                input[6] = []
-                input[7] = []
+                input[6] = [[],[]]
+                input[7] = [[],[]]
                 input[8] = false
                 input[9] = true
                 input[10] = false
@@ -365,27 +357,27 @@ nextflow_workflow {
             workflow {
                 """
                 input[0] = Channel.of([
-                    [id:"NA24835.00001", sample:"NA24835", family:"Ashkenazim", family_count:3, split_count:3],
+                    [id:"NA24835.00001", sample:"NA24835", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385", split_count:3],
                     file(params.cram3, checkIfExists:true),
                     file(params.crai3, checkIfExists:true),
                     file(params.split1, checkIfExists:true)
                 ],[
-                    [id:"NA24835.00002", sample:"NA24835", family:"Ashkenazim", family_count:3, split_count:3],
+                    [id:"NA24835.00002", sample:"NA24835", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385", split_count:3],
                     file(params.cram3, checkIfExists:true),
                     file(params.crai3, checkIfExists:true),
                     file(params.split2, checkIfExists:true)
                 ],[
-                    [id:"NA24835.00003", sample:"NA24835", family:"Ashkenazim", family_count:3, split_count:3],
+                    [id:"NA24835.00003", sample:"NA24835", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385", split_count:3],
                     file(params.cram3, checkIfExists:true),
                     file(params.crai3, checkIfExists:true),
                     file(params.split3, checkIfExists:true)
                 ])
                 input[1] = Channel.of([
-                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_count:3],
+                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385"],
                     file(params.gvcf1, checkIfExists:true),
                     file(params.gtbi1, checkIfExists:true)
                 ],[
-                    [id:"NA24149", sample:"NA24149", family:"Ashkenazim", family_count:3],
+                    [id:"NA24149", sample:"NA24149", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385"],
                     file(params.gvcf2, checkIfExists:true),
                     file(params.gtbi2, checkIfExists:true)
                 ])
@@ -405,10 +397,8 @@ nextflow_workflow {
                     [id:"strtablefile"],
                     file(params.strtablefile, checkIfExists:true)
                 ])
-                input[6] = []
-                input[7] = []
-                input[6] = []
-                input[7] = []
+                input[6] = [[],[]]
+                input[7] = [[],[]]
                 input[8] = false
                 input[9] = false
                 input[10] = true
@@ -439,27 +429,27 @@ nextflow_workflow {
             workflow {
                 """
                 input[0] = Channel.of([
-                    [id:"NA24835.00001", sample:"NA24835", family:"Ashkenazim", family_count:2, split_count:3],
+                    [id:"NA24835.00001", sample:"NA24835", family:"Ashkenazim", family_samples:"NA24149,NA24385", split_count:3],
                     file(params.cram3, checkIfExists:true),
                     file(params.crai3, checkIfExists:true),
                     file(params.split1, checkIfExists:true)
                 ],[
-                    [id:"NA24835.00002", sample:"NA24835", family:"Ashkenazim", family_count:2, split_count:3],
+                    [id:"NA24835.00002", sample:"NA24835", family:"Ashkenazim", family_samples:"NA24149,NA24385", split_count:3],
                     file(params.cram3, checkIfExists:true),
                     file(params.crai3, checkIfExists:true),
                     file(params.split2, checkIfExists:true)
                 ],[
-                    [id:"NA24835.00003", sample:"NA24835", family:"Ashkenazim", family_count:2, split_count:3],
+                    [id:"NA24835.00003", sample:"NA24835", family:"Ashkenazim", family_samples:"NA24149,NA24385", split_count:3],
                     file(params.cram3, checkIfExists:true),
                     file(params.crai3, checkIfExists:true),
                     file(params.split3, checkIfExists:true)
                 ])
                 input[1] = Channel.of([
-                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_count:2],
+                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143"],
                     file(params.gvcf1, checkIfExists:true),
                     file(params.gtbi1, checkIfExists:true)
                 ],[
-                    [id:"NA24149", sample:"NA24149", family:"NA24149", family_count:2],
+                    [id:"NA24149", sample:"NA24149", family:"NA24149", family_samples:"NA24149,NA24385"],
                     file(params.gvcf2, checkIfExists:true),
                     file(params.gtbi2, checkIfExists:true)
                 ])
@@ -479,10 +469,8 @@ nextflow_workflow {
                     [id:"strtablefile"],
                     file(params.strtablefile, checkIfExists:true)
                 ])
-                input[6] = []
-                input[7] = []
-                input[6] = []
-                input[7] = []
+                input[6] = [[],[]]
+                input[7] = [[],[]]
                 input[8] = false
                 input[9] = false
                 input[10] = false
