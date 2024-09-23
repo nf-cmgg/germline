@@ -145,6 +145,9 @@ nextflow_workflow {
                 input[1] = Channel.of([
                     [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", duplicate_count:2],
                     file(params.bed, checkIfExists:true)
+                ],[
+                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", duplicate_count:2],
+                    []
                 ])
                 input[2] = Channel.value([
                     [id:"fasta"],
