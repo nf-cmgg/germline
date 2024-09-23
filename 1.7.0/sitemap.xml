@@ -2,27 +2,22 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://nf-cmgg.github.io/germline/1.7.0/</loc>
-         <lastmod>2024-08-09</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2024-09-23</lastmod>
     </url>
     <url>
          <loc>https://nf-cmgg.github.io/germline/1.7.0/CITATIONS/</loc>
-         <lastmod>2024-08-09</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2024-09-23</lastmod>
     </url>
     <url>
          <loc>https://nf-cmgg.github.io/germline/1.7.0/output/</loc>
-         <lastmod>2024-08-09</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2024-09-23</lastmod>
     </url>
     <url>
          <loc>https://nf-cmgg.github.io/germline/1.7.0/parameters/</loc>
-         <lastmod>2024-08-09</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2024-09-23</lastmod>
     </url>
     <url>
          <loc>https://nf-cmgg.github.io/germline/1.7.0/usage/</loc>
-         <lastmod>2024-08-09</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2024-09-23</lastmod>
     </url>
 </urlset>
