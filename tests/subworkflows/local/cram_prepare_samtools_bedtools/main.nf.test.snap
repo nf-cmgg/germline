@@ -60,7 +60,7 @@
                         "family_samples": "NA24143",
                         "duplicate_count": 1
                     },
-                    "NA24143.filter.bed:md5,9fc0cc2e4403678f18bc8b18646abd66"
+                    "NA24143.filter.bed:md5,85a5568a6976ed455caa712991b30ac2"
                 ]
             ],
             [
@@ -71,7 +71,7 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-06T14:32:19.290286542"
+        "timestamp": "2024-09-23T14:56:11.141634788"
     },
     "default - WES": {
         "content": [
