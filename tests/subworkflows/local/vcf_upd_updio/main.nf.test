@@ -17,12 +17,12 @@ nextflow_workflow {
             workflow {
                 """
                 input[0] = Channel.of([
-                    [id:"Ashkenazim", family:"Ashkenazim", family_count:3, caller:"haplotypecaller"],
+                    [id:"Ashkenazim", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385", caller:"haplotypecaller"],
                     file(params.famvcf, checkIfExists:true),
                     file(params.famtbi, checkIfExists:true)
                 ])
                 input[1] = Channel.of([
-                    [id:"Ashkenazim", family:"Ashkenazim", family_count:3, caller:"haplotypecaller"],
+                    [id:"Ashkenazim", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385", caller:"haplotypecaller"],
                     file(params.ped, checkIfExists:true)
                 ])
                 input[2] = [[],[]]
@@ -50,12 +50,12 @@ nextflow_workflow {
             workflow {
                 """
                 input[0] = Channel.of([
-                    [id:"Ashkenazim", family:"Ashkenazim", family_count:1, caller:"haplotypecaller"],
+                    [id:"Ashkenazim", family:"Ashkenazim", family_samples:"NA24143", caller:"haplotypecaller"],
                     file(params.vcf1, checkIfExists:true),
                     file(params.tbi1, checkIfExists:true)
                 ])
                 input[1] = Channel.of([
-                    [id:"Ashkenazim", family:"Ashkenazim", family_count:1, caller:"haplotypecaller"],
+                    [id:"Ashkenazim", family:"Ashkenazim", family_samples:"NA24143", caller:"haplotypecaller"],
                     file(params.ped, checkIfExists:true)
                 ])
                 input[2] = [[],[]]

@@ -22,10 +22,9 @@
                 [
                     {
                         "family": "Ashkenazim",
-                        "id": "Ashkenazim",
-                        "family_count": 3,
+                        "family_samples": "NA24143,NA24149,NA24385",
                         "caller": "haplotypecaller",
-                        "samples": "NA24143,NA24149,NA24835"
+                        "id": "Ashkenazim"
                     },
                     "Ashkenazim.haplotypecaller.vcf.gz",
                     "Ashkenazim.haplotypecaller.vcf.gz.tbi"
@@ -41,7 +40,7 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-05T11:18:02.353352239"
+        "timestamp": "2024-09-05T17:35:02.44674969"
     },
     "filter - family": {
         "content": [
@@ -49,10 +48,9 @@
                 [
                     {
                         "family": "Ashkenazim",
-                        "id": "Ashkenazim",
-                        "family_count": 3,
+                        "family_samples": "NA24143,NA24149,NA24385",
                         "caller": "haplotypecaller",
-                        "samples": "NA24143,NA24149,NA24835"
+                        "id": "Ashkenazim"
                     },
                     "Ashkenazim.haplotypecaller.vcf.gz",
                     "Ashkenazim.haplotypecaller.vcf.gz.tbi"
@@ -68,7 +66,7 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-05T11:19:14.883570897"
+        "timestamp": "2024-09-05T17:35:46.768542501"
     },
     "default - gvcfs": {
         "content": [
@@ -76,10 +74,9 @@
                 [
                     {
                         "family": "Ashkenazim",
-                        "id": "Ashkenazim",
-                        "family_count": 1,
+                        "family_samples": "NA24143",
                         "caller": "haplotypecaller",
-                        "samples": "NA24143"
+                        "id": "Ashkenazim"
                     },
                     "Ashkenazim.haplotypecaller.vcf.gz",
                     "Ashkenazim.haplotypecaller.vcf.gz.tbi"
@@ -91,9 +88,9 @@
         ],
         "meta": {
             "nf-test": "0.9.0",
-            "nextflow": "24.04.3"
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-08-06T12:56:23.435795439"
+        "timestamp": "2024-09-05T17:34:17.846266913"
     },
     "default - crams": {
         "content": [
@@ -101,10 +98,9 @@
                 [
                     {
                         "family": "Ashkenazim",
-                        "id": "Ashkenazim",
-                        "family_count": 1,
+                        "family_samples": "NA24143",
                         "caller": "haplotypecaller",
-                        "samples": "NA24143"
+                        "id": "Ashkenazim"
                     },
                     "Ashkenazim.haplotypecaller.vcf.gz",
                     "Ashkenazim.haplotypecaller.vcf.gz.tbi"
@@ -120,7 +116,7 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-05T11:16:25.448441115"
+        "timestamp": "2024-09-05T17:33:52.045772718"
     },
     "only_call - family": {
         "content": [
@@ -145,10 +141,9 @@
                 [
                     {
                         "family": "Ashkenazim",
-                        "id": "Ashkenazim",
-                        "family_count": 2,
+                        "family_samples": "NA24143",
                         "caller": "haplotypecaller",
-                        "samples": "NA24143,NA24835"
+                        "id": "Ashkenazim"
                     },
                     "Ashkenazim.haplotypecaller.vcf.gz",
                     "Ashkenazim.haplotypecaller.vcf.gz.tbi"
@@ -164,6 +159,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-05T11:21:57.601081087"
+        "timestamp": "2024-09-06T14:26:29.249708339"
     }
 }

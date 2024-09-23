@@ -177,7 +177,7 @@ workflow {
         }
     }
 
-    callers = params.callers.tokenize(",")
+    def callers = params.callers.tokenize(",")
     callers.each { caller ->
         if(!(caller in GlobalVariables.availableCallers)) { error("\"${caller}\" is not a supported callers please use one or more of these instead: ${GlobalVariables.availableCallers}")}
     }
@@ -194,7 +194,6 @@ workflow {
 
     def multiqc_logo = params.multiqc_logo   ?: "$projectDir/assets/CMGG_logo.png"
 
-    print(params.genomes)
     //
     // SUBWORKFLOW: Run initialisation tasks
     //
@@ -208,7 +207,8 @@ workflow {
         params.input,
         params.ped,
         params.genomes,
-        params.genome
+        params.genome,
+        params.watchdir
     )
 
     //

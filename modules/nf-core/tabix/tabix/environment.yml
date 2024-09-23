@@ -1,6 +1,9 @@
+name: tabix_tabix
+
 channels:
   - conda-forge
   - bioconda
+  - defaults
 
 dependencies:
   - bioconda::htslib=1.20

@@ -330,28 +330,20 @@ workflow GERMLINE {
     //
 
     ch_samplesheet
-        .multiMap { families, meta, cram, crai, gvcf, tbi, roi_file, truth_vcf, truth_tbi, truth_bed ->
+        .multiMap { meta, cram, crai, gvcf, tbi, roi_file, truth_vcf, truth_tbi, truth_bed ->
             // Divide the input files into their corresponding channel
             def new_meta = meta + [
-                family_count:   families[meta.family].size(), // Contains the amount of samples in the family from this sample
                 type: gvcf && cram ? "gvcf_cram" : gvcf ? "gvcf" : "cram" // Define the type of input data
             ]
 
-            def new_meta_validation = [
-                id: meta.id,
-                sample: meta.sample,
-                family: meta.family
-            ]
+            def new_meta_validation = meta.subMap(["id", "sample", "family", "duplicate_count"])
 
             truth_variants: [new_meta_validation, truth_vcf, truth_tbi, truth_bed] // Optional channel containing the truth VCF, its index and the optional BED file
             gvcf:           [new_meta, gvcf, tbi] // Optional channel containing the GVCFs and their optional indices
             cram:           [new_meta, cram, crai]  // Mandatory channel containing the CRAM files and their optional indices
             roi:            [new_meta, roi_file] // Optional channel containing the ROI BED files for WES samples
-            family_samples: [meta.family, families[meta.family]] // A channel containing the samples per family
         }
         .set { ch_input }
-
-    ch_family_samples = ch_input.family_samples.distinct()
 
     //
     // Create the GVCF index if it's missing
@@ -599,12 +591,16 @@ workflow GERMLINE {
         if (validate){
 
             ch_input.truth_variants
-                .groupTuple() // No size needed here since it's being run before any process
+                .map { meta, vcf, tbi, bed ->
+                    def new_meta = meta - meta.subMap("duplicate_count")
+                    [ groupKey(new_meta, meta.duplicate_count), vcf, tbi, bed ]
+                }
+                .groupTuple()
                 .map { meta, vcf, tbi, bed ->
                     // Get only one VCF for samples that were given multiple times
-                    one_vcf = vcf.find { vcf_file -> vcf_file != [] } ?: []
-                    one_tbi = tbi.find { tbi_file -> tbi_file != [] } ?: []
-                    one_bed = bed.find { bed_file -> bed_file != [] } ?: []
+                    def one_vcf = vcf.find { vcf_file -> vcf_file != [] } ?: []
+                    def one_tbi = tbi.find { tbi_file -> tbi_file != [] } ?: []
+                    def one_bed = bed.find { bed_file -> bed_file != [] } ?: []
                     [ meta, one_vcf, one_tbi, one_bed ]
                 }
                 .branch { meta, vcf, tbi, bed ->
@@ -638,13 +634,8 @@ workflow GERMLINE {
 
             ch_final_vcfs
                 .map { meta, vcf, tbi ->
-                    def new_meta = meta - meta.subMap("family_count")
-                    [ meta.family, new_meta, vcf, tbi ]
-                }
-                .combine(ch_family_samples, by:0)
-                .map { family, meta, vcf, tbi, samples ->
-                    def sample = meta.sample ? [meta.sample] : samples
-                    [ meta, vcf, tbi, sample ]
+                    def new_meta = meta - meta.subMap("family_samples")
+                    [ new_meta, vcf, tbi, meta.family_samples.tokenize(",") ]
                 }
                 .transpose(by: 3)
                 .map { meta, vcf, tbi, sample ->
@@ -656,7 +647,7 @@ workflow GERMLINE {
                     ]
                     [ new_meta, vcf, tbi ]
                 }
-                .combine(ch_truths, by:0)
+                .join(ch_truths, failOnMismatch:true, failOnDuplicate:true)
                 .filter { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ->
                     // Filter out all samples that have no truth VCF
                     truth_vcf != []
@@ -685,7 +676,7 @@ workflow GERMLINE {
             CustomChannelOperators.joinOnKeys(
                 ch_final_vcfs.map { meta, vcf, tbi -> [ meta, vcf ]},
                 VCF_EXTRACT_RELATE_SOMALIER.out.peds,
-                ['id', 'family', 'family_count']
+                ['id', 'family', 'family_samples']
             )
             .dump(tag:'vcf2db_input', pretty:true)
             .set { ch_vcf2db_input }

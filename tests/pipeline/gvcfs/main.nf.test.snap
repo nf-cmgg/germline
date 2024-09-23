@@ -2,7 +2,7 @@
     "gvcfs": {
         "content": [
             [
-                "[:]"
+
             ],
             [
                 "multiqc/multiqc_plots",

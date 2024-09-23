@@ -14,38 +14,6 @@ workflow VCF_VALIDATE_SMALL_VARIANTS {
 
     ch_versions                             = Channel.empty()
 
-    happy_vcf                               = Channel.empty()
-    happy_tbi                               = Channel.empty()
-    happy_indel_roc                         = Channel.empty()
-    happy_indel_roc_pass                    = Channel.empty()
-    happy_snp_roc                           = Channel.empty()
-    happy_snp_roc_pass                      = Channel.empty()
-    happy_roc                               = Channel.empty()
-    happy_summary                           = Channel.empty()
-    happy_extended_csv                      = Channel.empty()
-
-    vcfeval_true_positive_vcf               = Channel.empty()
-    vcfeval_true_positive_vcf_tbi           = Channel.empty()
-    vcfeval_false_negative_vcf              = Channel.empty()
-    vcfeval_false_negative_vcf_tbi          = Channel.empty()
-    vcfeval_false_positive_vcf              = Channel.empty()
-    vcfeval_false_positive_vcf_tbi          = Channel.empty()
-    vcfeval_true_positive_baseline_vcf      = Channel.empty()
-    vcfeval_true_positive_baseline_vcf_tbi  = Channel.empty()
-    vcfeval_summary                         = Channel.empty()
-    vcfeval_phasing                         = Channel.empty()
-    vcfeval_snp_roc                         = Channel.empty()
-    vcfeval_non_snp_roc                     = Channel.empty()
-    vcfeval_weighted_roc                    = Channel.empty()
-
-    rtgtools_snp_png_rocplot                = Channel.empty()
-    rtgtools_non_snp_png_rocplot            = Channel.empty()
-    rtgtools_weighted_png_rocplot           = Channel.empty()
-
-    rtgtools_snp_svg_rocplot                = Channel.empty()
-    rtgtools_non_snp_svg_rocplot            = Channel.empty()
-    rtgtools_weighted_svg_rocplot           = Channel.empty()
-
     ch_input = ch_vcf.join(ch_beds, failOnDuplicate: true, failOnMismatch: true)
 
     RTGTOOLS_VCFEVAL(

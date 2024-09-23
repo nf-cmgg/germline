@@ -6,7 +6,7 @@
                     {
                         "id": "NA24143",
                         "family": "NA24143",
-                        "family_count": 1,
+                        "family_samples": "NA24143",
                         "caller": "haplotypecaller"
                     },
                     "NA24143.haplotypecaller.vcf.gz"
@@ -22,7 +22,7 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-05T12:53:05.739638954"
+        "timestamp": "2024-09-05T17:39:23.107888975"
     },
     "vcfanno": {
         "content": [
@@ -31,7 +31,7 @@
                     {
                         "id": "NA24143",
                         "family": "NA24143",
-                        "family_count": 1,
+                        "family_samples": "NA24143",
                         "caller": "haplotypecaller"
                     },
                     "NA24143.haplotypecaller.vcf.gz"
@@ -47,6 +47,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-05T12:53:27.894947052"
+        "timestamp": "2024-09-05T17:39:39.640344999"
     }
 }
