@@ -3,13 +3,17 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v1.8.0 - Optimistic Oostkamp - [September 23 2024]
+## v1.9.0dev
 
-## New features
+### Changes
+
+## v1.8.0 - Optimistic Oostkamp - [September 24 2024]
+
+### New features
 
 1. Added `watchpath` functionality to the pipeline. Add the `watch:` prefix to a file basename in the samplesheet and the pipeline will automatically wait for the file to be created in the `--watchdir` directory (the lookup happens recursively)
 
-## Changes
+### Changes
 
 1. Bumped the minimal support nextflow version to `24.04.0`
 2. Bumped all modules to the newest versions
@@ -17,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 4. Rename the `master` branch to `main`
 5. Low coverage regions (regions with less than 5 reads) are no longer considered for variant calling
 
-## Refactors
+### Refactors
 
 1. Updated the pipeline to the new linting guidelines
 2. Removed `check_max` in favor of `resourceLimits`
