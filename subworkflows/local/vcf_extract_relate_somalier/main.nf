@@ -4,9 +4,9 @@ include { SOMALIER_RELATE  } from '../../../modules/nf-core/somalier/relate/main
 workflow VCF_EXTRACT_RELATE_SOMALIER {
     take:
         ch_vcfs                 // channel: [mandatory] [ val(meta), path(vcf), path(tbi) ]
-        ch_fasta                // channel: [mandatory] [ path(fasta) ]
-        ch_fasta_fai            // channel: [mandatory] [ path(fai) ]
-        ch_somalier_sites       // channel: [mandatory] [ path(somalier_sites_vcf) ]
+        ch_fasta                // channel: [mandatory] [ val(meta), path(fasta) ]
+        ch_fasta_fai            // channel: [mandatory] [ val(meta), path(fai) ]
+        ch_somalier_sites       // channel: [mandatory] [ val(meta), path(somalier_sites_vcf) ]
         ch_peds                 // channel: [mandatory] [ val(meta), path(ped) ]
 
     main:

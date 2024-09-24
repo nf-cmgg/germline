@@ -31,15 +31,16 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
     //
 
     ch_crams
-        .groupTuple() // No size needed here because this runs before any process
-        .branch(
-            { meta, cram, crai ->
-                multiple: cram.size() > 1
-                    return [meta, cram]
-                single:   cram.size() == 1
-                    return [meta, cram[0], crai[0]]
-            }
-        )
+        .map { meta, cram, crai ->
+            [ groupKey(meta, meta.duplicate_count), cram, crai]
+        }
+        .groupTuple()
+        .branch { meta, cram, crai ->
+            multiple: cram.size() > 1
+                return [meta.target, cram]
+            single:   cram.size() == 1
+                return [meta.target, cram[0], crai[0]]
+        }
         .set { ch_cram_branch }
 
     ch_cram_branch.multiple.dump(tag:'cram_branch_multiple', pretty:true)
@@ -85,7 +86,10 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
     //
 
     ch_roi
-        .groupTuple() // A specified size isn't needed here since this runs before any process using ROI files is executed
+        .map { meta, roi ->
+            [ groupKey(meta, meta.duplicate_count), roi ]
+        }
+        .groupTuple()
         .branch { meta, roi ->
             // Determine whether there is an ROI file given to the current sample
             // It's possible that a sample is given multiple times in the samplesheet, in which
@@ -93,16 +97,16 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
             // sample contains an ROI file
             def is_present = false
             def output_roi = []
-            for( entry : roi) {
+            roi.each { entry ->
                 if(entry != []){
                     output_roi.add(entry)
                     is_present = true
                 }
             }
             found:      is_present
-                return [ meta, output_roi ]
+                return [ meta.target, output_roi ]
             missing:    !is_present
-                return [ meta, [] ]
+                return [ meta.target, [] ]
         }
         .set { ch_roi_branch }
 
@@ -114,18 +118,24 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
 
     // Add the default ROI file to all samples without an ROI file
     // if an ROI BED file has been given through the --roi parameter
+    ch_missing_rois = Channel.empty()
     if (ch_default_roi) {
         MERGE_ROI_PARAMS(
-            ch_default_roi.map { [[id:"default_roi"], it]},
+            ch_default_roi.map { bed ->
+                [[id:"default_roi"], bed]
+            },
             ch_fai
         )
         ch_versions = ch_versions.mix(MERGE_ROI_PARAMS.out.versions)
 
         ch_roi_branch.missing
-            .groupTuple() // A specified size isn't needed here since this runs before any process using the default ROI file is executed
-            .combine(MERGE_ROI_PARAMS.out.bed.map { it[1] })
+            .map { meta, bed ->
+                [ groupKey(meta, meta.duplicate_count), bed ]
+            }
+            .groupTuple()
+            .combine(MERGE_ROI_PARAMS.out.bed.map { meta, bed -> bed })
             .map { meta, missing, default_roi ->
-                [ meta, default_roi ]
+                [ meta.target, default_roi ]
             }
             .set { ch_missing_rois }
     } else {

@@ -6,15 +6,15 @@
             ],
             [
                 [
-                    "NA24835.haplotypecaller.bcftools_stats.txt:md5,cf8d900f4a7f7844bf1ece4478010459"
+                    "NA24835.haplotypecaller.bcftools_stats.txt:md5,5f42bee02b2bd0d2af2954292ec3b422"
                 ]
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-03-27T10:12:27.678293492"
+        "timestamp": "2024-09-05T11:20:45.005084818"
     },
     "default - family": {
         "content": [
@@ -22,10 +22,9 @@
                 [
                     {
                         "family": "Ashkenazim",
-                        "id": "Ashkenazim",
-                        "family_count": 3,
+                        "family_samples": "NA24143,NA24149,NA24385",
                         "caller": "haplotypecaller",
-                        "samples": "NA24143,NA24149,NA24835"
+                        "id": "Ashkenazim"
                     },
                     "Ashkenazim.haplotypecaller.vcf.gz",
                     "Ashkenazim.haplotypecaller.vcf.gz.tbi"
@@ -33,15 +32,15 @@
             ],
             [
                 [
-                    "NA24835.haplotypecaller.bcftools_stats.txt:md5,cf8d900f4a7f7844bf1ece4478010459"
+                    "NA24835.haplotypecaller.bcftools_stats.txt:md5,5f42bee02b2bd0d2af2954292ec3b422"
                 ]
             ]
         ],
         "meta": {
             "nf-test": "0.9.0",
-            "nextflow": "24.04.3"
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-08-06T13:01:36.711373912"
+        "timestamp": "2024-09-05T17:35:02.44674969"
     },
     "filter - family": {
         "content": [
@@ -49,10 +48,9 @@
                 [
                     {
                         "family": "Ashkenazim",
-                        "id": "Ashkenazim",
-                        "family_count": 3,
+                        "family_samples": "NA24143,NA24149,NA24385",
                         "caller": "haplotypecaller",
-                        "samples": "NA24143,NA24149,NA24835"
+                        "id": "Ashkenazim"
                     },
                     "Ashkenazim.haplotypecaller.vcf.gz",
                     "Ashkenazim.haplotypecaller.vcf.gz.tbi"
@@ -60,15 +58,15 @@
             ],
             [
                 [
-                    "NA24835.haplotypecaller.bcftools_stats.txt:md5,cf8d900f4a7f7844bf1ece4478010459"
+                    "NA24835.haplotypecaller.bcftools_stats.txt:md5,5f42bee02b2bd0d2af2954292ec3b422"
                 ]
             ]
         ],
         "meta": {
             "nf-test": "0.9.0",
-            "nextflow": "24.04.3"
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-08-06T13:02:26.651064532"
+        "timestamp": "2024-09-05T17:35:46.768542501"
     },
     "default - gvcfs": {
         "content": [
@@ -76,10 +74,9 @@
                 [
                     {
                         "family": "Ashkenazim",
-                        "id": "Ashkenazim",
-                        "family_count": 1,
+                        "family_samples": "NA24143",
                         "caller": "haplotypecaller",
-                        "samples": "NA24143"
+                        "id": "Ashkenazim"
                     },
                     "Ashkenazim.haplotypecaller.vcf.gz",
                     "Ashkenazim.haplotypecaller.vcf.gz.tbi"
@@ -91,9 +88,9 @@
         ],
         "meta": {
             "nf-test": "0.9.0",
-            "nextflow": "24.04.3"
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-08-06T12:56:23.435795439"
+        "timestamp": "2024-09-05T17:34:17.846266913"
     },
     "default - crams": {
         "content": [
@@ -101,10 +98,9 @@
                 [
                     {
                         "family": "Ashkenazim",
-                        "id": "Ashkenazim",
-                        "family_count": 1,
+                        "family_samples": "NA24143",
                         "caller": "haplotypecaller",
-                        "samples": "NA24143"
+                        "id": "Ashkenazim"
                     },
                     "Ashkenazim.haplotypecaller.vcf.gz",
                     "Ashkenazim.haplotypecaller.vcf.gz.tbi"
@@ -112,15 +108,15 @@
             ],
             [
                 [
-                    "NA24143.haplotypecaller.bcftools_stats.txt:md5,8832acfa6af30e9225b151da201733c3"
+                    "NA24143.haplotypecaller.bcftools_stats.txt:md5,09b4e7674e0f5b98b1e548df3002250e"
                 ]
             ]
         ],
         "meta": {
             "nf-test": "0.9.0",
-            "nextflow": "24.04.3"
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-08-06T12:55:51.608812907"
+        "timestamp": "2024-09-05T17:33:52.045772718"
     },
     "only_call - family": {
         "content": [
@@ -129,15 +125,15 @@
             ],
             [
                 [
-                    "NA24835.haplotypecaller.bcftools_stats.txt:md5,cf8d900f4a7f7844bf1ece4478010459"
+                    "NA24835.haplotypecaller.bcftools_stats.txt:md5,5f42bee02b2bd0d2af2954292ec3b422"
                 ]
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-03-27T10:11:35.142110509"
+        "timestamp": "2024-09-05T11:20:04.714403906"
     },
     "only_merge - sample + family": {
         "content": [
@@ -145,10 +141,9 @@
                 [
                     {
                         "family": "Ashkenazim",
-                        "id": "Ashkenazim",
-                        "family_count": 2,
+                        "family_samples": "NA24143",
                         "caller": "haplotypecaller",
-                        "samples": "NA24143,NA24835"
+                        "id": "Ashkenazim"
                     },
                     "Ashkenazim.haplotypecaller.vcf.gz",
                     "Ashkenazim.haplotypecaller.vcf.gz.tbi"
@@ -156,14 +151,14 @@
             ],
             [
                 [
-                    "NA24835.haplotypecaller.bcftools_stats.txt:md5,cf8d900f4a7f7844bf1ece4478010459"
+                    "NA24835.haplotypecaller.bcftools_stats.txt:md5,5f42bee02b2bd0d2af2954292ec3b422"
                 ]
             ]
         ],
         "meta": {
             "nf-test": "0.9.0",
-            "nextflow": "24.04.3"
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-08-06T13:04:20.473178165"
+        "timestamp": "2024-09-06T14:26:29.249708339"
     }
 }

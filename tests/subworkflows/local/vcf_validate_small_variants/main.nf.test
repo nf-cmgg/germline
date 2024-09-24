@@ -31,24 +31,20 @@ nextflow_workflow {
             workflow {
                 """
                 input[0] = Channel.of([
-                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_count:3],
+                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385"],
                     file(params.famvcf, checkIfExists:true),
                     file(params.famtbi, checkIfExists:true),
                     file(params.vcf1, checkIfExists:true),
                     file(params.tbi1, checkIfExists:true)
                 ])
                 input[1] = Channel.of([
-                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_count:3],
+                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385"],
                     file(params.bed, checkIfExists:true),
                     []
                 ])
                 input[2] = [[],[]]
                 input[3] = [[],[]]
                 input[4] = UNTAR.out.untar
-                input[5] = [[],[]]
-                input[6] = [[],[]]
-                input[7] = [[],[]]
-                input[8] = "vcfeval"
                 """
             }
         }
@@ -57,15 +53,6 @@ nextflow_workflow {
             assertAll(
                 { assert workflow.success },
                 { assert snapshot(
-                    workflow.out.happy_vcf,
-                    workflow.out.happy_tbi,
-                    workflow.out.happy_indel_roc,
-                    workflow.out.happy_indel_roc_pass,
-                    workflow.out.happy_snp_roc,
-                    workflow.out.happy_snp_roc_pass,
-                    workflow.out.happy_roc,
-                    workflow.out.happy_summary,
-                    workflow.out.happy_extended_csv,
                     workflow.out.vcfeval_true_positive_vcf,
                     workflow.out.vcfeval_true_positive_vcf_tbi,
                     workflow.out.vcfeval_false_negative_vcf,

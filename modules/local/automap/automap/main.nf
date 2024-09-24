@@ -14,9 +14,6 @@ process AUTOMAP_AUTOMAP {
     tuple val(meta), path("${prefix}"), emit: automap
     path  "versions.yml"              , emit: versions
 
-    when:
-    task.ext.when == null || task.ext.when
-
     script:
     def args = task.ext.args ?: ''
     prefix = task.ext.prefix ?: "${meta.id}"
@@ -42,22 +39,23 @@ process AUTOMAP_AUTOMAP {
 
     stub:
     def args = task.ext.args ?: ''
+    def panel_name = args.contains("--panelname") ? args.split("--panelname")[-1].trim().split(" ")[0] : ""
     prefix = task.ext.prefix ?: "${meta.id}"
 
-    def create_outputs = meta.family_count > 1 ? (1..meta.family_count).collect {
-        def cmd_prefix = "touch ${prefix}/sample${it}"
+    def create_outputs = meta.family_samples.tokenize(",").size() > 1 ? (1..meta.family_samples.tokenize(",").size()).collect { number ->
+        def cmd_prefix = "touch ${prefix}/sample${number}"
         [
-            "mkdir ${prefix}/sample${it}",
-            "${cmd_prefix}/sample${it}.HomRegions.pdf",
-            "${cmd_prefix}/sample${it}.HomRegions.${params.automap_panel_name}.tsv",
-            "${cmd_prefix}/sample${it}.HomRegions.tsv",
-            "${cmd_prefix}/sample${it}.HomRegions.strict.${params.automap_panel_name}.tsv"
+            "mkdir ${prefix}/sample${number}",
+            "${cmd_prefix}/sample${number}.HomRegions.pdf",
+            "${cmd_prefix}/sample${number}.HomRegions.${panel_name}.tsv",
+            "${cmd_prefix}/sample${number}.HomRegions.tsv",
+            "${cmd_prefix}/sample${number}.HomRegions.strict.${panel_name}.tsv"
         ].join(" && ")
     }.join(" && ") : [
         "touch ${prefix}/${meta.id}.HomRegions.pdf",
-        "touch ${prefix}/${meta.id}.HomRegions.${params.automap_panel_name}.tsv",
+        "touch ${prefix}/${meta.id}.HomRegions.${panel_name}.tsv",
         "touch ${prefix}/${meta.id}.HomRegions.tsv",
-        "touch ${prefix}/${meta.id}.HomRegions.strict.${params.automap_panel_name}.tsv"
+        "touch ${prefix}/${meta.id}.HomRegions.strict.${panel_name}.tsv"
     ].join(" && ")
 
     def VERSION = "1.0.0"

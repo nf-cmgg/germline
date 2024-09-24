@@ -22,6 +22,7 @@ workflow VCF_ROH_AUTOMAP {
     }
 
     // Merge the repeat BED files from the container if no container has been given
+    ch_valid_repeats = Channel.empty()
     if (!ch_repeats) {
         AUTOMAP_REPEATS(
             Channel.value([[id:"${val_genome}_repeats"], val_genome])

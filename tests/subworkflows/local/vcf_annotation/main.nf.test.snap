@@ -6,23 +6,23 @@
                     {
                         "id": "NA24143",
                         "family": "NA24143",
-                        "family_count": 1,
+                        "family_samples": "NA24143",
                         "caller": "haplotypecaller"
                     },
                     "NA24143.haplotypecaller.vcf.gz"
                 ]
             ],
             [
-                "NA241431_annotated.summary.html:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "NA241432_annotated.summary.html:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "NA241433_annotated.summary.html:md5,d41d8cd98f00b204e9800998ecf8427e"
+                "NA241430_annotated_summary.html:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "NA241431_annotated_summary.html:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "NA241432_annotated_summary.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-03-28T09:26:20.34701886"
+        "timestamp": "2024-09-05T17:39:23.107888975"
     },
     "vcfanno": {
         "content": [
@@ -31,22 +31,22 @@
                     {
                         "id": "NA24143",
                         "family": "NA24143",
-                        "family_count": 1,
+                        "family_samples": "NA24143",
                         "caller": "haplotypecaller"
                     },
                     "NA24143.haplotypecaller.vcf.gz"
                 ]
             ],
             [
-                "NA241431_annotated.summary.html:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "NA241432_annotated.summary.html:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "NA241433_annotated.summary.html:md5,d41d8cd98f00b204e9800998ecf8427e"
+                "NA241430_annotated_summary.html:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "NA241431_annotated_summary.html:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "NA241432_annotated_summary.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.02.0"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-03-28T09:26:37.223392102"
+        "timestamp": "2024-09-05T17:39:39.640344999"
     }
 }
