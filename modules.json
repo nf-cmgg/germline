@@ -14,7 +14,8 @@
                     "bcftools/concat": {
                         "branch": "master",
                         "git_sha": "cdf83b18471db290a28fe98c2a0852cb05864890",
-                        "installed_by": ["vcf_annotate_ensemblvep_snpeff"]
+                        "installed_by": ["vcf_annotate_ensemblvep_snpeff"],
+                        "patch": "modules/nf-core/bcftools/concat/bcftools-concat.diff"
                     },
                     "bcftools/filter": {
                         "branch": "master",

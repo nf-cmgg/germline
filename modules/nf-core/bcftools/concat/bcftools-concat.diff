@@ -1,0 +1,63 @@
+Changes in module 'nf-core/bcftools/concat'
+Changes in 'bcftools/concat/main.nf':
+--- modules/nf-core/bcftools/concat/main.nf
++++ modules/nf-core/bcftools/concat/main.nf
+@@ -11,18 +11,22 @@
+     tuple val(meta), path(vcfs), path(tbi)
+ 
+     output:
+-    tuple val(meta), path("*.gz") , emit: vcf
+-    tuple val(meta), path("*.tbi"), emit: tbi, optional: true
+-    tuple val(meta), path("*.csi"), emit: csi, optional: true
+-    path  "versions.yml"          , emit: versions
++    tuple val(meta), path("${prefix}.vcf.gz")       , emit: vcf
++    tuple val(meta), path("${prefix}.vcf.gz.tbi")   , emit: tbi, optional: true
++    tuple val(meta), path("*.csi")                  , emit: csi, optional: true
++    path  "versions.yml"                            , emit: versions
+ 
+     when:
+     task.ext.when == null || task.ext.when
+ 
+     script:
+     def args = task.ext.args   ?: ''
+-    def prefix   = task.ext.prefix ?: "${meta.id}"
++    prefix   = task.ext.prefix ?: "${meta.id}"
++    def tbi_names = tbi.findAll { file -> !(file instanceof List) }.collect { file -> file.name }
++    def create_input_index = vcfs.collect { vcf -> tbi_names.contains(vcf.name + ".tbi") ? "" : "tabix ${vcf}" }.join("\n    ")
+     """
++    ${create_input_index}
++
+     bcftools concat \\
+         --output ${prefix}.vcf.gz \\
+         $args \\
+@@ -37,7 +41,7 @@
+ 
+     stub:
+     def args = task.ext.args   ?: ''
+-    def prefix   = task.ext.prefix ?: "${meta.id}"
++    prefix   = task.ext.prefix ?: "${meta.id}"
+     def index = args.contains("--write-index=tbi") || args.contains("-W=tbi") ? "tbi" :
+                 args.contains("--write-index=csi") || args.contains("-W=csi") ? "csi" :
+                 args.contains("--write-index") || args.contains("-W") ? "csi" :
+
+Changes in 'bcftools/concat/environment.yml':
+--- modules/nf-core/bcftools/concat/environment.yml
++++ modules/nf-core/bcftools/concat/environment.yml
+@@ -1,7 +1,5 @@
+-name: bcftools_concat
+ channels:
+   - conda-forge
+   - bioconda
+-  - defaults
+ dependencies:
+   - bioconda::bcftools=1.20
+
+'modules/nf-core/bcftools/concat/meta.yml' is unchanged
+'modules/nf-core/bcftools/concat/tests/tags.yml' is unchanged
+'modules/nf-core/bcftools/concat/tests/vcf_gz_index_csi.config' is unchanged
+'modules/nf-core/bcftools/concat/tests/vcf_gz_index_tbi.config' is unchanged
+'modules/nf-core/bcftools/concat/tests/main.nf.test' is unchanged
+'modules/nf-core/bcftools/concat/tests/vcf_gz_index.config' is unchanged
+'modules/nf-core/bcftools/concat/tests/main.nf.test.snap' is unchanged
+'modules/nf-core/bcftools/concat/tests/nextflow.config' is unchanged
+************************************************************
