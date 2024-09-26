@@ -11,10 +11,10 @@ process BCFTOOLS_CONCAT {
     tuple val(meta), path(vcfs), path(tbi)
 
     output:
-    tuple val(meta), path("${prefix}.vcf.gz")       , emit: vcf
-    tuple val(meta), path("${prefix}.vcf.gz.tbi")   , emit: tbi, optional: true
-    tuple val(meta), path("*.csi")                  , emit: csi, optional: true
-    path  "versions.yml"                            , emit: versions
+    tuple val(meta), path("${prefix}.vcf.gz")    , emit: vcf
+    tuple val(meta), path("${prefix}.vcf.gz.tbi"), emit: tbi, optional: true
+    tuple val(meta), path("${prefix}.vcf.gz.csi"), emit: csi, optional: true
+    path  "versions.yml"                         , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
