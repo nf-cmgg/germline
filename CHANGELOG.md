@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Fixes
 
 1. Fixed some issues where indices were not created
+2. Updated the docs
 
 ## v1.8.1 - Open Oostkamp - [September 25 2024]
 
