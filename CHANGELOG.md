@@ -3,6 +3,12 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.8.2dev
+
+## Fixes
+
+1. Fixed some issues where indices were not created
+
 ## v1.8.1 - Open Oostkamp - [September 25 2024]
 
 ### Fixes
