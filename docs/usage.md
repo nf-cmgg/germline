@@ -12,6 +12,17 @@ You will need to create a samplesheet with information with the samples you woul
 --input '[path to samplesheet file]'
 ```
 
+### Watch for files in a directory
+
+When the `--watchdir` parameter has been given, the pipeline will automatically check for all files in the samplesheet that have the `watch:` prefix in the given directory. An example for watching CRAM files:
+
+```csv title="samplesheet.csv"
+sample,cram,crai
+SAMPLE_1,watch:INPUT.cram,watch:INPUT.cram.crai
+```
+
+The files `INPUT.cram` and `INPUT.cram.crai` will now watched for recursively in the watch directory.
+
 ### Example of the samplesheet
 
 Below is an example of how the samplesheet could look like in the three formats.
