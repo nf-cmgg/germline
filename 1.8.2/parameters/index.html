@@ -548,7 +548,7 @@
 
 
 <h1 id="nf-cmgggermline-pipeline-parameters">nf-cmgg/germline pipeline parameters</h1>
-<p>A nextflow pipeline for calling and annotating variants</p>
+<p>A nextflow pipeline for calling and annotating small germline variants from short DNA reads for WES and WGS data</p>
 <h2 id="inputoutput-options">Input/output options</h2>
 <p>Define where the pipeline should find input data and save output data.</p>
 <table>
@@ -580,8 +580,24 @@
 <td></td>
 </tr>
 <tr>
+<td><code>watchdir</code></td>
+<td>A folder to watch for the creation of files that start with <code>watch:</code> in the samplesheet</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
 <td><code>email</code></td>
 <td>Email address for completion summary. <details><summary>Help</summary><small>Set this parameter to your e-mail address to get a summary e-mail with details of the run sent to you when the workflow exits. If set in your user config file (<code>~/.nextflow/config</code>) then you don't need to specify this on the command line for every run.</small></details></td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>ped</code></td>
+<td>Path to a pedigree file for all samples in the run</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -687,7 +703,7 @@
 <td><code>igenomes_ignore</code></td>
 <td>Do not load the iGenomes reference config. <details><summary>Help</summary><small>Do not load <code>igenomes.config</code> when running the pipeline. You may choose this option if you observe clashes between custom parameters and those supplied in <code>igenomes.config</code>.</small></details></td>
 <td><code>boolean</code></td>
-<td>True</td>
+<td></td>
 <td></td>
 <td>True</td>
 </tr>
@@ -1140,34 +1156,10 @@
 <td>True</td>
 </tr>
 <tr>
-<td><code>validationShowHiddenParams</code></td>
-<td>Show all params when using <code>--help</code> <details><summary>Help</summary><small>By default, parameters set as <em>hidden</em> in the schema are not shown on the command line when a user runs with <code>--help</code>. Specifying this option will tell the pipeline to show all parameters.</small></details></td>
-<td><code>boolean</code></td>
-<td></td>
-<td></td>
-<td>True</td>
-</tr>
-<tr>
-<td><code>validationLenientMode</code></td>
-<td>Lenient mode for parameter validation</td>
-<td><code>boolean</code></td>
-<td></td>
-<td></td>
-<td>True</td>
-</tr>
-<tr>
-<td><code>validationFailUnrecognisedParams</code></td>
-<td>Fail on unrecognised parameters</td>
-<td><code>boolean</code></td>
-<td></td>
-<td></td>
-<td>True</td>
-</tr>
-<tr>
-<td><code>validationSchemaIgnoreParams</code></td>
-<td>Comma-separated list of parameters to ignore when validating against the schema</td>
+<td><code>pipelines_testdata_base_path</code></td>
+<td>Base URL or local path to location of pipeline test dataset files</td>
 <td><code>string</code></td>
-<td>genomes,igenomes_base,test_data</td>
+<td>https://raw.githubusercontent.com/nf-core/test-datasets/</td>
 <td></td>
 <td>True</td>
 </tr>
@@ -1278,15 +1270,15 @@
 <tr>
 <td><code>vep_version</code></td>
 <td>The version of the VEP tool to be used</td>
-<td><code>string</code></td>
-<td>105</td>
+<td><code>number</code></td>
+<td>105.0</td>
 <td></td>
 <td></td>
 </tr>
 <tr>
 <td><code>vep_cache_version</code></td>
 <td>The version of the VEP cache to be used</td>
-<td><code>string</code></td>
+<td><code>integer</code></td>
 <td>105</td>
 <td></td>
 <td></td>
