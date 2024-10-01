@@ -654,13 +654,30 @@ workflow GERMLINE {
                 }
                 .multiMap { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ->
                     vcfs: [meta, vcf, tbi, truth_vcf, truth_tbi]
-                    bed:  [meta, truth_bed, []]
+                    bed:  [meta, truth_bed]
                 }
                 .set { ch_validation_input }
 
+            CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_beds
+                .combine(callers)
+                .map { meta, bed, caller ->
+                    def new_meta = [
+                        id:meta.id,
+                        sample:meta.sample,
+                        family:meta.family,
+                        caller:caller
+                    ]
+                    [ new_meta, bed ]
+                }
+                .join(ch_validation_input.bed, failOnMismatch:true, failOnDuplicate:true)
+                .map { meta, regions, truth ->
+                    [ meta, truth, regions ]
+                }
+                .set { ch_validation_regions }
+
             VCF_VALIDATE_SMALL_VARIANTS(
                 ch_validation_input.vcfs,
-                ch_validation_input.bed,
+                ch_validation_regions,
                 ch_fasta_ready,
                 ch_fai_ready,
                 ch_sdf_ready.collect()
