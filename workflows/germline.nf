@@ -219,16 +219,13 @@ workflow GERMLINE {
     //
 
     // DBSNP index
-    if (ch_dbsnp_ready && !ch_dbsnp_tbi) {
+    if (ch_dbsnp_ready != [[],[]] && ch_dbsnp_tbi == [[],[]]) {
         TABIX_DBSNP(
-            ch_dbsnp_ready.map { dbnsp -> [[id:'dbsnp'], dbsnp] }
+            ch_dbsnp_ready
         )
         ch_versions = ch_versions.mix(TABIX_DBSNP.out.versions)
 
         TABIX_DBSNP.out.tbi
-            .map{ meta, tbi ->
-                [ tbi ]
-            }
             .collect()
             .set { ch_dbsnp_tbi_ready }
     } else {
@@ -632,7 +629,7 @@ workflow GERMLINE {
                 }
                 .set { ch_truths }
 
-            ch_final_vcfs.view()
+            ch_final_vcfs
                 .map { meta, vcf, tbi ->
                     def new_meta = meta - meta.subMap("family_samples")
                     [ new_meta, vcf, tbi, meta.family_samples.tokenize(",") ]
