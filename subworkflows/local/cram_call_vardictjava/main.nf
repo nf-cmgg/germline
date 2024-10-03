@@ -127,7 +127,7 @@ workflow CRAM_CALL_VARDICTJAVA {
         ch_filter_output
             .join(TABIX_TABIX.out.tbi, failOnDuplicate: true, failOnMismatch: true)
             .map { meta, vcf, tbi ->
-                def new_meta = meta + [samples: meta.sample]
+                def new_meta = meta + [family_samples: meta.sample]
                 [ new_meta, vcf, tbi ]
             }
             .set { ch_vcfs }

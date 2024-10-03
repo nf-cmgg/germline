@@ -632,7 +632,7 @@ workflow GERMLINE {
                 }
                 .set { ch_truths }
 
-            ch_final_vcfs
+            ch_final_vcfs.view()
                 .map { meta, vcf, tbi ->
                     def new_meta = meta - meta.subMap("family_samples")
                     [ new_meta, vcf, tbi, meta.family_samples.tokenize(",") ]
