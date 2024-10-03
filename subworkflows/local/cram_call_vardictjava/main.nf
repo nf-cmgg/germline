@@ -85,8 +85,8 @@ workflow CRAM_CALL_VARDICTJAVA {
                 .collect()
                 .set { ch_vcfanno_toml }
 
-            ch_dbsnp
-                .combine(ch_dbsnp_tbi)
+            ch_dbsnp.map { meta, dbsnp -> dbsnp }
+                .combine(ch_dbsnp_tbi.map { meta, tbi -> tbi })
                 .collect()
                 .set { ch_vcfanno_resources }
 
