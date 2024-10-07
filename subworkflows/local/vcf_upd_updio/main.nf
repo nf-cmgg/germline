@@ -2,7 +2,8 @@
 // Run UPDio analysis
 //
 
-include { UPDIO    } from '../../../modules/local/updio/main'
+include { UPDIO             } from '../../../modules/local/updio/main'
+include { BCFTOOLS_FILTER   } from '../../../modules/nf-core/bcftools/filter'
 
 workflow VCF_UPD_UPDIO {
     take:
@@ -41,10 +42,22 @@ workflow VCF_UPD_UPDIO {
             meta
         }
         .transpose(by:0)
+        .map { meta, vcf, tbi ->
+            [ meta, vcf ]
+        }
         .set { ch_trio_vcfs_family }
 
+    BCFTOOLS_FILTER(
+        ch_trio_vcfs_family
+    )
+    ch_versions = ch_versions.mix(BCFTOOLS_FILTER.out.versions.first())
+
+    BCFTOOLS_FILTER.out.vcf
+        .join(BCFTOOLS_FILTER.out.tbi, failOnDuplicate:true, failOnMismatch:true)
+        .set { ch_updio_input }
+
     UPDIO(
-        ch_trio_vcfs_family,
+        ch_updio_input,
         ch_cnv
     )
     ch_versions = ch_versions.mix(UPDIO.out.versions.first())
@@ -58,9 +71,6 @@ def get_family_data_from_ped(meta, ped) {
     def output = []
     ped.readLines().each { line ->
         if(line.startsWith("#")) { return }
-        def child = null
-        def mother = null
-        def father = null
         def split_line = line.split("\t")
         if(split_line[1] != "0" && split_line[2] != "0" && split_line[3] != "0") {
             output.add(meta + [child:split_line[1], father:split_line[2], mother:split_line[3]])
