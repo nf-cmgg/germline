@@ -302,6 +302,11 @@
                 "hc_phasing": {
                     "type": "boolean",
                     "description": "Perform phasing with HaplotypeCaller"
+                },
+                "min_callable_coverage": {
+                    "type": "integer",
+                    "description": "The lowest callable coverage to determine callable regions",
+                    "default": 5
                 }
             }
         },
