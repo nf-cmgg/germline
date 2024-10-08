@@ -14,7 +14,7 @@
                     },
                     [
                         "NA24385.events_list:md5,c61379c7a4bb61cbe9612b5cda773cf4",
-                        "NA24385.log:md5,a40a24f379127a9cde7e40a1ce1032ec",
+                        "NA24385.log:md5,ea4c71f55c4a53ecdc74f00659ea161d",
                         "NA24385.table:md5,ca8165fc7869a113ca034396de7cf579",
                         "NA24385.upd:md5,d41d8cd98f00b204e9800998ecf8427e"
                     ]
@@ -25,7 +25,7 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-05T17:40:47.828005254"
+        "timestamp": "2024-10-08T16:42:16.968323682"
     },
     "default - sample": {
         "content": [

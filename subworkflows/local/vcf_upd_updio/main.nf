@@ -22,6 +22,15 @@ workflow VCF_UPD_UPDIO {
         }
         .set { ch_trio_vcfs }
 
+    BCFTOOLS_FILTER(
+        ch_trio_vcfs
+    )
+    ch_versions = ch_versions.mix(BCFTOOLS_FILTER.out.versions.first())
+
+    BCFTOOLS_FILTER.out.vcf
+        .join(BCFTOOLS_FILTER.out.tbi, failOnDuplicate:true, failOnMismatch:true)
+        .set { ch_filter_output }
+
     ch_peds
         .filter { meta, ped ->
             meta.family_samples.tokenize(",").size() >= 3
@@ -30,7 +39,7 @@ workflow VCF_UPD_UPDIO {
 
     CustomChannelOperators.joinOnKeys(
         [failOnDuplicate:true, failOnMismatch:true],
-        ch_trio_vcfs,
+        ch_filter_output,
         ch_trio_peds,
         ["id", "family", "family_samples", "caller"]
     )
@@ -44,17 +53,8 @@ workflow VCF_UPD_UPDIO {
         .transpose(by:0)
         .set { ch_trio_vcfs_family }
 
-    BCFTOOLS_FILTER(
-        ch_trio_vcfs_family
-    )
-    ch_versions = ch_versions.mix(BCFTOOLS_FILTER.out.versions.first())
-
-    BCFTOOLS_FILTER.out.vcf
-        .join(BCFTOOLS_FILTER.out.tbi, failOnDuplicate:true, failOnMismatch:true)
-        .set { ch_updio_input }
-
     UPDIO(
-        ch_updio_input,
+        ch_trio_vcfs_family,
         ch_cnv
     )
     ch_versions = ch_versions.mix(UPDIO.out.versions.first())
