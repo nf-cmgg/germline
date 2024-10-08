@@ -8,8 +8,7 @@
                         "sample": "NA24143",
                         "family": "Ashkenazim",
                         "family_samples": "NA24143",
-                        "caller": "vardict",
-                        "samples": "NA24143"
+                        "caller": "vardict"
                     },
                     "NA24143.vardict.vcf.gz",
                     "NA24143.vardict.vcf.gz.tbi"
@@ -31,8 +30,7 @@
                         "sample": "NA24143",
                         "family": "Ashkenazim",
                         "family_samples": "NA24143",
-                        "caller": "vardict",
-                        "samples": "NA24143"
+                        "caller": "vardict"
                     },
                     "NA24143.vardict.vcf.gz",
                     "NA24143.vardict.vcf.gz.tbi"
