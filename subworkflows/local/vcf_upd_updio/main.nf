@@ -42,9 +42,6 @@ workflow VCF_UPD_UPDIO {
             meta
         }
         .transpose(by:0)
-        .map { meta, vcf, tbi ->
-            [ meta, vcf ]
-        }
         .set { ch_trio_vcfs_family }
 
     BCFTOOLS_FILTER(
