@@ -1,12 +1,10 @@
 # nf-cmgg/germline: Output
 
-# nf-cmgg/germline: Output
-
 ## Introduction
 
 This page describes the output produced by the pipeline.
 
-The directories listed below will be created in the results directory after the pipeline has finished. All paths are relative to the top-level output directory (specified by `--outdir <DIR>`). This is an example output when the pipeline has been run for a WGS sample called `SAMPLE_1` and a WES sample called `SAMPLE_2` which form a family called `FAMILY_1`. The output consists of 4 directories: `yyyy-MM-dd_project_name`, `individuals`, `multiqc_reports` and `pipeline_info`. This run has only been run with `haplotypecaller` (`--callers haplotypecaller`)
+The directories listed below will be created in the results directory after the pipeline has finished. All paths are relative to the top-level output directory (specified by `--outdir <DIR>`). This is an example output when the pipeline has been run for a WGS sample called `SAMPLE_1` and a WES sample called `SAMPLE_2` which form a family called `FAMILY_1`. The output consists of 4 directories: `yyyy-MM-dd_project_name`, `individuals`, `multiqc_reports` and `pipeline_info`. This run has only been run with `haplotypecaller`: (`--callers haplotypecaller`)
 
 ```bash
 results/
@@ -46,7 +44,7 @@ results/
 
 2. This directory contains all files for family `FAMILY_1`.
 
-3. This is the BED file used to parallelize the joint-genotyping. It contains all regions that have reads mapped to them for WGS and all regions in the regions of interest that have reads mapped to them for WES.
+3. This is the BED file used to parallelize the joint-genotyping. It contains all regions where real variants have been found in all GVCFs in the family. The value of `--merge_distance` (default: `100000` base pairs) is used to pad the region so the BED file contains multiple bigger regions instead of tons of small regions.
 
 4. The PED file detailing the relation between the different members of the family. This file will be inferred when no PED file has been given to this family.
 
@@ -60,11 +58,11 @@ results/
 
 9. The report created with MultiQC. This contains all statistics generated with `bcftools stats`, Ensembl VEP and other tools.
 
-10. The folder for `SAMPLE_1` containing temporary files that could be useful for re-analysing later.
+10. The folder for `SAMPLE_1` containing temporary files that could be useful for re-analysis later.
 
-11. This is the BED file used to parallelize the variant calling. It contains all regions that have reads mapped to them for WGS and all regions in the regions of interest that have reads mapped to them for WES.
+11. This is the BED file used to parallelize the variant calling. It contains all regions that are callable in the input files based on the desired regions (WGS = the whole genome; WES = the regions specified in the `roi` BED file).
 
-12. The GVCF file created with `haplotypecaller`. This can used in later runs of the pipeline to skip variant calling for this sample. A major use case for this is to add a new member to a family without having to call all variants of already called members.
+12. The GVCF file created with `haplotypecaller`. This can be used in later runs of the pipeline to skip variant calling for this sample. A major use case for this is to add a new member to a family without having to call all variants of already called members.
 
 13. The global distribution of the coverage calculated by `mosdepth`.
 
