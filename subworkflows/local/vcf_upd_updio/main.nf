@@ -2,7 +2,8 @@
 // Run UPDio analysis
 //
 
-include { UPDIO    } from '../../../modules/local/updio/main'
+include { UPDIO             } from '../../../modules/local/updio/main'
+include { BCFTOOLS_FILTER   } from '../../../modules/nf-core/bcftools/filter'
 
 workflow VCF_UPD_UPDIO {
     take:
@@ -21,6 +22,15 @@ workflow VCF_UPD_UPDIO {
         }
         .set { ch_trio_vcfs }
 
+    BCFTOOLS_FILTER(
+        ch_trio_vcfs
+    )
+    ch_versions = ch_versions.mix(BCFTOOLS_FILTER.out.versions.first())
+
+    BCFTOOLS_FILTER.out.vcf
+        .join(BCFTOOLS_FILTER.out.tbi, failOnDuplicate:true, failOnMismatch:true)
+        .set { ch_filter_output }
+
     ch_peds
         .filter { meta, ped ->
             meta.family_samples.tokenize(",").size() >= 3
@@ -29,7 +39,7 @@ workflow VCF_UPD_UPDIO {
 
     CustomChannelOperators.joinOnKeys(
         [failOnDuplicate:true, failOnMismatch:true],
-        ch_trio_vcfs,
+        ch_filter_output,
         ch_trio_peds,
         ["id", "family", "family_samples", "caller"]
     )
@@ -58,9 +68,6 @@ def get_family_data_from_ped(meta, ped) {
     def output = []
     ped.readLines().each { line ->
         if(line.startsWith("#")) { return }
-        def child = null
-        def mother = null
-        def father = null
         def split_line = line.split("\t")
         if(split_line[1] != "0" && split_line[2] != "0" && split_line[3] != "0") {
             output.add(meta + [child:split_line[1], father:split_line[2], mother:split_line[3]])

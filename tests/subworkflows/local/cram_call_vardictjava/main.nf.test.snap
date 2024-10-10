@@ -8,8 +8,7 @@
                         "sample": "NA24143",
                         "family": "Ashkenazim",
                         "family_samples": "NA24143",
-                        "caller": "vardict",
-                        "samples": "NA24143"
+                        "caller": "vardict"
                     },
                     "NA24143.vardict.vcf.gz",
                     "NA24143.vardict.vcf.gz.tbi"
@@ -31,8 +30,7 @@
                         "sample": "NA24143",
                         "family": "Ashkenazim",
                         "family_samples": "NA24143",
-                        "caller": "vardict",
-                        "samples": "NA24143"
+                        "caller": "vardict"
                     },
                     "NA24143.vardict.vcf.gz",
                     "NA24143.vardict.vcf.gz.tbi"
@@ -53,9 +51,8 @@
                         "id": "NA24143",
                         "sample": "NA24143",
                         "family": "Ashkenazim",
-                        "family_samples": "NA24143,NA24149",
-                        "caller": "vardict",
-                        "samples": "NA24143"
+                        "family_samples": "NA24143",
+                        "caller": "vardict"
                     },
                     "NA24143.vardict.vcf.gz",
                     "NA24143.vardict.vcf.gz.tbi"
@@ -65,9 +62,8 @@
                         "id": "NA24149",
                         "sample": "NA24149",
                         "family": "Ashkenazim",
-                        "family_samples": "NA24143,NA24149",
-                        "caller": "vardict",
-                        "samples": "NA24149"
+                        "family_samples": "NA24149",
+                        "caller": "vardict"
                     },
                     "NA24149.vardict.vcf.gz",
                     "NA24149.vardict.vcf.gz.tbi"
@@ -78,6 +74,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-05T17:38:29.203806206"
+        "timestamp": "2024-10-08T16:58:11.678281371"
     }
 }

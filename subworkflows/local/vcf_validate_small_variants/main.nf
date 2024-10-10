@@ -5,7 +5,7 @@ workflow VCF_VALIDATE_SMALL_VARIANTS {
 
     take:
     ch_vcf                          // [mandatory] channel: [ meta, vcf, tbi, truth_vcf, truth_tbi ]
-    ch_beds                         // [mandatory] channel: [ meta, regions_bed, targets_bed ]
+    ch_beds                         // [mandatory] channel: [ meta, truth_bed, region_bed ]
     ch_fasta                        // [happy only] channel: [ meta, fasta ]
     ch_fasta_fai                    // [happy only] channel: [ meta, fasta_fai ]
     ch_vcfeval_sdf                  // [vcfeval only] channel: [ meta, sdf ]

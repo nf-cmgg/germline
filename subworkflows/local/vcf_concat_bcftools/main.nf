@@ -15,11 +15,14 @@ workflow VCF_CONCAT_BCFTOOLS {
     ch_versions = Channel.empty()
 
     ch_vcfs
-        .map { meta, vcf, tbi ->
+        .map { meta, vcf, tbi=[] ->
             def new_meta = meta + [id:meta.sample ?: meta.family]
             [ groupKey(new_meta, meta.split_count), vcf, tbi ]
         }
         .groupTuple()
+        .map { meta, vcfs, tbis ->
+            [ meta, vcfs, tbis.findAll { tbi -> tbi != [] }]
+        }
         .set { ch_concat_input }
 
     BCFTOOLS_CONCAT(

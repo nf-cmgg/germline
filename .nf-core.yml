@@ -29,7 +29,7 @@ lint:
   multiqc_config:
     - "report_comment"
   actions_ci: false # TODO readd this once the linting doesn't act up
-nf_core_version: 3.0.0dev
+nf_core_version: 3.0.0
 repository_type: pipeline
 template:
   author: nvnieuwk

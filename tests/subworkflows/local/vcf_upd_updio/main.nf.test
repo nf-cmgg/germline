@@ -12,6 +12,7 @@ nextflow_workflow {
 
         when {
             params {
+                outdir = "${outputDir}"
                 updio = true
             }
             workflow {

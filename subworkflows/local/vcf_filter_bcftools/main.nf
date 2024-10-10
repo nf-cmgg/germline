@@ -16,12 +16,12 @@ workflow VCF_FILTER_BCFTOOLS {
     ch_versions = Channel.empty()
 
     FILTER_1(
-        ch_vcfs.map { meta, vcf, tbi=[] -> [ meta, vcf ]}
+        ch_vcfs.map { meta, vcf, tbi=[] -> [ meta, vcf, tbi ]}
     )
     ch_versions = ch_versions.mix(FILTER_1.out.versions.first())
 
     FILTER_2(
-        FILTER_1.out.vcf
+        FILTER_1.out.vcf.map { meta, vcf -> [ meta, vcf, [] ]}
     )
     ch_versions = ch_versions.mix(FILTER_2.out.versions.first())
 

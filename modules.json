@@ -18,7 +18,7 @@
                     },
                     "bcftools/filter": {
                         "branch": "master",
-                        "git_sha": "33ef773a7ea36e88323902f63662aa53c9b88988",
+                        "git_sha": "f85dbddd7a335fc0f5ac331e8d22ca94123b654b",
                         "installed_by": ["modules"]
                     },
                     "bcftools/norm": {
@@ -141,7 +141,7 @@
                     },
                     "rtgtools/vcfeval": {
                         "branch": "master",
-                        "git_sha": "e743b2dea725bcfc4b76a209981808987332013a",
+                        "git_sha": "83e2df1e4ec594beb8a575b4db0b4197900f4ebd",
                         "installed_by": ["modules"]
                     },
                     "samtools/convert": {

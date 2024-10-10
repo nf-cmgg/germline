@@ -1,7 +1,6 @@
 include { SAMTOOLS_CONVERT                  } from '../../../modules/nf-core/samtools/convert/main'
 include { VARDICTJAVA                       } from '../../../modules/nf-core/vardictjava/main'
-include { TABIX_TABIX      as TABIX_SPLIT   } from '../../../modules/nf-core/tabix/tabix/main'
-include { TABIX_BGZIPTABIX as TABIX_VCFANNO } from '../../../modules/nf-core/tabix/bgziptabix/main'
+include { TABIX_BGZIP                       } from '../../../modules/nf-core/tabix/bgzip/main'
 include { BCFTOOLS_REHEADER                 } from '../../../modules/nf-core/bcftools/reheader/main'
 include { VCFANNO                           } from '../../../modules/nf-core/vcfanno/main'
 include { TABIX_TABIX                       } from '../../../modules/nf-core/tabix/tabix/main'
@@ -67,13 +66,8 @@ workflow CRAM_CALL_VARDICTJAVA {
         )
         ch_versions = ch_versions.mix(VARDICTJAVA.out.versions.first())
 
-        TABIX_SPLIT(
-            VARDICTJAVA.out.vcf
-        )
-        ch_versions = ch_versions.mix(TABIX_SPLIT.out.versions.first())
-
         VCF_CONCAT_BCFTOOLS(
-            VARDICTJAVA.out.vcf.join(TABIX_SPLIT.out.tbi, failOnMismatch:true, failOnDuplicate:true),
+            VARDICTJAVA.out.vcf,
             false
         )
         ch_versions = ch_versions.mix(VCF_CONCAT_BCFTOOLS.out.versions)
@@ -85,8 +79,8 @@ workflow CRAM_CALL_VARDICTJAVA {
                 .collect()
                 .set { ch_vcfanno_toml }
 
-            ch_dbsnp
-                .combine(ch_dbsnp_tbi)
+            ch_dbsnp.map { meta, dbsnp -> dbsnp }
+                .combine(ch_dbsnp_tbi.map { meta, tbi -> tbi })
                 .collect()
                 .set { ch_vcfanno_resources }
 
@@ -98,12 +92,12 @@ workflow CRAM_CALL_VARDICTJAVA {
             )
             ch_versions = ch_versions.mix(VCFANNO.out.versions.first())
 
-            TABIX_VCFANNO(
+            TABIX_BGZIP(
                 VCFANNO.out.vcf
             )
-            ch_versions = ch_versions.mix(TABIX_VCFANNO.out.versions.first())
+            ch_versions = ch_versions.mix(TABIX_BGZIP.out.versions.first())
 
-            TABIX_VCFANNO.out.gz_tbi.set { ch_dbsnp_annotated }
+            TABIX_BGZIP.out.output.set { ch_dbsnp_annotated }
         } else {
             VCF_CONCAT_BCFTOOLS.out.vcfs.set { ch_dbsnp_annotated }
         }
@@ -127,7 +121,7 @@ workflow CRAM_CALL_VARDICTJAVA {
         ch_filter_output
             .join(TABIX_TABIX.out.tbi, failOnDuplicate: true, failOnMismatch: true)
             .map { meta, vcf, tbi ->
-                def new_meta = meta + [samples: meta.sample]
+                def new_meta = meta + [family_samples: meta.sample]
                 [ new_meta, vcf, tbi ]
             }
             .set { ch_vcfs }
