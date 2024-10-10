@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changes
 
 1. Added the `--squash-ploidy` argument to the RTG vcfeval process.
+2. Update to nf-core v3.0.1
 
 ### Fixes
 

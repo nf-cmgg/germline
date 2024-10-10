@@ -51,7 +51,7 @@ workflow PIPELINE_INITIALISATION {
         workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1
     )
 
-    
+
     //
     // Validate parameters and generate parameter summary to stdout
     //
@@ -60,7 +60,7 @@ workflow PIPELINE_INITIALISATION {
         validate_params,
         null
     )
-    
+
 
     //
     // Check config provided to the pipeline
@@ -104,7 +104,7 @@ workflow PIPELINE_COMPLETION {
     email           //  string: email address
     email_on_fail   //  string: email address sent on pipeline failure
     plaintext_email // boolean: Send plain-text email instead of HTML
-    
+
     outdir          //    path: Path to output directory where results will be published
     monochrome_logs // boolean: Disable ANSI colour codes in log output
     hook_url        //  string: hook URL for notifications
@@ -192,7 +192,6 @@ def toolCitationText() {
 
 def toolBibliographyText() {
     def reference_text = [
-            
             "<li>Ewels, P., Magnusson, M., Lundin, S., & Käller, M. (2016). MultiQC: summarize analysis results for multiple tools and samples in a single report. Bioinformatics , 32(19), 3047–3048. doi: /10.1093/bioinformatics/btw354</li>"
         ].join(' ').trim()
 

@@ -208,7 +208,7 @@ workflow {
         params.genome,
         params.watchdir
     )
-    
+
     //
     // WORKFLOW: Run main workflow
     //
