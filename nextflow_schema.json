@@ -1,9 +1,11 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://raw.githubusercontent.com/nf-cmgg/germline/master/nextflow_schema.json",
     "title": "nf-cmgg/germline pipeline parameters",
     "description": "A nextflow pipeline for calling and annotating small germline variants from short DNA reads for WES and WGS data",
     "type": "object",
+    "$defs": {
     "$defs": {
         "input_output_options": {
             "title": "Input/output options",
@@ -675,6 +677,7 @@
             "$ref": "#/$defs/pipeline_specific_parameters"
         },
         {
+            "$ref": "#/$defs/institutional_config_options"
             "$ref": "#/$defs/institutional_config_options"
         },
         {

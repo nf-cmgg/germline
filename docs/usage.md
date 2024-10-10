@@ -153,7 +153,7 @@ The above pipeline run specified with a params file in yaml format:
 nextflow run nf-cmgg/germline -profile docker -params-file params.yaml
 ```
 
-with `params.yaml` containing:
+with:
 
 ```yaml title="params.yaml"
 input: './samplesheet.csv'

@@ -133,7 +133,6 @@ workflow NFCMGG_GERMLINE {
 
     emit:
     multiqc_report = GERMLINE.out.multiqc_report // channel: /path/to/multiqc_report.html
-
 }
 
 /*
@@ -199,7 +198,6 @@ workflow {
     //
     PIPELINE_INITIALISATION (
         params.version,
-        params.help,
         params.validate_params,
         params.monochrome_logs,
         args,
@@ -210,7 +208,7 @@ workflow {
         params.genome,
         params.watchdir
     )
-
+    
     //
     // WORKFLOW: Run main workflow
     //
@@ -219,7 +217,6 @@ workflow {
         params,
         multiqc_logo
     )
-
     //
     // SUBWORKFLOW: Run completion tasks
     //
