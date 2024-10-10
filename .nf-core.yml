@@ -29,7 +29,7 @@ lint:
   multiqc_config:
     - "report_comment"
   actions_ci: false # TODO readd this once the linting doesn't act up
-nf_core_version: 3.0.0
+nf_core_version: 3.0.1
 repository_type: pipeline
 template:
   author: nvnieuwk
@@ -37,3 +37,6 @@ template:
     from short DNA reads for WES and WGS data
   name: germline
   prefix: nf-cmgg
+  skip_features:
+    - fastqc
+    - is_nfcore
