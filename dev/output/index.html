@@ -311,6 +311,17 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Output
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -320,6 +331,43 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Introduction
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pipeline-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pipeline overview
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -385,6 +433,32 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Introduction
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pipeline-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pipeline overview
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -402,10 +476,9 @@
 
 
 <h1 id="nf-cmgggermline-output">nf-cmgg/germline: Output</h1>
-<h1 id="nf-cmgggermline-output_1">nf-cmgg/germline: Output</h1>
 <h2 id="introduction">Introduction</h2>
 <p>This page describes the output produced by the pipeline.</p>
-<p>The directories listed below will be created in the results directory after the pipeline has finished. All paths are relative to the top-level output directory (specified by <code>--outdir &lt;DIR&gt;</code>). This is an example output when the pipeline has been run for a WGS sample called <code>SAMPLE_1</code> and a WES sample called <code>SAMPLE_2</code> which form a family called <code>FAMILY_1</code>. The output consists of 4 directories: <code>yyyy-MM-dd_project_name</code>, <code>individuals</code>, <code>multiqc_reports</code> and <code>pipeline_info</code>. This run has only been run with <code>haplotypecaller</code> (<code>--callers haplotypecaller</code>)</p>
+<p>The directories listed below will be created in the results directory after the pipeline has finished. All paths are relative to the top-level output directory (specified by <code>--outdir &lt;DIR&gt;</code>). This is an example output when the pipeline has been run for a WGS sample called <code>SAMPLE_1</code> and a WES sample called <code>SAMPLE_2</code> which form a family called <code>FAMILY_1</code>. The output consists of 4 directories: <code>yyyy-MM-dd_project_name</code>, <code>individuals</code>, <code>multiqc_reports</code> and <code>pipeline_info</code>. This run has only been run with <code>haplotypecaller</code>: (<code>--callers haplotypecaller</code>)</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>results/
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├──<span class="w"> </span>YYYY_MM_DD_project_name<span class="w"> </span><span class="c1">#(1)!</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>│<span class="w">   </span>└──<span class="w"> </span>FAMILY_1<span class="w"> </span><span class="c1">#(2)!</span>
@@ -446,7 +519,7 @@
 <p>This directory contains all files for family <code>FAMILY_1</code>.</p>
 </li>
 <li>
-<p>This is the BED file used to parallelize the joint-genotyping. It contains all regions that have reads mapped to them for WGS and all regions in the regions of interest that have reads mapped to them for WES.</p>
+<p>This is the BED file used to parallelize the joint-genotyping. It contains all regions where real variants have been found in all GVCFs in the family. The value of <code>--merge_distance</code> (default: <code>100000</code> base pairs) is used to pad the region so the BED file contains multiple bigger regions instead of tons of small regions.</p>
 </li>
 <li>
 <p>The PED file detailing the relation between the different members of the family. This file will be inferred when no PED file has been given to this family.</p>
@@ -467,13 +540,13 @@
 <p>The report created with MultiQC. This contains all statistics generated with <code>bcftools stats</code>, Ensembl VEP and other tools.</p>
 </li>
 <li>
-<p>The folder for <code>SAMPLE_1</code> containing temporary files that could be useful for re-analysing later.</p>
+<p>The folder for <code>SAMPLE_1</code> containing temporary files that could be useful for re-analysis later.</p>
 </li>
 <li>
-<p>This is the BED file used to parallelize the variant calling. It contains all regions that have reads mapped to them for WGS and all regions in the regions of interest that have reads mapped to them for WES.</p>
+<p>This is the BED file used to parallelize the variant calling. It contains all regions that are callable in the input files based on the desired regions (WGS = the whole genome; WES = the regions specified in the <code>roi</code> BED file).</p>
 </li>
 <li>
-<p>The GVCF file created with <code>haplotypecaller</code>. This can used in later runs of the pipeline to skip variant calling for this sample. A major use case for this is to add a new member to a family without having to call all variants of already called members.</p>
+<p>The GVCF file created with <code>haplotypecaller</code>. This can be used in later runs of the pipeline to skip variant calling for this sample. A major use case for this is to add a new member to a family without having to call all variants of already called members.</p>
 </li>
 <li>
 <p>The global distribution of the coverage calculated by <code>mosdepth</code>.</p>

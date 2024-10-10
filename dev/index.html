@@ -560,7 +560,7 @@ with <code>-profile test</code> before running the workflow on actual data.</p>
 </div>
 <h2 id="quick-start">Quick Start</h2>
 <ol>
-<li>Install <a href="https://www.nextflow.io/docs/latest/getstarted.html#installation"><code>Nextflow</code></a> (<code>&gt;=23.10.0</code>)</li>
+<li>Install <a href="https://www.nextflow.io/docs/latest/getstarted.html#installation"><code>Nextflow</code></a> (<code>&gt;=24.04.0</code>)</li>
 <li>Install any of <a href="https://docs.docker.com/engine/installation/"><code>Docker</code></a>, <a href="https://www.sylabs.io/guides/3.0/user-guide/"><code>Singularity</code></a> (you can follow <a href="https://singularity-tutorial.github.io/01-installation/">this tutorial</a>), <a href="https://podman.io/"><code>Podman</code></a>, <a href="https://nersc.gitlab.io/development/shifter/how-to-use/"><code>Shifter</code></a> or <a href="https://hpc.github.io/charliecloud/"><code>Charliecloud</code></a> for full pipeline reproducibility <em>(you can use <a href="https://conda.io/miniconda.html"><code>Conda</code></a> both to install Nextflow itself and also to manage software within pipelines. Please only use it within pipelines as a last resort; see <a href="https://nf-co.re/usage/configuration#basic-configuration-profiles">docs</a>)</em>.</li>
 </ol>
 <div class="language-text highlight"><span class="filename">samplesheet.csv</span><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>sample,family,cram,crai
@@ -570,6 +570,7 @@ with <code>-profile test</code> before running the workflow on actual data.</p>
 <p>Now, you can run the pipeline using:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>nextflow<span class="w"> </span>run<span class="w"> </span>nf-cmgg/germline<span class="w"> </span>--input<span class="w"> </span>samplesheet.csv<span class="w"> </span>--outdir<span class="w"> </span>&lt;OUTDIR&gt;<span class="w"> </span>--genome<span class="w"> </span>GRCh38<span class="w"> </span>-profile<span class="w"> </span>&lt;docker/singularity/podman/shifter/charliecloud/conda/institute&gt;
 </span></code></pre></div>
+<p>This pipeline contains a lot of parameters to customize your pipeline run. Please take a look at the <a href="parameters/">parameters</a> documentation for an overview.</p>
 <!-- prettier-ignore -->
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -578,7 +579,7 @@ see <a href="https://nf-co.re/usage/configuration#custom-configuration-files">do
 </div>
 <h2 id="credits">Credits</h2>
 <p>nf-cmgg/germline was originally written and is maintained by <a href="https://github.com/nvnieuwk">@nvnieuwk</a>.</p>
-<p>Special thanks to <a href="https://github.com/matthdsm">@matthdsm</a> for the many tips and feedback and to <a href="https://github.com/mvheetve">@mvheetve</a> for testing the pipeline.</p>
+<p>Special thanks to <a href="https://github.com/matthdsm">@matthdsm</a> for the many tips and feedback and to <a href="https://github.com/mvheetve">@mvheetve</a> and <a href="https://github.com/ToonRosseel">@ToonRossel</a> for testing the pipeline.</p>
 <h2 id="contributions-and-support">Contributions and Support</h2>
 <p>If you would like to contribute to this pipeline, please see the <a href="https://github.com/nf-cmgg/germline/blob/dev/.github/CONTRIBUTING.md">contributing guidelines</a>.</p>
 <h2 id="citations">Citations</h2>

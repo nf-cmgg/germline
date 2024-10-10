@@ -581,7 +581,7 @@
 </tr>
 <tr>
 <td><code>watchdir</code></td>
-<td>A folder to watch for the creation of files that start with <code>watch:</code> in the samplesheet</td>
+<td>A folder to watch for the creation of files that start with <code>watch:</code> in the samplesheet.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -597,7 +597,7 @@
 </tr>
 <tr>
 <td><code>ped</code></td>
-<td>Path to a pedigree file for all samples in the run</td>
+<td>Path to a pedigree file for all samples in the run. All relational data will be fetched from this file.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -621,7 +621,7 @@
 <tbody>
 <tr>
 <td><code>genome</code></td>
-<td>Reference genome build <details><summary>Help</summary><small>Requires a Genome Reference Consortium reference ID (e.g. GRCh38)</small></details></td>
+<td>Reference genome build. Used to fetch the right reference files. <details><summary>Help</summary><small>Requires a Genome Reference Consortium reference ID (e.g. GRCh38)</small></details></td>
 <td><code>string</code></td>
 <td>GRCh38</td>
 <td></td>
@@ -645,7 +645,7 @@
 </tr>
 <tr>
 <td><code>dict</code></td>
-<td>Path to the sequence dictionary generated from the FASTA reference</td>
+<td>Path to the sequence dictionary generated from the FASTA reference. This is only used when <code>haplotypecaller</code> is one of the specified callers.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -653,7 +653,7 @@
 </tr>
 <tr>
 <td><code>strtablefile</code></td>
-<td>Path to the STR table file generated from the FASTA reference</td>
+<td>Path to the STR table file generated from the FASTA reference. This is only used when <code>--dragstr</code> has been given.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -661,7 +661,7 @@
 </tr>
 <tr>
 <td><code>sdf</code></td>
-<td>Path to the SDF folder generated from the reference FASTA file</td>
+<td>Path to the SDF folder generated from the reference FASTA file. This is only required when using <code>--validate</code>.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -669,7 +669,7 @@
 </tr>
 <tr>
 <td><code>genomes_base</code></td>
-<td>Directory base for CMGG reference store (used when --genomes_ignore false is specified)</td>
+<td>Directory base for CMGG reference store (used when <code>--genomes_ignore false</code> is specified)</td>
 <td><code>string</code></td>
 <td>/references/</td>
 <td></td>
@@ -685,7 +685,7 @@
 </tr>
 <tr>
 <td><code>genomes_ignore</code></td>
-<td>Do not load the local references from the path specified with --genomes_base</td>
+<td>Do not load the local references from the path specified with <code>--genomes_base</code></td>
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
@@ -733,7 +733,7 @@
 </tr>
 <tr>
 <td><code>merge_distance</code></td>
-<td>The merge distance for genotype BED files <details><summary>Help</summary><small>Increase this parameter if GenomicsDBImport is running slow. This defines the maximum distance between intervals that should be merged. The less intervals GenomicsDBImport actually gets, the faster it will run.</small></details></td>
+<td>The merge distance for family BED files <details><summary>Help</summary><small>Increase this parameter if GenomicsDBImport is running slow. This defines the maximum distance between intervals that should be merged. The less intervals GenomicsDBImport actually gets, the faster it will run.</small></details></td>
 <td><code>integer</code></td>
 <td>100000</td>
 <td></td>
@@ -749,7 +749,7 @@
 </tr>
 <tr>
 <td><code>validate</code></td>
-<td>Validate the found variants <details><summary>Help</summary><small>This only validates individual sample GVCFs that have truth VCF supplied to them via the samplesheet (in row <code>truth_vcf</code>, with an optional index in the <code>truth_tbi</code> row)</small></details></td>
+<td>Validate the found variants</td>
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
@@ -757,7 +757,7 @@
 </tr>
 <tr>
 <td><code>filter</code></td>
-<td>Filter the found variants</td>
+<td>Filter the found variants.</td>
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
@@ -765,7 +765,7 @@
 </tr>
 <tr>
 <td><code>annotate</code></td>
-<td>Annotate the found variants</td>
+<td>Annotate the found variants using Ensembl VEP.</td>
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
@@ -773,7 +773,7 @@
 </tr>
 <tr>
 <td><code>add_ped</code></td>
-<td>Add PED INFO header lines to the final VCFs</td>
+<td>Add PED INFO header lines to the final VCFs.</td>
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
@@ -781,7 +781,7 @@
 </tr>
 <tr>
 <td><code>gemini</code></td>
-<td>Create a Gemini databases from the final VCFs</td>
+<td>Create a Gemini databases from the final VCFs.</td>
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
@@ -789,7 +789,7 @@
 </tr>
 <tr>
 <td><code>mosdepth_slow</code></td>
-<td>Don't run mosdepth in fast-mode <details><summary>Help</summary><small>This is advised if you need exact coverage BED files as output</small></details></td>
+<td>Don't run mosdepth in fast-mode <details><summary>Help</summary><small>This is advised if you need exact coverage BED files as output.</small></details></td>
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
@@ -797,7 +797,7 @@
 </tr>
 <tr>
 <td><code>project</code></td>
-<td>The name of the project. <details><summary>Help</summary><small>This will be used to specify the final output files folder in the output directory.</small></details></td>
+<td>The name of the project. <details><summary>Help</summary><small>This will be used to specify the name of the final output files folder in the output directory.</small></details></td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -805,7 +805,7 @@
 </tr>
 <tr>
 <td><code>skip_date_project</code></td>
-<td>Don't add the current date to the output project folder</td>
+<td>Don't add the current date to the output project folder.</td>
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
@@ -813,7 +813,7 @@
 </tr>
 <tr>
 <td><code>roi</code></td>
-<td>Path to the default ROI (regions of interest) BED file to be used for WES analysis <details><summary>Help</summary><small>This will be used for all samples that do not have a specific ROI file supplied to them through the samplesheet. Don't supply an ROI file to run the analysis as WGS.</small></details></td>
+<td>Path to the default ROI (regions of interest) BED file to be used for WES analysis. <details><summary>Help</summary><small>This will be used for all samples that do not have a specific ROI file supplied to them through the samplesheet. Don't supply an ROI file to run the analysis as WGS.</small></details></td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -821,7 +821,7 @@
 </tr>
 <tr>
 <td><code>dbsnp</code></td>
-<td>Path to the dbSNP VCF file</td>
+<td>Path to the dbSNP VCF file. This will be used to set the variant IDs.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -829,7 +829,7 @@
 </tr>
 <tr>
 <td><code>dbsnp_tbi</code></td>
-<td>Path to the index of the dbSNP VCF file</td>
+<td>Path to the index of the dbSNP VCF file.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -837,7 +837,7 @@
 </tr>
 <tr>
 <td><code>somalier_sites</code></td>
-<td>Path to the VCF file with sites for Somalier to use</td>
+<td>Path to the VCF file with sites for Somalier to use.</td>
 <td><code>string</code></td>
 <td>https://github.com/brentp/somalier/files/3412456/sites.hg38.vcf.gz</td>
 <td></td>
@@ -845,7 +845,7 @@
 </tr>
 <tr>
 <td><code>only_call</code></td>
-<td>Only call the variants without doing any post-processing</td>
+<td>Only call the variants without doing any post-processing.</td>
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
@@ -853,7 +853,7 @@
 </tr>
 <tr>
 <td><code>only_merge</code></td>
-<td>Only run the pipeline until the creation of the genomicsdbs and output them</td>
+<td>Only run the pipeline until the creation of the genomicsdbs and output them.</td>
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
@@ -861,7 +861,7 @@
 </tr>
 <tr>
 <td><code>output_genomicsdb</code></td>
-<td>Output the genomicsDB together with the joint-genotyped VCF</td>
+<td>Output the genomicsDB together with the joint-genotyped VCF.</td>
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
@@ -869,7 +869,7 @@
 </tr>
 <tr>
 <td><code>callers</code></td>
-<td>A comma delimited string of the available callers. Current options are: 'haplotypecaller' and 'vardict'</td>
+<td>A comma delimited string of the available callers. Current options are: <code>haplotypecaller</code> and <code>vardict</code>.</td>
 <td><code>string</code></td>
 <td>haplotypecaller</td>
 <td></td>
@@ -877,7 +877,7 @@
 </tr>
 <tr>
 <td><code>vardict_min_af</code></td>
-<td>The minimum allele frequency for VarDict when no <code>vardict_min_af</code> is supplied in the samplesheet</td>
+<td>The minimum allele frequency for VarDict when no <code>vardict_min_af</code> is supplied in the samplesheet.</td>
 <td><code>number</code></td>
 <td>0.1</td>
 <td></td>
@@ -885,7 +885,7 @@
 </tr>
 <tr>
 <td><code>normalize</code></td>
-<td>Normalize the VCFs</td>
+<td>Normalize the variant in the final VCFs.</td>
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
@@ -893,7 +893,7 @@
 </tr>
 <tr>
 <td><code>output_suffix</code></td>
-<td>A custom suffix to add to the basename of the output files</td>
+<td>A custom suffix to add to the basename of the output files.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -901,7 +901,7 @@
 </tr>
 <tr>
 <td><code>only_pass</code></td>
-<td>Filter out all variants that don't have the PASS filter for vardict. This only works when --filter is also given</td>
+<td>Filter out all variants that don't have the PASS filter for vardict. This only works when <code>--filter</code> is also given.</td>
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
@@ -909,7 +909,7 @@
 </tr>
 <tr>
 <td><code>keep_alt_contigs</code></td>
-<td>Keep all aditional contigs for calling instead of filtering them out before</td>
+<td>Keep all aditional contigs for calling instead of filtering them out before.</td>
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
@@ -917,7 +917,7 @@
 </tr>
 <tr>
 <td><code>updio</code></td>
-<td>Run UPDio analysis on the resulting VCFs</td>
+<td>Run UPDio analysis on the final VCFs.</td>
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
@@ -925,7 +925,7 @@
 </tr>
 <tr>
 <td><code>updio_common_cnvs</code></td>
-<td>A TSV file containing common CNVs to be used by UPDio</td>
+<td>A TSV file containing common CNVs to be used by UPDio.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -933,7 +933,7 @@
 </tr>
 <tr>
 <td><code>automap</code></td>
-<td>Run AutoMap analysis on the resulting VCFs</td>
+<td>Run AutoMap analysis on the final VCFs.</td>
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
@@ -965,9 +965,17 @@
 </tr>
 <tr>
 <td><code>hc_phasing</code></td>
-<td>Perform phasing with HaplotypeCaller</td>
+<td>Perform phasing with HaplotypeCaller.</td>
 <td><code>boolean</code></td>
 <td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>min_callable_coverage</code></td>
+<td>The lowest callable coverage to determine callable regions.</td>
+<td><code>integer</code></td>
+<td>5</td>
 <td></td>
 <td></td>
 </tr>
@@ -1053,7 +1061,15 @@
 <tbody>
 <tr>
 <td><code>help</code></td>
-<td>Display help text.</td>
+<td>Display help text. Give a parameter name to this option to see the detailed help of that parameter.</td>
+<td><code>['boolean', 'string']</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>helpFull</code></td>
+<td>See the full help message of all parameters.</td>
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
@@ -1096,14 +1112,6 @@
 <td>File size limit when attaching MultiQC reports to summary emails.</td>
 <td><code>string</code></td>
 <td>25.MB</td>
-<td></td>
-<td>True</td>
-</tr>
-<tr>
-<td><code>monochrome_logs</code></td>
-<td>Do not use coloured log outputs.</td>
-<td><code>boolean</code></td>
-<td></td>
 <td></td>
 <td>True</td>
 </tr>
@@ -1181,7 +1189,7 @@
 <tbody>
 <tr>
 <td><code>vep_chunk_size</code></td>
-<td>The amount of sites per split VCF as input to VEP</td>
+<td>The amount of sites per split VCF as input to VEP.</td>
 <td><code>integer</code></td>
 <td>50000</td>
 <td></td>
@@ -1189,7 +1197,7 @@
 </tr>
 <tr>
 <td><code>species</code></td>
-<td>The species of the samples <details><summary>Help</summary><small>Must be lower case and have underscores as spaces</small></details></td>
+<td>The species of the samples. <details><summary>Help</summary><small>Must be lower case and have underscores as spaces.</small></details></td>
 <td><code>string</code></td>
 <td>homo_sapiens</td>
 <td></td>
@@ -1197,7 +1205,7 @@
 </tr>
 <tr>
 <td><code>vep_merged</code></td>
-<td>Specify if the VEP cache is a merged cache</td>
+<td>Specify if the VEP cache is a merged cache.</td>
 <td><code>boolean</code></td>
 <td>True</td>
 <td></td>
@@ -1205,7 +1213,7 @@
 </tr>
 <tr>
 <td><code>vep_cache</code></td>
-<td>The path to the VEP cache</td>
+<td>The path to the VEP cache.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -1213,7 +1221,7 @@
 </tr>
 <tr>
 <td><code>vep_dbnsfp</code></td>
-<td>Use the dbNSFP plugin with Ensembl VEP <details><summary>Help</summary><small>The '--dbnsfp' and '--dbnsfp_tbi' parameters need to be specified when using this parameter.</small></details></td>
+<td>Use the dbNSFP plugin with Ensembl VEP. <details><summary>Help</summary><small>The '--dbnsfp' and '--dbnsfp_tbi' parameters need to be specified when using this parameter.</small></details></td>
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
@@ -1221,7 +1229,7 @@
 </tr>
 <tr>
 <td><code>vep_spliceai</code></td>
-<td>Use the SpliceAI plugin with Ensembl VEP <details><summary>Help</summary><small>The '--spliceai_indel', '--spliceai_indel_tbi', '--spliceai_snv' and '--spliceai_snv_tbi' parameters need to be specified when using this parameter.</small></details></td>
+<td>Use the SpliceAI plugin with Ensembl VEP. <details><summary>Help</summary><small>The '--spliceai_indel', '--spliceai_indel_tbi', '--spliceai_snv' and '--spliceai_snv_tbi' parameters need to be specified when using this parameter.</small></details></td>
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
@@ -1229,7 +1237,7 @@
 </tr>
 <tr>
 <td><code>vep_spliceregion</code></td>
-<td>Use the SpliceRegion plugin with Ensembl VEP</td>
+<td>Use the SpliceRegion plugin with Ensembl VEP.</td>
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
@@ -1237,7 +1245,7 @@
 </tr>
 <tr>
 <td><code>vep_mastermind</code></td>
-<td>Use the Mastermind plugin with Ensembl VEP <details><summary>Help</summary><small>The '--mastermind' and '--mastermind_tbi' parameters need to be specified when using this parameter.</small></details></td>
+<td>Use the Mastermind plugin with Ensembl VEP. <details><summary>Help</summary><small>The '--mastermind' and '--mastermind_tbi' parameters need to be specified when using this parameter.</small></details></td>
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
@@ -1245,7 +1253,7 @@
 </tr>
 <tr>
 <td><code>vep_maxentscan</code></td>
-<td>Use the MaxEntScan plugin with Ensembl VEP <details><summary>Help</summary><small>The '--maxentscan' parameter need to be specified when using this parameter.</small></details></td>
+<td>Use the MaxEntScan plugin with Ensembl VEP. <details><summary>Help</summary><small>The '--maxentscan' parameter need to be specified when using this parameter.</small></details></td>
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
@@ -1253,7 +1261,7 @@
 </tr>
 <tr>
 <td><code>vep_eog</code></td>
-<td>Use the custom EOG annotation with Ensembl VEP <details><summary>Help</summary><small>The '--eog' and '--eog_tbi' parameters need to be specified when using this parameter.</small></details></td>
+<td>Use the custom EOG annotation with Ensembl VEP. <details><summary>Help</summary><small>The '--eog' and '--eog_tbi' parameters need to be specified when using this parameter.</small></details></td>
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
@@ -1261,7 +1269,7 @@
 </tr>
 <tr>
 <td><code>vep_alphamissense</code></td>
-<td>Use the AlphaMissense plugin with Ensembl VEP <details><summary>Help</summary><small>The '--alphamissense' and '--alphamissense_tbi' parameters need to be specified when using this parameter.</small></details></td>
+<td>Use the AlphaMissense plugin with Ensembl VEP. <details><summary>Help</summary><small>The '--alphamissense' and '--alphamissense_tbi' parameters need to be specified when using this parameter.</small></details></td>
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
@@ -1269,7 +1277,7 @@
 </tr>
 <tr>
 <td><code>vep_version</code></td>
-<td>The version of the VEP tool to be used</td>
+<td>The version of the VEP tool to be used.</td>
 <td><code>number</code></td>
 <td>105.0</td>
 <td></td>
@@ -1277,7 +1285,7 @@
 </tr>
 <tr>
 <td><code>vep_cache_version</code></td>
-<td>The version of the VEP cache to be used</td>
+<td>The version of the VEP cache to be used.</td>
 <td><code>integer</code></td>
 <td>105</td>
 <td></td>
@@ -1285,7 +1293,7 @@
 </tr>
 <tr>
 <td><code>dbnsfp</code></td>
-<td>Path to the dbSNFP file</td>
+<td>Path to the dbSNFP file.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -1293,7 +1301,7 @@
 </tr>
 <tr>
 <td><code>dbnsfp_tbi</code></td>
-<td>Path to the index of the dbSNFP file</td>
+<td>Path to the index of the dbSNFP file.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -1301,7 +1309,7 @@
 </tr>
 <tr>
 <td><code>spliceai_indel</code></td>
-<td>Path to the VCF containing indels for spliceAI</td>
+<td>Path to the VCF containing indels for spliceAI.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -1309,7 +1317,7 @@
 </tr>
 <tr>
 <td><code>spliceai_indel_tbi</code></td>
-<td>Path to the index of the VCF containing indels for spliceAI</td>
+<td>Path to the index of the VCF containing indels for spliceAI.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -1317,7 +1325,7 @@
 </tr>
 <tr>
 <td><code>spliceai_snv</code></td>
-<td>Path to the VCF containing SNVs for spliceAI</td>
+<td>Path to the VCF containing SNVs for spliceAI.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -1325,7 +1333,7 @@
 </tr>
 <tr>
 <td><code>spliceai_snv_tbi</code></td>
-<td>Path to the index of the VCF containing SNVs for spliceAI</td>
+<td>Path to the index of the VCF containing SNVs for spliceAI.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -1333,7 +1341,7 @@
 </tr>
 <tr>
 <td><code>mastermind</code></td>
-<td>Path to the VCF for Mastermind</td>
+<td>Path to the VCF for Mastermind.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -1341,7 +1349,7 @@
 </tr>
 <tr>
 <td><code>mastermind_tbi</code></td>
-<td>Path to the index of the VCF for Mastermind</td>
+<td>Path to the index of the VCF for Mastermind.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -1349,7 +1357,7 @@
 </tr>
 <tr>
 <td><code>alphamissense</code></td>
-<td>Path to the TSV for AlphaMissense</td>
+<td>Path to the TSV for AlphaMissense.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -1357,7 +1365,7 @@
 </tr>
 <tr>
 <td><code>alphamissense_tbi</code></td>
-<td>Path to the index of the TSV for AlphaMissense</td>
+<td>Path to the index of the TSV for AlphaMissense.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -1365,7 +1373,7 @@
 </tr>
 <tr>
 <td><code>eog</code></td>
-<td>Path to the VCF containing EOG annotations</td>
+<td>Path to the VCF containing EOG annotations.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -1373,7 +1381,7 @@
 </tr>
 <tr>
 <td><code>eog_tbi</code></td>
-<td>Path to the index of the VCF containing EOG annotations</td>
+<td>Path to the index of the VCF containing EOG annotations.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -1381,7 +1389,7 @@
 </tr>
 <tr>
 <td><code>vcfanno</code></td>
-<td>Run annotations with vcfanno</td>
+<td>Run annotations with vcfanno.</td>
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
@@ -1389,7 +1397,7 @@
 </tr>
 <tr>
 <td><code>vcfanno_config</code></td>
-<td>The path to the VCFanno config TOML</td>
+<td>The path to the VCFanno config TOML.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -1397,7 +1405,7 @@
 </tr>
 <tr>
 <td><code>vcfanno_lua</code></td>
-<td>The path to a Lua script to be used in VCFanno</td>
+<td>The path to a Lua script to be used in VCFanno.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -1405,7 +1413,7 @@
 </tr>
 <tr>
 <td><code>vcfanno_resources</code></td>
-<td>A semicolon-seperated list of resource files for VCFanno, please also supply their indices using this parameter</td>
+<td>A semicolon-seperated list of resource files for VCFanno, please also supply their indices using this parameter.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
