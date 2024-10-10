@@ -31,7 +31,7 @@
                 "watchdir": {
                     "type": "string",
                     "format": "directory-path",
-                    "description": "A folder to watch for the creation of files that start with `watch:` in the samplesheet",
+                    "description": "A folder to watch for the creation of files that start with `watch:` in the samplesheet.",
                     "fa_icon": "fas fa-folder-open"
                 },
                 "email": {
@@ -46,7 +46,8 @@
                     "format": "file-path",
                     "exists": true,
                     "pattern": "^\\S+\\.ped$",
-                    "description": "Path to a pedigree file for all samples in the run"
+                    "description": "Path to a pedigree file for all samples in the run. All relational data will be fetched from this file.",
+                    "help": "A PED file given in the samplesheet will be used above this PED file."
                 }
             }
         },
@@ -59,7 +60,7 @@
                 "genome": {
                     "type": "string",
                     "default": "GRCh38",
-                    "description": "Reference genome build",
+                    "description": "Reference genome build. Used to fetch the right reference files.",
                     "help_text": "Requires a Genome Reference Consortium reference ID (e.g. GRCh38)"
                 },
                 "fasta": {
@@ -83,27 +84,30 @@
                 "dict": {
                     "type": "string",
                     "pattern": "^\\S+\\.dict$",
-                    "description": "Path to the sequence dictionary generated from the FASTA reference",
+                    "description": "Path to the sequence dictionary generated from the FASTA reference. This is only used when `haplotypecaller` is one of the specified callers.",
+                    "help": "The pipeline will autogenerate this file when missing.",
                     "fa_icon": "far fa-file-code",
                     "format": "file-path",
                     "mimetype": "text/plain"
                 },
                 "strtablefile": {
                     "type": "string",
-                    "description": "Path to the STR table file generated from the FASTA reference",
+                    "description": "Path to the STR table file generated from the FASTA reference. This is only used when `--dragstr` has been given.",
+                    "help": "The pipeline will autogenerate this file when missing.",
                     "fa_icon": "fas fa-folder",
                     "format": "path"
                 },
                 "sdf": {
                     "type": "string",
-                    "description": "Path to the SDF folder generated from the reference FASTA file",
+                    "description": "Path to the SDF folder generated from the reference FASTA file. This is only required when using `--validate`.",
+                    "help": "The pipeline will autogenerate this file when missing.",
                     "format": "path",
                     "fa_icon": "fas fa-folder"
                 },
                 "genomes_base": {
                     "type": "string",
                     "default": "/references/",
-                    "description": "Directory base for CMGG reference store (used when --genomes_ignore false is specified)",
+                    "description": "Directory base for CMGG reference store (used when `--genomes_ignore false` is specified)",
                     "fa_icon": "fas fa-download",
                     "format": "directory-path"
                 },
@@ -117,7 +121,7 @@
                 "genomes_ignore": {
                     "type": "boolean",
                     "hidden": true,
-                    "description": "Do not load the local references from the path specified with --genomes_base",
+                    "description": "Do not load the local references from the path specified with `--genomes_base`",
                     "fa_icon": "fas fa-ban"
                 },
                 "igenomes_base": {
@@ -153,8 +157,9 @@
                 "merge_distance": {
                     "type": "integer",
                     "default": 100000,
-                    "description": "The merge distance for genotype BED files",
-                    "help_text": "Increase this parameter if GenomicsDBImport is running slow. This defines the maximum distance between intervals that should be merged. The less intervals GenomicsDBImport actually gets, the faster it will run."
+                    "description": "The merge distance for family BED files",
+                    "help_text": "Increase this parameter if GenomicsDBImport is running slow. This defines the maximum distance between intervals that should be merged. The less intervals GenomicsDBImport actually gets, the faster it will run.",
+                    "minimum": 1
                 },
                 "dragstr": {
                     "type": "boolean",
@@ -164,135 +169,138 @@
                 "validate": {
                     "type": "boolean",
                     "description": "Validate the found variants",
-                    "help_text": "This only validates individual sample GVCFs that have truth VCF supplied to them via the samplesheet (in row `truth_vcf`, with an optional index in the `truth_tbi` row)"
+                    "help": "A sample should have at least a `truth_vcf` supplied along with it in the samplesheet for it be validated."
                 },
                 "filter": {
                     "type": "boolean",
-                    "description": "Filter the found variants"
+                    "description": "Filter the found variants."
                 },
                 "annotate": {
                     "type": "boolean",
-                    "description": "Annotate the found variants"
+                    "description": "Annotate the found variants using Ensembl VEP."
                 },
                 "add_ped": {
                     "type": "boolean",
-                    "description": "Add PED INFO header lines to the final VCFs"
+                    "description": "Add PED INFO header lines to the final VCFs."
                 },
                 "gemini": {
                     "type": "boolean",
-                    "description": "Create a Gemini databases from the final VCFs"
+                    "description": "Create a Gemini databases from the final VCFs."
                 },
                 "mosdepth_slow": {
                     "type": "boolean",
                     "description": "Don't run mosdepth in fast-mode",
-                    "help_text": "This is advised if you need exact coverage BED files as output"
+                    "help_text": "This is advised if you need exact coverage BED files as output."
                 },
                 "project": {
                     "type": "string",
                     "description": "The name of the project.",
-                    "help_text": "This will be used to specify the final output files folder in the output directory."
+                    "help_text": "This will be used to specify the name of the final output files folder in the output directory."
                 },
                 "skip_date_project": {
                     "type": "boolean",
-                    "description": "Don't add the current date to the output project folder"
+                    "description": "Don't add the current date to the output project folder."
                 },
                 "roi": {
                     "type": "string",
-                    "description": "Path to the default ROI (regions of interest) BED file to be used for WES analysis",
+                    "description": "Path to the default ROI (regions of interest) BED file to be used for WES analysis.",
                     "help_text": "This will be used for all samples that do not have a specific ROI file supplied to them through the samplesheet. Don't supply an ROI file to run the analysis as WGS.",
                     "format": "file-path",
                     "pattern": "^\\S+\\.bed(\\.gz)?$",
-                    "mimetype": "text/plain"
+                    "exists": true
                 },
                 "dbsnp": {
                     "type": "string",
-                    "description": "Path to the dbSNP VCF file",
+                    "description": "Path to the dbSNP VCF file. This will be used to set the variant IDs.",
                     "fa_icon": "far fa-file-alt",
                     "format": "file-path",
                     "pattern": "^\\S+\\.vcf\\.gz$",
-                    "mimetype": "text/plain"
+                    "exists": true
                 },
                 "dbsnp_tbi": {
                     "type": "string",
-                    "description": "Path to the index of the dbSNP VCF file",
+                    "description": "Path to the index of the dbSNP VCF file.",
                     "fa_icon": "far fa-file-alt",
                     "format": "file-path",
                     "pattern": "^\\S+\\.tbi$",
-                    "mimetype": "text/plain"
+                    "exists": true
                 },
                 "somalier_sites": {
                     "type": "string",
                     "default": "https://github.com/brentp/somalier/files/3412456/sites.hg38.vcf.gz",
                     "fa_icon": "far fa-file-alt",
-                    "description": "Path to the VCF file with sites for Somalier to use",
+                    "description": "Path to the VCF file with sites for Somalier to use.",
                     "pattern": "^\\S+\\.vcf\\.gz",
                     "format": "file-path",
-                    "mimetype": "text/plain"
+                    "exists": true
                 },
                 "only_call": {
                     "type": "boolean",
-                    "description": "Only call the variants without doing any post-processing"
+                    "description": "Only call the variants without doing any post-processing."
                 },
                 "only_merge": {
                     "type": "boolean",
-                    "description": "Only run the pipeline until the creation of the genomicsdbs and output them"
+                    "description": "Only run the pipeline until the creation of the genomicsdbs and output them."
                 },
                 "output_genomicsdb": {
                     "type": "boolean",
-                    "description": "Output the genomicsDB together with the joint-genotyped VCF"
+                    "description": "Output the genomicsDB together with the joint-genotyped VCF."
                 },
                 "callers": {
                     "type": "string",
-                    "description": "A comma delimited string of the available callers. Current options are: 'haplotypecaller' and 'vardict'",
+                    "description": "A comma delimited string of the available callers. Current options are: `haplotypecaller` and `vardict`.",
                     "default": "haplotypecaller"
                 },
                 "vardict_min_af": {
                     "type": "number",
-                    "description": "The minimum allele frequency for VarDict when no `vardict_min_af` is supplied in the samplesheet",
-                    "default": 0.1
+                    "description": "The minimum allele frequency for VarDict when no `vardict_min_af` is supplied in the samplesheet.",
+                    "default": 0.1,
+                    "minimum": 0
                 },
                 "normalize": {
                     "type": "boolean",
-                    "description": "Normalize the VCFs"
+                    "description": "Normalize the variant in the final VCFs."
                 },
                 "output_suffix": {
                     "type": "string",
-                    "description": "A custom suffix to add to the basename of the output files"
+                    "description": "A custom suffix to add to the basename of the output files."
                 },
                 "only_pass": {
                     "type": "boolean",
-                    "description": "Filter out all variants that don't have the PASS filter for vardict. This only works when --filter is also given"
+                    "description": "Filter out all variants that don't have the PASS filter for vardict. This only works when `--filter` is also given."
                 },
                 "keep_alt_contigs": {
                     "type": "boolean",
-                    "description": "Keep all aditional contigs for calling instead of filtering them out before"
+                    "description": "Keep all aditional contigs for calling instead of filtering them out before."
                 },
                 "updio": {
                     "type": "boolean",
-                    "description": "Run UPDio analysis on the resulting VCFs"
+                    "description": "Run UPDio analysis on the final VCFs."
                 },
                 "updio_common_cnvs": {
                     "type": "string",
-                    "description": "A TSV file containing common CNVs to be used by UPDio",
+                    "description": "A TSV file containing common CNVs to be used by UPDio.",
                     "format": "file-path",
                     "exists": true,
                     "pattern": "^\\S+\\.tsv$"
                 },
                 "automap": {
                     "type": "boolean",
-                    "description": "Run AutoMap analysis on the resulting VCFs"
+                    "description": "Run AutoMap analysis on the final VCFs."
                 },
                 "automap_repeats": {
                     "type": "string",
                     "description": "BED file with repeat regions in the genome.",
                     "help_text": "This file will be automatically generated for hg38/GRCh38 and hg19/GRCh37 when this parameter has not been given.",
-                    "pattern": "^\\S+\\.bed$"
+                    "pattern": "^\\S+\\.bed$",
+                    "exists": true
                 },
                 "automap_panel": {
                     "type": "string",
                     "description": "TXT file with gene panel regions to be used by AutoMap.",
                     "help_text": "By default the CMGG gene panel list will be used.",
-                    "pattern": "^\\S+\\.txt$"
+                    "pattern": "^\\S+\\.txt$",
+                    "exists": true
                 },
                 "automap_panel_name": {
                     "type": "string",
@@ -301,12 +309,13 @@
                 },
                 "hc_phasing": {
                     "type": "boolean",
-                    "description": "Perform phasing with HaplotypeCaller"
+                    "description": "Perform phasing with HaplotypeCaller."
                 },
                 "min_callable_coverage": {
                     "type": "integer",
-                    "description": "The lowest callable coverage to determine callable regions",
-                    "default": 5
+                    "description": "The lowest callable coverage to determine callable regions.",
+                    "default": 5,
+                    "minimum": 0
                 }
             }
         },
@@ -366,8 +375,13 @@
             "help_text": "These options are common to all nf-core pipelines and allow you to customise some of the core preferences for how the pipeline runs.\n\nTypically these options would be set in a Nextflow config file loaded for all pipeline runs, such as `~/.nextflow/config`.",
             "properties": {
                 "help": {
+                    "type": ["boolean", "string"],
+                    "description": "Display help text. Give a parameter name to this option to see the detailed help of that parameter.",
+                    "fa_icon": "fas fa-question-circle"
+                },
+                "helpFull": {
                     "type": "boolean",
-                    "description": "Display help text.",
+                    "description": "See the full help message of all parameters.",
                     "fa_icon": "fas fa-question-circle"
                 },
                 "version": {
@@ -403,12 +417,6 @@
                     "pattern": "^\\d+(\\.\\d+)?\\.?\\s*(K|M|G|T)?B$",
                     "default": "25.MB",
                     "fa_icon": "fas fa-file-upload",
-                    "hidden": true
-                },
-                "monochrome_logs": {
-                    "type": "boolean",
-                    "description": "Do not use coloured log outputs.",
-                    "fa_icon": "fas fa-palette",
                     "hidden": true
                 },
                 "hook_url": {
@@ -463,187 +471,188 @@
                 "vep_chunk_size": {
                     "type": "integer",
                     "default": 50000,
-                    "description": "The amount of sites per split VCF as input to VEP"
+                    "description": "The amount of sites per split VCF as input to VEP.",
+                    "minimum": 1
                 },
                 "species": {
                     "type": "string",
                     "default": "homo_sapiens",
-                    "description": "The species of the samples",
+                    "description": "The species of the samples.",
                     "fa_icon": "fas fa-user-circle",
                     "pattern": "^[a-z_]*$",
-                    "help_text": "Must be lower case and have underscores as spaces"
+                    "help_text": "Must be lower case and have underscores as spaces."
                 },
                 "vep_merged": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Specify if the VEP cache is a merged cache"
+                    "description": "Specify if the VEP cache is a merged cache."
                 },
                 "vep_cache": {
                     "type": "string",
-                    "description": "The path to the VEP cache",
+                    "description": "The path to the VEP cache.",
                     "format": "path"
                 },
                 "vep_dbnsfp": {
                     "type": "boolean",
-                    "description": "Use the dbNSFP plugin with Ensembl VEP",
+                    "description": "Use the dbNSFP plugin with Ensembl VEP.",
                     "fa_icon": "fas fa-question-circle",
                     "help_text": "The '--dbnsfp' and '--dbnsfp_tbi' parameters need to be specified when using this parameter."
                 },
                 "vep_spliceai": {
                     "type": "boolean",
-                    "description": "Use the SpliceAI plugin with Ensembl VEP",
+                    "description": "Use the SpliceAI plugin with Ensembl VEP.",
                     "fa_icon": "fas fa-question-circle",
                     "help_text": "The '--spliceai_indel', '--spliceai_indel_tbi', '--spliceai_snv' and '--spliceai_snv_tbi' parameters need to be specified when using this parameter."
                 },
                 "vep_spliceregion": {
                     "type": "boolean",
-                    "description": "Use the SpliceRegion plugin with Ensembl VEP",
+                    "description": "Use the SpliceRegion plugin with Ensembl VEP.",
                     "fa_icon": "fas fa-question-circle"
                 },
                 "vep_mastermind": {
                     "type": "boolean",
-                    "description": "Use the Mastermind plugin with Ensembl VEP",
+                    "description": "Use the Mastermind plugin with Ensembl VEP.",
                     "fa_icon": "fas fa-question-circle",
                     "help_text": "The '--mastermind' and '--mastermind_tbi' parameters need to be specified when using this parameter."
                 },
                 "vep_maxentscan": {
                     "type": "boolean",
-                    "description": "Use the MaxEntScan plugin with Ensembl VEP",
+                    "description": "Use the MaxEntScan plugin with Ensembl VEP.",
                     "fa_icon": "fas fa-question-circle",
                     "help_text": "The '--maxentscan' parameter need to be specified when using this parameter."
                 },
                 "vep_eog": {
                     "type": "boolean",
-                    "description": "Use the custom EOG annotation with Ensembl VEP",
+                    "description": "Use the custom EOG annotation with Ensembl VEP.",
                     "fa_icon": "fas fa-question-circle",
                     "help_text": "The '--eog' and '--eog_tbi' parameters need to be specified when using this parameter."
                 },
                 "vep_alphamissense": {
                     "type": "boolean",
-                    "description": "Use the AlphaMissense plugin with Ensembl VEP",
+                    "description": "Use the AlphaMissense plugin with Ensembl VEP.",
                     "fa_icon": "fas fa-question-circle",
                     "help_text": "The '--alphamissense' and '--alphamissense_tbi' parameters need to be specified when using this parameter."
                 },
                 "vep_version": {
                     "type": "number",
                     "default": 105.0,
-                    "description": "The version of the VEP tool to be used",
+                    "description": "The version of the VEP tool to be used.",
                     "fa_icon": "fas fa-code-branch"
                 },
                 "vep_cache_version": {
                     "type": "integer",
                     "default": 105,
-                    "description": "The version of the VEP cache to be used",
+                    "description": "The version of the VEP cache to be used.",
                     "fa_icon": "fas fa-code-branch"
                 },
                 "dbnsfp": {
                     "type": "string",
-                    "description": "Path to the dbSNFP file",
+                    "description": "Path to the dbSNFP file.",
                     "format": "file-path",
                     "fa_icon": "far fa-file-alt",
-                    "mimetype": "text/plain",
-                    "pattern": "^\\S+\\.gz$"
+                    "pattern": "^\\S+\\.gz$",
+                    "exists": true
                 },
                 "dbnsfp_tbi": {
                     "type": "string",
                     "format": "file-path",
-                    "description": "Path to the index of the dbSNFP file",
+                    "description": "Path to the index of the dbSNFP file.",
                     "fa_icon": "far fa-file-alt",
                     "pattern": "^\\S+\\.(csi|tbi)$",
-                    "mimetype": "text/plain"
+                    "exists": true
                 },
                 "spliceai_indel": {
                     "type": "string",
                     "format": "file-path",
-                    "description": "Path to the VCF containing indels for spliceAI",
+                    "description": "Path to the VCF containing indels for spliceAI.",
                     "fa_icon": "far fa-file-alt",
                     "pattern": "^\\S+\\.vcf\\.gz$",
-                    "mimetype": "text/plain"
+                    "exists": true
                 },
                 "spliceai_indel_tbi": {
                     "type": "string",
                     "format": "file-path",
-                    "description": "Path to the index of the VCF containing indels for spliceAI",
+                    "description": "Path to the index of the VCF containing indels for spliceAI.",
                     "pattern": "^\\S+\\.(csi|tbi)$",
-                    "mimetype": "text/plain"
+                    "exists": true
                 },
                 "spliceai_snv": {
                     "type": "string",
                     "format": "file-path",
-                    "description": "Path to the VCF containing SNVs for spliceAI",
+                    "description": "Path to the VCF containing SNVs for spliceAI.",
                     "pattern": "^\\S+\\.vcf\\.gz$",
-                    "mimetype": "text/plain"
+                    "exists": true
                 },
                 "spliceai_snv_tbi": {
                     "type": "string",
                     "format": "file-path",
-                    "description": "Path to the index of the VCF containing SNVs for spliceAI",
+                    "description": "Path to the index of the VCF containing SNVs for spliceAI.",
                     "pattern": "^\\S+\\.(csi|tbi)$",
-                    "mimetype": "text/plain"
+                    "exists": true
                 },
                 "mastermind": {
                     "type": "string",
                     "format": "file-path",
-                    "description": "Path to the VCF for Mastermind",
+                    "description": "Path to the VCF for Mastermind.",
                     "pattern": "^\\S+\\.vcf\\.gz$",
-                    "mimetype": "text/plain"
+                    "exists": true
                 },
                 "mastermind_tbi": {
                     "type": "string",
                     "format": "file-path",
-                    "description": "Path to the index of the VCF for Mastermind",
+                    "description": "Path to the index of the VCF for Mastermind.",
                     "pattern": "^\\S+\\.(csi|tbi)$",
-                    "mimetype": "text/plain"
+                    "exists": true
                 },
                 "alphamissense": {
                     "type": "string",
                     "format": "file-path",
-                    "description": "Path to the TSV for AlphaMissense",
+                    "description": "Path to the TSV for AlphaMissense.",
                     "pattern": "^\\S+\\.tsv\\.gz$",
-                    "mimetype": "text/plain"
+                    "exists": true
                 },
                 "alphamissense_tbi": {
                     "type": "string",
                     "format": "file-path",
-                    "description": "Path to the index of the TSV for AlphaMissense",
+                    "description": "Path to the index of the TSV for AlphaMissense.",
                     "pattern": "^\\S+\\.(csi|tbi)$",
-                    "mimetype": "text/plain"
+                    "exists": true
                 },
                 "eog": {
                     "type": "string",
                     "format": "file-path",
-                    "description": "Path to the VCF containing EOG annotations",
+                    "description": "Path to the VCF containing EOG annotations.",
                     "pattern": "^\\S+\\.vcf\\.gz$",
-                    "mimetype": "text/plain"
+                    "exists": true
                 },
                 "eog_tbi": {
                     "type": "string",
                     "format": "file-path",
-                    "description": "Path to the index of the VCF containing EOG annotations",
+                    "description": "Path to the index of the VCF containing EOG annotations.",
                     "pattern": "^\\S+\\.(csi|tbi)$",
-                    "mimetype": "text/plain"
+                    "exists": true
                 },
                 "vcfanno": {
                     "type": "boolean",
-                    "description": "Run annotations with vcfanno"
+                    "description": "Run annotations with vcfanno."
                 },
                 "vcfanno_config": {
                     "type": "string",
-                    "description": "The path to the VCFanno config TOML",
+                    "description": "The path to the VCFanno config TOML.",
                     "pattern": "^\\S+\\.toml$",
                     "format": "file-path",
-                    "mimetype": "text/plain"
+                    "exists": true
                 },
                 "vcfanno_lua": {
                     "type": "string",
-                    "description": "The path to a Lua script to be used in VCFanno",
+                    "description": "The path to a Lua script to be used in VCFanno.",
                     "pattern": "^\\S+\\.lua$",
                     "format": "file-path",
-                    "mimetype": "text/plain"
+                    "exists": true
                 },
                 "vcfanno_resources": {
                     "type": "string",
-                    "description": "A semicolon-seperated list of resource files for VCFanno, please also supply their indices using this parameter"
+                    "description": "A semicolon-seperated list of resource files for VCFanno, please also supply their indices using this parameter."
                 }
             },
             "help_text": "Annotation will only run when `--annotate true` is specified."
