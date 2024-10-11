@@ -25,6 +25,8 @@ lint:
     - custom_config
     - manifest.name
     - manifest.homePage
+    - validation.help.afterText
+    - validation.summary.afterText
 nf_core_version: 3.0.1
 repository_type: pipeline
 template:
