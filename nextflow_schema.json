@@ -379,7 +379,7 @@
                     "description": "Display help text. Give a parameter name to this option to see the detailed help of that parameter.",
                     "fa_icon": "fas fa-question-circle"
                 },
-                "helpFull": {
+                "help_full": {
                     "type": "boolean",
                     "description": "See the full help message of all parameters.",
                     "fa_icon": "fas fa-question-circle"
