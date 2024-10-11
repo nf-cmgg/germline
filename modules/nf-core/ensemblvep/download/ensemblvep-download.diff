@@ -14,18 +14,7 @@ Changes in 'ensemblvep/download/main.nf':
      input:
      tuple val(meta), val(assembly), val(species), val(cache_version)
 
-Changes in 'ensemblvep/download/environment.yml':
---- modules/nf-core/ensemblvep/download/environment.yml
-+++ modules/nf-core/ensemblvep/download/environment.yml
-@@ -1,7 +1,5 @@
--name: ensemblvep_download
- channels:
-   - conda-forge
-   - bioconda
--  - defaults
- dependencies:
-   - bioconda::ensembl-vep=112.0
-
+'modules/nf-core/ensemblvep/download/environment.yml' is unchanged
 'modules/nf-core/ensemblvep/download/meta.yml' is unchanged
 'modules/nf-core/ensemblvep/download/tests/tags.yml' is unchanged
 'modules/nf-core/ensemblvep/download/tests/main.nf.test' is unchanged
