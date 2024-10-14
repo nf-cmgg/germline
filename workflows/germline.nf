@@ -127,43 +127,43 @@ workflow GERMLINE {
 
 
     main:
-    ch_versions      = Channel.empty()
-    ch_reports       = Channel.empty()
-    ch_multiqc_files = Channel.empty()
+    def ch_versions      = Channel.empty()
+    def ch_reports       = Channel.empty()
+    def ch_multiqc_files = Channel.empty()
 
     //
     // Importing and convert the input files passed through the parameters to channels
     //
 
-    ch_fasta_ready        = Channel.fromPath(fasta).map{ fasta_file -> [[id:"reference"], fasta_file] }.collect()
-    ch_fai                = fai                 ? Channel.fromPath(fai).map{ fai_file -> [[id:"reference"], fai_file] }.collect() : null
-    ch_dict               = dict                ? Channel.fromPath(dict).map{ dict_file -> [[id:"reference"], dict_file] }.collect() : null
-    ch_strtablefile       = strtablefile        ? Channel.fromPath(strtablefile).map{ str_file -> [[id:"reference"], str_file] }.collect() : null
-    ch_sdf                = sdf                 ? Channel.fromPath(sdf).map { sdf_file -> [[id:'reference'], sdf_file] }.collect() : null
+    def ch_fasta_ready        = Channel.fromPath(fasta).map{ fasta_file -> [[id:"reference"], fasta_file] }.collect()
+    def ch_fai                = fai                 ? Channel.fromPath(fai).map{ fai_file -> [[id:"reference"], fai_file] }.collect() : null
+    def ch_dict               = dict                ? Channel.fromPath(dict).map{ dict_file -> [[id:"reference"], dict_file] }.collect() : null
+    def ch_strtablefile       = strtablefile        ? Channel.fromPath(strtablefile).map{ str_file -> [[id:"reference"], str_file] }.collect() : null
+    def ch_sdf                = sdf                 ? Channel.fromPath(sdf).map { sdf_file -> [[id:'reference'], sdf_file] }.collect() : null
 
-    ch_default_roi        = roi                 ? Channel.fromPath(roi).collect()                : []
+    def ch_default_roi        = roi                 ? Channel.fromPath(roi).collect()                : []
 
-    ch_dbsnp_ready        = dbsnp               ? Channel.fromPath(dbsnp).collect { dbsnp_file -> [[id:"dbsnp"], dbsnp_file] } : [[],[]]
-    ch_dbsnp_tbi          = dbsnp_tbi           ? Channel.fromPath(dbsnp_tbi).collect { dbsnp_file -> [[id:"dbsnp"], dbsnp_file] } : [[],[]]
+    def ch_dbsnp_ready        = dbsnp               ? Channel.fromPath(dbsnp).collect { dbsnp_file -> [[id:"dbsnp"], dbsnp_file] } : [[],[]]
+    def ch_dbsnp_tbi          = dbsnp_tbi           ? Channel.fromPath(dbsnp_tbi).collect { dbsnp_file -> [[id:"dbsnp"], dbsnp_file] } : [[],[]]
 
-    ch_somalier_sites     = somalier_sites      ? Channel.fromPath(somalier_sites).collect { sites_file -> [[id:"somalier_sites"], sites_file] } : [[],[]]
+    def ch_somalier_sites     = somalier_sites      ? Channel.fromPath(somalier_sites).collect { sites_file -> [[id:"somalier_sites"], sites_file] } : [[],[]]
 
-    ch_vep_cache          = vep_cache           ? Channel.fromPath(vep_cache).collect()          : []
+    def ch_vep_cache          = vep_cache           ? Channel.fromPath(vep_cache).collect()          : []
 
-    ch_vcfanno_config     = vcfanno_config      ? Channel.fromPath(vcfanno_config).collect()     : []
-    ch_vcfanno_lua        = vcfanno_lua         ? Channel.fromPath(vcfanno_lua).collect()        : []
-    ch_vcfanno_resources  = vcfanno_resources   ? Channel.of(vcfanno_resources.split(";")).collect{ res -> file(res, checkIfExists:true) } : []
+    def ch_vcfanno_config     = vcfanno_config      ? Channel.fromPath(vcfanno_config).collect()     : []
+    def ch_vcfanno_lua        = vcfanno_lua         ? Channel.fromPath(vcfanno_lua).collect()        : []
+    def ch_vcfanno_resources  = vcfanno_resources   ? Channel.of(vcfanno_resources.split(";")).collect{ res -> file(res, checkIfExists:true) } : []
 
-    ch_updio_common_cnvs  = updio_common_cnvs   ? Channel.fromPath(updio_common_cnvs).map{ common_cnvs -> [[id:'updio_cnv'], common_cnvs] } : [[],[]]
+    def ch_updio_common_cnvs  = updio_common_cnvs   ? Channel.fromPath(updio_common_cnvs).map{ common_cnvs -> [[id:'updio_cnv'], common_cnvs] } : [[],[]]
 
-    ch_automap_repeats    = automap_repeats     ? Channel.fromPath(automap_repeats).map{ repeats ->  [[id:"repeats"], repeats] }.collect() : []
-    ch_automap_panel      = automap_panel       ? Channel.fromPath(automap_panel).map{ panel -> [[id:"automap_panel"], panel] }.collect() : [[],[]]
+    def ch_automap_repeats    = automap_repeats     ? Channel.fromPath(automap_repeats).map{ repeats ->  [[id:"repeats"], repeats] }.collect() : []
+    def ch_automap_panel      = automap_panel       ? Channel.fromPath(automap_panel).map{ panel -> [[id:"automap_panel"], panel] }.collect() : [[],[]]
 
     //
     // Check for the presence of EnsemblVEP plugins that use extra files
     //
 
-    ch_vep_extra_files = []
+    def ch_vep_extra_files = []
 
     if(annotate){
         // Check if all dbnsfp files are given
@@ -219,21 +219,20 @@ workflow GERMLINE {
     //
 
     // DBSNP index
+    def ch_dbsnp_tbi_ready = Channel.empty()
     if (ch_dbsnp_ready != [[],[]] && ch_dbsnp_tbi == [[],[]]) {
         TABIX_DBSNP(
             ch_dbsnp_ready
         )
         ch_versions = ch_versions.mix(TABIX_DBSNP.out.versions)
 
-        TABIX_DBSNP.out.tbi
-            .collect()
-            .set { ch_dbsnp_tbi_ready }
+        ch_dbsnp_tbi_ready = TABIX_DBSNP.out.tbi.collect()
     } else {
         ch_dbsnp_tbi_ready = ch_dbsnp_tbi
     }
 
     // Reference fasta index
-    ch_fai_ready = Channel.empty()
+    def ch_fai_ready = Channel.empty()
     if (!ch_fai) {
         FAIDX(
             ch_fasta_ready,
@@ -241,31 +240,28 @@ workflow GERMLINE {
         )
         ch_versions = ch_versions.mix(FAIDX.out.versions)
 
-        FAIDX.out.fai
+        ch_fai_ready = FAIDX.out.fai
             .collect()
-            .dump(tag:'fasta_fai', pretty:true)
-            .set { ch_fai_ready }
     } else {
-        ch_fai.set { ch_fai_ready }
+        ch_fai_ready = ch_fai
     }
 
     // Reference sequence dictionary
-    ch_dict_ready = Channel.empty()
+    def ch_dict_ready = Channel.empty()
     if (!ch_dict) {
         CREATESEQUENCEDICTIONARY(
             ch_fasta_ready
         )
         ch_versions = ch_versions.mix(CREATESEQUENCEDICTIONARY.out.versions)
 
-        CREATESEQUENCEDICTIONARY.out.dict
+        ch_dict_ready = CREATESEQUENCEDICTIONARY.out.dict
             .collect()
-            .dump(tag:'dict', pretty:true)
-            .set { ch_dict_ready }
     } else {
-        ch_dict.set { ch_dict_ready }
+        ch_dict_ready = ch_dict
     }
 
     // Reference STR table file
+    def ch_strtablefile_ready = Channel.empty()
     if (dragstr && !ch_strtablefile) {
         COMPOSESTRTABLEFILE(
             ch_fasta_ready,
@@ -273,28 +269,21 @@ workflow GERMLINE {
             ch_dict_ready
         )
         ch_versions  = ch_versions.mix(COMPOSESTRTABLEFILE.out.versions)
-
-        COMPOSESTRTABLEFILE.out.str_table
-            .collect()
-            .dump(tag:'strtablefile', pretty:true)
-            .set { ch_strtablefile_ready }
+        ch_strtablefile_ready = COMPOSESTRTABLEFILE.out.str_table.collect()
     } else if (dragstr) {
-        ch_strtablefile.set { ch_strtablefile_ready }
+        ch_strtablefile_ready = ch_strtablefile
     } else {
         ch_strtablefile_ready = []
     }
 
     // Reference validation SDF
+    def ch_sdf_ready = Channel.empty()
     if (validate && !ch_sdf) {
         RTGTOOLS_FORMAT(
             ch_fasta_ready.map { meta, fasta_file -> [meta, fasta_file, [], []] }
         )
         ch_versions  = ch_versions.mix(RTGTOOLS_FORMAT.out.versions)
-
-        RTGTOOLS_FORMAT.out.sdf
-            .collect()
-            .dump(tag:'sdf', pretty:true)
-            .set { ch_sdf_ready }
+        ch_sdf_ready = RTGTOOLS_FORMAT.out.sdf.collect()
     }
     else if (validate && sdf.endsWith(".tar.gz")) {
         UNTAR(
@@ -302,22 +291,22 @@ workflow GERMLINE {
         )
         ch_versions = ch_versions.mix(UNTAR.out.versions)
 
-        UNTAR.out.untar
-            .dump(tag:'sdf', pretty:true)
-            .set { ch_sdf_ready }
+        ch_sdf_ready = UNTAR.out.untar.collect()
     } else if(validate) {
-        ch_sdf.set { ch_sdf_ready }
+        ch_sdf_ready = ch_sdf
     } else {
         ch_sdf_ready = [[],[]]
     }
 
+    // VEP annotation cache
+    def ch_vep_cache_ready = Channel.empty()
     if (!ch_vep_cache && annotate) {
         ENSEMBLVEP_DOWNLOAD(
             Channel.of([[id:"vep_cache"], genome == "hg38" ? "GRCh38" : genome, species, vep_cache_version]).collect()
         )
         ch_versions = ch_versions.mix(ENSEMBLVEP_DOWNLOAD.out.versions)
 
-        ch_vep_cache_ready = ENSEMBLVEP_DOWNLOAD.out.cache.collect{ meta, cache -> cache }
+        ch_vep_cache_ready = ENSEMBLVEP_DOWNLOAD.out.cache.collect{ _meta, cache -> cache }
     } else {
         ch_vep_cache_ready = ch_vep_cache
     }
@@ -326,7 +315,7 @@ workflow GERMLINE {
     // Split the input channel into the right channels
     //
 
-    ch_samplesheet
+    def ch_input = ch_samplesheet
         .multiMap { meta, cram, crai, gvcf, tbi, roi_file, truth_vcf, truth_tbi, truth_bed ->
             // Divide the input files into their corresponding channel
             def new_meta = meta + [
@@ -340,14 +329,13 @@ workflow GERMLINE {
             cram:           [new_meta, cram, crai]  // Mandatory channel containing the CRAM files and their optional indices
             roi:            [new_meta, roi_file] // Optional channel containing the ROI BED files for WES samples
         }
-        .set { ch_input }
 
     //
     // Create the GVCF index if it's missing
     //
 
-    ch_input.gvcf
-        .filter { meta, gvcf, tbi ->
+    def ch_gvcf_branch = ch_input.gvcf
+        .filter { meta, _gvcf, _tbi ->
             // Filter out samples that have no GVCF
             meta.type == "gvcf" || meta.type == "gvcf_cram"
         }
@@ -357,28 +345,26 @@ workflow GERMLINE {
             tbi:    tbi
                 return [ meta, gvcf, tbi ]
         }
-        .set { ch_gvcf_branch }
 
     TABIX_GVCF(
         ch_gvcf_branch.no_tbi
     )
     ch_versions = ch_versions.mix(TABIX_GVCF.out.versions)
 
-    ch_gvcf_branch.no_tbi
+    def ch_gvcfs_ready = ch_gvcf_branch.no_tbi
         .join(TABIX_GVCF.out.tbi, failOnDuplicate:true, failOnMismatch:true)
         .mix(ch_gvcf_branch.tbi)
-        .set { ch_gvcfs_ready }
 
     //
     // Run sample preparation
     //
 
     CRAM_PREPARE_SAMTOOLS_BEDTOOLS(
-        ch_input.cram.filter { meta, cram, crai ->
+        ch_input.cram.filter { meta, _cram, _crai ->
             // Filter out files that already have a called GVCF when only GVCF callers are used
             meta.type == "cram" || (meta.type == "gvcf_cram" && callers - GlobalVariables.gvcfCallers)
         },
-        ch_input.roi.filter { meta, roi_file ->
+        ch_input.roi.filter { meta, _roi_file ->
             // Filter out files that already have a called GVCF when only GVCF callers are used
             meta.type == "cram" || (meta.type == "gvcf_cram" && callers - GlobalVariables.gvcfCallers)
         },
@@ -400,15 +386,14 @@ workflow GERMLINE {
     )
     ch_versions = ch_versions.mix(INPUT_SPLIT_BEDTOOLS.out.versions)
 
-    ch_calls = Channel.empty()
-
+    def ch_calls = Channel.empty()
     if("haplotypecaller" in callers) {
         //
         // Call variants with GATK4 HaplotypeCaller
         //
 
         CRAM_CALL_GENOTYPE_GATK4(
-            INPUT_SPLIT_BEDTOOLS.out.split.filter { meta, cram, crai, bed ->
+            INPUT_SPLIT_BEDTOOLS.out.split.filter { meta, _cram, _crai, _bed ->
                 // Filter out the entries that already have a GVCF
                 meta.type == "cram"
             },
@@ -451,12 +436,11 @@ workflow GERMLINE {
         ch_calls = ch_calls.mix(CRAM_CALL_VARDICTJAVA.out.vcfs)
     }
 
-    ch_calls
+    def ch_called_variants = ch_calls
         .map { meta, vcf, tbi ->
             def new_meta = meta - meta.subMap(["type", "vardict_min_af"])
             [ new_meta, vcf, tbi ]
         }
-        .set { ch_called_variants }
 
     BCFTOOLS_STATS(
         ch_called_variants,
@@ -467,9 +451,9 @@ workflow GERMLINE {
         [[],[]]
     )
     ch_versions = ch_versions.mix(BCFTOOLS_STATS.out.versions.first())
-    ch_reports = ch_reports.mix(BCFTOOLS_STATS.out.stats.collect { meta, report -> report })
+    ch_reports = ch_reports.mix(BCFTOOLS_STATS.out.stats.collect { _meta, report -> report })
 
-    ch_normalized_variants = Channel.empty()
+    def ch_normalized_variants = Channel.empty()
     if(normalize) {
         BCFTOOLS_NORM(
             ch_called_variants,
@@ -482,11 +466,10 @@ workflow GERMLINE {
         )
         ch_versions = ch_versions.mix(TABIX_NORMALIZE.out.versions.first())
 
-        BCFTOOLS_NORM.out.vcf
+        ch_normalized_variants = BCFTOOLS_NORM.out.vcf
             .join(TABIX_NORMALIZE.out.tbi, failOnDuplicate:true, failOnMismatch:true)
-            .set { ch_normalized_variants }
     } else {
-        ch_called_variants.set { ch_normalized_variants }
+        ch_normalized_variants = ch_called_variants
     }
 
     if(!only_merge && !only_call) {
@@ -495,11 +478,10 @@ workflow GERMLINE {
         // Preprocess the PED channel
         //
 
-        ch_normalized_variants
-            .map { meta, vcf, tbi ->
+        def ch_somalier_input = ch_normalized_variants
+            .map { meta, _vcf, _tbi ->
                 [ meta, pedFiles.containsKey(meta.family) ? pedFiles[meta.family] : [] ]
             }
-            .set { ch_somalier_input }
 
         //
         // Run relation tests with somalier
@@ -518,7 +500,7 @@ workflow GERMLINE {
         // Add PED headers to the VCFs
         //
 
-        ch_ped_vcfs = Channel.empty()
+        def ch_ped_vcfs = Channel.empty()
         if(add_ped){
 
             VCF_PED_RTGTOOLS(
@@ -527,21 +509,19 @@ workflow GERMLINE {
             )
             ch_versions = ch_versions.mix(VCF_PED_RTGTOOLS.out.versions)
 
-            VCF_PED_RTGTOOLS.out.ped_vcfs
-                .set { ch_ped_vcfs }
+            ch_ped_vcfs = VCF_PED_RTGTOOLS.out.ped_vcfs
         } else {
-            ch_normalized_variants
-                .map { meta, vcf, tbi=[] ->
+            ch_ped_vcfs = ch_normalized_variants
+                .map { meta, vcf, _tbi=[] ->
                     [ meta, vcf ]
                 }
-                .set { ch_ped_vcfs }
         }
 
         //
         // Annotation of the variants and creation of Gemini-compatible database files
         //
 
-        ch_annotation_output = Channel.empty()
+        def ch_annotation_output = Channel.empty()
         if (annotate) {
             VCF_ANNOTATION(
                 ch_ped_vcfs,
@@ -560,12 +540,10 @@ workflow GERMLINE {
             ch_versions = ch_versions.mix(VCF_ANNOTATION.out.versions)
             ch_reports  = ch_reports.mix(VCF_ANNOTATION.out.reports)
 
-            VCF_ANNOTATION.out.annotated_vcfs.set { ch_annotation_output }
+            ch_annotation_output = VCF_ANNOTATION.out.annotated_vcfs
         } else {
-            ch_ped_vcfs.set { ch_annotation_output }
+            ch_annotation_output = ch_ped_vcfs
         }
-
-        ch_annotation_output.dump(tag:'annotation_output', pretty:true)
 
         //
         // Tabix the resulting VCF
@@ -576,9 +554,8 @@ workflow GERMLINE {
         )
         ch_versions = ch_versions.mix(TABIX_FINAL.out.versions.first())
 
-        ch_annotation_output
+        def ch_final_vcfs = ch_annotation_output
             .join(TABIX_FINAL.out.tbi, failOnDuplicate:true, failOnMismatch:true)
-            .set { ch_final_vcfs }
 
         //
         // Validate the found variants
@@ -586,7 +563,7 @@ workflow GERMLINE {
 
         if (validate){
 
-            ch_input.truth_variants
+            def ch_truths_input = ch_input.truth_variants
                 .map { meta, vcf, tbi, bed ->
                     def new_meta = meta - meta.subMap("duplicate_count")
                     [ groupKey(new_meta, meta.duplicate_count), vcf, tbi, bed ]
@@ -599,16 +576,15 @@ workflow GERMLINE {
                     def one_bed = bed.find { bed_file -> bed_file != [] } ?: []
                     [ meta, one_vcf, one_tbi, one_bed ]
                 }
-                .branch { meta, vcf, tbi, bed ->
+                .branch { _meta, vcf, tbi, _bed ->
                     no_vcf: !vcf
                     tbi: tbi
                     no_tbi: !tbi
                 }
-                .set { ch_truths_input }
 
             // Create truth VCF indices if none were given
             TABIX_TRUTH(
-                ch_truths_input.no_tbi.map { meta, vcf, tbi, bed ->
+                ch_truths_input.no_tbi.map { meta, vcf, _tbi, _bed ->
                     [ meta, vcf ]
                 }
             )
@@ -616,7 +592,7 @@ workflow GERMLINE {
 
             ch_truths_input.no_tbi
                 .join(TABIX_TRUTH.out.tbi, failOnDuplicate:true, failOnMismatch:true)
-                .map { meta, vcf, empty, bed, tbi ->
+                .map { meta, vcf, _empty, bed, tbi ->
                     [ meta, vcf, tbi, bed ]
                 }
                 .mix(ch_truths_input.tbi)
@@ -626,9 +602,9 @@ workflow GERMLINE {
                     def new_meta = meta + [caller: caller]
                     [ new_meta, vcf, tbi, bed ]
                 }
-                .set { ch_truths }
+                .set { ch_truths } // Set needs to be used here due to some Nextflow bug
 
-            ch_final_vcfs
+            def ch_validation_input = ch_final_vcfs
                 .map { meta, vcf, tbi ->
                     def new_meta = meta - meta.subMap("family_samples")
                     [ new_meta, vcf, tbi, meta.family_samples.tokenize(",") ]
@@ -644,7 +620,7 @@ workflow GERMLINE {
                     [ new_meta, vcf, tbi ]
                 }
                 .join(ch_truths, failOnMismatch:true, failOnDuplicate:true)
-                .filter { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ->
+                .filter { _meta, _vcf, _tbi, truth_vcf, _truth_tbi, _truth_bed ->
                     // Filter out all samples that have no truth VCF
                     truth_vcf != []
                 }
@@ -652,7 +628,6 @@ workflow GERMLINE {
                     vcfs: [meta, vcf, tbi, truth_vcf, truth_tbi]
                     bed:  [meta, truth_bed]
                 }
-                .set { ch_validation_input }
 
             CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_beds
                 .combine(callers)
@@ -669,7 +644,7 @@ workflow GERMLINE {
                 .map { meta, regions, truth ->
                     [ meta, truth, regions ]
                 }
-                .set { ch_validation_regions }
+                .set { ch_validation_regions } // Set needs to be used here due to some Nextflow bug
 
             VCF_VALIDATE_SMALL_VARIANTS(
                 ch_validation_input.vcfs,
@@ -684,20 +659,17 @@ workflow GERMLINE {
         //
 
         if(gemini){
-            CustomChannelOperators.joinOnKeys(
-                ch_final_vcfs.map { meta, vcf, tbi -> [ meta, vcf ]},
-                VCF_EXTRACT_RELATE_SOMALIER.out.peds,
-                ['id', 'family', 'family_samples']
-            )
-            .dump(tag:'vcf2db_input', pretty:true)
-            .set { ch_vcf2db_input }
+            def ch_vcf2db_input = CustomChannelOperators.joinOnKeys(
+                    ch_final_vcfs.map { meta, vcf, _tbi -> [ meta, vcf ]},
+                    VCF_EXTRACT_RELATE_SOMALIER.out.peds,
+                    ['id', 'family', 'family_samples']
+                )
 
             VCF2DB(
                 ch_vcf2db_input
             )
             ch_versions = ch_versions.mix(VCF2DB.out.versions.first())
 
-            VCF2DB.out.db.dump(tag:'vcf2db_output', pretty:true)
         }
 
         //
@@ -731,45 +703,43 @@ workflow GERMLINE {
     //
     // Collate and save software versions
     //
-    softwareVersionsToYAML(ch_versions)
+    def ch_collated_versions = softwareVersionsToYAML(ch_versions)
         .collectFile(
             storeDir: "${outdir}/pipeline_info",
             name:  ''  + 'pipeline_software_' +  'mqc_'  + 'versions.yml',
             sort: true,
             newLine: true
         )
-        .set { ch_collated_versions }
-
 
     //
     // Perform multiQC on all QC data
     //
 
-    ch_multiqc_config                     = Channel.fromPath(
-                                            "$projectDir/assets/multiqc_config.yml", checkIfExists: true)
-    ch_multiqc_custom_config              = multiqc_config ?
-                                            Channel.fromPath(multiqc_config, checkIfExists: true) :
-                                            Channel.empty()
-    ch_multiqc_logo                       = multiqc_logo ?
-                                            Channel.fromPath(multiqc_logo, checkIfExists: true) :
-                                            Channel.empty()
+    def ch_multiqc_config                     = Channel.fromPath(
+                                                "$projectDir/assets/multiqc_config.yml", checkIfExists: true)
+    def ch_multiqc_custom_config              = multiqc_config ?
+                                                Channel.fromPath(multiqc_config, checkIfExists: true) :
+                                                Channel.empty()
+    def ch_multiqc_logo                       = multiqc_logo ?
+                                                Channel.fromPath(multiqc_logo, checkIfExists: true) :
+                                                Channel.empty()
 
-    summary_params                        = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
-    ch_workflow_summary                   = Channel.value(paramsSummaryMultiqc(summary_params))
-    ch_multiqc_custom_methods_description = multiqc_methods_description ?
-                                            file(multiqc_methods_description, checkIfExists: true) :
-                                            file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
-    ch_methods_description                = Channel.value(methodsDescriptionText(ch_multiqc_custom_methods_description))
+    def summary_params                        = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
+    def ch_workflow_summary                   = Channel.value(paramsSummaryMultiqc(summary_params))
+    def ch_multiqc_custom_methods_description = multiqc_methods_description ?
+                                                file(multiqc_methods_description, checkIfExists: true) :
+                                                file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
+    def ch_methods_description                = Channel.value(methodsDescriptionText(ch_multiqc_custom_methods_description))
 
-    ch_multiqc_files                      = ch_multiqc_files.mix(
-                                                ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'),
-                                                ch_collated_versions,
-                                                ch_methods_description.collectFile(
-                                                    name: 'methods_description_mqc.yaml',
-                                                    sort: false
-                                                ),
-                                                ch_reports
-                                            )
+    ch_multiqc_files                          = ch_multiqc_files.mix(
+                                                    ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'),
+                                                    ch_collated_versions,
+                                                    ch_methods_description.collectFile(
+                                                        name: 'methods_description_mqc.yaml',
+                                                        sort: false
+                                                    ),
+                                                    ch_reports
+                                                )
 
 
     MULTIQC (
@@ -781,7 +751,8 @@ workflow GERMLINE {
         []
     )
 
-    emit:multiqc_report = MULTIQC.out.report.toList() // channel: /path/to/multiqc_report.html
+    emit:
+    multiqc_report = MULTIQC.out.report.toList() // channel: /path/to/multiqc_report.html
     versions       = ch_versions                 // channel: [ path(versions.yml) ]
 }
 

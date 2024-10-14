@@ -70,12 +70,12 @@ workflow CRAM_CALL_VARDICTJAVA {
     if(!(ch_dbsnp instanceof List)) {
         ch_dbsnp.map { _meta, dbsnp -> [ get_vcfanno_config(dbsnp) ] }
             .collect()
-            .set { ch_vcfanno_toml }
+            .set { ch_vcfanno_toml } // Set needs to be used here due to some Nextflow bug
 
         ch_dbsnp.map { _meta, dbsnp -> dbsnp }
             .combine(ch_dbsnp_tbi.map { _meta, tbi -> tbi })
             .collect()
-            .set { ch_vcfanno_resources }
+            .set { ch_vcfanno_resources } // Set needs to be used here due to some Nextflow bug
 
         VCFANNO(
             VCF_CONCAT_BCFTOOLS.out.vcfs.map { meta, vcf -> [ meta, vcf, [], [] ] },
