@@ -15,7 +15,7 @@
 
 include { getGenomeAttribute } from './subworkflows/local/utils_cmgg_germline_pipeline'
 
-// These give warnings in the vscode plugin 1.0.0-rc1, with no way of actually fixing it. take another look at this later!
+// Take another look at this later!
 params.fasta                = getGenomeAttribute('fasta', params.genomes, params.genome)
 params.fai                  = getGenomeAttribute('fai', params.genomes, params.genome)
 params.dict                 = getGenomeAttribute('dict', params.genomes, params.genome)
