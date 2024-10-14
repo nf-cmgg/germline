@@ -24,9 +24,9 @@ workflow CRAM_CALL_GENOTYPE_GATK4 {
 
     main:
 
-    ch_versions     = Channel.empty()
-    ch_vcfs         = Channel.empty()
-    ch_reports      = Channel.empty()
+    def ch_versions     = Channel.empty()
+    def ch_vcfs         = Channel.empty()
+    def ch_reports      = Channel.empty()
 
     CRAM_CALL_GATK4(
         ch_input,
@@ -41,7 +41,7 @@ workflow CRAM_CALL_GENOTYPE_GATK4 {
     ch_versions = ch_versions.mix(CRAM_CALL_GATK4.out.versions)
     ch_reports  = ch_reports.mix(CRAM_CALL_GATK4.out.reports)
 
-    ch_gvcfs_ready = ch_gvcfs
+    def ch_gvcfs_ready = ch_gvcfs
         .map { meta, gvcf, tbi ->
             def new_meta = meta + [caller:"haplotypecaller"]
             [ new_meta, gvcf, tbi ]
@@ -73,11 +73,9 @@ workflow CRAM_CALL_GENOTYPE_GATK4 {
             )
             ch_versions = ch_versions.mix(VCF_FILTER_BCFTOOLS.out.versions)
 
-            VCF_FILTER_BCFTOOLS.out.vcfs
-                .set { ch_vcfs }
+            ch_vcfs = VCF_FILTER_BCFTOOLS.out.vcfs
         } else {
-            GVCF_JOINT_GENOTYPE_GATK4.out.vcfs
-                .set { ch_vcfs }
+            ch_vcfs = GVCF_JOINT_GENOTYPE_GATK4.out.vcfs
         }
 
     }

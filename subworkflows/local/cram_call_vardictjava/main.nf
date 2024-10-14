@@ -20,111 +20,104 @@ workflow CRAM_CALL_VARDICTJAVA {
         filter               // boolean: filter the VCFs
 
     main:
-        ch_versions = Channel.empty()
+    def ch_versions = Channel.empty()
 
-        ch_crams
-            .map { meta, cram, crai ->
-                def new_meta = meta + [caller:"vardict"]
-                [ new_meta, cram, crai ]
-            }
-            .set { ch_crams }
+    def ch_cram_bam = ch_crams
+        .map { meta, cram, crai ->
+            def new_meta = meta + [caller:"vardict"]
+            [ new_meta, cram, crai ]
+        }
+        .branch { _meta, cram, _crai ->
+            bam: cram.extension == "bam"
+            cram: cram.extension == "cram"
+        }
 
-        ch_crams
-            .branch { meta, cram, crai ->
-                bam: cram.extension == "bam"
-                cram: cram.extension == "cram"
-            }
-            .set { ch_cram_bam }
+    SAMTOOLS_CONVERT(
+        ch_cram_bam.cram,
+        ch_fasta,
+        ch_fai
+    )
+    ch_versions = ch_versions.mix(SAMTOOLS_CONVERT.out.versions.first())
 
-        SAMTOOLS_CONVERT(
-            ch_cram_bam.cram,
-            ch_fasta,
-            ch_fai
+    def ch_vardict_crams = ch_input
+        .map { meta, cram, crai, bed ->
+            def new_meta = meta - meta.subMap("split_count") + [caller:"vardict", id:meta.sample]
+            [ new_meta, cram, crai, bed, meta.split_count ]
+        }
+
+    def ch_vardict_input = ch_cram_bam.bam
+        .mix(SAMTOOLS_CONVERT.out.bam.join(SAMTOOLS_CONVERT.out.bai, failOnMismatch:true, failOnDuplicate:true))
+        .combine(ch_vardict_crams, by:0)
+        .map { meta, bam, bai, _cram, _crai, bed, split_count ->
+            def new_meta = meta + [id:bed.baseName, split_count:split_count]
+            [ new_meta, bam, bai, bed ]
+        }
+
+    VARDICTJAVA(
+        ch_vardict_input,
+        ch_fasta,
+        ch_fai
+    )
+    ch_versions = ch_versions.mix(VARDICTJAVA.out.versions.first())
+
+    VCF_CONCAT_BCFTOOLS(
+        VARDICTJAVA.out.vcf,
+        false
+    )
+    ch_versions = ch_versions.mix(VCF_CONCAT_BCFTOOLS.out.versions)
+
+    def ch_annotated = Channel.empty()
+    if(!(ch_dbsnp instanceof List)) {
+        ch_dbsnp.map { _meta, dbsnp -> [ get_vcfanno_config(dbsnp) ] }
+            .collect()
+            .set { ch_vcfanno_toml }
+
+        ch_dbsnp.map { _meta, dbsnp -> dbsnp }
+            .combine(ch_dbsnp_tbi.map { _meta, tbi -> tbi })
+            .collect()
+            .set { ch_vcfanno_resources }
+
+        VCFANNO(
+            VCF_CONCAT_BCFTOOLS.out.vcfs.map { meta, vcf -> [ meta, vcf, [], [] ] },
+            ch_vcfanno_toml,
+            [],
+            ch_vcfanno_resources
         )
-        ch_versions = ch_versions.mix(SAMTOOLS_CONVERT.out.versions.first())
+        ch_versions = ch_versions.mix(VCFANNO.out.versions.first())
 
-        ch_input
-            .map { meta, cram, crai, bed ->
-                def new_meta = meta - meta.subMap("split_count") + [caller:"vardict", id:meta.sample]
-                [ new_meta, cram, crai, bed, meta.split_count ]
-            }
-            .set { ch_vardict_crams }
-
-        ch_cram_bam.bam
-            .mix(SAMTOOLS_CONVERT.out.bam.join(SAMTOOLS_CONVERT.out.bai, failOnMismatch:true, failOnDuplicate:true))
-            .combine(ch_vardict_crams, by:0)
-            .map { meta, bam, bai, cram, crai, bed, split_count ->
-                def new_meta = meta + [id:bed.baseName, split_count:split_count]
-                [ new_meta, bam, bai, bed ]
-            }
-            .set { ch_vardict_input }
-
-        VARDICTJAVA(
-            ch_vardict_input,
-            ch_fasta,
-            ch_fai
+        TABIX_BGZIP(
+            VCFANNO.out.vcf
         )
-        ch_versions = ch_versions.mix(VARDICTJAVA.out.versions.first())
+        ch_versions = ch_versions.mix(TABIX_BGZIP.out.versions.first())
 
-        VCF_CONCAT_BCFTOOLS(
-            VARDICTJAVA.out.vcf,
+        ch_annotated = TABIX_BGZIP.out.output
+    } else {
+        ch_annotated = VCF_CONCAT_BCFTOOLS.out.vcfs
+    }
+
+    def ch_filter_output = Channel.empty()
+    if(filter) {
+        VCF_FILTER_BCFTOOLS(
+            ch_annotated,
             false
         )
-        ch_versions = ch_versions.mix(VCF_CONCAT_BCFTOOLS.out.versions)
+        ch_versions = ch_versions.mix(VCF_FILTER_BCFTOOLS.out.versions)
+        ch_filter_output = VCF_FILTER_BCFTOOLS.out.vcfs
+    } else {
+        ch_filter_output = ch_annotated
+    }
 
-        ch_dbsnp_annotated = Channel.empty()
-        if(ch_dbsnp != [[],[]]) {
-            ch_dbsnp
-                .map { meta, dbsnp -> [ get_vcfanno_config(dbsnp) ] }
-                .collect()
-                .set { ch_vcfanno_toml }
-
-            ch_dbsnp.map { meta, dbsnp -> dbsnp }
-                .combine(ch_dbsnp_tbi.map { meta, tbi -> tbi })
-                .collect()
-                .set { ch_vcfanno_resources }
-
-            VCFANNO(
-                VCF_CONCAT_BCFTOOLS.out.vcfs.map { meta, vcf -> [ meta, vcf, [], [] ] },
-                ch_vcfanno_toml,
-                [],
-                ch_vcfanno_resources
-            )
-            ch_versions = ch_versions.mix(VCFANNO.out.versions.first())
-
-            TABIX_BGZIP(
-                VCFANNO.out.vcf
-            )
-            ch_versions = ch_versions.mix(TABIX_BGZIP.out.versions.first())
-
-            TABIX_BGZIP.out.output.set { ch_dbsnp_annotated }
-        } else {
-            VCF_CONCAT_BCFTOOLS.out.vcfs.set { ch_dbsnp_annotated }
-        }
-
-        if(filter) {
-            VCF_FILTER_BCFTOOLS(
-                ch_dbsnp_annotated,
-                false
-            )
-            ch_versions = ch_versions.mix(VCF_FILTER_BCFTOOLS.out.versions)
-            ch_filter_output = VCF_FILTER_BCFTOOLS.out.vcfs
-        } else {
-            ch_filter_output = ch_dbsnp_annotated
-        }
-
-        TABIX_TABIX(
-            ch_filter_output
-        )
-        ch_versions = ch_versions.mix(TABIX_TABIX.out.versions.first())
-
+    TABIX_TABIX(
         ch_filter_output
-            .join(TABIX_TABIX.out.tbi, failOnDuplicate: true, failOnMismatch: true)
-            .map { meta, vcf, tbi ->
-                def new_meta = meta + [family_samples: meta.sample]
-                [ new_meta, vcf, tbi ]
-            }
-            .set { ch_vcfs }
+    )
+    ch_versions = ch_versions.mix(TABIX_TABIX.out.versions.first())
+
+    def ch_vcfs = ch_filter_output
+        .join(TABIX_TABIX.out.tbi, failOnDuplicate: true, failOnMismatch: true)
+        .map { meta, vcf, tbi ->
+            def new_meta = meta + [family_samples: meta.sample]
+            [ new_meta, vcf, tbi ]
+        }
 
     emit:
     vcfs = ch_vcfs          // channel: [ val(meta), path(vcf), path(tbi) ]
