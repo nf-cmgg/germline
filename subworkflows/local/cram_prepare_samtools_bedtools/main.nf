@@ -23,14 +23,14 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
 
     main:
 
-    ch_versions  = Channel.empty()
-    ch_reports   = Channel.empty()
+    def ch_versions  = Channel.empty()
+    def ch_reports   = Channel.empty()
 
     //
     // Merge the CRAM files if there are multiple per sample
     //
 
-    ch_crams
+    def ch_cram_branch = ch_crams
         .map { meta, cram, crai ->
             [ groupKey(meta, meta.duplicate_count), cram, crai]
         }
@@ -41,10 +41,6 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
             single:   cram.size() == 1
                 return [meta.target, cram[0], crai[0]]
         }
-        .set { ch_cram_branch }
-
-    ch_cram_branch.multiple.dump(tag:'cram_branch_multiple', pretty:true)
-    ch_cram_branch.single.dump(tag:'cram_branch_single', pretty:true)
 
     SAMTOOLS_MERGE(
         ch_cram_branch.multiple,
@@ -57,7 +53,7 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
     // Index the CRAM files which have no index
     //
 
-    SAMTOOLS_MERGE.out.cram
+    def ch_merged_crams = SAMTOOLS_MERGE.out.cram
         .mix(ch_cram_branch.single)
         .branch { meta, cram, crai=[] ->
             not_indexed: crai == []
@@ -65,27 +61,21 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
             indexed: crai != []
                 return [ meta, cram, crai ]
         }
-        .set { ch_merged_crams }
-
-    ch_merged_crams.not_indexed.dump(tag:'merged_crams_not_indexed', pretty:true)
-    ch_merged_crams.indexed.dump(tag:'merged_crams_indexed', pretty:true)
 
     SAMTOOLS_INDEX(
         ch_merged_crams.not_indexed
     )
     ch_versions = ch_versions.mix(SAMTOOLS_INDEX.out.versions.first())
 
-    ch_merged_crams.not_indexed
+    def ch_ready_crams = ch_merged_crams.not_indexed
         .join(SAMTOOLS_INDEX.out.crai, failOnDuplicate: true, failOnMismatch: true)
         .mix(ch_merged_crams.indexed)
-        .dump(tag:'ready_crams', pretty:true)
-        .set { ch_ready_crams }
 
     //
     // Preprocess the ROI BED files => sort and merge overlapping regions
     //
 
-    ch_roi
+    def ch_roi_branch = ch_roi
         .map { meta, roi ->
             [ groupKey(meta, meta.duplicate_count), roi ]
         }
@@ -95,20 +85,12 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
             // It's possible that a sample is given multiple times in the samplesheet, in which
             // case they have been merged earlier. This code checks if at least one entry of the same
             // sample contains an ROI file
-            def is_present = false
-            def output_roi = []
-            roi.each { entry ->
-                if(entry != []){
-                    output_roi.add(entry)
-                    is_present = true
-                }
-            }
-            found:      is_present
+            def output_roi = roi.findAll { entry -> entry != [] }
+            found:      output_roi.size() > 0
                 return [ meta.target, output_roi ]
-            missing:    !is_present
+            missing:    output_roi.size() == 0
                 return [ meta.target, [] ]
         }
-        .set { ch_roi_branch }
 
     MERGE_ROI_SAMPLE(
         ch_roi_branch.found,
@@ -118,7 +100,7 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
 
     // Add the default ROI file to all samples without an ROI file
     // if an ROI BED file has been given through the --roi parameter
-    ch_missing_rois = Channel.empty()
+    def ch_missing_rois = Channel.empty()
     if (ch_default_roi) {
         MERGE_ROI_PARAMS(
             ch_default_roi.map { bed ->
@@ -128,31 +110,27 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
         )
         ch_versions = ch_versions.mix(MERGE_ROI_PARAMS.out.versions)
 
-        ch_roi_branch.missing
+        ch_missing_rois = ch_roi_branch.missing
             .map { meta, bed ->
                 [ groupKey(meta, meta.duplicate_count), bed ]
             }
             .groupTuple()
-            .combine(MERGE_ROI_PARAMS.out.bed.map { meta, bed -> bed })
-            .map { meta, missing, default_roi ->
+            .combine(MERGE_ROI_PARAMS.out.bed.map { _meta, bed -> bed })
+            .map { meta, _missing, default_roi ->
                 [ meta.target, default_roi ]
             }
-            .set { ch_missing_rois }
     } else {
-        ch_roi_branch.missing.set { ch_missing_rois }
+        ch_missing_rois = ch_roi_branch.missing
     }
 
-    ch_missing_rois
-        .mix(MERGE_ROI_SAMPLE.out.bed)
-        .set { ch_ready_rois }
+    def ch_ready_rois = ch_missing_rois.mix(MERGE_ROI_SAMPLE.out.bed)
 
     //
     // Create callable regions
     //
 
-    ch_ready_crams
+    def ch_mosdepth_input = ch_ready_crams
         .join(ch_ready_rois, failOnDuplicate:true, failOnMismatch:true)
-        .set { ch_mosdepth_input }
 
     MOSDEPTH(
         ch_mosdepth_input,
@@ -160,25 +138,23 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
     )
     ch_versions = ch_versions.mix(MOSDEPTH.out.versions.first())
 
-    ch_ready_rois
+    def ch_beds_to_filter = ch_ready_rois
         .join(MOSDEPTH.out.quantized_bed, failOnDuplicate:true, failOnMismatch:true)
-        .set { ch_beds_to_filter }
 
     // Filter out the regions with no coverage
     FILTER_BEDS(
-        ch_beds_to_filter.map { meta, roi, callable -> [ meta, callable ]}
+        ch_beds_to_filter.map { meta, _roi, callable -> [ meta, callable ]}
     )
     ch_versions = ch_versions.mix(FILTER_BEDS.out.versions)
 
-    FILTER_BEDS.out.bed
+    def ch_beds_to_intersect = FILTER_BEDS.out.bed
         .join(ch_beds_to_filter, failOnDuplicate:true, failOnMismatch:true)
-        .branch { meta, filtered_callable, roi, callable ->
+        .branch { meta, filtered_callable, roi, _callable ->
             roi:    roi
                 return [ meta, roi, filtered_callable ]
             no_roi: !roi
                 return [ meta, filtered_callable ]
         }
-        .set { ch_beds_to_intersect }
 
     // Intersect the ROI with the callable regions
     BEDTOOLS_INTERSECT(
@@ -187,9 +163,8 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
     )
     ch_versions = ch_versions.mix(BEDTOOLS_INTERSECT.out.versions)
 
-    ch_beds_to_intersect.no_roi
+    def ch_ready_beds = ch_beds_to_intersect.no_roi
         .mix(BEDTOOLS_INTERSECT.out.intersect)
-        .set { ch_ready_beds }
 
     emit:
     ready_crams = ch_ready_crams    // [ val(meta), path(cram), path(crai) ]

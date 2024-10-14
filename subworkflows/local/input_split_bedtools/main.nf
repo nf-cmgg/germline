@@ -11,18 +11,18 @@ workflow INPUT_SPLIT_BEDTOOLS {
 
     main:
 
-    ch_versions = Channel.empty()
+    def ch_versions = Channel.empty()
 
     BEDTOOLS_SPLIT(
         ch_beds
     )
     ch_versions = ch_versions.mix(BEDTOOLS_SPLIT.out.versions.first())
 
-    ch_inputs
+    def ch_split_output = ch_inputs
         .join(BEDTOOLS_SPLIT.out.beds, failOnDuplicate: true, failOnMismatch: true)
         .map { meta, input, input_index, beds ->
             // Determine the amount of BED files per sample
-            bed_is_list = beds instanceof ArrayList
+            def bed_is_list = beds instanceof ArrayList
             def new_meta = meta + [split_count: bed_is_list ? beds.size() : 1]
             [ new_meta, input, input_index, bed_is_list ? beds : [beds] ]
         }
@@ -32,7 +32,6 @@ workflow INPUT_SPLIT_BEDTOOLS {
             def new_meta = meta + [id:bed.baseName]
             [ new_meta, input, input_index, bed ]
         }
-        .set { ch_split_output }
 
     emit:
     split = ch_split_output // channel: [ val(meta), path(input), path(input_index), path(bed) ]
