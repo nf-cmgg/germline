@@ -73,7 +73,7 @@ workflow VCF_VALIDATE_SMALL_VARIANTS {
     def ch_rtgtools_snp_png_rocplot        = rocplot_out_png.snp
     def ch_rtgtools_non_snp_png_rocplot    = rocplot_out_png.non_snp
     def ch_rtgtools_weighted_png_rocplot   = rocplot_out_png.weighted
- 
+
     def ch_rtgtools_snp_svg_rocplot        = rocplot_out_svg.snp
     def ch_rtgtools_non_snp_svg_rocplot    = rocplot_out_svg.non_snp
     def ch_rtgtools_weighted_svg_rocplot   = rocplot_out_svg.weighted
