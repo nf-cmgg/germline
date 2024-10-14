@@ -546,7 +546,6 @@ workflow GERMLINE {
             VCF_ANNOTATION(
                 ch_ped_vcfs,
                 ch_fasta_ready,
-                ch_fai_ready,
                 ch_vep_cache_ready,
                 ch_vep_extra_files,
                 ch_vcfanno_config,
@@ -675,8 +674,6 @@ workflow GERMLINE {
             VCF_VALIDATE_SMALL_VARIANTS(
                 ch_validation_input.vcfs,
                 ch_validation_regions,
-                ch_fasta_ready,
-                ch_fai_ready,
                 ch_sdf_ready.collect()
             )
             ch_versions = ch_versions.mix(VCF_VALIDATE_SMALL_VARIANTS.out.versions)
