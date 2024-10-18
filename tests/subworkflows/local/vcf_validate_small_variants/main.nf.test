@@ -42,9 +42,7 @@ nextflow_workflow {
                     file(params.bed, checkIfExists:true),
                     []
                 ])
-                input[2] = [[],[]]
-                input[3] = [[],[]]
-                input[4] = UNTAR.out.untar
+                input[2] = UNTAR.out.untar
                 """
             }
         }

@@ -12,7 +12,7 @@ workflow VCF_CONCAT_BCFTOOLS {
 
     main:
 
-    ch_versions = Channel.empty()
+    def ch_versions = Channel.empty()
 
     ch_vcfs
         .map { meta, vcf, tbi=[] ->
@@ -30,29 +30,27 @@ workflow VCF_CONCAT_BCFTOOLS {
     )
     ch_versions = ch_versions.mix(BCFTOOLS_CONCAT.out.versions.first())
 
-    ch_vcf_tbi = Channel.empty()
+    def ch_vcf_tbi = Channel.empty()
     if(val_tabix) {
         TABIX_TABIX(
             BCFTOOLS_CONCAT.out.vcf
         )
         ch_versions = ch_versions.mix(TABIX_TABIX.out.versions.first())
 
-        BCFTOOLS_CONCAT.out.vcf
+        ch_vcf_tbi = BCFTOOLS_CONCAT.out.vcf
             .join(TABIX_TABIX.out.tbi, failOnDuplicate: true, failOnMismatch: true)
             .map { meta, vcf, tbi ->
                 // Remove the bed counter from the meta field
                 def new_meta = meta - meta.subMap("split_count")
                 [ new_meta, vcf, tbi ]
             }
-            .set { ch_vcf_tbi }
     } else {
-        BCFTOOLS_CONCAT.out.vcf
+        ch_vcf_tbi = BCFTOOLS_CONCAT.out.vcf
             .map { meta, vcf ->
                 // Remove the bed counter from the meta field
                 def new_meta = meta - meta.subMap("split_count")
                 [ new_meta, vcf ]
             }
-            .set { ch_vcf_tbi }
     }
 
     emit:

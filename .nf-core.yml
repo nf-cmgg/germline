@@ -9,6 +9,7 @@ lint:
     - .github/ISSUE_TEMPLATE/config.yml
     - .github/workflows/awstest.yml
     - .github/workflows/awsfulltest.yml
+    - .github/workflows/template_version_comment.yml
     - docs/README.md
   files_unchanged:
     - .github/CONTRIBUTING.md

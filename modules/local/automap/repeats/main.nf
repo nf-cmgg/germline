@@ -12,7 +12,6 @@ process AUTOMAP_REPEATS {
     path  "versions.yml"            , emit: versions
 
     script:
-    def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
 
     def VERSION = "1.0.0"
