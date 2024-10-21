@@ -236,7 +236,7 @@
                     },
                     "vcf_annotate_ensemblvep_snpeff": {
                         "branch": "master",
-                        "git_sha": "cfd937a668919d948f6fcbf4218e79de50c2f36f",
+                        "git_sha": "1b2fdf082b2ea7976b112e149a474d816094724c",
                         "installed_by": ["subworkflows"]
                     }
                 }
