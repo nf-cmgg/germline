@@ -11,12 +11,12 @@ process AUTOMAP_AUTOMAP {
     val(genome)
 
     output:
-    tuple val(meta), path("${prefix}"), emit: automap
-    path  "versions.yml"              , emit: versions
+    tuple val(meta), path("${task.ext.prefix ?: meta.id}"), emit: automap
+    path  "versions.yml"                                  , emit: versions
 
     script:
     def args = task.ext.args ?: ''
-    prefix = task.ext.prefix ?: "${meta.id}"
+    def prefix = task.ext.prefix ?: "${meta.id}"
 
     def panel_file = panel ? "--panel $panel" : "--panel /usr/local/lib/automap/Resources/Biomodule_20220808_all_genes_hg38.txt"
     def hg_genome = genome ?: "hg38"
@@ -40,7 +40,7 @@ process AUTOMAP_AUTOMAP {
     stub:
     def args = task.ext.args ?: ''
     def panel_name = args.contains("--panelname") ? args.split("--panelname")[-1].trim().split(" ")[0] : ""
-    prefix = task.ext.prefix ?: "${meta.id}"
+    def prefix = task.ext.prefix ?: "${meta.id}"
 
     def create_outputs = meta.family_samples.tokenize(",").size() > 1 ? (1..meta.family_samples.tokenize(",").size()).collect { number ->
         def cmd_prefix = "touch ${prefix}/sample${number}"

@@ -9,12 +9,12 @@ process UPDIO {
     tuple val(meta2), path(cnv)
 
     output:
-    tuple val(meta), path("${prefix}"), emit: updio
-    path  "versions.yml"              , emit: versions
+    tuple val(meta), path("${task.ext.prefix ?: meta.id}"), emit: updio
+    path  "versions.yml"                                  , emit: versions
 
     script:
     def args = task.ext.args ?: ''
-    prefix = task.ext.prefix ?: "${meta.id}"
+    def prefix = task.ext.prefix ?: "${meta.id}"
 
     def common_cnv_file = cnv ? "--common_cnv_file $cnv" : "--common_cnv_file /usr/local/lib/updio/sample_data/common_dels_1percent_liftover.tsv"
     def VERSION = "1.0.0"
@@ -33,7 +33,7 @@ process UPDIO {
     """
 
     stub:
-    prefix = task.ext.prefix ?: "${meta.id}"
+    def prefix = task.ext.prefix ?: "${meta.id}"
 
     def VERSION = "1.0.0"
     """

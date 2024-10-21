@@ -15,6 +15,7 @@
 
 include { getGenomeAttribute } from './subworkflows/local/utils_cmgg_germline_pipeline'
 
+// Take another look at this later!
 params.fasta                = getGenomeAttribute('fasta', params.genomes, params.genome)
 params.fai                  = getGenomeAttribute('fai', params.genomes, params.genome)
 params.dict                 = getGenomeAttribute('dict', params.genomes, params.genome)
@@ -199,7 +200,6 @@ workflow {
     PIPELINE_INITIALISATION (
         params.version,
         params.validate_params,
-        params.monochrome_logs,
         args,
         params.outdir,
         params.input,

@@ -7,7 +7,7 @@
                 "nf-core": {
                     "bcftools/annotate": {
                         "branch": "master",
-                        "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
+                        "git_sha": "cb08035150685b11d890d90c9534d4f16869eaec",
                         "installed_by": ["modules"],
                         "patch": "modules/nf-core/bcftools/annotate/bcftools-annotate.diff"
                     },
@@ -63,7 +63,7 @@
                     },
                     "bedtools/split": {
                         "branch": "master",
-                        "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
+                        "git_sha": "cb08035150685b11d890d90c9534d4f16869eaec",
                         "installed_by": ["modules"]
                     },
                     "ensemblvep/download": {
@@ -236,7 +236,7 @@
                     },
                     "vcf_annotate_ensemblvep_snpeff": {
                         "branch": "master",
-                        "git_sha": "cfd937a668919d948f6fcbf4218e79de50c2f36f",
+                        "git_sha": "1b2fdf082b2ea7976b112e149a474d816094724c",
                         "installed_by": ["subworkflows"]
                     }
                 }

@@ -13,45 +13,41 @@ workflow VCF_UPD_UPDIO {
 
     main:
 
-    ch_versions = Channel.empty()
+    def ch_versions = Channel.empty()
 
     // Filter out all families that have less than 3 samples
-    ch_vcfs
-        .filter { meta, vcf, tbi ->
+    def ch_trio_vcfs = ch_vcfs
+        .filter { meta, _vcf, _tbi ->
             meta.family_samples.tokenize(",").size() >= 3
         }
-        .set { ch_trio_vcfs }
 
     BCFTOOLS_FILTER(
         ch_trio_vcfs
     )
     ch_versions = ch_versions.mix(BCFTOOLS_FILTER.out.versions.first())
 
-    BCFTOOLS_FILTER.out.vcf
+    def ch_filter_output = BCFTOOLS_FILTER.out.vcf
         .join(BCFTOOLS_FILTER.out.tbi, failOnDuplicate:true, failOnMismatch:true)
-        .set { ch_filter_output }
 
-    ch_peds
-        .filter { meta, ped ->
+    def ch_trio_peds = ch_peds
+        .filter { meta, _ped ->
             meta.family_samples.tokenize(",").size() >= 3
         }
-        .set { ch_trio_peds }
 
-    CustomChannelOperators.joinOnKeys(
-        [failOnDuplicate:true, failOnMismatch:true],
-        ch_filter_output,
-        ch_trio_peds,
-        ["id", "family", "family_samples", "caller"]
-    )
+    def ch_trio_vcfs_family = CustomChannelOperators.joinOnKeys(
+            [failOnDuplicate:true, failOnMismatch:true],
+            ch_filter_output,
+            ch_trio_peds,
+            ["id", "family", "family_samples", "caller"]
+        )
         .map { meta, vcf, tbi, ped ->
             def meta_list = get_family_data_from_ped(meta, ped)
             [ meta_list, vcf, tbi ]
         }
-        .filter { meta, vcf, tbi ->
+        .filter { meta, _vcf, _tbi ->
             meta
         }
         .transpose(by:0)
-        .set { ch_trio_vcfs_family }
 
     UPDIO(
         ch_trio_vcfs_family,
