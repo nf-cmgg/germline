@@ -17,7 +17,8 @@ include { methodsDescriptionText            } from '../subworkflows/local/utils_
 
 include { CRAM_PREPARE_SAMTOOLS_BEDTOOLS    } from '../subworkflows/local/cram_prepare_samtools_bedtools/main'
 include { INPUT_SPLIT_BEDTOOLS              } from '../subworkflows/local/input_split_bedtools/main'
-include { CRAM_CALL_GENOTYPE_GATK4          } from '../subworkflows/local/cram_call_genotype_gatk4/main'
+include { CRAM_CALL_GATK4                   } from '../subworkflows/local/cram_call_gatk4/main'
+include { GVCF_JOINT_GENOTYPE_GATK4         } from '../subworkflows/local/gvcf_joint_genotype_gatk4/main'
 include { BAM_CALL_VARDICTJAVA              } from '../subworkflows/local/bam_call_vardictjava/main'
 include { VCF_EXTRACT_RELATE_SOMALIER       } from '../subworkflows/local/vcf_extract_relate_somalier/main'
 include { VCF_PED_RTGTOOLS                  } from '../subworkflows/local/vcf_ped_rtgtools/main'
@@ -355,6 +356,10 @@ workflow GERMLINE {
     def ch_gvcfs_ready = ch_gvcf_branch.no_tbi
         .join(TABIX_GVCF.out.tbi, failOnDuplicate:true, failOnMismatch:true)
         .mix(ch_gvcf_branch.tbi)
+        .map { meta, gvcf, tbi ->
+            [ meta, gvcf, tbi, callers.intersect(GlobalVariables.gvcfCallers) ]
+        }
+        .transpose(by:3)
 
     //
     // Run sample preparation
@@ -409,28 +414,22 @@ workflow GERMLINE {
         // Call variants with GATK4 HaplotypeCaller
         //
 
-        CRAM_CALL_GENOTYPE_GATK4(
+        CRAM_CALL_GATK4(
             ch_caller_inputs.cram.filter { meta, _cram, _crai, _bed ->
                 // Filter out the entries that already have a GVCF
                 meta.type == "cram"
             },
-            ch_gvcfs_ready,
             ch_fasta_ready,
             ch_fai_ready,
             ch_dict_ready,
             ch_strtablefile_ready,
             ch_dbsnp_ready,
             ch_dbsnp_tbi_ready,
-            dragstr,
-            only_call,
-            only_merge,
-            filter,
-            scatter_count
+            dragstr
         )
-        ch_versions = ch_versions.mix(CRAM_CALL_GENOTYPE_GATK4.out.versions)
-        ch_reports  = ch_reports.mix(CRAM_CALL_GENOTYPE_GATK4.out.reports)
-
-        ch_calls = ch_calls.mix(CRAM_CALL_GENOTYPE_GATK4.out.vcfs)
+        ch_gvcfs_ready = ch_gvcfs_ready.mix(CRAM_CALL_GATK4.out.gvcfs)
+        ch_versions = ch_versions.mix(CRAM_CALL_GATK4.out.versions)
+        ch_reports  = ch_reports.mix(CRAM_CALL_GATK4.out.reports)
 
     }
 
@@ -451,6 +450,21 @@ workflow GERMLINE {
 
         ch_calls = ch_calls.mix(BAM_CALL_VARDICTJAVA.out.vcfs)
     }
+
+    // TODO reimplement --only_call and --only_merge
+
+    GVCF_JOINT_GENOTYPE_GATK4(
+        ch_gvcfs_ready,
+        ch_fasta_ready,
+        ch_fai_ready,
+        ch_dict_ready,
+        ch_dbsnp_ready,
+        ch_dbsnp_tbi_ready,
+        only_merge,
+        scatter_count
+    )
+    ch_versions = ch_versions.mix(GVCF_JOINT_GENOTYPE_GATK4.out.versions)
+    ch_calls = ch_calls.mix(GVCF_JOINT_GENOTYPE_GATK4.out.vcfs)
 
     def ch_called_variants = ch_calls
         .map { meta, vcf, tbi ->
