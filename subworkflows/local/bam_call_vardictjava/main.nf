@@ -7,6 +7,7 @@ include { BCFTOOLS_STATS                    } from '../../../modules/nf-core/bcf
 
 include { VCF_CONCAT_BCFTOOLS               } from '../vcf_concat_bcftools/main'
 include { VCF_FILTER_BCFTOOLS               } from '../vcf_filter_bcftools/main'
+include { VCF_DBSNP_VCFANNO                 } from '../vcf_dbsnp_vcfanno/main'
 
 workflow BAM_CALL_VARDICTJAVA {
     take:
@@ -38,28 +39,12 @@ workflow BAM_CALL_VARDICTJAVA {
 
     def ch_annotated = Channel.empty()
     if(!(ch_dbsnp instanceof List)) {
-        ch_dbsnp.map { _meta, dbsnp -> [ get_vcfanno_config(dbsnp) ] }
-            .collect()
-            .set { ch_vcfanno_toml } // Set needs to be used here due to some Nextflow bug
-
-        ch_dbsnp.map { _meta, dbsnp -> dbsnp }
-            .combine(ch_dbsnp_tbi.map { _meta, tbi -> tbi })
-            .collect()
-            .set { ch_vcfanno_resources } // Set needs to be used here due to some Nextflow bug
-
-        VCFANNO(
-            VCF_CONCAT_BCFTOOLS.out.vcfs.map { meta, vcf -> [ meta, vcf, [], [] ] },
-            ch_vcfanno_toml,
-            [],
-            ch_vcfanno_resources
+        VCF_DBNSP_VCFANNO(
+            VCF_CONCAT_BCFTOOLS.out.vcfs,
+            ch_dbsnp,
+            ch_dbsnp_tbi
         )
-        ch_versions = ch_versions.mix(VCFANNO.out.versions.first())
-
-        TABIX_BGZIP(
-            VCFANNO.out.vcf
-        )
-        ch_versions = ch_versions.mix(TABIX_BGZIP.out.versions.first())
-
+        ch_versions = ch_versions.mix(VCF_DBSNP_VCFANNO.out.versions)
         ch_annotated = TABIX_BGZIP.out.output
     } else {
         ch_annotated = VCF_CONCAT_BCFTOOLS.out.vcfs
@@ -94,12 +79,4 @@ workflow BAM_CALL_VARDICTJAVA {
 
     versions = ch_versions  // channel: [ path(versions.yml) ]
 
-}
-
-def get_vcfanno_config(vcf) {
-    def old_toml = file("${projectDir}/assets/dbsnp.toml", checkIfExists: true)
-    old_toml.copyTo("${workDir}/vcfanno/dbsnp.toml")
-    def new_toml = file("${workDir}/vcfanno/dbsnp.toml")
-    new_toml.text = old_toml.text.replace("DBSNP_FILE", vcf.getName())
-    return new_toml
 }
