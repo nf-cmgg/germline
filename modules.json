@@ -66,6 +66,16 @@
                         "git_sha": "cb08035150685b11d890d90c9534d4f16869eaec",
                         "installed_by": ["modules"]
                     },
+                    "elprep/fastatoelfasta": {
+                        "branch": "master",
+                        "git_sha": "74ac5351a11a184171489dee73652e8b69ba9d22",
+                        "installed_by": ["modules"]
+                    },
+                    "elprep/filter": {
+                        "branch": "master",
+                        "git_sha": "909c4dcdbb1e751214e2bb155e8c0a59633ed12a",
+                        "installed_by": ["modules"]
+                    },
                     "ensemblvep/download": {
                         "branch": "master",
                         "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
@@ -183,7 +193,7 @@
                     "tabix/bgzip": {
                         "branch": "master",
                         "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
-                        "installed_by": ["modules"]
+                        "installed_by": ["vcf_annotate_ensemblvep_snpeff"]
                     },
                     "tabix/bgziptabix": {
                         "branch": "master",

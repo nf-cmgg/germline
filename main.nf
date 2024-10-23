@@ -19,6 +19,7 @@ include { getGenomeAttribute } from './subworkflows/local/utils_cmgg_germline_pi
 params.fasta                = getGenomeAttribute('fasta', params.genomes, params.genome)
 params.fai                  = getGenomeAttribute('fai', params.genomes, params.genome)
 params.dict                 = getGenomeAttribute('dict', params.genomes, params.genome)
+params.elfasta              = getGenomeAttribute('elfasta', params.genomes, params.genome)
 params.strtablefile         = getGenomeAttribute('strtablefile', params.genomes, params.genome)
 params.sdf                  = getGenomeAttribute('sdf', params.genomes, params.genome)
 params.dbsnp                = getGenomeAttribute('dbsnp', params.genomes, params.genome)
@@ -73,6 +74,7 @@ workflow NFCMGG_GERMLINE {
         pipeline_params.fasta,
         pipeline_params.fai,
         pipeline_params.dict,
+        pipeline_params.elfasta,
         pipeline_params.strtablefile,
         pipeline_params.sdf,
         pipeline_params.dbsnp,
@@ -103,6 +105,7 @@ workflow NFCMGG_GERMLINE {
         pipeline_params.automap_panel,
         pipeline_params.outdir,
         GlobalVariables.pedFiles,
+        pipeline_params.elsites,
 
         // Boolean inputs
         pipeline_params.dragstr,

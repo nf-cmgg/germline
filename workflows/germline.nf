@@ -19,6 +19,7 @@ include { CRAM_PREPARE_SAMTOOLS_BEDTOOLS    } from '../subworkflows/local/cram_p
 include { INPUT_SPLIT_BEDTOOLS              } from '../subworkflows/local/input_split_bedtools/main'
 include { CRAM_CALL_GATK4                   } from '../subworkflows/local/cram_call_gatk4/main'
 include { GVCF_JOINT_GENOTYPE_GATK4         } from '../subworkflows/local/gvcf_joint_genotype_gatk4/main'
+include { BAM_CALL_ELPREP                   } from '../subworkflows/local/bam_call_elprep/main'
 include { BAM_CALL_VARDICTJAVA              } from '../subworkflows/local/bam_call_vardictjava/main'
 include { VCF_EXTRACT_RELATE_SOMALIER       } from '../subworkflows/local/vcf_extract_relate_somalier/main'
 include { VCF_PED_RTGTOOLS                  } from '../subworkflows/local/vcf_ped_rtgtools/main'
@@ -36,6 +37,7 @@ include { VCF_FILTER_BCFTOOLS               } from '../subworkflows/local/vcf_fi
 
 include { SAMTOOLS_FAIDX as FAIDX                                    } from '../modules/nf-core/samtools/faidx/main'
 include { GATK4_CREATESEQUENCEDICTIONARY as CREATESEQUENCEDICTIONARY } from '../modules/nf-core/gatk4/createsequencedictionary/main'
+include { ELPREP_FASTATOELFASTA                                      } from '../modules/nf-core/elprep/fastatoelfasta/main'
 include { GATK4_COMPOSESTRTABLEFILE as COMPOSESTRTABLEFILE           } from '../modules/nf-core/gatk4/composestrtablefile/main'
 include { RTGTOOLS_FORMAT                                            } from '../modules/nf-core/rtgtools/format/main'
 include { UNTAR                                                      } from '../modules/nf-core/untar/main'
@@ -69,6 +71,7 @@ workflow GERMLINE {
     fasta                       // string: path to the reference fasta
     fai                         // string: path to the index of the reference fasta
     dict                        // string: path to the sequence dictionary file
+    elfasta                     // string: path to the elfasta reference file
     strtablefile                // string: path to the strtable file
     sdf                         // string: path to the SDF directory
     dbsnp                       // string: path to the DBSNP VCF file
@@ -99,6 +102,7 @@ workflow GERMLINE {
     automap_panel               // string: path to the Automap panel file
     outdir                      // string: path to the output directory
     pedFiles                    // map:    a map that has the family ID as key and a PED file as value
+    elsites                     // string: path to the elsites file for elprep
 
     // Boolean inputs
     dragstr                     // boolean: create a dragstr model and use it for haplotypecaller
@@ -140,6 +144,7 @@ workflow GERMLINE {
     def ch_fasta_ready        = Channel.fromPath(fasta).map{ fasta_file -> [[id:"reference"], fasta_file] }.collect()
     def ch_fai                = fai                 ? Channel.fromPath(fai).map{ fai_file -> [[id:"reference"], fai_file] }.collect() : null
     def ch_dict               = dict                ? Channel.fromPath(dict).map{ dict_file -> [[id:"reference"], dict_file] }.collect() : null
+    def ch_elfasta            = elfasta             ? Channel.fromPath(elfasta).map { elfasta_file -> [[id:"reference"], elfasta_file]}.collect() : null
     def ch_strtablefile       = strtablefile        ? Channel.fromPath(strtablefile).map{ str_file -> [[id:"reference"], str_file] }.collect() : null
     def ch_sdf                = sdf                 ? Channel.fromPath(sdf).map { sdf_file -> [[id:'reference'], sdf_file] }.collect() : null
 
@@ -160,6 +165,8 @@ workflow GERMLINE {
 
     def ch_automap_repeats    = automap_repeats     ? Channel.fromPath(automap_repeats).map{ repeats ->  [[id:"repeats"], repeats] }.collect() : []
     def ch_automap_panel      = automap_panel       ? Channel.fromPath(automap_panel).map{ panel -> [[id:"automap_panel"], panel] }.collect() : [[],[]]
+
+    def ch_elsites            = elsites             ? Channel.fromPath(elsites).map{ elsites_file -> [[id:'elsites'], elsites_file] }.collect() : [[],[]]
 
     //
     // Check for the presence of EnsemblVEP plugins that use extra files
@@ -262,6 +269,18 @@ workflow GERMLINE {
         ch_dict_ready = ch_dict
     }
 
+    def ch_elfasta_ready = Channel.empty()
+    def elprep_used = callers.contains("elprep")
+    if (!ch_elfasta && elprep_used) {
+        ELPREP_FASTATOELFASTA(
+            ch_fasta_ready
+        )
+        ch_versions = ch_versions.mix(ELPREP_FASTATOELFASTA.out.versions)
+        ch_elfasta_ready = ELPREP_FASTATOELFASTA.out.elfasta
+    } else {
+        ch_elfasta_ready = ch_elfasta
+    }
+
     // Reference STR table file
     def ch_strtablefile_ready = Channel.empty()
     if (dragstr && !ch_strtablefile) {
@@ -356,10 +375,11 @@ workflow GERMLINE {
     def ch_gvcfs_ready = ch_gvcf_branch.no_tbi
         .join(TABIX_GVCF.out.tbi, failOnDuplicate:true, failOnMismatch:true)
         .mix(ch_gvcf_branch.tbi)
-        .map { meta, gvcf, tbi ->
-            [ meta, gvcf, tbi, callers.intersect(GlobalVariables.gvcfCallers) ]
+        .combine(callers.intersect(GlobalVariables.gvcfCallers))
+        .map { meta, gvcf, tbi, caller ->
+            def new_meta = meta + [caller:caller]
+            [ new_meta, gvcf, tbi ]
         }
-        .transpose(by:3)
 
     //
     // Run sample preparation
@@ -398,7 +418,7 @@ workflow GERMLINE {
         CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_beds.map { meta, bed ->
             [meta, bed, scatter_count]
         },
-        CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_crams
+        ch_split_cram_bam
     )
     ch_versions = ch_versions.mix(INPUT_SPLIT_BEDTOOLS.out.versions)
 
@@ -430,6 +450,26 @@ workflow GERMLINE {
         ch_gvcfs_ready = ch_gvcfs_ready.mix(CRAM_CALL_GATK4.out.gvcfs)
         ch_versions = ch_versions.mix(CRAM_CALL_GATK4.out.versions)
         ch_reports  = ch_reports.mix(CRAM_CALL_GATK4.out.reports)
+    }
+
+    if("elprep" in callers) {
+        //
+        // Call variants with Elprep
+        //
+
+        BAM_CALL_ELPREP(
+            ch_caller_inputs.bam.filter { meta, _bam, _bai, _bed ->
+                // Filter out the entries that already have a GVCF
+                meta.type == "cram"
+            },
+            ch_elfasta_ready,
+            ch_elsites,
+            ch_dbsnp_ready,
+            ch_dbsnp_tbi_ready
+        )
+        ch_gvcfs_ready = ch_gvcfs_ready.mix(BAM_CALL_ELPREP.out.gvcfs)
+        ch_versions = ch_versions.mix(BAM_CALL_ELPREP.out.versions)
+        ch_reports  = ch_reports.mix(BAM_CALL_ELPREP.out.reports)
 
     }
 
