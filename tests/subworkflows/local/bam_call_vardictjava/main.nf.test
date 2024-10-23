@@ -1,16 +1,16 @@
 nextflow_workflow {
 
-    name "Test Workflow CRAM_CALL_VARDICTJAVA"
-    script "subworkflows/local/cram_call_vardictjava/main.nf"
-    workflow "CRAM_CALL_VARDICTJAVA"
+    name "Test Workflow BAM_CALL_VARDICTJAVA"
+    script "subworkflows/local/bam_call_vardictjava/main.nf"
+    workflow "BAM_CALL_VARDICTJAVA"
 
     tag "subworkflows"
     tag "subworkflows_local"
-    tag "cram_call_vardictjava"
+    tag "bam_call_vardictjava"
     tag "vcf_concat_bcftools"
     tag "vcf_filter_bcftools"
 
-    test("cram_call_vardictjava - default") {
+    test("bam_call_vardictjava - default") {
 
 
         when {
@@ -20,37 +20,32 @@ nextflow_workflow {
             workflow {
                 """
                 input[0] = Channel.of([
-                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143"],
-                    file(params.cram1, checkIfExists:true),
-                    file(params.crai1, checkIfExists:true)
-                ])
-                input[1] = Channel.of([
                     [id:"NA24143.00001", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
-                    file(params.cram1, checkIfExists:true),
-                    file(params.crai1, checkIfExists:true),
+                    file(params.bam1, checkIfExists:true),
+                    file(params.bai1, checkIfExists:true),
                     file(params.split1, checkIfExists:true)
                 ],[
                     [id:"NA24143.00002", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
-                    file(params.cram1, checkIfExists:true),
-                    file(params.crai1, checkIfExists:true),
+                    file(params.bam1, checkIfExists:true),
+                    file(params.bai1, checkIfExists:true),
                     file(params.split2, checkIfExists:true)
                 ],[
                     [id:"NA24143.00003", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
-                    file(params.cram1, checkIfExists:true),
-                    file(params.crai1, checkIfExists:true),
+                    file(params.bam1, checkIfExists:true),
+                    file(params.bai1, checkIfExists:true),
                     file(params.split3, checkIfExists:true)
                 ])
-                input[2] = Channel.value([
+                input[1] = Channel.value([
                     [id:"fasta"],
                     file(params.fasta, checkIfExists:true)
                 ])
-                input[3] = Channel.value([
+                input[2] = Channel.value([
                     [id:"fai"],
                     file(params.fai, checkIfExists:true)
                 ])
+                input[3] = [[],[]]
                 input[4] = [[],[]]
-                input[5] = [[],[]]
-                input[6] = false
+                input[5] = false
                 """
             }
         }
@@ -59,14 +54,14 @@ nextflow_workflow {
             assertAll(
                 { assert workflow.success },
                 { assert snapshot(
-                    workflow.out.vcfs.collect { it.collect { it instanceof Map ? it : file(it).name } }
+                    workflow.out.vcfs.collect { [it[0], "${file(it[1]).name},variantsMD5:${path(it[1]).vcf.variantsMD5}", file(it[2]).name] }
                 ).match("default") }
             )
         }
 
     }
 
-    test("cram_call_vardictjava - filter") {
+    test("bam_call_vardictjava - filter") {
 
 
         when {
@@ -77,37 +72,32 @@ nextflow_workflow {
             workflow {
                 """
                 input[0] = Channel.of([
-                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143"],
-                    file(params.cram1, checkIfExists:true),
-                    file(params.crai1, checkIfExists:true)
-                ])
-                input[1] = Channel.of([
                     [id:"NA24143.00001", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
-                    file(params.cram1, checkIfExists:true),
-                    file(params.crai1, checkIfExists:true),
+                    file(params.bam1, checkIfExists:true),
+                    file(params.bai1, checkIfExists:true),
                     file(params.split1, checkIfExists:true)
                 ],[
                     [id:"NA24143.00002", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
-                    file(params.cram1, checkIfExists:true),
-                    file(params.crai1, checkIfExists:true),
+                    file(params.bam1, checkIfExists:true),
+                    file(params.bai1, checkIfExists:true),
                     file(params.split2, checkIfExists:true)
                 ],[
                     [id:"NA24143.00003", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
-                    file(params.cram1, checkIfExists:true),
-                    file(params.crai1, checkIfExists:true),
+                    file(params.bam1, checkIfExists:true),
+                    file(params.bai1, checkIfExists:true),
                     file(params.split3, checkIfExists:true)
                 ])
-                input[2] = Channel.value([
+                input[1] = Channel.value([
                     [id:"fasta"],
                     file(params.fasta, checkIfExists:true)
                 ])
-                input[3] = Channel.value([
+                input[2] = Channel.value([
                     [id:"fai"],
                     file(params.fai, checkIfExists:true)
                 ])
+                input[3] = [[],[]]
                 input[4] = [[],[]]
-                input[5] = [[],[]]
-                input[6] = true
+                input[5] = true
                 """
             }
         }
@@ -116,14 +106,14 @@ nextflow_workflow {
             assertAll(
                 { assert workflow.success },
                 { assert snapshot(
-                    workflow.out.vcfs.collect { it.collect { it instanceof Map ? it : file(it).name } }
+                    workflow.out.vcfs.collect { [it[0], "${file(it[1]).name},variantsMD5:${path(it[1]).vcf.variantsMD5}", file(it[2]).name] }
                 ).match("filter") }
             )
         }
 
     }
 
-    test("cram_call_vardictjava - family") {
+    test("bam_call_vardictjava - family") {
         // The family should not be merged here
 
         when {
@@ -133,56 +123,47 @@ nextflow_workflow {
             workflow {
                 """
                 input[0] = Channel.of([
-                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143,NA24149"],
-                    file(params.cram1, checkIfExists:true),
-                    file(params.crai1, checkIfExists:true)
-                ],[
-                    [id:"NA24149", sample:"NA24149", family:"Ashkenazim", family_samples:"NA24143,NA24149"],
-                    file(params.cram2, checkIfExists:true),
-                    file(params.crai2, checkIfExists:true)
-                ])
-                input[1] = Channel.of([
                     [id:"NA24143.00001", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143,NA24149", split_count:3],
-                    file(params.cram1, checkIfExists:true),
-                    file(params.crai1, checkIfExists:true),
+                    file(params.bam1, checkIfExists:true),
+                    file(params.bai1, checkIfExists:true),
                     file(params.split1, checkIfExists:true)
                 ],[
                     [id:"NA24143.00002", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143,NA24149", split_count:3],
-                    file(params.cram1, checkIfExists:true),
-                    file(params.crai1, checkIfExists:true),
+                    file(params.bam1, checkIfExists:true),
+                    file(params.bai1, checkIfExists:true),
                     file(params.split2, checkIfExists:true)
                 ],[
                     [id:"NA24143.00003", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143,NA24149", split_count:3],
-                    file(params.cram1, checkIfExists:true),
-                    file(params.crai1, checkIfExists:true),
+                    file(params.bam1, checkIfExists:true),
+                    file(params.bai1, checkIfExists:true),
                     file(params.split3, checkIfExists:true)
                 ],[
                     [id:"NA24149.00001", sample:"NA24149", family:"Ashkenazim", family_samples:"NA24143,NA24149", split_count:3],
-                    file(params.cram2, checkIfExists:true),
-                    file(params.crai2, checkIfExists:true),
+                    file(params.bam2, checkIfExists:true),
+                    file(params.bai2, checkIfExists:true),
                     file(params.split1, checkIfExists:true)
                 ],[
                     [id:"NA24149.00002", sample:"NA24149", family:"Ashkenazim", family_samples:"NA24143,NA24149", split_count:3],
-                    file(params.cram2, checkIfExists:true),
-                    file(params.crai2, checkIfExists:true),
+                    file(params.bam2, checkIfExists:true),
+                    file(params.bai2, checkIfExists:true),
                     file(params.split2, checkIfExists:true)
                 ],[
                     [id:"NA24149.00003", sample:"NA24149", family:"Ashkenazim", family_samples:"NA24143,NA24149", split_count:3],
-                    file(params.cram2, checkIfExists:true),
-                    file(params.crai2, checkIfExists:true),
+                    file(params.bam2, checkIfExists:true),
+                    file(params.bai2, checkIfExists:true),
                     file(params.split3, checkIfExists:true)
                 ])
-                input[2] = Channel.value([
+                input[1] = Channel.value([
                     [id:"fasta"],
                     file(params.fasta, checkIfExists:true)
                 ])
-                input[3] = Channel.value([
+                input[2] = Channel.value([
                     [id:"fai"],
                     file(params.fai, checkIfExists:true)
                 ])
+                input[3] = [[],[]]
                 input[4] = [[],[]]
-                input[5] = [[],[]]
-                input[6] = false
+                input[5] = false
                 """
             }
         }
@@ -191,7 +172,7 @@ nextflow_workflow {
             assertAll(
                 { assert workflow.success },
                 { assert snapshot(
-                    workflow.out.vcfs.collect { it.collect { it instanceof Map ? it : file(it).name } }
+                    workflow.out.vcfs.collect { [it[0], "${file(it[1]).name},variantsMD5:${path(it[1]).vcf.variantsMD5}", file(it[2]).name] }
                 ).match("family") }
             )
         }

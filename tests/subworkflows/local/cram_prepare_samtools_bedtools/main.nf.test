@@ -31,15 +31,22 @@ nextflow_workflow {
                     file(params.fai, checkIfExists:true)
                 ])
                 input[4] = []
+                input[5] = false
                 """
             }
         }
 
         then {
+            def fasta = "https://github.com/nf-cmgg/test-datasets/raw/germline/data/genomics/homo_sapiens/genome/hg38_chr21_22000000_23000000.fasta"
             assertAll(
                 { assert workflow.success },
                 { assert snapshot(
-                    workflow.out.ready_crams.collect { it.collect { it instanceof Map ? it : file(it).name } },
+                    workflow.out.ready_crams.collect {
+                        [ it[0], it[1], file(it[2]).name ]
+                    },
+                    workflow.out.ready_bams.collect {
+                        [ it[0], "${file(it[1]).name},readsMD5:${bam(it[1]).getReadsMD5()}", file(it[2]).name ]
+                    },                    
                     workflow.out.ready_beds,
                     workflow.out.reports
                 ).match("default - WGS") }
@@ -71,15 +78,22 @@ nextflow_workflow {
                     file(params.fai, checkIfExists:true)
                 ])
                 input[4] = Channel.fromPath(params.bed, checkIfExists:true)
+                input[5] = true
                 """
             }
         }
 
         then {
+            def fasta = "https://github.com/nf-cmgg/test-datasets/raw/germline/data/genomics/homo_sapiens/genome/hg38_chr21_22000000_23000000.fasta"
             assertAll(
                 { assert workflow.success },
                 { assert snapshot(
-                    workflow.out.ready_crams.collect { it.collect { it instanceof Map ? it : file(it).name } },
+                    workflow.out.ready_crams.collect {
+                        [ it[0], it[1], file(it[2]).name ]
+                    },
+                    workflow.out.ready_bams.collect {
+                        [ it[0], "${file(it[1]).name},readsMD5:${bam(it[1]).getReadsMD5()}", file(it[2]).name ]
+                    },                    
                     workflow.out.ready_beds,
                     workflow.out.reports
                 ).match("default - WES common ROI") }
@@ -111,15 +125,22 @@ nextflow_workflow {
                     file(params.fai, checkIfExists:true)
                 ])
                 input[4] = []
+                input[5] = false
                 """
             }
         }
 
         then {
+            def fasta = "https://github.com/nf-cmgg/test-datasets/raw/germline/data/genomics/homo_sapiens/genome/hg38_chr21_22000000_23000000.fasta"
             assertAll(
                 { assert workflow.success },
                 { assert snapshot(
-                    workflow.out.ready_crams.collect { it.collect { it instanceof Map ? it : file(it).name } },
+                    workflow.out.ready_crams.collect {
+                        [ it[0], it[1], file(it[2]).name ]
+                    },
+                    workflow.out.ready_bams.collect {
+                        [ it[0], "${file(it[1]).name},readsMD5:${bam(it[1]).getReadsMD5()}", file(it[2]).name ]
+                    },                    
                     workflow.out.ready_beds,
                     workflow.out.reports
                 ).match("default - WES") }
@@ -158,6 +179,7 @@ nextflow_workflow {
                     file(params.fai, checkIfExists:true)
                 ])
                 input[4] = []
+                input[5] = true
                 """
             }
         }
@@ -168,7 +190,10 @@ nextflow_workflow {
                 { assert workflow.success },
                 { assert snapshot(
                     workflow.out.ready_crams.collect {
-                        [ it[0], cram(it[1], fasta).reads.size(), file(it[2]).name ]
+                        [ it[0], "${file(it[1]).name},readsMD5:${cram(it[1], fasta).getReadsMD5()}", file(it[2]).name ]
+                    },
+                    workflow.out.ready_bams.collect {
+                        [ it[0], "${file(it[1]).name},readsMD5:${bam(it[1]).getReadsMD5()}", file(it[2]).name ]
                     },
                     workflow.out.ready_beds,
                     workflow.out.reports

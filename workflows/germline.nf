@@ -18,7 +18,7 @@ include { methodsDescriptionText            } from '../subworkflows/local/utils_
 include { CRAM_PREPARE_SAMTOOLS_BEDTOOLS    } from '../subworkflows/local/cram_prepare_samtools_bedtools/main'
 include { INPUT_SPLIT_BEDTOOLS              } from '../subworkflows/local/input_split_bedtools/main'
 include { CRAM_CALL_GENOTYPE_GATK4          } from '../subworkflows/local/cram_call_genotype_gatk4/main'
-include { CRAM_CALL_VARDICTJAVA             } from '../subworkflows/local/cram_call_vardictjava/main'
+include { BAM_CALL_VARDICTJAVA              } from '../subworkflows/local/bam_call_vardictjava/main'
 include { VCF_EXTRACT_RELATE_SOMALIER       } from '../subworkflows/local/vcf_extract_relate_somalier/main'
 include { VCF_PED_RTGTOOLS                  } from '../subworkflows/local/vcf_ped_rtgtools/main'
 include { VCF_ANNOTATION                    } from '../subworkflows/local/vcf_annotation/main'
@@ -358,7 +358,8 @@ workflow GERMLINE {
     //
     // Run sample preparation
     //
-
+    
+    def create_bam_files = callers.intersect(GlobalVariables.bamCallers).size() > 0 // Only create BAM files when needed
     CRAM_PREPARE_SAMTOOLS_BEDTOOLS(
         ch_input.cram.filter { meta, _cram, _crai ->
             // Filter out files that already have a called GVCF when only GVCF callers are used
@@ -370,13 +371,22 @@ workflow GERMLINE {
         },
         ch_fasta_ready,
         ch_fai_ready,
-        ch_default_roi
+        ch_default_roi,
+        create_bam_files
     )
     ch_versions = ch_versions.mix(CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.versions)
 
     //
     // Split the BED files
     //
+
+    def ch_split_cram_bam = Channel.empty()
+    if(create_bam_files) {
+        ch_split_cram_bam = CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_crams
+            .join(CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_bams, failOnDuplicate:true, failOnMismatch:true)
+    } else {
+        ch_split_cram_bam = CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_crams
+    }
 
     INPUT_SPLIT_BEDTOOLS(
         CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_beds.map { meta, bed ->
@@ -386,6 +396,12 @@ workflow GERMLINE {
     )
     ch_versions = ch_versions.mix(INPUT_SPLIT_BEDTOOLS.out.versions)
 
+    def ch_caller_inputs = INPUT_SPLIT_BEDTOOLS.out.split
+        .multiMap { meta, cram, crai, bam=[], bai=[], bed ->
+            cram: [meta, cram, crai, bed]
+            bam: [meta, bam, bai, bed]
+        }
+
     def ch_calls = Channel.empty()
     if("haplotypecaller" in callers) {
         //
@@ -393,7 +409,7 @@ workflow GERMLINE {
         //
 
         CRAM_CALL_GENOTYPE_GATK4(
-            INPUT_SPLIT_BEDTOOLS.out.split.filter { meta, _cram, _crai, _bed ->
+            ch_caller_inputs.cram.filter { meta, _cram, _crai, _bed ->
                 // Filter out the entries that already have a GVCF
                 meta.type == "cram"
             },
@@ -422,18 +438,17 @@ workflow GERMLINE {
         // Call variants with VarDict
         //
 
-        CRAM_CALL_VARDICTJAVA(
-            CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_crams,
-            INPUT_SPLIT_BEDTOOLS.out.split,
+        BAM_CALL_VARDICTJAVA(
+            ch_caller_inputs.bam,
             ch_fasta_ready,
             ch_fai_ready,
             ch_dbsnp_ready,
             ch_dbsnp_tbi_ready,
             filter
         )
-        ch_versions = ch_versions.mix(CRAM_CALL_VARDICTJAVA.out.versions)
+        ch_versions = ch_versions.mix(BAM_CALL_VARDICTJAVA.out.versions)
 
-        ch_calls = ch_calls.mix(CRAM_CALL_VARDICTJAVA.out.vcfs)
+        ch_calls = ch_calls.mix(BAM_CALL_VARDICTJAVA.out.vcfs)
     }
 
     def ch_called_variants = ch_calls

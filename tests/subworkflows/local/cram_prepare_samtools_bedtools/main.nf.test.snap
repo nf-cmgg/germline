@@ -10,8 +10,21 @@
                         "family_samples": "NA24143",
                         "duplicate_count": 2
                     },
-                    798258,
+                    "NA24143.cram,readsMD5:be28f434d6f7bcfa398488a6611d89c1",
                     "NA24143.cram.crai"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143",
+                        "duplicate_count": 2
+                    },
+                    "NA24143.bam,readsMD5:be28f434d6f7bcfa398488a6611d89c1",
+                    "NA24143.bam.bai"
                 ]
             ],
             [
@@ -34,7 +47,7 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-23T11:46:20.577603661"
+        "timestamp": "2024-10-23T10:19:20.53195135"
     },
     "default - WGS": {
         "content": [
@@ -47,9 +60,12 @@
                         "family_samples": "NA24143",
                         "duplicate_count": 1
                     },
-                    "NA24143.cram",
+                    "/nf-cmgg/test-datasets/raw/germline/data/genomics/homo_sapiens/illumina/crams/NA24143.cram",
                     "NA24143.cram.crai"
                 ]
+            ],
+            [
+                
             ],
             [
                 [
@@ -71,7 +87,7 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-23T14:56:11.141634788"
+        "timestamp": "2024-10-23T10:17:48.433466279"
     },
     "default - WES": {
         "content": [
@@ -84,9 +100,12 @@
                         "family_samples": "NA24143",
                         "duplicate_count": 1
                     },
-                    "NA24143.cram",
+                    "/nf-cmgg/test-datasets/raw/germline/data/genomics/homo_sapiens/illumina/crams/NA24143.cram",
                     "NA24143.cram.crai"
                 ]
+            ],
+            [
+                
             ],
             [
                 [
@@ -108,7 +127,7 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-06T14:33:15.988619426"
+        "timestamp": "2024-10-23T10:18:36.993186258"
     },
     "default - WES common ROI": {
         "content": [
@@ -121,8 +140,21 @@
                         "family_samples": "NA24143",
                         "duplicate_count": 1
                     },
-                    "NA24143.cram",
+                    "/nf-cmgg/test-datasets/raw/germline/data/genomics/homo_sapiens/illumina/crams/NA24143.cram",
                     "NA24143.cram.crai"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143",
+                        "duplicate_count": 1
+                    },
+                    "NA24143.bam,readsMD5:77afffb023e537869c5c6ebf31187ded",
+                    "NA24143.bam.bai"
                 ]
             ],
             [
@@ -145,6 +177,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-06T14:32:49.756585296"
+        "timestamp": "2024-10-23T10:18:13.865281894"
     }
 }

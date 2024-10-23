@@ -10,7 +10,7 @@
                         "family_samples": "NA24143",
                         "caller": "vardict"
                     },
-                    "NA24143.vardict.vcf.gz",
+                    "NA24143.vardict.vcf.gz,variantsMD5:98497d2c15c6e3781f5ddeb81bf6288f",
                     "NA24143.vardict.vcf.gz.tbi"
                 ]
             ]
@@ -19,7 +19,7 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-05T17:38:01.461442987"
+        "timestamp": "2024-10-23T11:17:08.827619348"
     },
     "default": {
         "content": [
@@ -32,7 +32,7 @@
                         "family_samples": "NA24143",
                         "caller": "vardict"
                     },
-                    "NA24143.vardict.vcf.gz",
+                    "NA24143.vardict.vcf.gz,variantsMD5:98497d2c15c6e3781f5ddeb81bf6288f",
                     "NA24143.vardict.vcf.gz.tbi"
                 ]
             ]
@@ -41,7 +41,7 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-05T17:37:40.178107639"
+        "timestamp": "2024-10-23T11:16:29.818590197"
     },
     "family": {
         "content": [
@@ -54,7 +54,7 @@
                         "family_samples": "NA24143",
                         "caller": "vardict"
                     },
-                    "NA24143.vardict.vcf.gz",
+                    "NA24143.vardict.vcf.gz,variantsMD5:98497d2c15c6e3781f5ddeb81bf6288f",
                     "NA24143.vardict.vcf.gz.tbi"
                 ],
                 [
@@ -65,7 +65,7 @@
                         "family_samples": "NA24149",
                         "caller": "vardict"
                     },
-                    "NA24149.vardict.vcf.gz",
+                    "NA24149.vardict.vcf.gz,variantsMD5:37c24a3165a79df0b9744e80a9255f83",
                     "NA24149.vardict.vcf.gz.tbi"
                 ]
             ]
@@ -74,6 +74,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-10-08T16:58:11.678281371"
+        "timestamp": "2024-10-23T11:17:59.686967502"
     }
 }
