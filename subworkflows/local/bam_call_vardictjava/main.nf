@@ -33,7 +33,7 @@ workflow BAM_CALL_VARDICTJAVA {
 
     VCF_CONCAT_BCFTOOLS(
         VARDICTJAVA.out.vcf,
-        false
+        true
     )
     ch_versions = ch_versions.mix(VCF_CONCAT_BCFTOOLS.out.versions)
 
@@ -50,25 +50,7 @@ workflow BAM_CALL_VARDICTJAVA {
         ch_annotated = VCF_CONCAT_BCFTOOLS.out.vcfs
     }
 
-    def ch_filter_output = Channel.empty()
-    if(filter) {
-        VCF_FILTER_BCFTOOLS(
-            ch_annotated,
-            false
-        )
-        ch_versions = ch_versions.mix(VCF_FILTER_BCFTOOLS.out.versions)
-        ch_filter_output = VCF_FILTER_BCFTOOLS.out.vcfs
-    } else {
-        ch_filter_output = ch_annotated
-    }
-
-    TABIX_TABIX(
-        ch_filter_output
-    )
-    ch_versions = ch_versions.mix(TABIX_TABIX.out.versions.first())
-
-    def ch_vcfs = ch_filter_output
-        .join(TABIX_TABIX.out.tbi, failOnDuplicate: true, failOnMismatch: true)
+    def ch_vcfs = ch_annotated
         .map { meta, vcf, tbi ->
             def new_meta = meta + [family_samples: meta.sample]
             [ new_meta, vcf, tbi ]

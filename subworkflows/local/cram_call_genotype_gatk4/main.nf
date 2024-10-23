@@ -4,7 +4,6 @@
 
 include { CRAM_CALL_GATK4               } from '../cram_call_gatk4/main'
 include { GVCF_JOINT_GENOTYPE_GATK4     } from '../gvcf_joint_genotype_gatk4/main'
-include { VCF_FILTER_BCFTOOLS           } from '../vcf_filter_bcftools/main'
 
 workflow CRAM_CALL_GENOTYPE_GATK4 {
     take:
@@ -64,26 +63,10 @@ workflow CRAM_CALL_GENOTYPE_GATK4 {
 
     }
 
-    if(!only_call && !only_merge) {
-
-        if(filter) {
-            VCF_FILTER_BCFTOOLS(
-                GVCF_JOINT_GENOTYPE_GATK4.out.vcfs,
-                true
-            )
-            ch_versions = ch_versions.mix(VCF_FILTER_BCFTOOLS.out.versions)
-
-            ch_vcfs = VCF_FILTER_BCFTOOLS.out.vcfs
-        } else {
-            ch_vcfs = GVCF_JOINT_GENOTYPE_GATK4.out.vcfs
-        }
-
-    }
-
     emit:
-    vcfs = ch_vcfs         // channel: [ val(meta), path(vcf), path(tbi) ]
+    vcfs = GVCF_JOINT_GENOTYPE_GATK4.out.vcfs   // channel: [ val(meta), path(vcf), path(tbi) ]
 
-    reports = ch_reports   // channel: [ path(reports) ]
-    versions = ch_versions // channel: [ versions.yml ]
+    reports = ch_reports                        // channel: [ path(reports) ]
+    versions = ch_versions                      // channel: [ versions.yml ]
 
 }

@@ -25,6 +25,7 @@ include { VCF_ANNOTATION                    } from '../subworkflows/local/vcf_an
 include { VCF_VALIDATE_SMALL_VARIANTS       } from '../subworkflows/local/vcf_validate_small_variants/main'
 include { VCF_UPD_UPDIO                     } from '../subworkflows/local/vcf_upd_updio/main'
 include { VCF_ROH_AUTOMAP                   } from '../subworkflows/local/vcf_roh_automap/main'
+include { VCF_FILTER_BCFTOOLS               } from '../subworkflows/local/vcf_filter_bcftools/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -468,10 +469,22 @@ workflow GERMLINE {
     ch_versions = ch_versions.mix(BCFTOOLS_STATS.out.versions.first())
     ch_reports = ch_reports.mix(BCFTOOLS_STATS.out.stats.collect { _meta, report -> report })
 
+    def ch_filtered_variants = Channel.empty()
+    if(filter) {
+        VCF_FILTER_BCFTOOLS(
+            ch_called_variants,
+            true
+        )
+        ch_versions = ch_versions.mix(VCF_FILTER_BCFTOOLS.out.versions)
+        ch_filtered_variants = VCF_FILTER_BCFTOOLS.out.vcfs
+    } else {
+        ch_filtered_variants = ch_called_variants
+    }
+
     def ch_normalized_variants = Channel.empty()
     if(normalize) {
         BCFTOOLS_NORM(
-            ch_called_variants,
+            ch_filtered_variants,
             ch_fasta_ready,
         )
         ch_versions = ch_versions.mix(BCFTOOLS_NORM.out.versions.first())
@@ -484,7 +497,7 @@ workflow GERMLINE {
         ch_normalized_variants = BCFTOOLS_NORM.out.vcf
             .join(TABIX_NORMALIZE.out.tbi, failOnDuplicate:true, failOnMismatch:true)
     } else {
-        ch_normalized_variants = ch_called_variants
+        ch_normalized_variants = ch_filtered_variants
     }
 
     if(!only_merge && !only_call) {
