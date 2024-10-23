@@ -1,0 +1,20 @@
+Changes in module 'nf-core/elprep/filter'
+Changes in 'elprep/filter/main.nf':
+--- modules/nf-core/elprep/filter/main.nf
++++ modules/nf-core/elprep/filter/main.nf
+@@ -65,7 +65,7 @@
+     if ("$bam" == "${prefix}.${suffix}") error "Input and output names are the same, set prefix in module configuration to disambiguate!"
+ 
+     """
+-    elprep filter ${bam} ${prefix}.${suffix} \\
++    elprep filter ${bam} /dev/null \\
+         ${reference_sequences_cmd} \\
+         ${filter_regions_cmd} \\
+         ${markdup_cmd} \\
+
+'modules/nf-core/elprep/filter/environment.yml' is unchanged
+'modules/nf-core/elprep/filter/meta.yml' is unchanged
+'modules/nf-core/elprep/filter/tests/main.nf.test' is unchanged
+'modules/nf-core/elprep/filter/tests/main.nf.test.snap' is unchanged
+'modules/nf-core/elprep/filter/tests/nextflow.config' is unchanged
+************************************************************

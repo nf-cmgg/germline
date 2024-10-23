@@ -74,7 +74,8 @@
                     "elprep/filter": {
                         "branch": "master",
                         "git_sha": "909c4dcdbb1e751214e2bb155e8c0a59633ed12a",
-                        "installed_by": ["modules"]
+                        "installed_by": ["modules"],
+                        "patch": "modules/nf-core/elprep/filter/elprep-filter.diff"
                     },
                     "ensemblvep/download": {
                         "branch": "master",

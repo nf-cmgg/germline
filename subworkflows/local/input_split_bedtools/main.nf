@@ -30,7 +30,6 @@ workflow INPUT_SPLIT_BEDTOOLS {
             return [new_meta] + bed_output + row[1..-2]
         }
         .transpose(by:1) // Create one channel entry for each BED file per sample
-        .view()
         .map { row ->
             // Set the base name of the BED file as the ID (this will look like sample_id.xxxx, where xxxx are numbers)
             def new_meta = row[0] + [id:row[1].baseName]
