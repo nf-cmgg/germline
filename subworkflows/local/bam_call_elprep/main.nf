@@ -44,7 +44,7 @@ workflow BAM_CALL_ELPREP {
 
     def ch_annotated = Channel.empty()
     if(!(ch_dbsnp instanceof List)) {
-        VCF_DBNSP_VCFANNO(
+        VCF_DBSNP_VCFANNO(
             VCF_CONCAT_BCFTOOLS.out.vcfs,
             ch_dbsnp,
             ch_dbsnp_tbi
