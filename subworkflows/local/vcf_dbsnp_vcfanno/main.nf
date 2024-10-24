@@ -1,4 +1,5 @@
-include { VCFANNO                           } from '../../../modules/nf-core/vcfanno/main'
+include { VCFANNO            } from '../../../modules/nf-core/vcfanno/main'
+include { TABIX_BGZIPTABIX   } from '../../../modules/nf-core/tabix/bgziptabix/main'
 
 workflow VCF_DBSNP_VCFANNO {
     take:
@@ -24,12 +25,12 @@ workflow VCF_DBSNP_VCFANNO {
     )
     ch_versions = ch_versions.mix(VCFANNO.out.versions.first())
 
-    TABIX_BGZIP(
+    TABIX_BGZIPTABIX(
         VCFANNO.out.vcf
     )
-    ch_versions = ch_versions.mix(TABIX_BGZIP.out.versions.first())
+    ch_versions = ch_versions.mix(TABIX_BGZIPTABIX.out.versions.first())
 
-    def ch_vcfs = TABIX_BGZIP.out.output
+    def ch_vcfs = TABIX_BGZIPTABIX.out.gz_tbi
 
     emit:
     vcfs = ch_vcfs          // channel: [ val(meta), path(vcf), path(tbi) ]
