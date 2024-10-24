@@ -33,7 +33,7 @@ workflow INPUT_SPLIT_BEDTOOLS {
         .map { row ->
             // Set the base name of the BED file as the ID (this will look like sample_id.xxxx, where xxxx are numbers)
             def new_meta = row[0] + [id:row[1].baseName]
-            return [ new_meta, row[1] ] + row[3..-1]
+            return [ new_meta ] + row[2..-1] + [ row[1] ]
         }
 
     emit:

@@ -20,7 +20,6 @@ process ELPREP_FILTER {
 
 
     output:
-    tuple val(meta), path("*.{bam,sam}")            , emit: bam
     tuple val(meta), path("*.log")                  , emit: logs
     tuple val(meta), path("*.metrics.txt")          , optional: true, emit: metrics
     tuple val(meta), path("*.recall")               , optional: true, emit: recall

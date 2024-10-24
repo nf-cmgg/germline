@@ -2,7 +2,15 @@ Changes in module 'nf-core/elprep/filter'
 Changes in 'elprep/filter/main.nf':
 --- modules/nf-core/elprep/filter/main.nf
 +++ modules/nf-core/elprep/filter/main.nf
-@@ -65,7 +65,7 @@
+@@ -20,7 +20,6 @@
+ 
+ 
+     output:
+-    tuple val(meta), path("*.{bam,sam}")            , emit: bam
+     tuple val(meta), path("*.log")                  , emit: logs
+     tuple val(meta), path("*.metrics.txt")          , optional: true, emit: metrics
+     tuple val(meta), path("*.recall")               , optional: true, emit: recall
+@@ -65,7 +64,7 @@
      if ("$bam" == "${prefix}.${suffix}") error "Input and output names are the same, set prefix in module configuration to disambiguate!"
  
      """
