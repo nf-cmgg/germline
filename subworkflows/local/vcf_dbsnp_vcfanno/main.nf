@@ -18,7 +18,7 @@ workflow VCF_DBSNP_VCFANNO {
         .collect()
 
     VCFANNO(
-        ch_input.map { meta, vcf -> [ meta, vcf, [], [] ] },
+        ch_input.map { meta, vcf, tbi -> [ meta, vcf, tbi, [] ] },
         ch_vcfanno_toml,
         [],
         ch_vcfanno_resources
