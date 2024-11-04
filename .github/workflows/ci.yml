@@ -29,7 +29,7 @@ jobs:
           - "24.04.2"
           - "latest-everything"
         filter:
-          - "module"
+          - "process"
           - "workflow"
           - "pipeline"
         shard: [1,2,3,4,5]
