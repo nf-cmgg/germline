@@ -39,13 +39,13 @@ workflow BAM_CALL_VARDICTJAVA {
 
     def ch_annotated = Channel.empty()
     if(!(ch_dbsnp instanceof List)) {
-        VCF_DBNSP_VCFANNO(
+        VCF_DBSNP_VCFANNO(
             VCF_CONCAT_BCFTOOLS.out.vcfs,
             ch_dbsnp,
             ch_dbsnp_tbi
         )
         ch_versions = ch_versions.mix(VCF_DBSNP_VCFANNO.out.versions)
-        ch_annotated = TABIX_BGZIP.out.output
+        ch_annotated = VCF_DBSNP_VCFANNO.out.vcfs
     } else {
         ch_annotated = VCF_CONCAT_BCFTOOLS.out.vcfs
     }
