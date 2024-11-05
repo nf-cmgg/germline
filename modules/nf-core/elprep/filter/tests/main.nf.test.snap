@@ -1,7 +1,9 @@
 {
     "test-elprep-filter": {
         "content": [
-            null,
+            [
+                
+            ],
             [
                 
             ],
@@ -49,10 +51,10 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.9.0",
-            "nextflow": "24.04.4"
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
         },
-        "timestamp": "2024-10-22T11:05:45.927224502"
+        "timestamp": "2024-11-05T15:16:40.979143203"
     },
     "test-elprep-filter-stub": {
         "content": [
