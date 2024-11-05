@@ -36,7 +36,6 @@ nextflow_workflow {
                     file(params.crai1, checkIfExists:true),
                     file(params.split3, checkIfExists:true)
                 ])
-                input[1] = Channel.empty()
                 input[2] = Channel.value([
                     [id:"fasta"],
                     file(params.fasta, checkIfExists:true)
