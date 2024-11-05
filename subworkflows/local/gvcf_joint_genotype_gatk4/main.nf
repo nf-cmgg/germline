@@ -16,7 +16,7 @@ include { VCF_CONCAT_BCFTOOLS    } from '../vcf_concat_bcftools/main'
 
 workflow GVCF_JOINT_GENOTYPE_GATK4 {
     take:
-        ch_gvcfs        // channel: [mandatory] [ val(meta), path(gvcf), path(tbi) ] => The GVCFs called with HaplotypeCaller
+        ch_gvcfs        // channel: [mandatory] [ val(meta), path(gvcf), path(tbi) ] => The GVCFs
         ch_fasta        // channel: [mandatory] [ path(fasta) ] => fasta reference
         ch_fai          // channel: [mandatory] [ path(fai) ] => fasta reference index
         ch_dict         // channel: [mandatory] [ path(dict) ] => sequence dictionary
@@ -138,7 +138,7 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
     }
 
     emit:
-    vcfs = ch_vcfs         // [ val(meta), path(vcf) ]
+    vcfs = ch_vcfs         // [ val(meta), path(vcf), path(tbi) ]
     versions = ch_versions // [ path(versions) ]
 
 }

@@ -4,8 +4,8 @@ include { TABIX_BGZIPTABIX   } from '../../../modules/nf-core/tabix/bgziptabix/m
 workflow VCF_DBSNP_VCFANNO {
     take:
         ch_input             // channel: [mandatory] [ val(meta), path(vcf), path(tbi), ] => VCF files to be annotated
-        ch_dbsnp             // channel: [optional]  [ path(vcf) ] => the dbnsp vcf file
-        ch_dbsnp_tbi         // channel: [optional]  [ path(tbi) ] => the dbsnp vcf index file
+        ch_dbsnp             // channel: [optional]  [ val(meta), path(vcf) ] => the dbnsp vcf file
+        ch_dbsnp_tbi         // channel: [optional]  [ val(meta), path(tbi) ] => the dbsnp vcf index file
 
     main:
     def ch_versions = Channel.empty()
@@ -30,10 +30,8 @@ workflow VCF_DBSNP_VCFANNO {
     )
     ch_versions = ch_versions.mix(TABIX_BGZIPTABIX.out.versions.first())
 
-    def ch_vcfs = TABIX_BGZIPTABIX.out.gz_tbi
-
     emit:
-    vcfs = ch_vcfs          // channel: [ val(meta), path(vcf), path(tbi) ]
+    vcfs = TABIX_BGZIPTABIX.out.gz_tbi          // channel: [ val(meta), path(vcf), path(tbi) ]
 
     versions = ch_versions  // channel: [ path(versions.yml) ]
 

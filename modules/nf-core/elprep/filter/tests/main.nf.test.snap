@@ -1,15 +1,7 @@
 {
     "test-elprep-filter": {
         "content": [
-            [
-                [
-                    {
-                        "id": "test",
-                        "single_end": false
-                    },
-                    "test.bam,readsMD5:463ac3b905fbf4ddf113a94dbfa8d69f"
-                ]
-            ],
+            null,
             [
                 
             ],
@@ -64,15 +56,7 @@
     },
     "test-elprep-filter-stub": {
         "content": [
-            [
-                [
-                    {
-                        "id": "test",
-                        "single_end": false
-                    },
-                    "test.bam:md5,d41d8cd98f00b204e9800998ecf8427e"
-                ]
-            ],
+            null,
             [
                 
             ],

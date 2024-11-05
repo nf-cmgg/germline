@@ -105,7 +105,6 @@ process ELPREP_FILTER {
     if ("$bam" == "${prefix}.${suffix}") error "Input and output names are the same, set prefix in module configuration to disambiguate!"
 
     """
-    touch ${prefix}.${suffix}
     touch elprep-${timestamp}.log
     ${markdup_cmd}
     ${bqsr_cmd}
