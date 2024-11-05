@@ -384,7 +384,7 @@ workflow GERMLINE {
     //
     // Run sample preparation
     //
-    
+
     def create_bam_files = callers.intersect(GlobalVariables.bamCallers).size() > 0 // Only create BAM files when needed
     CRAM_PREPARE_SAMTOOLS_BEDTOOLS(
         ch_input.cram.filter { meta, _cram, _crai ->
@@ -491,10 +491,11 @@ workflow GERMLINE {
         ch_calls = ch_calls.mix(BAM_CALL_VARDICTJAVA.out.vcfs)
     }
 
-    // TODO reimplement --only_call and --only_merge
+    // Stop pipeline execution when only calls should happen
+    def ch_gvcfs_final = ch_gvcfs_ready.filter { !only_call }
 
     GVCF_JOINT_GENOTYPE_GATK4(
-        ch_gvcfs_ready,
+        ch_gvcfs_final,
         ch_fasta_ready,
         ch_fai_ready,
         ch_dict_ready,
@@ -506,7 +507,10 @@ workflow GERMLINE {
     ch_versions = ch_versions.mix(GVCF_JOINT_GENOTYPE_GATK4.out.versions)
     ch_calls = ch_calls.mix(GVCF_JOINT_GENOTYPE_GATK4.out.vcfs)
 
-    def ch_called_variants = ch_calls
+    // Stop pipeline execution when only the merge should happen
+    def ch_calls_final = ch_calls.filter { !only_merge }
+
+    def ch_called_variants = ch_calls_final
         .map { meta, vcf, tbi ->
             def new_meta = meta - meta.subMap(["type", "vardict_min_af"])
             [ new_meta, vcf, tbi ]

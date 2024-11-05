@@ -46,7 +46,7 @@ nextflow_workflow {
                     },
                     workflow.out.ready_bams.collect {
                         [ it[0], "${file(it[1]).name},readsMD5:${bam(it[1]).getReadsMD5()}", file(it[2]).name ]
-                    },                    
+                    },
                     workflow.out.ready_beds,
                     workflow.out.reports
                 ).match("default - WGS") }
@@ -93,7 +93,7 @@ nextflow_workflow {
                     },
                     workflow.out.ready_bams.collect {
                         [ it[0], "${file(it[1]).name},readsMD5:${bam(it[1]).getReadsMD5()}", file(it[2]).name ]
-                    },                    
+                    },
                     workflow.out.ready_beds,
                     workflow.out.reports
                 ).match("default - WES common ROI") }
@@ -140,7 +140,7 @@ nextflow_workflow {
                     },
                     workflow.out.ready_bams.collect {
                         [ it[0], "${file(it[1]).name},readsMD5:${bam(it[1]).getReadsMD5()}", file(it[2]).name ]
-                    },                    
+                    },
                     workflow.out.ready_beds,
                     workflow.out.reports
                 ).match("default - WES") }
