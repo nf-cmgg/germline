@@ -401,6 +401,7 @@ workflow GERMLINE {
         create_bam_files
     )
     ch_versions = ch_versions.mix(CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.versions)
+    def ch_single_beds = CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_beds
 
     //
     // Split the BED files
@@ -415,7 +416,7 @@ workflow GERMLINE {
     }
 
     INPUT_SPLIT_BEDTOOLS(
-        CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_beds.map { meta, bed ->
+        ch_single_beds.map { meta, bed ->
             [meta, bed, scatter_count]
         },
         ch_split_cram_bam
@@ -429,6 +430,7 @@ workflow GERMLINE {
         }
 
     def ch_calls = Channel.empty()
+    def ch_gvcf_reports = Channel.empty()
     if("haplotypecaller" in callers) {
         //
         // Call variants with GATK4 HaplotypeCaller
@@ -449,7 +451,8 @@ workflow GERMLINE {
         )
         ch_gvcfs_ready = ch_gvcfs_ready.mix(CRAM_CALL_GATK4.out.gvcfs)
         ch_versions = ch_versions.mix(CRAM_CALL_GATK4.out.versions)
-        ch_reports  = ch_reports.mix(CRAM_CALL_GATK4.out.reports)
+        ch_reports  = ch_reports.mix(CRAM_CALL_GATK4.out.reports.map { _meta, report -> report })
+        ch_gvcf_reports = ch_gvcf_reports.mix(CRAM_CALL_GATK4.out.reports)
     }
 
     if("elprep" in callers) {
@@ -469,7 +472,8 @@ workflow GERMLINE {
         )
         ch_gvcfs_ready = ch_gvcfs_ready.mix(BAM_CALL_ELPREP.out.gvcfs)
         ch_versions = ch_versions.mix(BAM_CALL_ELPREP.out.versions)
-        ch_reports  = ch_reports.mix(BAM_CALL_ELPREP.out.reports)
+        ch_reports  = ch_reports.mix(BAM_CALL_ELPREP.out.reports.map { _meta, report -> report })
+        ch_gvcf_reports = ch_gvcf_reports.mix(BAM_CALL_ELPREP.out.reports)        
 
     }
 
@@ -506,6 +510,7 @@ workflow GERMLINE {
     )
     ch_versions = ch_versions.mix(GVCF_JOINT_GENOTYPE_GATK4.out.versions)
     ch_calls = ch_calls.mix(GVCF_JOINT_GENOTYPE_GATK4.out.vcfs)
+    def ch_joint_beds = GVCF_JOINT_GENOTYPE_GATK4.out.beds
 
     // Stop pipeline execution when only the merge should happen
     def ch_calls_final = ch_calls.filter { !only_merge }
@@ -525,7 +530,8 @@ workflow GERMLINE {
         [[],[]]
     )
     ch_versions = ch_versions.mix(BCFTOOLS_STATS.out.versions.first())
-    ch_reports = ch_reports.mix(BCFTOOLS_STATS.out.stats.collect { _meta, report -> report })
+    def ch_final_reports = BCFTOOLS_STATS.out.stats
+    ch_reports = ch_reports.mix(ch_final_reports.collect { _meta, report -> report })
 
     def ch_filtered_variants = Channel.empty()
     if(filter) {
@@ -558,6 +564,11 @@ workflow GERMLINE {
         ch_normalized_variants = ch_filtered_variants
     }
 
+    def ch_final_vcfs = Channel.empty()
+    def ch_final_dbs = Channel.empty()
+    def ch_final_automap = Channel.empty()
+    def ch_final_peds = Channel.empty()
+    def ch_final_updio = Channel.empty()
     if(!only_merge && !only_call) {
 
         //
@@ -581,6 +592,8 @@ workflow GERMLINE {
             ch_somalier_input
         )
         ch_versions = ch_versions.mix(VCF_EXTRACT_RELATE_SOMALIER.out.versions)
+        ch_final_peds = VCF_EXTRACT_RELATE_SOMALIER.out.peds
+        ch_final_reports = ch_final_reports.mix(VCF_EXTRACT_RELATE_SOMALIER.out.html)
 
         //
         // Add PED headers to the VCFs
@@ -591,7 +604,7 @@ workflow GERMLINE {
 
             VCF_PED_RTGTOOLS(
                 ch_normalized_variants,
-                VCF_EXTRACT_RELATE_SOMALIER.out.peds
+                ch_final_peds
             )
             ch_versions = ch_versions.mix(VCF_PED_RTGTOOLS.out.versions)
 
@@ -640,7 +653,7 @@ workflow GERMLINE {
         )
         ch_versions = ch_versions.mix(TABIX_FINAL.out.versions.first())
 
-        def ch_final_vcfs = ch_annotation_output
+        ch_final_vcfs = ch_annotation_output
             .join(TABIX_FINAL.out.tbi, failOnDuplicate:true, failOnMismatch:true)
 
         //
@@ -715,7 +728,7 @@ workflow GERMLINE {
                     bed:  [meta, truth_bed]
                 }
 
-            CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_beds
+            ch_single_beds
                 .combine(callers)
                 .map { meta, bed, caller ->
                     def new_meta = [
@@ -747,7 +760,7 @@ workflow GERMLINE {
         if(gemini){
             def ch_vcf2db_input = CustomChannelOperators.joinOnKeys(
                     ch_final_vcfs.map { meta, vcf, _tbi -> [ meta, vcf ]},
-                    VCF_EXTRACT_RELATE_SOMALIER.out.peds,
+                    ch_final_peds,
                     ['id', 'family', 'family_samples']
                 )
 
@@ -755,7 +768,7 @@ workflow GERMLINE {
                 ch_vcf2db_input
             )
             ch_versions = ch_versions.mix(VCF2DB.out.versions.first())
-
+            ch_final_dbs = VCF2DB.out.db
         }
 
         //
@@ -765,10 +778,11 @@ workflow GERMLINE {
         if(updio) {
             VCF_UPD_UPDIO(
                 ch_final_vcfs,
-                VCF_EXTRACT_RELATE_SOMALIER.out.peds,
+                ch_final_peds,
                 ch_updio_common_cnvs
             )
-            ch_versions = ch_versions.mix(VCF_UPD_UPDIO.out.versions.first())
+            ch_versions = ch_versions.mix(VCF_UPD_UPDIO.out.versions)
+            ch_final_updio = VCF_UPD_UPDIO.out.updio
         }
 
         //
@@ -782,7 +796,8 @@ workflow GERMLINE {
                 ch_automap_panel,
                 genome
             )
-            ch_versions = ch_versions.mix(VCF_ROH_AUTOMAP.out.versions.first())
+            ch_versions = ch_versions.mix(VCF_ROH_AUTOMAP.out.versions)
+            ch_final_automap = VCF_ROH_AUTOMAP.out.automap
         }
     }
 
@@ -838,6 +853,16 @@ workflow GERMLINE {
     )
 
     emit:
+    gvcfs = ch_gvcfs_final // channel: [ val(meta), path(gvcf), path(tbi) ]
+    vcfs = ch_final_vcfs // channel: [ val(meta), path(vcf), path(tbi) ]
+    gemini = ch_final_dbs // channel: [ val(meta), path(db) ]
+    peds = ch_final_peds // channel: [ val(meta), path(ped) ]
+    single_beds = ch_single_beds // channel: [ val(meta), path(bed) ]
+    joint_beds = ch_joint_beds // channel: [ val(meta), path(bed) ]
+    final_reports = ch_final_reports // channel: [ val(meta), path(report) ]
+    gvcf_reports = ch_gvcf_reports // channel: [ val(meta), path(report) ]
+    automap = ch_final_automap // channel: [ val(meta), path(automap) ]
+    updio = ch_final_updio // channel: [ val(meta), path(updio) ]
     multiqc_report = MULTIQC.out.report.toList() // channel: /path/to/multiqc_report.html
     versions       = ch_versions                 // channel: [ path(versions.yml) ]
 }

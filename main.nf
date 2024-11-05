@@ -50,95 +50,6 @@ include { GERMLINE                } from './workflows/germline'
 include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_cmgg_germline_pipeline'
 include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_cmgg_germline_pipeline'
 
-//
-// WORKFLOW: Run main analysis pipeline depending on type of input
-//
-
-workflow NFCMGG_GERMLINE {
-
-    take:
-    samplesheet     // channel: samplesheet read in from --input
-    pipeline_params // the parameters used for this pipeline
-    multiqc_logo    // string: the path to the multiqc logo
-
-    main:
-
-    //
-    // WORKFLOW: Run pipeline
-    //
-    GERMLINE (
-        // Input channels
-        samplesheet,
-
-        // File inputs
-        pipeline_params.fasta,
-        pipeline_params.fai,
-        pipeline_params.dict,
-        pipeline_params.elfasta,
-        pipeline_params.strtablefile,
-        pipeline_params.sdf,
-        pipeline_params.dbsnp,
-        pipeline_params.dbsnp_tbi,
-        pipeline_params.vep_cache,
-        pipeline_params.dbnsfp,
-        pipeline_params.dbnsfp_tbi,
-        pipeline_params.spliceai_indel,
-        pipeline_params.spliceai_indel_tbi,
-        pipeline_params.spliceai_snv,
-        pipeline_params.spliceai_snv_tbi,
-        pipeline_params.mastermind,
-        pipeline_params.mastermind_tbi,
-        pipeline_params.eog,
-        pipeline_params.eog_tbi,
-        pipeline_params.alphamissense,
-        pipeline_params.alphamissense_tbi,
-        pipeline_params.vcfanno_resources,
-        pipeline_params.vcfanno_config,
-        pipeline_params.multiqc_config,
-        multiqc_logo,
-        pipeline_params.multiqc_methods_description,
-        pipeline_params.roi,
-        pipeline_params.somalier_sites,
-        pipeline_params.vcfanno_lua,
-        pipeline_params.updio_common_cnvs,
-        pipeline_params.automap_repeats,
-        pipeline_params.automap_panel,
-        pipeline_params.outdir,
-        GlobalVariables.pedFiles,
-        pipeline_params.elsites,
-
-        // Boolean inputs
-        pipeline_params.dragstr,
-        pipeline_params.annotate,
-        pipeline_params.vcfanno,
-        pipeline_params.only_call,
-        pipeline_params.only_merge,
-        pipeline_params.filter,
-        pipeline_params.normalize,
-        pipeline_params.add_ped,
-        pipeline_params.gemini,
-        pipeline_params.validate,
-        pipeline_params.updio,
-        pipeline_params.automap,
-        pipeline_params.vep_dbnsfp,
-        pipeline_params.vep_spliceai,
-        pipeline_params.vep_mastermind,
-        pipeline_params.vep_eog,
-        pipeline_params.vep_alphamissense,
-
-        // Value inputs
-        pipeline_params.genome,
-        pipeline_params.species,
-        pipeline_params.vep_cache_version,
-        pipeline_params.vep_chunk_size,
-        pipeline_params.scatter_count,
-        pipeline_params.callers.tokenize(",")
-    )
-
-    emit:
-    multiqc_report = GERMLINE.out.multiqc_report // channel: /path/to/multiqc_report.html
-}
-
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -215,11 +126,76 @@ workflow {
     //
     // WORKFLOW: Run main workflow
     //
-    NFCMGG_GERMLINE (
+
+    GERMLINE (
+        // Input channels
         PIPELINE_INITIALISATION.out.samplesheet,
-        params,
-        multiqc_logo
+
+        // File inputs
+        params.fasta,
+        params.fai,
+        params.dict,
+        params.elfasta,
+        params.strtablefile,
+        params.sdf,
+        params.dbsnp,
+        params.dbsnp_tbi,
+        params.vep_cache,
+        params.dbnsfp,
+        params.dbnsfp_tbi,
+        params.spliceai_indel,
+        params.spliceai_indel_tbi,
+        params.spliceai_snv,
+        params.spliceai_snv_tbi,
+        params.mastermind,
+        params.mastermind_tbi,
+        params.eog,
+        params.eog_tbi,
+        params.alphamissense,
+        params.alphamissense_tbi,
+        params.vcfanno_resources,
+        params.vcfanno_config,
+        params.multiqc_config,
+        multiqc_logo,
+        params.multiqc_methods_description,
+        params.roi,
+        params.somalier_sites,
+        params.vcfanno_lua,
+        params.updio_common_cnvs,
+        params.automap_repeats,
+        params.automap_panel,
+        params.outdir,
+        GlobalVariables.pedFiles,
+        params.elsites,
+
+        // Boolean inputs
+        params.dragstr,
+        params.annotate,
+        params.vcfanno,
+        params.only_call,
+        params.only_merge,
+        params.filter,
+        params.normalize,
+        params.add_ped,
+        params.gemini,
+        params.validate,
+        params.updio,
+        params.automap,
+        params.vep_dbnsfp,
+        params.vep_spliceai,
+        params.vep_mastermind,
+        params.vep_eog,
+        params.vep_alphamissense,
+
+        // Value inputs
+        params.genome,
+        params.species,
+        params.vep_cache_version,
+        params.vep_chunk_size,
+        params.scatter_count,
+        params.callers.tokenize(",")
     )
+
     //
     // SUBWORKFLOW: Run completion tasks
     //
@@ -230,7 +206,7 @@ workflow {
         params.outdir,
         params.monochrome_logs,
         params.hook_url,
-        NFCMGG_GERMLINE.out.multiqc_report
+        GERMLINE.out.multiqc_report
     )
 }
 
