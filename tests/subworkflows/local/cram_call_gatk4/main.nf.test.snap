@@ -6,6 +6,13 @@
             ],
             [
                 [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143",
+                        "caller": "haplotypecaller"
+                    },
                     "NA24143.haplotypecaller.bcftools_stats.txt:md5,09b4e7674e0f5b98b1e548df3002250e"
                 ]
             ]
@@ -14,7 +21,7 @@
             "nf-test": "0.9.1",
             "nextflow": "24.10.0"
         },
-        "timestamp": "2024-11-05T09:53:12.737680049"
+        "timestamp": "2024-11-06T15:52:12.577735225"
     },
     "cram_call_gatk4 - dragstr": {
         "content": [
@@ -23,6 +30,13 @@
             ],
             [
                 [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143",
+                        "caller": "haplotypecaller"
+                    },
                     "NA24143.haplotypecaller.bcftools_stats.txt:md5,c4dad5b8e05871dda66df42b1f6c89ff"
                 ]
             ]
@@ -31,6 +45,6 @@
             "nf-test": "0.9.1",
             "nextflow": "24.10.0"
         },
-        "timestamp": "2024-11-05T09:54:07.696125828"
+        "timestamp": "2024-11-06T15:53:15.117652446"
     }
 }
