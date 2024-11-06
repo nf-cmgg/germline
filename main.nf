@@ -248,7 +248,7 @@ output {
         path { meta, _report -> { _file -> "${meta.id}/reports/${meta.id}.${meta.caller}.bcftools_stats.txt" }}
     }
     'vcfs' {
-        path { meta, vcf, _tbi -> { file -> 
+        path { meta, vcf, _tbi -> { file ->
             if(file == vcf.name) {
                 return "${final_prefix}/${meta.family}/${meta.id}.${meta.caller}.vcf.gz"
             }

@@ -473,7 +473,7 @@ workflow GERMLINE {
         ch_gvcfs_ready = ch_gvcfs_ready.mix(BAM_CALL_ELPREP.out.gvcfs)
         ch_versions = ch_versions.mix(BAM_CALL_ELPREP.out.versions)
         ch_reports  = ch_reports.mix(BAM_CALL_ELPREP.out.reports.map { _meta, report -> report })
-        ch_gvcf_reports = ch_gvcf_reports.mix(BAM_CALL_ELPREP.out.reports)        
+        ch_gvcf_reports = ch_gvcf_reports.mix(BAM_CALL_ELPREP.out.reports)
 
     }
 
