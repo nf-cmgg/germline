@@ -7,6 +7,8 @@
 ----------------------------------------------------------------------------------------
 */
 
+nextflow.preview.output = true
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT FUNCTIONS / MODULES / SUBWORKFLOWS / WORKFLOWS
@@ -208,6 +210,72 @@ workflow {
         params.hook_url,
         GERMLINE.out.multiqc_report
     )
+
+    publish:
+    GERMLINE.out.gvcfs >> 'gvcfs'
+    GERMLINE.out.single_beds >> 'single_beds'
+    GERMLINE.out.validation >> 'validation'
+    GERMLINE.out.gvcf_reports >> 'gvcf_reports'
+    GERMLINE.out.vcfs >> 'vcfs'
+    GERMLINE.out.gemini >> 'gemini'
+    GERMLINE.out.peds >> 'peds'
+    GERMLINE.out.joint_beds >> 'joint_beds'
+    GERMLINE.out.final_reports >> 'final_reports'
+    GERMLINE.out.automap >> 'automap'
+    GERMLINE.out.updio >> 'updio'
+    GERMLINE.out.multiqc_report >> 'multiqc'
+}
+
+def project_name = params.project ?: workflow.runName
+def final_prefix = params.skip_date_project ? "${project_name}" : "${new Date().format("yyyy-MM-dd")}_${project_name}"
+
+output {
+    'gvcfs' {
+        path { meta, gvcf, _tbi -> { file ->
+            if(file == gvcf.name) {
+                return "${meta.id}/${meta.id}.${meta.caller}.g.vcf.gz"
+            }
+            return "${meta.id}/${meta.id}.${meta.caller}.g.vcf.gz.tbi"
+        } }
+    }
+    'single_beds' {
+        path { meta, _bed -> { _file -> "${meta.id}/${meta.id}.bed" } }
+    }
+    'validation' {
+        path { meta, _report -> { file -> "${meta.id}/validation/${meta.caller}/${file}" } }
+    }
+    'gvcf_reports' {
+        path { meta, _report -> { _file -> "${meta.id}/reports/${meta.id}.${meta.caller}.bcftools_stats.txt" }}
+    }
+    'vcfs' {
+        path { meta, vcf, _tbi -> { file -> 
+            if(file == vcf.name) {
+                return "${final_prefix}/${meta.family}/${meta.id}.${meta.caller}.vcf.gz"
+            }
+            return "${final_prefix}/${meta.family}/${meta.id}.${meta.caller}.vcf.gz.tbi"
+        } }
+    }
+    'gemini' {
+        path { meta, _db -> { _file -> "${final_prefix}/${meta.family}/${meta.id}.${meta.caller}.db"}}
+    }
+    'peds' {
+        path { meta, _ped -> { _file -> "${final_prefix}/${meta.family}/${meta.id}.${meta.caller}.ped"}}
+    }
+    'joint_beds' {
+        path { meta, _bed -> { _file -> "${final_prefix}/${meta.family}/${meta.id}.${meta.caller}.bed"}}
+    }
+    'final_reports' {
+        path { meta, _report -> { file -> "${final_prefix}/${meta.family}/reports/${file}"}}
+    }
+    'automap' {
+        path { meta, _automap -> { file -> "${final_prefix}/${meta.family}/automap/${meta.caller}"}}
+    }
+    'updio' {
+        path { meta, _updio -> { file -> "${final_prefix}/${meta.family}/updio/${meta.caller}"}}
+    }
+    'multiqc' {
+        path { _report -> { _file -> "multiqc/multiqc_report.html"}}
+    }
 }
 
 /*

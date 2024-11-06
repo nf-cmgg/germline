@@ -92,7 +92,6 @@ workflow VCF_VALIDATE_SMALL_VARIANTS {
     vcfeval_snp_roc                         = ch_vcfeval_snp_roc                         // channel: [ meta, tsv ]
     vcfeval_non_snp_roc                     = ch_vcfeval_non_snp_roc                     // channel: [ meta, tsv ]
     vcfeval_weighted_roc                    = ch_vcfeval_weighted_roc                    // channel: [ meta, tsv ]
-
     rtgtools_snp_png_rocplot                = ch_rtgtools_snp_png_rocplot                // channel: [ meta, png ]
     rtgtools_non_snp_png_rocplot            = ch_rtgtools_non_snp_png_rocplot            // channel: [ meta, png ]
     rtgtools_weighted_png_rocplot           = ch_rtgtools_weighted_png_rocplot           // channel: [ meta, png ]

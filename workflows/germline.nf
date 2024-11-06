@@ -564,241 +564,257 @@ workflow GERMLINE {
         ch_normalized_variants = ch_filtered_variants
     }
 
-    def ch_final_vcfs = Channel.empty()
-    def ch_final_dbs = Channel.empty()
-    def ch_final_automap = Channel.empty()
-    def ch_final_peds = Channel.empty()
-    def ch_final_updio = Channel.empty()
-    if(!only_merge && !only_call) {
+    //
+    // Preprocess the PED channel
+    //
 
-        //
-        // Preprocess the PED channel
-        //
+    def ch_somalier_input = ch_normalized_variants
+        .map { meta, _vcf, _tbi ->
+            [ meta, pedFiles.containsKey(meta.family) ? pedFiles[meta.family] : [] ]
+        }
 
-        def ch_somalier_input = ch_normalized_variants
-            .map { meta, _vcf, _tbi ->
-                [ meta, pedFiles.containsKey(meta.family) ? pedFiles[meta.family] : [] ]
+    //
+    // Run relation tests with somalier
+    //
+
+    VCF_EXTRACT_RELATE_SOMALIER(
+        ch_normalized_variants,
+        ch_fasta_ready,
+        ch_fai_ready,
+        ch_somalier_sites,
+        ch_somalier_input
+    )
+    ch_versions = ch_versions.mix(VCF_EXTRACT_RELATE_SOMALIER.out.versions)
+    def ch_final_peds = VCF_EXTRACT_RELATE_SOMALIER.out.peds
+    ch_final_reports = ch_final_reports.mix(VCF_EXTRACT_RELATE_SOMALIER.out.html)
+
+    //
+    // Add PED headers to the VCFs
+    //
+
+    def ch_ped_vcfs = Channel.empty()
+    if(add_ped){
+
+        VCF_PED_RTGTOOLS(
+            ch_normalized_variants,
+            ch_final_peds
+        )
+        ch_versions = ch_versions.mix(VCF_PED_RTGTOOLS.out.versions)
+
+        ch_ped_vcfs = VCF_PED_RTGTOOLS.out.ped_vcfs
+    } else {
+        ch_ped_vcfs = ch_normalized_variants
+            .map { meta, vcf, _tbi=[] ->
+                [ meta, vcf ]
+            }
+    }
+
+    //
+    // Annotation of the variants and creation of Gemini-compatible database files
+    //
+
+    def ch_annotation_output = Channel.empty()
+    if (annotate) {
+        VCF_ANNOTATION(
+            ch_ped_vcfs,
+            ch_fasta_ready,
+            ch_vep_cache_ready,
+            ch_vep_extra_files,
+            ch_vcfanno_config,
+            ch_vcfanno_lua,
+            ch_vcfanno_resources,
+            genome,
+            species,
+            vep_cache_version,
+            vep_chunk_size,
+            vcfanno
+        )
+        ch_versions = ch_versions.mix(VCF_ANNOTATION.out.versions)
+        ch_reports  = ch_reports.mix(VCF_ANNOTATION.out.reports)
+
+        ch_annotation_output = VCF_ANNOTATION.out.annotated_vcfs
+    } else {
+        ch_annotation_output = ch_ped_vcfs
+    }
+
+    //
+    // Tabix the resulting VCF
+    //
+
+    TABIX_FINAL(
+        ch_annotation_output
+    )
+    ch_versions = ch_versions.mix(TABIX_FINAL.out.versions.first())
+
+    def ch_final_vcfs = ch_annotation_output
+        .join(TABIX_FINAL.out.tbi, failOnDuplicate:true, failOnMismatch:true)
+
+    //
+    // Validate the found variants
+    //
+
+    def ch_final_validation = Channel.empty()
+    if (validate){
+        def ch_truths_input = ch_input.truth_variants
+            .map { meta, vcf, tbi, bed ->
+                def new_meta = meta - meta.subMap("duplicate_count")
+                [ groupKey(new_meta, meta.duplicate_count), vcf, tbi, bed ]
+            }
+            .groupTuple()
+            .map { meta, vcf, tbi, bed ->
+                // Get only one VCF for samples that were given multiple times
+                def one_vcf = vcf.find { vcf_file -> vcf_file != [] } ?: []
+                def one_tbi = tbi.find { tbi_file -> tbi_file != [] } ?: []
+                def one_bed = bed.find { bed_file -> bed_file != [] } ?: []
+                [ meta, one_vcf, one_tbi, one_bed ]
+            }
+            .branch { _meta, vcf, tbi, _bed ->
+                no_vcf: !vcf
+                tbi: tbi
+                no_tbi: !tbi
             }
 
-        //
-        // Run relation tests with somalier
-        //
-
-        VCF_EXTRACT_RELATE_SOMALIER(
-            ch_normalized_variants,
-            ch_fasta_ready,
-            ch_fai_ready,
-            ch_somalier_sites,
-            ch_somalier_input
+        // Create truth VCF indices if none were given
+        TABIX_TRUTH(
+            ch_truths_input.no_tbi.map { meta, vcf, _tbi, _bed ->
+                [ meta, vcf ]
+            }
         )
-        ch_versions = ch_versions.mix(VCF_EXTRACT_RELATE_SOMALIER.out.versions)
-        ch_final_peds = VCF_EXTRACT_RELATE_SOMALIER.out.peds
-        ch_final_reports = ch_final_reports.mix(VCF_EXTRACT_RELATE_SOMALIER.out.html)
+        ch_versions = ch_versions.mix(TABIX_TRUTH.out.versions.first())
 
-        //
-        // Add PED headers to the VCFs
-        //
+        ch_truths_input.no_tbi
+            .join(TABIX_TRUTH.out.tbi, failOnDuplicate:true, failOnMismatch:true)
+            .map { meta, vcf, _empty, bed, tbi ->
+                [ meta, vcf, tbi, bed ]
+            }
+            .mix(ch_truths_input.tbi)
+            .mix(ch_truths_input.no_vcf)
+            .combine(callers)
+            .map { meta, vcf, tbi, bed, caller ->
+                def new_meta = meta + [caller: caller]
+                [ new_meta, vcf, tbi, bed ]
+            }
+            .set { ch_truths } // Set needs to be used here due to some Nextflow bug
 
-        def ch_ped_vcfs = Channel.empty()
-        if(add_ped){
+        def ch_validation_input = ch_final_vcfs
+            .map { meta, vcf, tbi ->
+                def new_meta = meta - meta.subMap("family_samples")
+                [ new_meta, vcf, tbi, meta.family_samples.tokenize(",") ]
+            }
+            .transpose(by: 3)
+            .map { meta, vcf, tbi, sample ->
+                def new_meta = [
+                    id: sample,
+                    sample: sample,
+                    family: meta.family,
+                    caller: meta.caller
+                ]
+                [ new_meta, vcf, tbi ]
+            }
+            .join(ch_truths, failOnMismatch:true, failOnDuplicate:true)
+            .filter { _meta, _vcf, _tbi, truth_vcf, _truth_tbi, _truth_bed ->
+                // Filter out all samples that have no truth VCF
+                truth_vcf != []
+            }
+            .multiMap { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ->
+                vcfs: [meta, vcf, tbi, truth_vcf, truth_tbi]
+                bed:  [meta, truth_bed]
+            }
 
-            VCF_PED_RTGTOOLS(
-                ch_normalized_variants,
-                ch_final_peds
-            )
-            ch_versions = ch_versions.mix(VCF_PED_RTGTOOLS.out.versions)
+        ch_single_beds
+            .combine(callers)
+            .map { meta, bed, caller ->
+                def new_meta = [
+                    id:meta.id,
+                    sample:meta.sample,
+                    family:meta.family,
+                    caller:caller
+                ]
+                [ new_meta, bed ]
+            }
+            .join(ch_validation_input.bed, failOnMismatch:true, failOnDuplicate:true)
+            .map { meta, regions, truth ->
+                [ meta, truth, regions ]
+            }
+            .set { ch_validation_regions } // Set needs to be used here due to some Nextflow bug
 
-            ch_ped_vcfs = VCF_PED_RTGTOOLS.out.ped_vcfs
-        } else {
-            ch_ped_vcfs = ch_normalized_variants
-                .map { meta, vcf, _tbi=[] ->
-                    [ meta, vcf ]
-                }
-        }
-
-        //
-        // Annotation of the variants and creation of Gemini-compatible database files
-        //
-
-        def ch_annotation_output = Channel.empty()
-        if (annotate) {
-            VCF_ANNOTATION(
-                ch_ped_vcfs,
-                ch_fasta_ready,
-                ch_vep_cache_ready,
-                ch_vep_extra_files,
-                ch_vcfanno_config,
-                ch_vcfanno_lua,
-                ch_vcfanno_resources,
-                genome,
-                species,
-                vep_cache_version,
-                vep_chunk_size,
-                vcfanno
-            )
-            ch_versions = ch_versions.mix(VCF_ANNOTATION.out.versions)
-            ch_reports  = ch_reports.mix(VCF_ANNOTATION.out.reports)
-
-            ch_annotation_output = VCF_ANNOTATION.out.annotated_vcfs
-        } else {
-            ch_annotation_output = ch_ped_vcfs
-        }
-
-        //
-        // Tabix the resulting VCF
-        //
-
-        TABIX_FINAL(
-            ch_annotation_output
+        VCF_VALIDATE_SMALL_VARIANTS(
+            ch_validation_input.vcfs,
+            ch_validation_regions,
+            ch_sdf_ready.collect()
         )
-        ch_versions = ch_versions.mix(TABIX_FINAL.out.versions.first())
+        ch_versions = ch_versions.mix(VCF_VALIDATE_SMALL_VARIANTS.out.versions)
 
-        ch_final_vcfs = ch_annotation_output
-            .join(TABIX_FINAL.out.tbi, failOnDuplicate:true, failOnMismatch:true)
+        ch_final_validation = VCF_VALIDATE_SMALL_VARIANTS.out.vcfeval_true_positive_vcf.mix(
+            VCF_VALIDATE_SMALL_VARIANTS.out.vcfeval_true_positive_vcf_tbi,
+            VCF_VALIDATE_SMALL_VARIANTS.out.vcfeval_false_negative_vcf,
+            VCF_VALIDATE_SMALL_VARIANTS.out.vcfeval_false_negative_vcf_tbi,
+            VCF_VALIDATE_SMALL_VARIANTS.out.vcfeval_false_positive_vcf,
+            VCF_VALIDATE_SMALL_VARIANTS.out.vcfeval_false_positive_vcf_tbi,
+            VCF_VALIDATE_SMALL_VARIANTS.out.vcfeval_true_positive_baseline_vcf,
+            VCF_VALIDATE_SMALL_VARIANTS.out.vcfeval_true_positive_baseline_vcf_tbi,
+            VCF_VALIDATE_SMALL_VARIANTS.out.vcfeval_summary,
+            VCF_VALIDATE_SMALL_VARIANTS.out.vcfeval_phasing,
+            VCF_VALIDATE_SMALL_VARIANTS.out.vcfeval_snp_roc,
+            VCF_VALIDATE_SMALL_VARIANTS.out.vcfeval_non_snp_roc,
+            VCF_VALIDATE_SMALL_VARIANTS.out.vcfeval_weighted_roc,
+            VCF_VALIDATE_SMALL_VARIANTS.out.rtgtools_snp_png_rocplot,
+            VCF_VALIDATE_SMALL_VARIANTS.out.rtgtools_non_snp_png_rocplot,
+            VCF_VALIDATE_SMALL_VARIANTS.out.rtgtools_weighted_png_rocplot,
+            VCF_VALIDATE_SMALL_VARIANTS.out.rtgtools_snp_svg_rocplot,
+            VCF_VALIDATE_SMALL_VARIANTS.out.rtgtools_non_snp_svg_rocplot,
+            VCF_VALIDATE_SMALL_VARIANTS.out.rtgtools_weighted_svg_rocplot
+        )
+    }
 
-        //
-        // Validate the found variants
-        //
+    //
+    // Create Gemini-compatible database files
+    //
 
-        if (validate){
-
-            def ch_truths_input = ch_input.truth_variants
-                .map { meta, vcf, tbi, bed ->
-                    def new_meta = meta - meta.subMap("duplicate_count")
-                    [ groupKey(new_meta, meta.duplicate_count), vcf, tbi, bed ]
-                }
-                .groupTuple()
-                .map { meta, vcf, tbi, bed ->
-                    // Get only one VCF for samples that were given multiple times
-                    def one_vcf = vcf.find { vcf_file -> vcf_file != [] } ?: []
-                    def one_tbi = tbi.find { tbi_file -> tbi_file != [] } ?: []
-                    def one_bed = bed.find { bed_file -> bed_file != [] } ?: []
-                    [ meta, one_vcf, one_tbi, one_bed ]
-                }
-                .branch { _meta, vcf, tbi, _bed ->
-                    no_vcf: !vcf
-                    tbi: tbi
-                    no_tbi: !tbi
-                }
-
-            // Create truth VCF indices if none were given
-            TABIX_TRUTH(
-                ch_truths_input.no_tbi.map { meta, vcf, _tbi, _bed ->
-                    [ meta, vcf ]
-                }
-            )
-            ch_versions = ch_versions.mix(TABIX_TRUTH.out.versions.first())
-
-            ch_truths_input.no_tbi
-                .join(TABIX_TRUTH.out.tbi, failOnDuplicate:true, failOnMismatch:true)
-                .map { meta, vcf, _empty, bed, tbi ->
-                    [ meta, vcf, tbi, bed ]
-                }
-                .mix(ch_truths_input.tbi)
-                .mix(ch_truths_input.no_vcf)
-                .combine(callers)
-                .map { meta, vcf, tbi, bed, caller ->
-                    def new_meta = meta + [caller: caller]
-                    [ new_meta, vcf, tbi, bed ]
-                }
-                .set { ch_truths } // Set needs to be used here due to some Nextflow bug
-
-            def ch_validation_input = ch_final_vcfs
-                .map { meta, vcf, tbi ->
-                    def new_meta = meta - meta.subMap("family_samples")
-                    [ new_meta, vcf, tbi, meta.family_samples.tokenize(",") ]
-                }
-                .transpose(by: 3)
-                .map { meta, vcf, tbi, sample ->
-                    def new_meta = [
-                        id: sample,
-                        sample: sample,
-                        family: meta.family,
-                        caller: meta.caller
-                    ]
-                    [ new_meta, vcf, tbi ]
-                }
-                .join(ch_truths, failOnMismatch:true, failOnDuplicate:true)
-                .filter { _meta, _vcf, _tbi, truth_vcf, _truth_tbi, _truth_bed ->
-                    // Filter out all samples that have no truth VCF
-                    truth_vcf != []
-                }
-                .multiMap { meta, vcf, tbi, truth_vcf, truth_tbi, truth_bed ->
-                    vcfs: [meta, vcf, tbi, truth_vcf, truth_tbi]
-                    bed:  [meta, truth_bed]
-                }
-
-            ch_single_beds
-                .combine(callers)
-                .map { meta, bed, caller ->
-                    def new_meta = [
-                        id:meta.id,
-                        sample:meta.sample,
-                        family:meta.family,
-                        caller:caller
-                    ]
-                    [ new_meta, bed ]
-                }
-                .join(ch_validation_input.bed, failOnMismatch:true, failOnDuplicate:true)
-                .map { meta, regions, truth ->
-                    [ meta, truth, regions ]
-                }
-                .set { ch_validation_regions } // Set needs to be used here due to some Nextflow bug
-
-            VCF_VALIDATE_SMALL_VARIANTS(
-                ch_validation_input.vcfs,
-                ch_validation_regions,
-                ch_sdf_ready.collect()
-            )
-            ch_versions = ch_versions.mix(VCF_VALIDATE_SMALL_VARIANTS.out.versions)
-        }
-
-        //
-        // Create Gemini-compatible database files
-        //
-
-        if(gemini){
-            def ch_vcf2db_input = CustomChannelOperators.joinOnKeys(
-                    ch_final_vcfs.map { meta, vcf, _tbi -> [ meta, vcf ]},
-                    ch_final_peds,
-                    ['id', 'family', 'family_samples']
-                )
-
-            VCF2DB(
-                ch_vcf2db_input
-            )
-            ch_versions = ch_versions.mix(VCF2DB.out.versions.first())
-            ch_final_dbs = VCF2DB.out.db
-        }
-
-        //
-        // Run UPDio analysis
-        //
-
-        if(updio) {
-            VCF_UPD_UPDIO(
-                ch_final_vcfs,
+    def ch_final_dbs = Channel.empty()
+    if(gemini){
+        def ch_vcf2db_input = CustomChannelOperators.joinOnKeys(
+                ch_final_vcfs.map { meta, vcf, _tbi -> [ meta, vcf ]},
                 ch_final_peds,
-                ch_updio_common_cnvs
+                ['id', 'family', 'family_samples']
             )
-            ch_versions = ch_versions.mix(VCF_UPD_UPDIO.out.versions)
-            ch_final_updio = VCF_UPD_UPDIO.out.updio
-        }
 
-        //
-        // Run automap analysis
-        //
+        VCF2DB(
+            ch_vcf2db_input
+        )
+        ch_versions = ch_versions.mix(VCF2DB.out.versions.first())
+        ch_final_dbs = VCF2DB.out.db
+    }
 
-        if(automap) {
-            VCF_ROH_AUTOMAP(
-                ch_final_vcfs,
-                ch_automap_repeats,
-                ch_automap_panel,
-                genome
-            )
-            ch_versions = ch_versions.mix(VCF_ROH_AUTOMAP.out.versions)
-            ch_final_automap = VCF_ROH_AUTOMAP.out.automap
-        }
+    //
+    // Run UPDio analysis
+    //
+
+    def ch_final_updio = Channel.empty()
+    if(updio) {
+        VCF_UPD_UPDIO(
+            ch_final_vcfs,
+            ch_final_peds,
+            ch_updio_common_cnvs
+        )
+        ch_versions = ch_versions.mix(VCF_UPD_UPDIO.out.versions)
+        ch_final_updio = VCF_UPD_UPDIO.out.updio
+    }
+
+    //
+    // Run automap analysis
+    //
+
+    def ch_final_automap = Channel.empty()
+    if(automap) {
+        VCF_ROH_AUTOMAP(
+            ch_final_vcfs,
+            ch_automap_repeats,
+            ch_automap_panel,
+            genome
+        )
+        ch_versions = ch_versions.mix(VCF_ROH_AUTOMAP.out.versions)
+        ch_final_automap = VCF_ROH_AUTOMAP.out.automap
     }
 
     //
@@ -853,18 +869,19 @@ workflow GERMLINE {
     )
 
     emit:
-    gvcfs = ch_gvcfs_final // channel: [ val(meta), path(gvcf), path(tbi) ]
-    vcfs = ch_final_vcfs // channel: [ val(meta), path(vcf), path(tbi) ]
-    gemini = ch_final_dbs // channel: [ val(meta), path(db) ]
-    peds = ch_final_peds // channel: [ val(meta), path(ped) ]
-    single_beds = ch_single_beds // channel: [ val(meta), path(bed) ]
-    joint_beds = ch_joint_beds // channel: [ val(meta), path(bed) ]
-    final_reports = ch_final_reports // channel: [ val(meta), path(report) ]
-    gvcf_reports = ch_gvcf_reports // channel: [ val(meta), path(report) ]
-    automap = ch_final_automap // channel: [ val(meta), path(automap) ]
-    updio = ch_final_updio // channel: [ val(meta), path(updio) ]
-    multiqc_report = MULTIQC.out.report.toList() // channel: /path/to/multiqc_report.html
-    versions       = ch_versions                 // channel: [ path(versions.yml) ]
+    gvcfs           = ch_gvcfs_final                // channel: [ val(meta), path(gvcf), path(tbi) ]
+    vcfs            = ch_final_vcfs                 // channel: [ val(meta), path(vcf), path(tbi) ]
+    gemini          = ch_final_dbs                  // channel: [ val(meta), path(db) ]
+    peds            = ch_final_peds                 // channel: [ val(meta), path(ped) ]
+    single_beds     = ch_single_beds                // channel: [ val(meta), path(bed) ]
+    joint_beds      = ch_joint_beds                 // channel: [ val(meta), path(bed) ]
+    final_reports   = ch_final_reports              // channel: [ val(meta), path(report) ]
+    gvcf_reports    = ch_gvcf_reports               // channel: [ val(meta), path(report) ]
+    automap         = ch_final_automap              // channel: [ val(meta), path(automap) ]
+    updio           = ch_final_updio                // channel: [ val(meta), path(updio) ]
+    validation      = ch_final_validation           // channel: [ val(meta), path(file) ]
+    multiqc_report  = MULTIQC.out.report.toList()   // channel: /path/to/multiqc_report.html
+    versions        = ch_versions                   // channel: [ path(versions.yml) ]
 }
 
 /*
