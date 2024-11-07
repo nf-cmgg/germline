@@ -211,8 +211,13 @@ workflow {
         GERMLINE.out.multiqc_report
     )
 
+    // Filtering out input GVCFs from the output publishing fixes an issue in the current implementation of
+    // the workflow output definitions: https://github.com/nextflow-io/nextflow/issues/5480
+    ch_gvcfs_out = GERMLINE.out.gvcfs.filter { _meta, gvcf, _tbi -> gvcf.startsWith(workflow.workDir) }
+
     publish:
-    GERMLINE.out.gvcfs >> 'gvcfs'
+    ch_gvcfs_out >> 'gvcfs'
+    GERMLINE.out.genomicsdb >> 'genomicsdb'
     GERMLINE.out.single_beds >> 'single_beds'
     GERMLINE.out.validation >> 'validation'
     GERMLINE.out.gvcf_reports >> 'gvcf_reports'
@@ -237,6 +242,12 @@ output {
             }
             return "${meta.id}/${meta.id}.${meta.caller}.g.vcf.gz.tbi"
         } }
+    }
+    'genomicsdb' {
+        enabled (params.output_genomicsdb || params.only_merge)
+        path { meta, genomicsdb ->
+            { file -> "${final_prefix}/${meta.family}/${meta.id}_${meta.caller}_genomicsdb"}
+        }
     }
     'single_beds' {
         path { meta, _bed -> { _file -> "${meta.id}/${meta.id}.bed" } }

@@ -140,8 +140,9 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
     }
 
     emit:
-    vcfs = ch_vcfs         // [ val(meta), path(vcf), path(tbi) ]
-    beds = ch_beds         // [ val(meta), path(bed) ]
-    versions = ch_versions // [ path(versions) ]
+    vcfs = ch_vcfs                                      // [ val(meta), path(vcf), path(tbi) ]
+    genomicsdb = GATK4_GENOMICSDBIMPORT.out.genomicsdb  // [ val(meta), path(genomicsdb) ]
+    beds = ch_beds                                      // [ val(meta), path(bed) ]
+    versions = ch_versions                              // [ path(versions) ]
 
 }

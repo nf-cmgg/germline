@@ -336,14 +336,29 @@ workflow GERMLINE {
     // Split the input channel into the right channels
     //
 
+    def usedGvcfCallers = callers.intersect(GlobalVariables.gvcfCallers)
+
     def ch_input = ch_samplesheet
         .multiMap { meta, cram, crai, gvcf, tbi, roi_file, truth_vcf, truth_tbi, truth_bed ->
+            // Error checks that were not possible using nf-schema
+            if (gvcf && usedGvcfCallers.size() >= 2) {
+                error("GVCF input is not supported for runs that use more than one caller that produces a GVCF output")
+            }
+            if (gvcf && validate) {
+                error("Validation is not supported for GVCF inputs, use CRAM files instead when using `--validate`.")
+            }
+
             // Divide the input files into their corresponding channel
             def new_meta = meta + [
                 type: gvcf && cram ? "gvcf_cram" : gvcf ? "gvcf" : "cram" // Define the type of input data
             ]
 
             def new_meta_validation = meta.subMap(["id", "sample", "family", "duplicate_count"])
+
+            def new_meta_gvcf = meta
+            if (usedGvcfCallers.size() == 1) {
+                new_meta_gvcf = meta + [caller:usedGvcfCallers[0]]
+            }
 
             truth_variants: [new_meta_validation, truth_vcf, truth_tbi, truth_bed] // Optional channel containing the truth VCF, its index and the optional BED file
             gvcf:           [new_meta, gvcf, tbi] // Optional channel containing the GVCFs and their optional indices
@@ -511,6 +526,7 @@ workflow GERMLINE {
     ch_versions = ch_versions.mix(GVCF_JOINT_GENOTYPE_GATK4.out.versions)
     ch_calls = ch_calls.mix(GVCF_JOINT_GENOTYPE_GATK4.out.vcfs)
     def ch_joint_beds = GVCF_JOINT_GENOTYPE_GATK4.out.beds
+    def ch_final_genomicsdb = GVCF_JOINT_GENOTYPE_GATK4.out.genomicsdb
 
     // Stop pipeline execution when only the merge should happen
     def ch_calls_final = ch_calls.filter { !only_merge }
@@ -869,7 +885,8 @@ workflow GERMLINE {
     )
 
     emit:
-    gvcfs           = ch_gvcfs_final                // channel: [ val(meta), path(gvcf), path(tbi) ]
+    gvcfs           = ch_gvcfs_ready                // channel: [ val(meta), path(gvcf), path(tbi) ]
+    genomicsdb      = ch_final_genomicsdb           // channel: [ val(meta), path(genomicsdb) ]
     vcfs            = ch_final_vcfs                 // channel: [ val(meta), path(vcf), path(tbi) ]
     gemini          = ch_final_dbs                  // channel: [ val(meta), path(db) ]
     peds            = ch_final_peds                 // channel: [ val(meta), path(ped) ]
