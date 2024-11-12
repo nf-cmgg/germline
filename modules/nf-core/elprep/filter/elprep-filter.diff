@@ -1,0 +1,81 @@
+Changes in module 'nf-core/elprep/filter'
+Changes in 'elprep/filter/main.nf':
+--- modules/nf-core/elprep/filter/main.nf
++++ modules/nf-core/elprep/filter/main.nf
+@@ -20,7 +20,6 @@
+ 
+ 
+     output:
+-    tuple val(meta), path("*.{bam,sam}")            , emit: bam
+     tuple val(meta), path("*.log")                  , emit: logs
+     tuple val(meta), path("*.metrics.txt")          , optional: true, emit: metrics
+     tuple val(meta), path("*.recall")               , optional: true, emit: recall
+@@ -65,7 +64,7 @@
+     if ("$bam" == "${prefix}.${suffix}") error "Input and output names are the same, set prefix in module configuration to disambiguate!"
+ 
+     """
+-    elprep filter ${bam} ${prefix}.${suffix} \\
++    elprep filter ${bam} /dev/null \\
+         ${reference_sequences_cmd} \\
+         ${filter_regions_cmd} \\
+         ${markdup_cmd} \\
+@@ -106,7 +105,6 @@
+     if ("$bam" == "${prefix}.${suffix}") error "Input and output names are the same, set prefix in module configuration to disambiguate!"
+ 
+     """
+-    touch ${prefix}.${suffix}
+     touch elprep-${timestamp}.log
+     ${markdup_cmd}
+     ${bqsr_cmd}
+
+'modules/nf-core/elprep/filter/environment.yml' is unchanged
+'modules/nf-core/elprep/filter/meta.yml' is unchanged
+'modules/nf-core/elprep/filter/tests/main.nf.test' is unchanged
+Changes in 'elprep/filter/tests/main.nf.test.snap':
+--- modules/nf-core/elprep/filter/tests/main.nf.test.snap
++++ modules/nf-core/elprep/filter/tests/main.nf.test.snap
+@@ -2,13 +2,7 @@
+     "test-elprep-filter": {
+         "content": [
+             [
+-                [
+-                    {
+-                        "id": "test",
+-                        "single_end": false
+-                    },
+-                    "test.bam,readsMD5:463ac3b905fbf4ddf113a94dbfa8d69f"
+-                ]
++                
+             ],
+             [
+                 
+@@ -57,22 +51,14 @@
+             ]
+         ],
+         "meta": {
+-            "nf-test": "0.9.0",
+-            "nextflow": "24.04.4"
++            "nf-test": "0.9.1",
++            "nextflow": "24.10.0"
+         },
+-        "timestamp": "2024-10-22T11:05:45.927224502"
++        "timestamp": "2024-11-05T15:16:40.979143203"
+     },
+     "test-elprep-filter-stub": {
+         "content": [
+-            [
+-                [
+-                    {
+-                        "id": "test",
+-                        "single_end": false
+-                    },
+-                    "test.bam:md5,d41d8cd98f00b204e9800998ecf8427e"
+-                ]
+-            ],
++            null,
+             [
+                 
+             ],
+
+'modules/nf-core/elprep/filter/tests/nextflow.config' is unchanged
+************************************************************
