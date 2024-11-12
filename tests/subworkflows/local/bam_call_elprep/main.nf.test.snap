@@ -1,0 +1,56 @@
+{
+    "bam_call_elprep - dbsnp": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143",
+                        "caller": "elprep"
+                    },
+                    "NA24143.elprep.g.vcf.gz,variantsMD5:974ed65cfad6264db7c6589d6b7d7d74",
+                    "NA24143.elprep.g.vcf.gz.tbi"
+                ]
+            ],
+            [
+                [
+                    "NA24143.elprep.bcftools_stats.txt:md5,36b9f979c03b24d87e2dc710baf3672b"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
+        },
+        "timestamp": "2024-11-04T15:56:30.054330853"
+    },
+    "bam_call_elprep - default": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143",
+                        "caller": "elprep"
+                    },
+                    "NA24143.elprep.g.vcf.gz,variantsMD5:974ed65cfad6264db7c6589d6b7d7d74",
+                    "NA24143.elprep.g.vcf.gz.tbi"
+                ]
+            ],
+            [
+                [
+                    "NA24143.elprep.bcftools_stats.txt:md5,36b9f979c03b24d87e2dc710baf3672b"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
+        },
+        "timestamp": "2024-11-04T15:55:56.561058236"
+    }
+}

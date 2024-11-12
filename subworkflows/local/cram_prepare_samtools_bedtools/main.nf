@@ -8,6 +8,7 @@ include { FILTER_BEDS                       } from '../../../modules/local/filte
 
 include { SAMTOOLS_MERGE                    } from '../../../modules/nf-core/samtools/merge/main'
 include { SAMTOOLS_INDEX                    } from '../../../modules/nf-core/samtools/index/main'
+include { SAMTOOLS_CONVERT                  } from '../../../modules/nf-core/samtools/convert/main'
 include { TABIX_TABIX                       } from '../../../modules/nf-core/tabix/tabix/main'
 include { TABIX_BGZIP as UNZIP_ROI          } from '../../../modules/nf-core/tabix/bgzip/main'
 include { BEDTOOLS_INTERSECT                } from '../../../modules/nf-core/bedtools/intersect/main'
@@ -20,6 +21,7 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
         ch_fasta             // channel: [mandatory] [ path(fasta) ] => fasta reference
         ch_fai               // channel: [mandatory] [ path(fai) ] => fasta reference index
         ch_default_roi       // channel: [optional]  [ path(roi) ] => bed containing regions of interest to be used as default
+        output_bam           // boolean: Also output BAM files
 
     main:
 
@@ -70,6 +72,22 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
     def ch_ready_crams = ch_merged_crams.not_indexed
         .join(SAMTOOLS_INDEX.out.crai, failOnDuplicate: true, failOnMismatch: true)
         .mix(ch_merged_crams.indexed)
+
+    //
+    // Optionally convert the CRAM files to BAM
+    //
+
+    def ch_ready_bams = Channel.empty()
+    if(output_bam) {
+        SAMTOOLS_CONVERT(
+            ch_ready_crams,
+            ch_fasta,
+            ch_fai
+        )
+        ch_versions = ch_versions.mix(SAMTOOLS_CONVERT.out.versions.first())
+
+        ch_ready_bams = SAMTOOLS_CONVERT.out.bam.join(SAMTOOLS_CONVERT.out.bai, failOnDuplicate:true, failOnMismatch:true)
+    }
 
     //
     // Preprocess the ROI BED files => sort and merge overlapping regions
@@ -168,6 +186,7 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
 
     emit:
     ready_crams = ch_ready_crams    // [ val(meta), path(cram), path(crai) ]
+    ready_bams  = ch_ready_bams     // [ val(meta), path(bam), path(bai) ]
     ready_beds  = ch_ready_beds     // [ val(meta), path(bed) ]
     versions    = ch_versions       // [ path(versions) ]
     reports     = ch_reports        // [ path(reports) ]

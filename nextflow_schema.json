@@ -104,6 +104,24 @@
                     "format": "path",
                     "fa_icon": "fas fa-folder"
                 },
+                "elfasta": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "mimetype": "text/plain",
+                    "pattern": "^\\S+\\.elfasta$",
+                    "description": "Path to the ELFASTA genome file. This is used when `elprep` is part of the callers and will be automatically generated when missing.",
+                    "fa_icon": "far fa-file-code"
+                },
+                "elsites": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "mimetype": "text/plain",
+                    "pattern": "^\\S+\\.elsites$",
+                    "description": "Path to the elsites file. This is used when `elprep` is part of the callers.",
+                    "fa_icon": "far fa-file-code"
+                },
                 "genomes_base": {
                     "type": "string",
                     "default": "/references/",

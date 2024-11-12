@@ -1,0 +1,62 @@
+nextflow_workflow {
+
+    name "Test Workflow BAM_CALL_VARDICTJAVA"
+    script "subworkflows/local/bam_call_vardictjava/main.nf"
+    workflow "BAM_CALL_VARDICTJAVA"
+
+    tag "subworkflows"
+    tag "subworkflows_local"
+    tag "bam_call_vardictjava"
+    tag "vcf_concat_bcftools"
+
+    test("bam_call_vardictjava - default") {
+
+        when {
+            params {
+                callers = "vardict"
+            }
+            workflow {
+                """
+                input[0] = Channel.of([
+                    [id:"NA24143.00001", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
+                    file(params.bam1, checkIfExists:true),
+                    file(params.bai1, checkIfExists:true),
+                    file(params.split1, checkIfExists:true)
+                ],[
+                    [id:"NA24143.00002", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
+                    file(params.bam1, checkIfExists:true),
+                    file(params.bai1, checkIfExists:true),
+                    file(params.split2, checkIfExists:true)
+                ],[
+                    [id:"NA24143.00003", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
+                    file(params.bam1, checkIfExists:true),
+                    file(params.bai1, checkIfExists:true),
+                    file(params.split3, checkIfExists:true)
+                ])
+                input[1] = Channel.value([
+                    [id:"fasta"],
+                    file(params.fasta, checkIfExists:true)
+                ])
+                input[2] = Channel.value([
+                    [id:"fai"],
+                    file(params.fai, checkIfExists:true)
+                ])
+                input[3] = [[],[]]
+                input[4] = [[],[]]
+                input[5] = false
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.out.vcfs.collect { [it[0], "${file(it[1]).name},variantsMD5:${path(it[1]).vcf.variantsMD5}", file(it[2]).name] }
+                ).match() }
+            )
+        }
+
+    }
+
+}

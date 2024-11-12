@@ -4,9 +4,11 @@ import java.nio.file.Path
 
 class GlobalVariables {
     // The available callers
-    public static List availableCallers = ["haplotypecaller", "vardict"]
+    public static List availableCallers = ["haplotypecaller", "vardict", "elprep"]
 
-    public static List gvcfCallers = ["haplotypecaller"]
+    public static List gvcfCallers = ["haplotypecaller", "elprep"]
+
+    public static List bamCallers = ["elprep", "vardict"]
 
     public static Map<String,Path> pedFiles = [:]
 
