@@ -117,7 +117,8 @@
                     "gatk4/haplotypecaller": {
                         "branch": "master",
                         "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
-                        "installed_by": ["modules"]
+                        "installed_by": ["modules"],
+                        "patch": "modules/nf-core/gatk4/haplotypecaller/gatk4-haplotypecaller.diff"
                     },
                     "gawk": {
                         "branch": "master",
@@ -219,7 +220,8 @@
                     "vcf2db": {
                         "branch": "master",
                         "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
-                        "installed_by": ["modules"]
+                        "installed_by": ["modules"],
+                        "patch": "modules/nf-core/vcf2db/vcf2db.diff"
                     },
                     "vcfanno": {
                         "branch": "master",
