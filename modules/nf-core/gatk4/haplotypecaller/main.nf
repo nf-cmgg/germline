@@ -1,6 +1,6 @@
 process GATK4_HAPLOTYPECALLER {
     tag "$meta.id"
-    label 'process_medium'
+    label 'process_low'
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -44,7 +44,6 @@ process GATK4_HAPLOTYPECALLER {
         --input $input \\
         --output ${prefix}.vcf.gz \\
         --reference $fasta \\
-        --native-pair-hmm-threads ${task.cpus} \\
         $dbsnp_command \\
         $interval_command \\
         $dragstr_command \\

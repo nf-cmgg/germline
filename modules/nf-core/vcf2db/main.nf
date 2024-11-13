@@ -1,12 +1,10 @@
 process VCF2DB {
     tag "$meta.id"
-    label 'process_medium'
+    label 'process_single'
 
     // WARN: Version information not provided by tool on CLI. Please update version string below when bumping container versions.
     conda "${moduleDir}/environment.yml"
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/vcf2db:2020.02.24--pl5321hdfd78af_3':
-        'biocontainers/vcf2db:2020.02.24--pl5321hdfd78af_3' }"
+    container "quay.io/cmgg/vcf2db:2020.02.24"
 
     input:
     tuple val(meta), path(vcf), path(ped)
