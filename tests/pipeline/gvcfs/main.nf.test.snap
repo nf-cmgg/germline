@@ -1,24 +1,21 @@
 {
-    "gvcfs": {
+    "pipeline_default - gvcfs": {
         "content": [
             [
-                
-            ],
-            [
-                "multiqc/multiqc_report.html",
-                "samplesheet.csv",
-                "test/Ashkenazim/Ashkenazim.haplotypecaller.bed",
-                "test/Ashkenazim/Ashkenazim.haplotypecaller.ped",
-                "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz",
-                "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz.tbi",
-                "test/Ashkenazim/reports/Ashkenazim.haplotypecaller.bcftools_stats.txt",
-                "test/Ashkenazim/reports/Ashkenazim.haplotypecaller.html"
+                "Ashkenazim/output_<version>_<date>/Ashkenazim.haplotypecaller.bed",
+                "Ashkenazim/output_<version>_<date>/Ashkenazim.haplotypecaller.ped",
+                "Ashkenazim/output_<version>_<date>/Ashkenazim.haplotypecaller.vcf.gz",
+                "Ashkenazim/output_<version>_<date>/Ashkenazim.haplotypecaller.vcf.gz.tbi",
+                "Ashkenazim/qc_<version>_<date>/Ashkenazim.haplotypecaller.bcftools_stats.txt",
+                "Ashkenazim/qc_<version>_<date>/Ashkenazim.haplotypecaller.html",
+                "<version>_<date>/multiqc_report.html",
+                "<version>_<date>/samplesheet.csv"
             ]
         ],
         "meta": {
             "nf-test": "0.9.1",
             "nextflow": "24.10.0"
         },
-        "timestamp": "2024-11-07T15:46:42.423860055"
+        "timestamp": "2024-11-13T14:14:20.958812996"
     }
 }

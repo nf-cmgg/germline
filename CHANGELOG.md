@@ -3,16 +3,20 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v1.9.0dev
+## v2.0.0dev
 
 ### New features
 
 1. Added the `--min_callable_coverage` parameter to state what the lowest coverage should for a region to be classified as callable.
+2. Added the [`elprep` caller](https://github.com/ExaScience/elprep) as an alternative to the haplotypecaller.
 
 ### Changes
 
 1. Added the `--squash-ploidy` argument to the RTG vcfeval process.
 2. Update to nf-core v3.0.1
+3. Completely reworked the output directory structure to a more sensible structure. The pipeline can now be run on the same output directory every time and will incrementally add files to the correct family folder. See the [output documentation](https://nf-cmgg.github.io/germline/latest/output/) for more info.
+4. Migrated to the new workflow output definitions.
+5. Bumped the minimal Nextflow version to 24.10.0.
 
 ### Fixes
 
