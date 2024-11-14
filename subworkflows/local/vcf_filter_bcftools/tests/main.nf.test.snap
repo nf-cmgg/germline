@@ -1,0 +1,45 @@
+{
+    "vcf_filter_bcftools - tabix": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143",
+                        "caller": "haplotypecaller"
+                    },
+                    "variantsMD5:2ce8bc96a9b3afbf060cdd89e74c4c82",
+                    "vcf.gz.tbi"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
+        },
+        "timestamp": "2024-11-14T13:46:42.107550656"
+    },
+    "vcf_filter_bcftools - no_tabix": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143",
+                        "caller": "haplotypecaller"
+                    },
+                    "variantsMD5:2ce8bc96a9b3afbf060cdd89e74c4c82"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
+        },
+        "timestamp": "2024-11-14T13:46:30.33756839"
+    }
+}
