@@ -1,7 +1,7 @@
 nextflow_workflow {
 
     name "Test Workflow VCF_DBSNP_VCFANNO"
-    script "subworkflows/local/vcf_dbsnp_vcfanno/main.nf"
+    script "../main.nf"
     workflow "VCF_DBSNP_VCFANNO"
 
     tag "subworkflows"

@@ -1,7 +1,7 @@
 nextflow_workflow {
 
     name "Test Workflow VCF_ANNOTATION"
-    script "subworkflows/local/vcf_annotation/main.nf"
+    script "../main.nf"
     workflow "VCF_ANNOTATION"
 
     tag "subworkflows"

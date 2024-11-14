@@ -1,7 +1,7 @@
 nextflow_workflow {
 
     name "Test Workflow VCF_EXTRACT_RELATE_SOMALIER"
-    script "subworkflows/local/vcf_extract_relate_somalier/main.nf"
+    script "../main.nf"
     workflow "VCF_EXTRACT_RELATE_SOMALIER"
 
     tag "subworkflows"

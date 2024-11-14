@@ -1,7 +1,7 @@
 nextflow_workflow {
 
     name "Test Workflow GVCF_JOINT_GENOTYPE_GATK4"
-    script "subworkflows/local/gvcf_joint_genotype_gatk4/main.nf"
+    script "../main.nf"
     workflow "GVCF_JOINT_GENOTYPE_GATK4"
 
     tag "subworkflows"

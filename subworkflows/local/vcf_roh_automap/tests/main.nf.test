@@ -1,7 +1,7 @@
 nextflow_workflow {
 
     name "Test Workflow VCF_ROH_AUTOMAP"
-    script "subworkflows/local/vcf_roh_automap/main.nf"
+    script "../main.nf"
     workflow "VCF_ROH_AUTOMAP"
 
     tag "subworkflows"

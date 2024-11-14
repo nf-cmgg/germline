@@ -1,7 +1,7 @@
 nextflow_workflow {
 
     name "Test Workflow VCF_UPD_UPDIO"
-    script "subworkflows/local/vcf_upd_updio/main.nf"
+    script "../main.nf"
     workflow "VCF_UPD_UPDIO"
 
     tag "subworkflows"

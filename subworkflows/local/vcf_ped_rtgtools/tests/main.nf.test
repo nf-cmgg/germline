@@ -1,7 +1,7 @@
 nextflow_workflow {
 
     name "Test Workflow VCF_PED_RTGTOOLS"
-    script "subworkflows/local/vcf_ped_rtgtools/main.nf"
+    script "../main.nf"
     workflow "VCF_PED_RTGTOOLS"
 
     tag "subworkflows"

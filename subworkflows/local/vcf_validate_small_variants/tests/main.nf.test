@@ -1,7 +1,7 @@
 nextflow_workflow {
 
     name "Test Workflow VCF_VALIDATE_SMALL_VARIANTS"
-    script "subworkflows/local/vcf_validate_small_variants/main.nf"
+    script "../main.nf"
     workflow "VCF_VALIDATE_SMALL_VARIANTS"
 
     tag "subworkflows"

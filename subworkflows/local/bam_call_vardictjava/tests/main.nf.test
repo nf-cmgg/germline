@@ -1,7 +1,7 @@
 nextflow_workflow {
 
     name "Test Workflow BAM_CALL_VARDICTJAVA"
-    script "subworkflows/local/bam_call_vardictjava/main.nf"
+    script "../main.nf"
     workflow "BAM_CALL_VARDICTJAVA"
 
     tag "subworkflows"
@@ -43,7 +43,6 @@ nextflow_workflow {
                 ])
                 input[3] = [[],[]]
                 input[4] = [[],[]]
-                input[5] = false
                 """
             }
         }

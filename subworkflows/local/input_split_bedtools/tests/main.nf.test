@@ -1,7 +1,7 @@
 nextflow_workflow {
 
     name "Test Workflow INPUT_SPLIT_BEDTOOLS"
-    script "subworkflows/local/input_split_bedtools/main.nf"
+    script "../main.nf"
     workflow "INPUT_SPLIT_BEDTOOLS"
 
     tag "subworkflows"

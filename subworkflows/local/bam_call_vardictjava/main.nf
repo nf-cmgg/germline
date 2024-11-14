@@ -16,7 +16,6 @@ workflow BAM_CALL_VARDICTJAVA {
         ch_fai               // channel: [mandatory] [ val(meta), path(fai) ] => fasta reference index
         ch_dbsnp             // channel: [optional]  [ path(vcf) ] => the dbnsp vcf file
         ch_dbsnp_tbi         // channel: [optional]  [ path(tbi) ] => the dbsnp vcf index file
-        filter               // boolean: filter the VCFs
 
     main:
     def ch_versions = Channel.empty()

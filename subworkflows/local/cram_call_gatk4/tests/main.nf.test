@@ -1,46 +1,55 @@
 nextflow_workflow {
 
-    name "Test Workflow BAM_CALL_ELPREP"
-    script "subworkflows/local/bam_call_elprep/main.nf"
-    workflow "BAM_CALL_ELPREP"
+    name "Test Workflow CRAM_CALL_GATK4"
+    script "../main.nf"
+    workflow "CRAM_CALL_GATK4"
 
     tag "subworkflows"
     tag "subworkflows_local"
-    tag "bam_call_elprep"
-    tag "vcf_dbsnp_vcfanno"
+    tag "cram_call_gatk4"
+    tag "vcf_concat_bcftools"
 
-    test("bam_call_elprep - default") {
+    test("cram_call_gatk4 - default") {
 
 
         when {
             params {
-                callers = "elprep"
+                callers = "haplotypecaller"
             }
             workflow {
                 """
                 input[0] = Channel.of([
                     [id:"NA24143.00001", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
-                    file(params.bam1, checkIfExists:true),
-                    file(params.bai1, checkIfExists:true),
+                    file(params.cram1, checkIfExists:true),
+                    file(params.crai1, checkIfExists:true),
                     file(params.split1, checkIfExists:true)
                 ],[
                     [id:"NA24143.00002", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
-                    file(params.bam1, checkIfExists:true),
-                    file(params.bai1, checkIfExists:true),
+                    file(params.cram1, checkIfExists:true),
+                    file(params.crai1, checkIfExists:true),
                     file(params.split2, checkIfExists:true)
                 ],[
                     [id:"NA24143.00003", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
-                    file(params.bam1, checkIfExists:true),
-                    file(params.bai1, checkIfExists:true),
+                    file(params.cram1, checkIfExists:true),
+                    file(params.crai1, checkIfExists:true),
                     file(params.split3, checkIfExists:true)
                 ])
                 input[1] = Channel.value([
                     [id:"fasta"],
-                    file(params.elfasta, checkIfExists:true)
+                    file(params.fasta, checkIfExists:true)
                 ])
-                input[2] = [[],[]]
-                input[3] = [[],[]]
+                input[2] = Channel.value([
+                    [id:"fai"],
+                    file(params.fai, checkIfExists:true)
+                ])
+                input[3] = Channel.value([
+                    [id:"dict"],
+                    file(params.dict, checkIfExists:true)
+                ])
                 input[4] = [[],[]]
+                input[5] = [[],[]]
+                input[6] = [[],[]]
+                input[7] = false
                 """
             }
         }
@@ -57,38 +66,50 @@ nextflow_workflow {
 
     }
 
-    test("bam_call_elprep - dbsnp") {
+    test("cram_call_gatk4 - dragstr") {
 
 
         when {
             params {
-                callers = "elprep"
+                callers = "haplotypecaller"
             }
             workflow {
                 """
                 input[0] = Channel.of([
                     [id:"NA24143.00001", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
-                    file(params.bam1, checkIfExists:true),
-                    file(params.bai1, checkIfExists:true),
+                    file(params.cram1, checkIfExists:true),
+                    file(params.crai1, checkIfExists:true),
                     file(params.split1, checkIfExists:true)
                 ],[
                     [id:"NA24143.00002", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
-                    file(params.bam1, checkIfExists:true),
-                    file(params.bai1, checkIfExists:true),
+                    file(params.cram1, checkIfExists:true),
+                    file(params.crai1, checkIfExists:true),
                     file(params.split2, checkIfExists:true)
                 ],[
                     [id:"NA24143.00003", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
-                    file(params.bam1, checkIfExists:true),
-                    file(params.bai1, checkIfExists:true),
+                    file(params.cram1, checkIfExists:true),
+                    file(params.crai1, checkIfExists:true),
                     file(params.split3, checkIfExists:true)
                 ])
                 input[1] = Channel.value([
                     [id:"fasta"],
-                    file(params.elfasta, checkIfExists:true)
+                    file(params.fasta, checkIfExists:true)
                 ])
-                input[2] = [[],[]]
-                input[3] = [[id:'dbsnp'], file(params.vcf1, checkIfExists:true)]
-                input[4] = [[id:'dbsnp'], file(params.tbi1, checkIfExists:true)]
+                input[2] = Channel.value([
+                    [id:"fai"],
+                    file(params.fai, checkIfExists:true)
+                ])
+                input[3] = Channel.value([
+                    [id:"dict"],
+                    file(params.dict, checkIfExists:true)
+                ])
+                input[4] = Channel.value([
+                    [id:"str"],
+                    file(params.strtablefile, checkIfExists:true)
+                ])
+                input[5] = [[],[]]
+                input[6] = [[],[]]
+                input[7] = true
                 """
             }
         }
@@ -104,4 +125,5 @@ nextflow_workflow {
         }
 
     }
+
 }

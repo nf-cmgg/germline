@@ -1,7 +1,7 @@
 nextflow_workflow {
 
     name "Test Workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS"
-    script "subworkflows/local/cram_prepare_samtools_bedtools/main.nf"
+    script "../main.nf"
     workflow "CRAM_PREPARE_SAMTOOLS_BEDTOOLS"
 
     tag "subworkflows"
