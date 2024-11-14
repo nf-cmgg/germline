@@ -34,24 +34,13 @@ jobs:
       - name: Determine coverage
         id: coverage
         run: |
-          output=$($CONDA/bin/nf-test coverage --silent | grep -vE "^(Load|Warning|Files)")
-          echo $output
-          echo "files_output=$(echo $output | grep '  •')" >> $GITHUB_ENV
-          echo "coverage_output=$(echo $output | grep 'COVERAGE')" >> $GITHUB_ENV
+          $CONDA/bin/nf-test coverage --silent | grep -vE "^(Load|Warning|Files)" >> $GITHUB_OUTPUT
 
       - name: Comment coverage
-        uses: bubkoo/auto-comment@v1
+        uses: wow-actions/auto-comment@v1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           pullRequestOpened: >
             *nf-test coverage* 🚀
 
-            ${{ steps.coverage.outputs.coverage_output }}
-
-            <details>
-
-            <summary>File view</summary>
-
-            ${{ steps.coverage.outputs.files_output }}
-
-            </details>
+            ${{ steps.coverage.outputs.* }}
