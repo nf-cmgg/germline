@@ -1,0 +1,75 @@
+nextflow_workflow {
+
+    name "Test Workflow VCF_CONCAT_BCFTOOLS"
+    script "../main.nf"
+    workflow "VCF_CONCAT_BCFTOOLS"
+
+    tag "subworkflows"
+    tag "subworkflows_local"
+    tag "vcf_concat_bcftools"
+
+    test("vcf_concat_bcftools - no_tabix") {
+
+        config "./nextflow.config"
+
+        when {
+            workflow {
+                """
+                input[0] = Channel.of([
+                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", caller:"haplotypecaller", split_count:2],
+                    file(params.gvcf1, checkIfExists:true),
+                    file(params.gtbi1, checkIfExists:true)
+                ],[
+                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", caller:"haplotypecaller", split_count:2],
+                    file(params.vcf1, checkIfExists:true),
+                    file(params.tbi1, checkIfExists:true)
+                ])
+                input[1] = false
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.out.vcfs.collect { [it[0], "variantsMD5:${path(it[1]).vcf.variantsMD5}"] }
+                ).match() }
+            )
+        }
+
+    }
+
+    test("vcf_concat_bcftools - tabix") {
+
+        config "./nextflow.config"
+
+        when {
+            workflow {
+                """
+                input[0] = Channel.of([
+                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", caller:"haplotypecaller", split_count:2],
+                    file(params.gvcf1, checkIfExists:true),
+                    file(params.gtbi1, checkIfExists:true)
+                ],[
+                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", caller:"haplotypecaller", split_count:2],
+                    file(params.vcf1, checkIfExists:true),
+                    file(params.tbi1, checkIfExists:true)
+                ])
+                input[1] = true
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.out.vcfs.collect { [it[0], "variantsMD5:${path(it[1]).vcf.variantsMD5}", it[2][-10..-1]] }
+                ).match() }
+            )
+        }
+
+    }
+
+}
