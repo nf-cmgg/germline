@@ -36,8 +36,8 @@ jobs:
         run: |
           output=$($CONDA/bin/nf-test coverage --silent | grep -vE "^(Load|Warning|Files)")
           echo $output
-          echo $output | grep "  •" >> $env:files_output
-          echo $output | grep "COVERAGE" >> $env:coverage_output
+          echo "files_output=$(echo $output | grep '  •'" >> $GITHUB_ENV
+          echo "coverage_output=$(echo $output | grep 'COVERAGE'" >> $GITHUB_ENV
 
       - name: Comment coverage
         uses: bubkoo/auto-comment@v1
