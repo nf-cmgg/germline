@@ -34,7 +34,7 @@ jobs:
       - name: Determine coverage
         id: coverage
         run: |
-          $CONDA/bin/nf-test coverage --silent | grep -vE "^(Load|Warning|Files)" >> $GITHUB_OUTPUT
+          $CONDA/bin/nf-test coverage --silent | grep -vE "^(Load|Warning|Files) | sed -e 's/•/-/'" >> $GITHUB_OUTPUT
 
       - name: Comment coverage
         uses: wow-actions/auto-comment@v1
