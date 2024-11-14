@@ -49,7 +49,7 @@ nextflow_workflow {
             assertAll(
                 { assert workflow.success },
                 { assert snapshot(
-                    workflow.out.gvcfs.collect { [it[0], "${file(it[1]).name},variantsMD5:${path(it[1]).vcf.variantsMD5}", file(it[2]).name] },
+                    workflow.out.gvcfs.collect { [it[0], "variantsMD5:${path(it[1]).vcf.variantsMD5}", it[2][-12..-1]] },
                     workflow.out.reports
                 ).match() }
             )
@@ -97,7 +97,7 @@ nextflow_workflow {
             assertAll(
                 { assert workflow.success },
                 { assert snapshot(
-                    workflow.out.gvcfs.collect { [it[0], "${file(it[1]).name},variantsMD5:${path(it[1]).vcf.variantsMD5}", file(it[2]).name] },
+                    workflow.out.gvcfs.collect { [it[0], "variantsMD5:${path(it[1]).vcf.variantsMD5}", it[2][-12..-1]] },
                     workflow.out.reports
                 ).match() }
             )

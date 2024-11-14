@@ -64,6 +64,7 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
     )
     ch_versions = ch_versions.mix(GATK4_GENOMICSDBIMPORT.out.versions.first())
 
+    def ch_beds = Channel.empty()
     if(!only_merge) {
 
         BCFTOOLS_QUERY(
@@ -87,13 +88,14 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
             ch_fai
         )
         ch_versions = ch_versions.mix(MERGE_BEDS.out.versions.first())
+        ch_beds = MERGE_BEDS.out.bed
 
         //
         // Split BED file into multiple BEDs specified by --scatter_count
         //
 
         INPUT_SPLIT_BEDTOOLS(
-            MERGE_BEDS.out.bed.map { meta, bed ->
+            ch_beds.map { meta, bed ->
                 // Multiply the scatter count by the family size to better scatter big families
                 [meta, bed, (scatter_count * meta.family_samples.tokenize(",").size())]
             },
@@ -138,7 +140,9 @@ workflow GVCF_JOINT_GENOTYPE_GATK4 {
     }
 
     emit:
-    vcfs = ch_vcfs         // [ val(meta), path(vcf), path(tbi) ]
-    versions = ch_versions // [ path(versions) ]
+    vcfs = ch_vcfs                                      // [ val(meta), path(vcf), path(tbi) ]
+    genomicsdb = GATK4_GENOMICSDBIMPORT.out.genomicsdb  // [ val(meta), path(genomicsdb) ]
+    beds = ch_beds                                      // [ val(meta), path(bed) ]
+    versions = ch_versions                              // [ path(versions) ]
 
 }

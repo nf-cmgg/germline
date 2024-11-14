@@ -97,11 +97,10 @@ workflow CRAM_CALL_GATK4 {
     )
     ch_versions = ch_versions.mix(BCFTOOLS_STATS.out.versions.first())
 
-    def ch_reports = BCFTOOLS_STATS.out.stats.collect{ _meta, report -> report}
 
     emit:
     gvcfs = VCF_CONCAT_BCFTOOLS.out.vcfs    // channel: [ val(meta), path(vcf), path(tbi) ]
-    reports = ch_reports                    // channel: [ path(stats) ]
+    reports = BCFTOOLS_STATS.out.stats      // channel: [ val(meta), path(stats) ]
     versions = ch_versions                  // channel: [ versions.yml ]
 
 }

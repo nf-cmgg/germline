@@ -65,11 +65,9 @@ workflow BAM_CALL_ELPREP {
     )
     ch_versions = ch_versions.mix(BCFTOOLS_STATS.out.versions.first())
 
-    def ch_reports = BCFTOOLS_STATS.out.stats.collect{ _meta, report -> report}
-
     emit:
-    gvcfs = ch_annotated    // channel: [ val(meta), path(vcf), path(tbi) ]
-    reports = ch_reports    // channel: [ path(stats) ]
-    versions = ch_versions  // channel: [ versions.yml ]
+    gvcfs = ch_annotated                // channel: [ val(meta), path(vcf), path(tbi) ]
+    reports = BCFTOOLS_STATS.out.stats  // channel: [ val(meta), path(stats) ]
+    versions = ch_versions              // channel: [ versions.yml ]
 
 }
