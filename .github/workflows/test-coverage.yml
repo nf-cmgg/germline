@@ -33,6 +33,7 @@ jobs:
 
       - name: Determine coverage
         id: coverage
+        shell: bash
         run: |
           output=$($CONDA/bin/nf-test coverage --silent | grep -vE "^(Load|Warning|Files)")
           echo $output
