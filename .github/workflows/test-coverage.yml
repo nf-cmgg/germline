@@ -33,12 +33,11 @@ jobs:
 
       - name: Determine coverage
         id: coverage
-        shell: bash
         run: |
           output=$($CONDA/bin/nf-test coverage --silent | grep -vE "^(Load|Warning|Files)")
           echo $output
-          echo $output | grep "  •" >> $files_output
-          echo $output | grep "COVERAGE" >> $coverage_output
+          echo $output | grep "  •" >> $env:files_output
+          echo $output | grep "COVERAGE" >> $env:coverage_output
 
       - name: Comment coverage
         uses: bubkoo/auto-comment@v1
