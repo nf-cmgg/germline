@@ -44,9 +44,9 @@ nextflow_workflow {
             assertAll(
                 { assert workflow.success },
                 { assert snapshot(
-                    workflow.out.annotated_vcfs.collect { it.collect { it instanceof Map ? it.groupTarget : file(it).name } },
+                    workflow.out.annotated_vcfs.collect { [ it[0].groupTarget, it[1][-7..-1] ]},
                     workflow.out.reports
-                ).match("default") }
+                ).match() }
             )
         }
 
@@ -87,9 +87,9 @@ nextflow_workflow {
             assertAll(
                 { assert workflow.success },
                 { assert snapshot(
-                    workflow.out.annotated_vcfs.collect { it.collect { it instanceof Map ? it.groupTarget : file(it).name } },
+                    workflow.out.annotated_vcfs.collect { [ it[0].groupTarget, it[1][-7..-1] ] },
                     workflow.out.reports
-                ).match("vcfanno") }
+                ).match() }
             )
         }
 

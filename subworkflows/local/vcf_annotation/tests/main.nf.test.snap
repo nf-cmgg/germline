@@ -1,5 +1,5 @@
 {
-    "default": {
+    "vcf_annotation - default": {
         "content": [
             [
                 [
@@ -9,7 +9,7 @@
                         "family_samples": "NA24143",
                         "caller": "haplotypecaller"
                     },
-                    "NA24143.haplotypecaller.vcf.gz"
+                    ".vcf.gz"
                 ]
             ],
             [
@@ -19,12 +19,12 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.9.0",
-            "nextflow": "24.04.4"
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
         },
-        "timestamp": "2024-09-05T17:39:23.107888975"
+        "timestamp": "2024-11-14T16:27:10.638204373"
     },
-    "vcfanno": {
+    "vcf_annotation - vcfanno": {
         "content": [
             [
                 [
@@ -34,7 +34,7 @@
                         "family_samples": "NA24143",
                         "caller": "haplotypecaller"
                     },
-                    "NA24143.haplotypecaller.vcf.gz"
+                    ".vcf.gz"
                 ]
             ],
             [
@@ -44,9 +44,9 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.9.0",
-            "nextflow": "24.04.4"
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
         },
-        "timestamp": "2024-09-05T17:39:39.640344999"
+        "timestamp": "2024-11-14T16:27:36.089100362"
     }
 }

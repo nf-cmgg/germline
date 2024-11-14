@@ -1,5 +1,5 @@
 {
-    "default - peds": {
+    "vcf_extract_relate_somalier - default - peds": {
         "content": [
             [
                 [
@@ -62,12 +62,12 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.9.0",
-            "nextflow": "24.04.4"
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
         },
-        "timestamp": "2024-09-05T17:39:52.526057891"
+        "timestamp": "2024-11-14T16:29:26.72882236"
     },
-    "default - no peds": {
+    "vcf_extract_relate_somalier - default - no peds": {
         "content": [
             [
                 [
@@ -130,9 +130,9 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.9.0",
-            "nextflow": "24.04.4"
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
         },
-        "timestamp": "2024-09-05T17:40:03.603049023"
+        "timestamp": "2024-11-14T16:29:46.729601248"
     }
 }

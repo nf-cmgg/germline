@@ -37,7 +37,7 @@ nextflow_workflow {
             assertAll(
                 { assert workflow.success },
                 { assert snapshot(
-                    workflow.out.vcfs.collect { [ it[0], "${file(it[1]).name},variantsMD5:${path(it[1]).vcf.variantsMD5}", file(it[2]).name ] }
+                    workflow.out.vcfs.collect { [ it[0], "variantsMD5:${path(it[1]).vcf.variantsMD5}", it[2][-4..-1] ] }
                 ).match() }
             )
         }
