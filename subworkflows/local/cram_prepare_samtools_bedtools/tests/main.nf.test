@@ -49,7 +49,7 @@ nextflow_workflow {
                     },
                     workflow.out.ready_beds,
                     workflow.out.reports
-                ).match("default - WGS") }
+                ).match() }
             )
         }
 
@@ -96,7 +96,7 @@ nextflow_workflow {
                     },
                     workflow.out.ready_beds,
                     workflow.out.reports
-                ).match("default - WES common ROI") }
+                ).match() }
             )
         }
 
@@ -143,7 +143,7 @@ nextflow_workflow {
                     },
                     workflow.out.ready_beds,
                     workflow.out.reports
-                ).match("default - WES") }
+                ).match() }
             )
         }
 
@@ -197,7 +197,7 @@ nextflow_workflow {
                     },
                     workflow.out.ready_beds,
                     workflow.out.reports
-                ).match("default - merge") }
+                ).match() }
             )
         }
 
