@@ -33,8 +33,8 @@ nextflow_workflow {
             assertAll(
                 { assert workflow.success },
                 { assert snapshot(
-                    workflow.out.ped_vcfs.collect { it.collect { it instanceof Map ? it : file(it).name } }
-                ).match("default") }
+                    workflow.out.ped_vcfs.collect { [it[0], "variantsMD5:${path(it[1]).vcf.variantsMD5}"] }
+                ).match() }
             )
         }
 
