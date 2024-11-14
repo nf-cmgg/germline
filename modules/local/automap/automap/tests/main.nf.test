@@ -46,12 +46,12 @@ nextflow_process {
             assertAll(
                 { assert process.success },
                 { assert snapshot(
-                    process.out.automap.collect { meta, out -> 
-                        [ 
-                            meta, 
-                            path(out).list().collect { 
+                    process.out.automap.collect { meta, out ->
+                        [
+                            meta,
+                            path(out).list().collect {
                                 it.list().collect {
-                                    "${file(it.toString()).name},variantsMD5:${it.vcf.variantsMD5}" 
+                                    "${file(it.toString()).name},variantsMD5:${it.vcf.variantsMD5}"
                                 }
                             }
                         ]
