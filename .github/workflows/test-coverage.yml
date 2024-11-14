@@ -37,10 +37,8 @@ jobs:
         run: |
           output=$($CONDA/bin/nf-test coverage --silent | grep -vE "^(Load|Warning|Files)")
           echo $output
-          files=$(echo $output | grep "  •")
-          coverage=$(echo $output | grep "COVERAGE")
-          echo "::set-output name=files_output::$files"
-          echo "::set-output name=coverage_output::$coverage"
+          echo $output | grep "  •" >> $files_output
+          echo $output | grep "COVERAGE" >> $coverage_output
 
       - name: Comment coverage
         uses: bubkoo/auto-comment@v1
