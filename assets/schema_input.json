@@ -9,11 +9,15 @@
         "properties": {
             "sample": {
                 "type": "string",
-                "meta": ["id", "sample"]
+                "pattern": "^[^\\. ]+$",
+                "meta": ["id", "sample"],
+                "errorMessage": "Sample name should be a string that does not contain dots or spaces"
             },
             "family": {
                 "type": "string",
-                "meta": ["family"]
+                "pattern": "^[^\\. ]+$",
+                "meta": ["family"],
+                "errorMessage": "Family name should be a string that does not contain dots or spaces"
             },
             "cram": {
                 "oneOf": [
