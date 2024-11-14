@@ -1,0 +1,61 @@
+name: nf-test coverage
+# This workflow runs the pipeline with the minimal test dataset to check that it completes without any syntax errors
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+env:
+  NXF_ANSI_LOG: false
+
+jobs:
+  coverage:
+    name: Determine test coverage
+    # Only run on push if this is the nf-core dev branch (merged PRs)
+    if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-cmgg/germline') }}"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out pipeline code
+        uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Nextflow
+        uses: nf-core/setup-nextflow@v2
+
+      - name: Disk space cleanup
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
+
+      - name: Install nf-test
+        run: |
+          conda install -c bioconda nf-test
+
+      - name: Determine coverage
+        id: coverage
+        run: |
+          output=$($CONDA/bin/nf-test coverage --silent | grep -vE "^(Load|Warning|Files)")
+          files=$(echo $output | grep "  •")
+          coverage=$(echo $output | grep "COVERAGE")
+          echo "::set-output name=files_output::files"
+          echo "::set-output name=coverage_output::coverage"
+      
+      - name: Comment coverage
+        uses: bubkoo/auto-comment@v1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          pullRequestOpened: >
+            *nf-test coverage* 🚀
+
+            ${{ steps.coverage.outputs.coverage_output }}
+
+            <details>
+
+            <summary>File view</summary>
+
+            ${{ steps.coverage.outputs.files_output }}
+
+            </details>
