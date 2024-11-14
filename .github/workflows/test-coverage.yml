@@ -35,6 +35,7 @@ jobs:
         id: coverage
         run: |
           output=$($CONDA/bin/nf-test coverage --silent | grep -vE "^(Load|Warning|Files)")
+          echo $output
           files=$(echo $output | grep "  •")
           coverage=$(echo $output | grep "COVERAGE")
           echo "::set-output name=files_output::files"
