@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 1. Added the `--min_callable_coverage` parameter to state what the lowest coverage should for a region to be classified as callable.
 2. Added the [`elprep` caller](https://github.com/ExaScience/elprep) as an alternative to the haplotypecaller.
+3. Added full unit tests for all parts that were missing tests.
 
 ### Changes
 

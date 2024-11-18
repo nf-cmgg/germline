@@ -8,6 +8,125 @@ The directories listed below will be created in the results directory after the 
 
 ```bash
 results/
+├── Proband_12345
+│   ├── NA24143_v2_0_0dev_2024_11_18
+│   │   ├── NA24143.bed
+│   │   ├── NA24143.haplotypecaller.bcftools_stats.txt
+│   │   ├── NA24143.haplotypecaller.g.vcf.gz
+│   │   ├── NA24143.haplotypecaller.g.vcf.gz.tbi
+│   │   └── validation
+│   │       └── haplotypecaller
+│   │           ├── NA24143.fn.vcf.gz
+│   │           ├── NA24143.fn.vcf.gz.tbi
+│   │           ├── NA24143.fp.vcf.gz
+│   │           ├── NA24143.fp.vcf.gz.tbi
+│   │           ├── NA24143.non_snp.png
+│   │           ├── NA24143.non_snp_roc.tsv.gz
+│   │           ├── NA24143.non_snp.svg
+│   │           ├── NA24143.phasing.txt
+│   │           ├── NA24143.snp.png
+│   │           ├── NA24143.snp_roc.tsv.gz
+│   │           ├── NA24143.snp.svg
+│   │           ├── NA24143.summary.txt
+│   │           ├── NA24143.tp-baseline.vcf.gz
+│   │           ├── NA24143.tp-baseline.vcf.gz.tbi
+│   │           ├── NA24143.tp.vcf.gz
+│   │           ├── NA24143.tp.vcf.gz.tbi
+│   │           ├── NA24143.weighted.png
+│   │           ├── NA24143.weighted_roc.tsv.gz
+│   │           └── NA24143.weighted.svg
+│   ├── NA24149_v2_0_0dev_2024_11_18
+│   │   ├── NA24149.bed
+│   │   ├── NA24149.haplotypecaller.bcftools_stats.txt
+│   │   ├── NA24149.haplotypecaller.g.vcf.gz
+│   │   ├── NA24149.haplotypecaller.g.vcf.gz.tbi
+│   │   └── validation
+│   │       └── haplotypecaller
+│   │           ├── NA24149.fn.vcf.gz
+│   │           ├── NA24149.fn.vcf.gz.tbi
+│   │           ├── NA24149.fp.vcf.gz
+│   │           ├── NA24149.fp.vcf.gz.tbi
+│   │           ├── NA24149.non_snp.png
+│   │           ├── NA24149.non_snp_roc.tsv.gz
+│   │           ├── NA24149.non_snp.svg
+│   │           ├── NA24149.phasing.txt
+│   │           ├── NA24149.snp.png
+│   │           ├── NA24149.snp_roc.tsv.gz
+│   │           ├── NA24149.snp.svg
+│   │           ├── NA24149.summary.txt
+│   │           ├── NA24149.tp-baseline.vcf.gz
+│   │           ├── NA24149.tp-baseline.vcf.gz.tbi
+│   │           ├── NA24149.tp.vcf.gz
+│   │           ├── NA24149.tp.vcf.gz.tbi
+│   │           ├── NA24149.weighted.png
+│   │           ├── NA24149.weighted_roc.tsv.gz
+│   │           └── NA24149.weighted.svg
+│   ├── NA24385_v2_0_0dev_2024_11_18
+│   │   ├── NA24385.bed
+│   │   ├── NA24385.haplotypecaller.bcftools_stats.txt
+│   │   ├── NA24385.haplotypecaller.g.vcf.gz
+│   │   ├── NA24385.haplotypecaller.g.vcf.gz.tbi
+│   │   └── validation
+│   │       └── haplotypecaller
+│   │           ├── NA24385.fn.vcf.gz
+│   │           ├── NA24385.fn.vcf.gz.tbi
+│   │           ├── NA24385.fp.vcf.gz
+│   │           ├── NA24385.fp.vcf.gz.tbi
+│   │           ├── NA24385.non_snp.png
+│   │           ├── NA24385.non_snp_roc.tsv.gz
+│   │           ├── NA24385.non_snp.svg
+│   │           ├── NA24385.phasing.txt
+│   │           ├── NA24385.snp.png
+│   │           ├── NA24385.snp_roc.tsv.gz
+│   │           ├── NA24385.snp.svg
+│   │           ├── NA24385.summary.txt
+│   │           ├── NA24385.tp-baseline.vcf.gz
+│   │           ├── NA24385.tp-baseline.vcf.gz.tbi
+│   │           ├── NA24385.tp.vcf.gz
+│   │           ├── NA24385.tp.vcf.gz.tbi
+│   │           ├── NA24385.weighted.png
+│   │           ├── NA24385.weighted_roc.tsv.gz
+│   │           └── NA24385.weighted.svg
+│   ├── output_v2_0_0dev_2024_11_18
+│   │   ├── automap
+│   │   │   └── haplotypecaller
+│   │   │       ├── sample1
+│   │   │       │   ├── sample1.HomRegions.cmgg_bio.tsv
+│   │   │       │   ├── sample1.HomRegions.pdf
+│   │   │       │   ├── sample1.HomRegions.strict.cmgg_bio.tsv
+│   │   │       │   └── sample1.HomRegions.tsv
+│   │   │       ├── sample2
+│   │   │       │   ├── sample2.HomRegions.cmgg_bio.tsv
+│   │   │       │   ├── sample2.HomRegions.pdf
+│   │   │       │   ├── sample2.HomRegions.strict.cmgg_bio.tsv
+│   │   │       │   └── sample2.HomRegions.tsv
+│   │   │       └── sample3
+│   │   │           ├── sample3.HomRegions.cmgg_bio.tsv
+│   │   │           ├── sample3.HomRegions.pdf
+│   │   │           ├── sample3.HomRegions.strict.cmgg_bio.tsv
+│   │   │           └── sample3.HomRegions.tsv
+│   │   ├── Proband_12345.haplotypecaller.bed
+│   │   ├── Proband_12345.haplotypecaller.db
+│   │   ├── Proband_12345.haplotypecaller.ped
+│   │   ├── Proband_12345.haplotypecaller.vcf.gz
+│   │   └── Proband_12345.haplotypecaller.vcf.gz.tbi
+│   └── qc_v2_0_0dev_2024_11_18
+│       ├── Proband_12345.haplotypecaller.bcftools_stats.txt
+│       └── Proband_12345.haplotypecaller.html
+└── v2_0_0dev_2024_11_18
+    ├── execution_report_2024-11-18_14-03-56.html
+    ├── execution_timeline_2024-11-18_14-03-56.html
+    ├── execution_trace_2024-11-18_14-03-56.html
+    ├── multiqc_report.html
+    ├── params_2024-11-18_14-04-11.json
+    ├── pipeline_dag_2024-11-18_14-03-56.html
+    ├── pipeline_software_mqc_versions.yml
+    └── samplesheet.csv
+```
+
+
+```bash
+results/
 ├── YYYY_MM_DD_project_name #(1)!
 │   └── FAMILY_1 #(2)!
 │       ├── FAMILY_1.bed #(3)!

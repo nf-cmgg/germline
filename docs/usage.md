@@ -127,13 +127,13 @@ Note that the pipeline will create the following files in your working directory
 ```bash
 work          #(1)!
 results       #(2)!
-.nextflow_log #(3)!
+.nextflow.log #(3)!
 ...           #(4)!
 ```
 
 1. Directory containing the nextflow working files
 
-2. Finished results in specified location (defined with --outdir)
+2. Finished results in specified location (defined with --outdir). See [output](./output.md) documentation for more on this.
 
 3. Log file from Nextflow
 
