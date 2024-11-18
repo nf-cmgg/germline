@@ -4,6 +4,8 @@
 
 This page describes the output produced by the pipeline.
 
+The output directory has been structured in such a way that you can pass the same output directory to it for each pipeline run. The pipeline will add the files to that directory in a traceable way without overwriting already existing files. This makes it easy to store data, coming from multiple sequencing runs, in the same root directory.
+
 To explain the structure of the output directory, a simple example run consisting of two families is used. The first family (`family1`) is a family consisting of a trio (son, father and mother) and the second family (`family2`) consists of a single sample.
 
 ```bash
