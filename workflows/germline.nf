@@ -502,8 +502,7 @@ workflow GERMLINE {
             ch_fasta_ready,
             ch_fai_ready,
             ch_dbsnp_ready,
-            ch_dbsnp_tbi_ready,
-            filter
+            ch_dbsnp_tbi_ready
         )
         ch_versions = ch_versions.mix(BAM_CALL_VARDICTJAVA.out.versions)
 

@@ -1,0 +1,47 @@
+nextflow_workflow {
+
+    name "Test Workflow VCF_DBSNP_VCFANNO"
+    script "../main.nf"
+    workflow "VCF_DBSNP_VCFANNO"
+
+    tag "subworkflows"
+    tag "subworkflows_local"
+    tag "vcf_dbsnp_vcfanno"
+
+    test("vcf_dbsnp_vcfanno - default") {
+
+        when {
+            params {
+                annotate = true
+            }
+            workflow {
+                """
+                input[0] = Channel.of([
+                    [id:"NA24143", family:"NA24143", family_samples:"NA24143", caller:"haplotypecaller"],
+                    file(params.vcf1, checkIfExists:true),
+                    file(params.tbi1, checkIfExists:true)
+                ])
+                input[1] = Channel.value([
+                    [id:"dbnsp"],
+                    file(params.vcf2, checkIfExists:true)
+                ])
+                input[2] = Channel.value([
+                    [id:"dbnsp"],
+                    file(params.tbi2, checkIfExists:true)
+                ])
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.out.vcfs.collect { [ it[0], "variantsMD5:${path(it[1]).vcf.variantsMD5}", it[2][-4..-1] ] }
+                ).match() }
+            )
+        }
+
+    }
+
+}

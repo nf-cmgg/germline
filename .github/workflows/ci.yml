@@ -12,6 +12,7 @@ on:
 env:
   NXF_ANSI_LOG: false
   NFT_MAX_SHARDS: 5
+  SOURCE_BRANCH: ${{ github.head_ref || github.ref_name }}
 
 concurrency:
   group: "${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}"
@@ -51,18 +52,28 @@ jobs:
         with:
           version: "${{ matrix.NXF_VER }}"
 
-      - name: Disk space cleanup
-        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
+      # - name: Disk space cleanup
+      #   uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
 
       - name: Install nf-test
         run: |
           conda install -c bioconda nf-test
 
-      - name: "Run ${{ matrix.filter }} tests | ${{ matrix.shard }}/${{ env.NFT_MAX_SHARDS }}"
+      - name: "Run ${{ matrix.filter }} tests (changed) | ${{ matrix.shard }}/${{ env.NFT_MAX_SHARDS }}"
+        if: ${{ env.SOURCE_BRANCH != 'main' }}
         run: |
           $CONDA/bin/nf-test test \
             --ci \
             --changed-since HEAD^ \
+            --shard ${{ matrix.shard }}/${{ env.NFT_MAX_SHARDS }} \
+            --filter ${{ matrix.filter }} \
+            --junitxml=default.xml
+
+      - name: "Run ${{ matrix.filter }} tests (all) | ${{ matrix.shard }}/${{ env.NFT_MAX_SHARDS }}"
+        if: ${{ env.SOURCE_BRANCH == 'main' }}
+        run: |
+          $CONDA/bin/nf-test test \
+            --ci \
             --shard ${{ matrix.shard }}/${{ env.NFT_MAX_SHARDS }} \
             --filter ${{ matrix.filter }} \
             --junitxml=default.xml

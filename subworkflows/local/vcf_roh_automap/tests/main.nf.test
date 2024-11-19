@@ -1,0 +1,90 @@
+nextflow_workflow {
+
+    name "Test Workflow VCF_ROH_AUTOMAP"
+    script "../main.nf"
+    workflow "VCF_ROH_AUTOMAP"
+
+    tag "subworkflows"
+    tag "subworkflows_local"
+    tag "vcf_roh_automap"
+
+    test("vcf_roh_automap - default - family") {
+
+        when {
+            params {
+                automap = true
+                automap_panel_name = "cmgg_bio"
+            }
+            workflow {
+                """
+                input[0] = Channel.of([
+                    [id:"Ashkenazim", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385", caller:"haplotypecaller", samples: "NA24143,NA24835,NA24149"],
+                    file(params.famvcf, checkIfExists:true),
+                    file(params.famtbi, checkIfExists:true)
+                ])
+                input[1] = []
+                input[2] = [[],[]]
+                input[3] = "GRCh38"
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.out.automap.collect { it.collect {
+                        def dirname = it
+                        it instanceof Map ? it : path(it).list().collect {
+                            return getRecursiveFileNames(it, dirname.split("/")[0..-2].join("/"))
+                        }
+                    }}
+                ).match("default - family") }
+            )
+        }
+
+    }
+
+    test("vcf_roh_automap - default - sample") {
+
+        // Stub because this fails due to small test data
+        options "-stub"
+
+        when {
+            params {
+                automap = true
+                automap_panel_name = "cmgg_bio"
+            }
+            workflow {
+                """
+                input[0] = Channel.of([
+                    [id:"NA24143", family:"NA24143", family_samples:"NA24143", caller:"haplotypecaller", samples: "NA24143,NA24835,NA24149"],
+                    file(params.vcf1, checkIfExists:true),
+                    file(params.tbi1, checkIfExists:true)
+                ])
+                input[1] = []
+                input[2] = [[],[]]
+                input[3] = "GRCh38"
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.out.automap
+                ).match("default - sample") }
+            )
+        }
+
+    }
+
+}
+
+def getRecursiveFileNames(fileOrDir, outputDir) {
+    if(file(fileOrDir.toString()).isDirectory()) {
+        return fileOrDir.list().collect { getRecursiveFileNames(it, outputDir) }
+    }
+    return fileOrDir.toString().replace("${outputDir}/", "")
+}

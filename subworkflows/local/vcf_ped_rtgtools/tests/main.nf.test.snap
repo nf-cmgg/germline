@@ -1,0 +1,22 @@
+{
+    "vcf_ped_rtgtools - default": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "Ashkenazim",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143,NA24149,NA24385",
+                        "caller": "haplotypecaller"
+                    },
+                    "variantsMD5:4367d1c96e701a1cc1a96b615381b278"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
+        },
+        "timestamp": "2024-11-14T15:54:56.709943272"
+    }
+}

@@ -1,0 +1,83 @@
+nextflow_workflow {
+
+    name "Test Workflow VCF_EXTRACT_RELATE_SOMALIER"
+    script "../main.nf"
+    workflow "VCF_EXTRACT_RELATE_SOMALIER"
+
+    tag "subworkflows"
+    tag "subworkflows_local"
+    tag "vcf_extract_relate_somalier"
+
+    test("vcf_extract_relate_somalier - default - peds") {
+
+        when {
+            workflow {
+                """
+                input[0] = Channel.of([
+                    [id:"Ashkenazim", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385", caller:"haplotypecaller"],
+                    file(params.famvcf, checkIfExists:true),
+                    file(params.famtbi, checkIfExists:true)
+                ])
+                input[1] = Channel.value([[id:"ref"], file(params.fasta, checkIfExists:true)])
+                input[2] = Channel.value([[id:"ref"], file(params.fai, checkIfExists:true)])
+                input[3] = Channel.value([[id:"ref"], file(params.somalier_sites, checkIfExists:true)])
+                input[4] = Channel.of([
+                    [id:"Ashkenazim", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385", caller:"haplotypecaller"],
+                    file(params.ped, checkIfExists:true)
+                ])
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.out.extract,
+                    workflow.out.html,
+                    workflow.out.pairs_tsv,
+                    workflow.out.samples_tsv,
+                    workflow.out.peds
+                ).match() }
+            )
+        }
+
+    }
+
+    test("vcf_extract_relate_somalier - default - no peds") {
+
+        when {
+            workflow {
+                """
+                input[0] = Channel.of([
+                    [id:"Ashkenazim", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385", caller:"haplotypecaller"],
+                    file(params.famvcf, checkIfExists:true),
+                    file(params.famtbi, checkIfExists:true)
+                ])
+                input[1] = Channel.value([[id:"ref"], file(params.fasta, checkIfExists:true)])
+                input[2] = Channel.value([[id:"ref"], file(params.fai, checkIfExists:true)])
+                input[3] = Channel.value([[id:"ref"], file(params.somalier_sites, checkIfExists:true)])
+                input[4] = Channel.of([
+                    [id:"Ashkenazim", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385", caller:"haplotypecaller"],
+                    []
+                ])
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.out.extract,
+                    workflow.out.html,
+                    workflow.out.pairs_tsv,
+                    workflow.out.samples_tsv,
+                    workflow.out.peds
+                ).match() }
+            )
+        }
+
+    }
+
+}
