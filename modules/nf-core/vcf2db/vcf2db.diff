@@ -1,7 +1,10 @@
 Changes in module 'nf-core/vcf2db'
+'modules/nf-core/vcf2db/environment.yml' is unchanged
+'modules/nf-core/vcf2db/meta.yml' is unchanged
+Changes in 'vcf2db/main.nf':
 --- modules/nf-core/vcf2db/main.nf
 +++ modules/nf-core/vcf2db/main.nf
-@@ -1,12 +1,10 @@
+@@ -1,6 +1,6 @@
  process VCF2DB {
      tag "$meta.id"
 -    label 'process_medium'
@@ -9,12 +12,8 @@ Changes in module 'nf-core/vcf2db'
  
      // WARN: Version information not provided by tool on CLI. Please update version string below when bumping container versions.
      conda "${moduleDir}/environment.yml"
--    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
--        'https://depot.galaxyproject.org/singularity/vcf2db:2020.02.24--pl5321hdfd78af_3':
--        'biocontainers/vcf2db:2020.02.24--pl5321hdfd78af_3' }"
-+    container "quay.io/cmgg/vcf2db:2020.02.24"
- 
-     input:
-     tuple val(meta), path(vcf), path(ped)
 
+'modules/nf-core/vcf2db/tests/main.nf.test.snap' is unchanged
+'modules/nf-core/vcf2db/tests/tags.yml' is unchanged
+'modules/nf-core/vcf2db/tests/main.nf.test' is unchanged
 ************************************************************
