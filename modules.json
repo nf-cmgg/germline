@@ -102,17 +102,20 @@
                     "gatk4/createsequencedictionary": {
                         "branch": "master",
                         "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
-                        "installed_by": ["modules"]
+                        "installed_by": ["modules"],
+                        "patch": "modules/nf-core/gatk4/createsequencedictionary/gatk4-createsequencedictionary.diff"
                     },
                     "gatk4/genomicsdbimport": {
                         "branch": "master",
                         "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
-                        "installed_by": ["modules"]
+                        "installed_by": ["modules"],
+                        "patch": "modules/nf-core/gatk4/genomicsdbimport/gatk4-genomicsdbimport.diff"
                     },
                     "gatk4/genotypegvcfs": {
                         "branch": "master",
                         "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
-                        "installed_by": ["modules"]
+                        "installed_by": ["modules"],
+                        "patch": "modules/nf-core/gatk4/genotypegvcfs/gatk4-genotypegvcfs.diff"
                     },
                     "gatk4/haplotypecaller": {
                         "branch": "master",
