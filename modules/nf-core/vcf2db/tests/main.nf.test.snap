@@ -6,9 +6,10 @@
                     [
                         {
                             "id": "test",
-                            "single_end": false
+                            "single_end": false,
+                            "caller": "haplotypecaller"
                         },
-                        "test.db:md5,d41d8cd98f00b204e9800998ecf8427e"
+                        "test.haplotypecaller.db:md5,d41d8cd98f00b204e9800998ecf8427e"
                     ]
                 ],
                 "1": [
@@ -18,9 +19,10 @@
                     [
                         {
                             "id": "test",
-                            "single_end": false
+                            "single_end": false,
+                            "caller": "haplotypecaller"
                         },
-                        "test.db:md5,d41d8cd98f00b204e9800998ecf8427e"
+                        "test.haplotypecaller.db:md5,d41d8cd98f00b204e9800998ecf8427e"
                     ]
                 ],
                 "versions": [
@@ -29,22 +31,22 @@
             }
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.04.3"
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
         },
-        "timestamp": "2024-01-10T16:13:32.293507403"
+        "timestamp": "2024-11-19T14:40:53.107217359"
     },
     "homo_sapiens - vcf, ped": {
         "content": [
-            "test.db",
+            "test.haplotypecaller.db",
             [
                 "versions.yml:md5,3d9eedf7998cb77b614736659eb22b1d"
             ]
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.04.3"
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
         },
-        "timestamp": "2024-08-06T10:27:06.932652"
+        "timestamp": "2024-11-19T14:40:45.633504872"
     }
 }
