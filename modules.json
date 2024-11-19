@@ -140,7 +140,7 @@
                     },
                     "rtgtools/format": {
                         "branch": "master",
-                        "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
+                        "git_sha": "167a20a2e267261af397e9ea5bf58426e6345ce7",
                         "installed_by": ["modules"]
                     },
                     "rtgtools/pedfilter": {
