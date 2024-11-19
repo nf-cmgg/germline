@@ -51,6 +51,7 @@ params.vcfanno_config       = getGenomeAttribute('vcfanno_config', params.genome
 include { GERMLINE                } from './workflows/germline'
 include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_cmgg_germline_pipeline'
 include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_cmgg_germline_pipeline'
+include { getWorkflowVersion      } from './subworkflows/nf-core/utils_nfcore_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -213,14 +214,14 @@ workflow {
 
     // Filtering out input GVCFs from the output publishing fixes an issue in the current implementation of
     // the workflow output definitions: https://github.com/nextflow-io/nextflow/issues/5480
-    ch_gvcfs_out = GERMLINE.out.gvcfs.filter { _meta, gvcf, _tbi -> gvcf.startsWith(workflow.workDir) }
+    def ch_gvcfs_out = GERMLINE.out.gvcfs.filter { _meta, gvcf, _tbi -> gvcf.startsWith(workflow.workDir) }
 
     publish:
     ch_gvcfs_out >> 'gvcfs'
-    GERMLINE.out.genomicsdb >> 'genomicsdb'
     GERMLINE.out.single_beds >> 'single_beds'
     GERMLINE.out.validation >> 'validation'
     GERMLINE.out.gvcf_reports >> 'gvcf_reports'
+    GERMLINE.out.genomicsdb >> 'genomicsdb'
     GERMLINE.out.vcfs >> 'vcfs'
     GERMLINE.out.gemini >> 'gemini'
     GERMLINE.out.peds >> 'peds'
@@ -231,61 +232,58 @@ workflow {
     GERMLINE.out.multiqc_report >> 'multiqc'
 }
 
-def project_name = params.project ?: workflow.runName
-def final_prefix = params.skip_date_project ? "${project_name}" : "${new Date().format("yyyy-MM-dd")}_${project_name}"
-
 output {
     'gvcfs' {
         path { meta, gvcf, _tbi -> { file ->
             if(file == gvcf.name) {
-                return "${meta.id}/${meta.id}.${meta.caller}.g.vcf.gz"
+                return "${meta.family}/${meta.id}_${getWorkflowVersion().replace(".", "_")}_${new Date().format("yyyy_MM_dd")}/${meta.id}.${meta.caller}.g.vcf.gz"
             }
-            return "${meta.id}/${meta.id}.${meta.caller}.g.vcf.gz.tbi"
+            return "${meta.family}/${meta.id}_${getWorkflowVersion().replace(".", "_")}_${new Date().format("yyyy_MM_dd")}/${meta.id}.${meta.caller}.g.vcf.gz.tbi"
         } }
+    }
+    'single_beds' {
+        path { meta, _bed -> { _file -> "${meta.family}/${meta.id}_${getWorkflowVersion().replace(".", "_")}_${new Date().format("yyyy_MM_dd")}/${meta.id}.bed" } }
+    }
+    'validation' {
+        path { meta, _report -> { file -> "${meta.family}/${meta.id}_${getWorkflowVersion().replace(".", "_")}_${new Date().format("yyyy_MM_dd")}/validation/${meta.caller}/${file}" } }
+    }
+    'gvcf_reports' {
+        path { meta, _report -> { _file -> "${meta.family}/${meta.id}_${getWorkflowVersion().replace(".", "_")}_${new Date().format("yyyy_MM_dd")}/${meta.id}.${meta.caller}.bcftools_stats.txt" }}
     }
     'genomicsdb' {
         enabled (params.output_genomicsdb || params.only_merge)
-        path { meta, genomicsdb ->
-            { file -> "${final_prefix}/${meta.family}/${meta.id}_${meta.caller}_genomicsdb"}
+        path { meta, _genomicsdb ->
+            { _file -> "${meta.family}/output_${getWorkflowVersion().replace(".", "_")}_${new Date().format("yyyy_MM_dd")}/${meta.id}_${meta.caller}_genomicsdb"}
         }
-    }
-    'single_beds' {
-        path { meta, _bed -> { _file -> "${meta.id}/${meta.id}.bed" } }
-    }
-    'validation' {
-        path { meta, _report -> { file -> "${meta.id}/validation/${meta.caller}/${file}" } }
-    }
-    'gvcf_reports' {
-        path { meta, _report -> { _file -> "${meta.id}/reports/${meta.id}.${meta.caller}.bcftools_stats.txt" }}
     }
     'vcfs' {
         path { meta, vcf, _tbi -> { file ->
             if(file == vcf.name) {
-                return "${final_prefix}/${meta.family}/${meta.id}.${meta.caller}.vcf.gz"
+                return "${meta.family}/output_${getWorkflowVersion().replace(".", "_")}_${new Date().format("yyyy_MM_dd")}/${meta.id}.${meta.caller}.vcf.gz"
             }
-            return "${final_prefix}/${meta.family}/${meta.id}.${meta.caller}.vcf.gz.tbi"
+            return "${meta.family}/output_${getWorkflowVersion().replace(".", "_")}_${new Date().format("yyyy_MM_dd")}/${meta.id}.${meta.caller}.vcf.gz.tbi"
         } }
     }
     'gemini' {
-        path { meta, _db -> { _file -> "${final_prefix}/${meta.family}/${meta.id}.${meta.caller}.db"}}
+        path { meta, _db -> { _file -> "${meta.family}/output_${getWorkflowVersion().replace(".", "_")}_${new Date().format("yyyy_MM_dd")}/${meta.id}.${meta.caller}.db"}}
     }
     'peds' {
-        path { meta, _ped -> { _file -> "${final_prefix}/${meta.family}/${meta.id}.${meta.caller}.ped"}}
+        path { meta, _ped -> { _file -> "${meta.family}/output_${getWorkflowVersion().replace(".", "_")}_${new Date().format("yyyy_MM_dd")}/${meta.id}.${meta.caller}.ped"}}
     }
     'joint_beds' {
-        path { meta, _bed -> { _file -> "${final_prefix}/${meta.family}/${meta.id}.${meta.caller}.bed"}}
+        path { meta, _bed -> { _file -> "${meta.family}/output_${getWorkflowVersion().replace(".", "_")}_${new Date().format("yyyy_MM_dd")}/${meta.id}.${meta.caller}.bed"}}
     }
     'final_reports' {
-        path { meta, _report -> { file -> "${final_prefix}/${meta.family}/reports/${file}"}}
+        path { meta, _report -> { file -> "${meta.family}/qc_${getWorkflowVersion().replace(".", "_")}_${new Date().format("yyyy_MM_dd")}/${file}"}}
     }
     'automap' {
-        path { meta, _automap -> { file -> "${final_prefix}/${meta.family}/automap/${meta.caller}"}}
+        path { meta, _automap -> { _file -> "${meta.family}/output_${getWorkflowVersion().replace(".", "_")}_${new Date().format("yyyy_MM_dd")}/automap/${meta.caller}"}}
     }
     'updio' {
-        path { meta, _updio -> { file -> "${final_prefix}/${meta.family}/updio/${meta.caller}"}}
+        path { meta, _updio -> { _file -> "${meta.family}/output_${getWorkflowVersion().replace(".", "_")}_${new Date().format("yyyy_MM_dd")}/updio/${meta.caller}"}}
     }
     'multiqc' {
-        path { _report -> { _file -> "multiqc/multiqc_report.html"}}
+        path { _report -> { _file -> "${getWorkflowVersion().replace(".", "_")}_${new Date().format("yyyy_MM_dd")}/multiqc_report.html"}}
     }
 }
 

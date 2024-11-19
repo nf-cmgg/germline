@@ -838,7 +838,7 @@ workflow GERMLINE {
     //
     def ch_collated_versions = softwareVersionsToYAML(ch_versions)
         .collectFile(
-            storeDir: "${outdir}/pipeline_info",
+            storeDir: "${outdir}/v${workflow.manifest.version.replace('.', '_')}_${new Date().format("yyyy_MM_dd")}",
             name:  ''  + 'pipeline_software_' +  'mqc_'  + 'versions.yml',
             sort: true,
             newLine: true

@@ -84,7 +84,7 @@ workflow PIPELINE_INITIALISATION {
     )
 
     // Output the samplesheet
-    file(input).copyTo("${outdir}/samplesheet.csv")
+    file(input).copyTo("${outdir}/v${workflow.manifest.version.replace('.', '_')}_${new Date().format("yyyy_MM_dd")}/samplesheet.csv")
 
     emit:
     samplesheet = WATCHPATH_HANDLING.out.samplesheet
