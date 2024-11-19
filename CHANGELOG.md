@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 1. Validation of all samples now use an intersect of the golden truth BED files with the BED file used to call the variants. This should fix the WES validation which was broken until this point.
 2. A couple of small fixes to the vardict flow.
 3. Only use the standard chromosomes for UPDio analysis.
+4. Reduced the resources given to some GATK4 modules
+5. VCF2DB now uses a seqera container to fix some issues when running it in nomad
 
 ## v1.8.2 - Outstanding Oostkamp - [September 30 2024]
 
