@@ -13,9 +13,11 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0 # fetch all commits/branches
+
       - uses: actions/setup-python@v4
         with:
           python-version: 3.x
+
       - name: Fetch current date
         id: date
         run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_OUTPUT
@@ -29,6 +31,7 @@ jobs:
       - name: Parse version
         id: version
         run: |
+          echo ${{ steps.read_yml.outputs }}
           [[ ${{ steps.read_yml.outputs.template.version }} == *"dev"* ]] && pipeline_version="dev" || pipeline_version=$version
           echo "version=$pipeline_version" >> $GITHUB_OUTPUT
 
