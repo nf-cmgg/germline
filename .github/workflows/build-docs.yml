@@ -31,8 +31,7 @@ jobs:
       - name: Parse version
         id: version
         run: |
-          echo ${{ steps.read_yml.outputs }}
-          [[ ${{ steps.read_yml.outputs.template.version }} == *"dev"* ]] && pipeline_version="dev" || pipeline_version=$version
+          [[ ${{ steps.read_yml.outputs['template.version'] }} == *"dev"* ]] && pipeline_version="dev" || pipeline_version=$version
           echo "version=$pipeline_version" >> $GITHUB_OUTPUT
 
       - name: Setup git user
