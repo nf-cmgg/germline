@@ -19,8 +19,516 @@ Changes in 'bcftools/annotate/main.nf':
 'modules/nf-core/bcftools/annotate/tests/vcf.config' is unchanged
 'modules/nf-core/bcftools/annotate/tests/vcf_gz_index_csi.config' is unchanged
 'modules/nf-core/bcftools/annotate/tests/vcf_gz_index_tbi.config' is unchanged
-'modules/nf-core/bcftools/annotate/tests/main.nf.test' is unchanged
+Changes in 'bcftools/annotate/tests/main.nf.test':
+--- modules/nf-core/bcftools/annotate/tests/main.nf.test
++++ modules/nf-core/bcftools/annotate/tests/main.nf.test
+@@ -21,9 +21,9 @@
+                     file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test.vcf.gz', checkIfExists: true),
+                     file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test.vcf.gz.tbi', checkIfExists: true),
+                     file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test2.vcf.gz', checkIfExists: true),
+-                    file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test2.vcf.gz.tbi', checkIfExists: true)
+-                ]
+-                input[1] = []
++                    file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test2.vcf.gz.tbi', checkIfExists: true),
++                    []
++                ]
+                 """
+             }
+         }
+@@ -52,9 +52,9 @@
+                     file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test.vcf.gz', checkIfExists: true),
+                     [],
+                     file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test2.vcf.gz', checkIfExists: true),
+-                    file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test2.vcf.gz.tbi', checkIfExists: true)
+-                ]
+-                input[1] = []
++                    file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test2.vcf.gz.tbi', checkIfExists: true),
++                    []
++                ]
+                 """
+             }
+         }
+@@ -82,9 +82,9 @@
+                     file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test.vcf.gz', checkIfExists: true),
+                     file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test.vcf.gz.tbi', checkIfExists: true),
+                     file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test2.vcf.gz', checkIfExists: true),
+-                    file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test2.vcf.gz.tbi', checkIfExists: true)
+-                ]
+-                input[1] = []
++                    file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test2.vcf.gz.tbi', checkIfExists: true),
++                    []
++                ]
+                 """
+             }
+         }
+@@ -116,9 +116,9 @@
+                     file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test.vcf.gz', checkIfExists: true),
+                     file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test.vcf.gz.tbi', checkIfExists: true),
+                     file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test2.vcf.gz', checkIfExists: true),
+-                    file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test2.vcf.gz.tbi', checkIfExists: true)
+-                ]
+-                input[1] = []
++                    file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test2.vcf.gz.tbi', checkIfExists: true),
++                    []
++                ]
+                 """
+             }
+         }
+@@ -150,9 +150,9 @@
+                     file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test.vcf.gz', checkIfExists: true),
+                     file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test.vcf.gz.tbi', checkIfExists: true),
+                     file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test2.vcf.gz', checkIfExists: true),
+-                    file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test2.vcf.gz.tbi', checkIfExists: true)
+-                ]
+-                input[1] = []
++                    file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test2.vcf.gz.tbi', checkIfExists: true),
++                    []
++                ]
+                 """
+             }
+         }
+@@ -178,17 +178,18 @@
+         when {
+             process {
+                 """
+-                input[0] = [
++                input[0] = Channel.of([
+                     [ id:'test', single_end:false ], // meta map
+                     file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test.vcf.gz', checkIfExists: true),
+                     [],
+                     file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test2.vcf.gz', checkIfExists: true),
+                     file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test2.vcf.gz.tbi', checkIfExists: true)
+-                ]
+-                input[1] = Channel.of(
+-                    '##INFO=<ID=SGB,Number=1,Type=Float,Description="Segregation based metric.">',
+-                    '##INFO=<ID=MQ0F,Number=1,Type=Float,Description="Fraction of MQ0 reads (smaller is better)">'
+-                ).collectFile(name:"headers.vcf", newLine:true)
++                ]).join(
++                    Channel.of(
++                        '##INFO=<ID=SGB,Number=1,Type=Float,Description="Segregation based metric.">',
++                        '##INFO=<ID=MQ0F,Number=1,Type=Float,Description="Fraction of MQ0 reads (smaller is better)">'
++                    ).collectFile(name:"headers.vcf", newLine:true)
++                )
+                 """
+             }
+         }
+@@ -218,9 +219,9 @@
+                     file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test.vcf.gz', checkIfExists: true),
+                     file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test.vcf.gz.tbi', checkIfExists: true),
+                     file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test2.vcf.gz', checkIfExists: true),
+-                    file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test2.vcf.gz.tbi', checkIfExists: true)
+-                ]
+-                input[1] = []
++                    file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test2.vcf.gz.tbi', checkIfExists: true),
++                    []
++                ]
+                 """
+             }
+         }
+@@ -247,9 +248,9 @@
+                     file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test.vcf.gz', checkIfExists: true),
+                     file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test.vcf.gz.tbi', checkIfExists: true),
+                     file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test2.vcf.gz', checkIfExists: true),
+-                    file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test2.vcf.gz.tbi', checkIfExists: true)
+-                ]
+-                input[1] = []
++                    file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test2.vcf.gz.tbi', checkIfExists: true),
++                    []
++                ]
+                 """
+             }
+         }
+@@ -277,9 +278,9 @@
+                     file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test.vcf.gz', checkIfExists: true),
+                     file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test.vcf.gz.tbi', checkIfExists: true),
+                     file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test2.vcf.gz', checkIfExists: true),
+-                    file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test2.vcf.gz.tbi', checkIfExists: true)
+-                ]
+-                input[1] = []
++                    file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test2.vcf.gz.tbi', checkIfExists: true),
++                    []
++                ]
+                 """
+             }
+         }
+@@ -307,9 +308,9 @@
+                     file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test.vcf.gz', checkIfExists: true),
+                     file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test.vcf.gz.tbi', checkIfExists: true),
+                     file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test2.vcf.gz', checkIfExists: true),
+-                    file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test2.vcf.gz.tbi', checkIfExists: true)
+-                ]
+-                input[1] = []
++                    file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/vcf/test2.vcf.gz.tbi', checkIfExists: true),
++                    []
++                ]
+                 """
+             }
+         }
+
 'modules/nf-core/bcftools/annotate/tests/bcf.config' is unchanged
 'modules/nf-core/bcftools/annotate/tests/vcf_gz_index.config' is unchanged
-'modules/nf-core/bcftools/annotate/tests/main.nf.test.snap' is unchanged
+Changes in 'bcftools/annotate/tests/main.nf.test.snap':
+--- modules/nf-core/bcftools/annotate/tests/main.nf.test.snap
++++ modules/nf-core/bcftools/annotate/tests/main.nf.test.snap
+@@ -1,26 +1,5 @@
+ {
+-    "bcf": {
+-        "content": [
+-            [
+-                [
+-                    {
+-                        "id": "test",
+-                        "single_end": false
+-                    },
+-                    "test_ann.bcf"
+-                ]
+-            ],
+-            [
+-                "versions.yml:md5,ea53f98610d42597cf384ff1fa3eb204"
+-            ]
+-        ],
+-        "meta": {
+-            "nf-test": "0.8.4",
+-            "nextflow": "24.04.2"
+-        },
+-        "timestamp": "2024-06-12T16:39:33.331888"
+-    },
+-    "sarscov2 - [vcf, tbi, annotation, annotation_tbi], [] - vcf_gz_index": {
++    "sarscov2 - [vcf, tbi, annotation, annotation_tbi], [] - vcf_gz_index_csi": {
+         "content": [
+             [
+                 [
+@@ -51,9 +30,9 @@
+             "nf-test": "0.8.4",
+             "nextflow": "24.04.2"
+         },
+-        "timestamp": "2024-08-15T10:07:59.658031137"
+-    },
+-    "sarscov2 - [vcf, tbi, annotation, annotation_tbi], [] - vcf_gz_index_csi - stub": {
++        "timestamp": "2024-08-15T10:08:10.581301219"
++    },
++    "sarscov2 - [vcf, tbi, annotation, annotation_tbi], [] - stub": {
+         "content": [
+             {
+                 "0": [
+@@ -69,25 +48,13 @@
+                     
+                 ],
+                 "2": [
+-                    [
+-                        {
+-                            "id": "test",
+-                            "single_end": false
+-                        },
+-                        "test_vcf.vcf.gz.csi:md5,d41d8cd98f00b204e9800998ecf8427e"
+-                    ]
++                    
+                 ],
+                 "3": [
+                     "versions.yml:md5,ea53f98610d42597cf384ff1fa3eb204"
+                 ],
+                 "csi": [
+-                    [
+-                        {
+-                            "id": "test",
+-                            "single_end": false
+-                        },
+-                        "test_vcf.vcf.gz.csi:md5,d41d8cd98f00b204e9800998ecf8427e"
+-                    ]
++                    
+                 ],
+                 "tbi": [
+                     
+@@ -110,9 +77,78 @@
+             "nf-test": "0.8.4",
+             "nextflow": "24.04.2"
+         },
+-        "timestamp": "2024-08-15T10:09:05.096883418"
+-    },
+-    "sarscov2 - [vcf, tbi, annotation, annotation_tbi], [] - vcf_gz_index_csi": {
++        "timestamp": "2024-08-15T10:08:43.975017625"
++    },
++    "sarscov2 - [vcf, tbi, annotation, annotation_tbi], [] - vcf_gz_index_tbi": {
++        "content": [
++            [
++                [
++                    {
++                        "id": "test",
++                        "single_end": false
++                    },
++                    "test_vcf.vcf.gz"
++                ]
++            ],
++            [
++                [
++                    {
++                        "id": "test",
++                        "single_end": false
++                    },
++                    "test_vcf.vcf.gz.tbi"
++                ]
++            ],
++            [
++                
++            ],
++            [
++                "versions.yml:md5,ea53f98610d42597cf384ff1fa3eb204"
++            ]
++        ],
++        "meta": {
++            "nf-test": "0.8.4",
++            "nextflow": "24.04.2"
++        },
++        "timestamp": "2024-08-15T10:08:21.354059092"
++    },
++    "bcf": {
++        "content": [
++            [
++                
++            ],
++            [
++                
++            ]
++        ],
++        "meta": {
++            "nf-test": "0.9.1",
++            "nextflow": "24.10.0"
++        },
++        "timestamp": "2024-11-20T13:52:35.607526048"
++    },
++    "sarscov2 - [vcf, tbi, annotation, annotation_tbi], [] - vcf_output": {
++        "content": [
++            [
++                [
++                    {
++                        "id": "test",
++                        "single_end": false
++                    },
++                    "test_vcf.vcf.gz"
++                ]
++            ],
++            [
++                "versions.yml:md5,ea53f98610d42597cf384ff1fa3eb204"
++            ]
++        ],
++        "meta": {
++            "nf-test": "0.8.4",
++            "nextflow": "24.04.2"
++        },
++        "timestamp": "2024-08-15T10:07:37.788393317"
++    },
++    "sarscov2 - [vcf, tbi, annotation, annotation_tbi], [] - vcf_gz_index": {
+         "content": [
+             [
+                 [
+@@ -143,9 +179,30 @@
+             "nf-test": "0.8.4",
+             "nextflow": "24.04.2"
+         },
+-        "timestamp": "2024-08-15T10:08:10.581301219"
+-    },
+-    "sarscov2 - [vcf, tbi, annotation, annotation_tbi], [] - stub": {
++        "timestamp": "2024-08-15T10:07:59.658031137"
++    },
++    "sarscov2 - [vcf, [], annotation, annotation_tbi], [] - vcf_output": {
++        "content": [
++            [
++                [
++                    {
++                        "id": "test",
++                        "single_end": false
++                    },
++                    "test_vcf.vcf.gz"
++                ]
++            ],
++            [
++                "versions.yml:md5,ea53f98610d42597cf384ff1fa3eb204"
++            ]
++        ],
++        "meta": {
++            "nf-test": "0.8.4",
++            "nextflow": "24.04.2"
++        },
++        "timestamp": "2024-08-15T10:07:48.500746325"
++    },
++    "sarscov2 - [vcf, tbi, annotation, annotation_tbi], [] - vcf_gz_index_tbi - stub": {
+         "content": [
+             {
+                 "0": [
+@@ -158,7 +215,13 @@
+                     ]
+                 ],
+                 "1": [
+-                    
++                    [
++                        {
++                            "id": "test",
++                            "single_end": false
++                        },
++                        "test_vcf.vcf.gz.tbi:md5,d41d8cd98f00b204e9800998ecf8427e"
++                    ]
+                 ],
+                 "2": [
+                     
+@@ -170,7 +233,13 @@
+                     
+                 ],
+                 "tbi": [
+-                    
++                    [
++                        {
++                            "id": "test",
++                            "single_end": false
++                        },
++                        "test_vcf.vcf.gz.tbi:md5,d41d8cd98f00b204e9800998ecf8427e"
++                    ]
+                 ],
+                 "vcf": [
+                     [
+@@ -190,84 +259,9 @@
+             "nf-test": "0.8.4",
+             "nextflow": "24.04.2"
+         },
+-        "timestamp": "2024-08-15T10:08:43.975017625"
+-    },
+-    "sarscov2 - [vcf, tbi, annotation, annotation_tbi], [] - vcf_gz_index_tbi": {
+-        "content": [
+-            [
+-                [
+-                    {
+-                        "id": "test",
+-                        "single_end": false
+-                    },
+-                    "test_vcf.vcf.gz"
+-                ]
+-            ],
+-            [
+-                [
+-                    {
+-                        "id": "test",
+-                        "single_end": false
+-                    },
+-                    "test_vcf.vcf.gz.tbi"
+-                ]
+-            ],
+-            [
+-                
+-            ],
+-            [
+-                "versions.yml:md5,ea53f98610d42597cf384ff1fa3eb204"
+-            ]
+-        ],
+-        "meta": {
+-            "nf-test": "0.8.4",
+-            "nextflow": "24.04.2"
+-        },
+-        "timestamp": "2024-08-15T10:08:21.354059092"
+-    },
+-    "sarscov2 - [vcf, tbi, annotation, annotation_tbi], [] - vcf_output": {
+-        "content": [
+-            [
+-                [
+-                    {
+-                        "id": "test",
+-                        "single_end": false
+-                    },
+-                    "test_vcf.vcf.gz"
+-                ]
+-            ],
+-            [
+-                "versions.yml:md5,ea53f98610d42597cf384ff1fa3eb204"
+-            ]
+-        ],
+-        "meta": {
+-            "nf-test": "0.8.4",
+-            "nextflow": "24.04.2"
+-        },
+-        "timestamp": "2024-08-15T10:07:37.788393317"
+-    },
+-    "sarscov2 - [vcf, [], annotation, annotation_tbi], [] - vcf_output": {
+-        "content": [
+-            [
+-                [
+-                    {
+-                        "id": "test",
+-                        "single_end": false
+-                    },
+-                    "test_vcf.vcf.gz"
+-                ]
+-            ],
+-            [
+-                "versions.yml:md5,ea53f98610d42597cf384ff1fa3eb204"
+-            ]
+-        ],
+-        "meta": {
+-            "nf-test": "0.8.4",
+-            "nextflow": "24.04.2"
+-        },
+-        "timestamp": "2024-08-15T10:07:48.500746325"
+-    },
+-    "sarscov2 - [vcf, tbi, annotation, annotation_tbi], [] - vcf_gz_index_tbi - stub": {
++        "timestamp": "2024-08-15T10:09:16.094918834"
++    },
++    "sarscov2 - [vcf, tbi, annotation, annotation_tbi], [] - vcf_gz_index_csi - stub": {
+         "content": [
+             {
+                 "0": [
+@@ -280,31 +274,31 @@
+                     ]
+                 ],
+                 "1": [
+-                    [
+-                        {
+-                            "id": "test",
+-                            "single_end": false
+-                        },
+-                        "test_vcf.vcf.gz.tbi:md5,d41d8cd98f00b204e9800998ecf8427e"
+-                    ]
++                    
+                 ],
+                 "2": [
+-                    
++                    [
++                        {
++                            "id": "test",
++                            "single_end": false
++                        },
++                        "test_vcf.vcf.gz.csi:md5,d41d8cd98f00b204e9800998ecf8427e"
++                    ]
+                 ],
+                 "3": [
+                     "versions.yml:md5,ea53f98610d42597cf384ff1fa3eb204"
+                 ],
+                 "csi": [
+-                    
++                    [
++                        {
++                            "id": "test",
++                            "single_end": false
++                        },
++                        "test_vcf.vcf.gz.csi:md5,d41d8cd98f00b204e9800998ecf8427e"
++                    ]
+                 ],
+                 "tbi": [
+-                    [
+-                        {
+-                            "id": "test",
+-                            "single_end": false
+-                        },
+-                        "test_vcf.vcf.gz.tbi:md5,d41d8cd98f00b204e9800998ecf8427e"
+-                    ]
++                    
+                 ],
+                 "vcf": [
+                     [
+@@ -324,7 +318,7 @@
+             "nf-test": "0.8.4",
+             "nextflow": "24.04.2"
+         },
+-        "timestamp": "2024-08-15T10:09:16.094918834"
++        "timestamp": "2024-08-15T10:09:05.096883418"
+     },
+     "sarscov2 - [vcf, tbi, annotation, annotation_tbi], [] - vcf_gz_index - stub": {
+         "content": [
+
 ************************************************************
