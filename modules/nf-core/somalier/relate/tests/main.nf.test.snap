@@ -30,6 +30,15 @@
                     ]
                 ],
                 "3": [
+                    [
+                        {
+                            "id": "cohort",
+                            "single_end": false
+                        },
+                        "cohort_somalier.ped:md5,377126dd9cfb8218ec6783fa68d53e67"
+                    ]
+                ],
+                "4": [
                     "versions.yml:md5,59d805a9f89558414535c136c814bea6"
                 ],
                 "html": [
@@ -50,6 +59,15 @@
                         "cohort.pairs.tsv:md5,54d1e9fca1bf9d747d4254c6fa98edcf"
                     ]
                 ],
+                "ped": [
+                    [
+                        {
+                            "id": "cohort",
+                            "single_end": false
+                        },
+                        "cohort_somalier.ped:md5,377126dd9cfb8218ec6783fa68d53e67"
+                    ]
+                ],
                 "samples_tsv": [
                     [
                         {
@@ -65,10 +83,10 @@
             }
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.04.2"
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
         },
-        "timestamp": "2024-07-02T05:29:21.162582556"
+        "timestamp": "2024-11-20T13:00:49.22698226"
     },
     "[ delete_me, [] ], [] -stub": {
         "content": [
@@ -101,6 +119,15 @@
                     ]
                 ],
                 "3": [
+                    [
+                        {
+                            "id": "cohort",
+                            "single_end": false
+                        },
+                        "cohort_somalier.ped:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "4": [
                     "versions.yml:md5,59d805a9f89558414535c136c814bea6"
                 ],
                 "html": [
@@ -121,6 +148,15 @@
                         "cohort.pairs.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
                     ]
                 ],
+                "ped": [
+                    [
+                        {
+                            "id": "cohort",
+                            "single_end": false
+                        },
+                        "cohort_somalier.ped:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
                 "samples_tsv": [
                     [
                         {
@@ -136,10 +172,10 @@
             }
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.04.2"
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
         },
-        "timestamp": "2024-07-02T05:29:43.887124223"
+        "timestamp": "2024-11-20T13:01:06.098709152"
     },
     "[ delete_me, ped ], groups -stub": {
         "content": [
@@ -172,6 +208,15 @@
                     ]
                 ],
                 "3": [
+                    [
+                        {
+                            "id": "cohort",
+                            "single_end": false
+                        },
+                        "cohort_somalier.ped:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "4": [
                     "versions.yml:md5,59d805a9f89558414535c136c814bea6"
                 ],
                 "html": [
@@ -192,6 +237,15 @@
                         "cohort.pairs.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
                     ]
                 ],
+                "ped": [
+                    [
+                        {
+                            "id": "cohort",
+                            "single_end": false
+                        },
+                        "cohort_somalier.ped:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
                 "samples_tsv": [
                     [
                         {
@@ -207,10 +261,10 @@
             }
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.04.2"
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
         },
-        "timestamp": "2024-07-02T05:29:55.034913513"
+        "timestamp": "2024-11-20T13:01:14.932484293"
     },
     "[ delete_me, ped ], groups": {
         "content": [
@@ -243,6 +297,15 @@
                     ]
                 ],
                 "3": [
+                    [
+                        {
+                            "id": "cohort",
+                            "single_end": false
+                        },
+                        "cohort_somalier.ped:md5,1eec67a4157fff88730161a080430ba5"
+                    ]
+                ],
+                "4": [
                     "versions.yml:md5,59d805a9f89558414535c136c814bea6"
                 ],
                 "html": [
@@ -263,6 +326,15 @@
                         "cohort.pairs.tsv:md5,8655714f1e5359329188e9f501168131"
                     ]
                 ],
+                "ped": [
+                    [
+                        {
+                            "id": "cohort",
+                            "single_end": false
+                        },
+                        "cohort_somalier.ped:md5,1eec67a4157fff88730161a080430ba5"
+                    ]
+                ],
                 "samples_tsv": [
                     [
                         {
@@ -278,9 +350,9 @@
             }
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.04.2"
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
         },
-        "timestamp": "2024-07-02T05:29:32.451456985"
+        "timestamp": "2024-11-20T13:00:57.673492011"
     }
 }
