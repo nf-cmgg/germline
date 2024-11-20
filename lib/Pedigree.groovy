@@ -84,7 +84,7 @@ class PedigreeEntry {
         // Family ID
         id = lineSplit[0]
         if (id ==~ idRegex) {
-            familyId = id
+            familyId = id.replace(".", "_") // Replace dots with underscores to prevent breaking the multiqc report
         } else {
             exceptions.add("Invalid family ID (${id}). It should only contain these characters: a-z, A-Z, 0-9, _ and ." as String)
         }
@@ -92,7 +92,7 @@ class PedigreeEntry {
         // Individual ID
         id = lineSplit[1]
         if (id ==~ idRegex) {
-            individualId = id
+            individualId = id.replace(".", "_") // Replace dots with underscores to prevent breaking the multiqc report
         } else {
             exceptions.add("Invalid individual ID (${id}). It should only contain these characters: a-z, A-Z, 0-9, _ and ." as String)
         }
@@ -102,7 +102,7 @@ class PedigreeEntry {
         // Paternal ID
         id = lineSplit[2]
         if (id ==~ idRegex) {
-            paternalId = id
+            paternalId = id.replace(".", "_") // Replace dots with underscores to prevent breaking the multiqc report
         } else if (!validMissingIDs.contains(id)) {
             exceptions.add("Invalid paternal ID (${id}). It should only contain these characters: a-z, A-Z, 0-9, _ and .; Use 0 if the paternal ID is missing" as String)
         }
@@ -110,7 +110,7 @@ class PedigreeEntry {
         // Maternal ID
         id = lineSplit[3]
         if (id ==~ idRegex) {
-            maternalId = id
+            maternalId = id.replace(".", "_") // Replace dots with underscores to prevent breaking the multiqc report
         } else if (!validMissingIDs.contains(id)) {
             exceptions.add("Invalid maternal ID (${id}). It should only contain these characters: a-z, A-Z, 0-9, _ and .; Use 0 if the maternal ID is missing" as String)
         }
