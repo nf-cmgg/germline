@@ -1,0 +1,19 @@
+Changes in module 'nf-core/gatk4/createsequencedictionary'
+'modules/nf-core/gatk4/createsequencedictionary/environment.yml' is unchanged
+'modules/nf-core/gatk4/createsequencedictionary/meta.yml' is unchanged
+Changes in 'gatk4/createsequencedictionary/main.nf':
+--- modules/nf-core/gatk4/createsequencedictionary/main.nf
++++ modules/nf-core/gatk4/createsequencedictionary/main.nf
+@@ -1,6 +1,6 @@
+ process GATK4_CREATESEQUENCEDICTIONARY {
+     tag "$fasta"
+-    label 'process_medium'
++    label 'process_low'
+ 
+     conda "${moduleDir}/environment.yml"
+     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+
+'modules/nf-core/gatk4/createsequencedictionary/tests/main.nf.test.snap' is unchanged
+'modules/nf-core/gatk4/createsequencedictionary/tests/tags.yml' is unchanged
+'modules/nf-core/gatk4/createsequencedictionary/tests/main.nf.test' is unchanged
+************************************************************

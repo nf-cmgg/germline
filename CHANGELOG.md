@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 3. Only use the standard chromosomes for UPDio analysis.
 4. Reduced the resources given to some GATK4 modules
 5. VCF2DB now uses a seqera container to fix some issues when running it in nomad
+6. Dots in sample and family names are now converted to an underscore automatically.
 
 ## v1.8.2 - Outstanding Oostkamp - [September 30 2024]
 
