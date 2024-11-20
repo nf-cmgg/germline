@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.40">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.45">
     
     
       
@@ -26,7 +26,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.8c3ca2c6.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.0253249f.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
@@ -568,7 +568,7 @@
 <td>Path to comma-separated file containing information about the samples in the experiment. <details><summary>Help</summary><small>You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with samples, and a header row. See <a href="../usage/">usage docs</a>.</small></details></td>
 <td><code>string</code></td>
 <td></td>
-<td>True</td>
+<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
 <td></td>
 </tr>
 <tr>
@@ -576,7 +576,7 @@
 <td>The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.</td>
 <td><code>string</code></td>
 <td></td>
-<td>True</td>
+<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
 <td></td>
 </tr>
 <tr>
@@ -632,7 +632,7 @@
 <td>Path to FASTA genome file. <details><summary>Help</summary><small>This parameter is <em>mandatory</em> if <code>--genome</code> is not specified. The path to the reference genome fasta.</small></details></td>
 <td><code>string</code></td>
 <td></td>
-<td>True</td>
+<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
 <td></td>
 </tr>
 <tr>
@@ -668,6 +668,30 @@
 <td></td>
 </tr>
 <tr>
+<td><code>elfasta</code></td>
+<td>Path to the ELFASTA genome file. This is used when <code>elprep</code> is part of the callers and will be automatically generated when missing.</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>elsites</code></td>
+<td>Path to the elsites file. This is used when <code>elprep</code> is part of the callers.</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>genomes</code></td>
+<td>Object for genomes</td>
+<td><code>object</code></td>
+<td></td>
+<td></td>
+<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
+</tr>
+<tr>
 <td><code>genomes_base</code></td>
 <td>Directory base for CMGG reference store (used when <code>--genomes_ignore false</code> is specified)</td>
 <td><code>string</code></td>
@@ -681,7 +705,7 @@
 <td><code>string</code></td>
 <td>/conf/</td>
 <td></td>
-<td>True</td>
+<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
 </tr>
 <tr>
 <td><code>genomes_ignore</code></td>
@@ -689,7 +713,7 @@
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
-<td>True</td>
+<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
 </tr>
 <tr>
 <td><code>igenomes_base</code></td>
@@ -697,7 +721,7 @@
 <td><code>string</code></td>
 <td></td>
 <td></td>
-<td>True</td>
+<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
 </tr>
 <tr>
 <td><code>igenomes_ignore</code></td>
@@ -705,7 +729,7 @@
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
-<td>True</td>
+<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
 </tr>
 </tbody>
 </table>
@@ -790,22 +814,6 @@
 <tr>
 <td><code>mosdepth_slow</code></td>
 <td>Don't run mosdepth in fast-mode <details><summary>Help</summary><small>This is advised if you need exact coverage BED files as output.</small></details></td>
-<td><code>boolean</code></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td><code>project</code></td>
-<td>The name of the project. <details><summary>Help</summary><small>This will be used to specify the name of the final output files folder in the output directory.</small></details></td>
-<td><code>string</code></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td><code>skip_date_project</code></td>
-<td>Don't add the current date to the output project folder.</td>
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
@@ -1001,7 +1009,7 @@
 <td><code>string</code></td>
 <td>master</td>
 <td></td>
-<td>True</td>
+<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
 </tr>
 <tr>
 <td><code>custom_config_base</code></td>
@@ -1009,7 +1017,7 @@
 <td><code>string</code></td>
 <td>https://raw.githubusercontent.com/nf-core/configs/master</td>
 <td></td>
-<td>True</td>
+<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
 </tr>
 <tr>
 <td><code>config_profile_name</code></td>
@@ -1017,7 +1025,7 @@
 <td><code>string</code></td>
 <td></td>
 <td></td>
-<td>True</td>
+<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
 </tr>
 <tr>
 <td><code>config_profile_description</code></td>
@@ -1025,7 +1033,7 @@
 <td><code>string</code></td>
 <td></td>
 <td></td>
-<td>True</td>
+<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
 </tr>
 <tr>
 <td><code>config_profile_contact</code></td>
@@ -1033,7 +1041,7 @@
 <td><code>string</code></td>
 <td></td>
 <td></td>
-<td>True</td>
+<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
 </tr>
 <tr>
 <td><code>config_profile_url</code></td>
@@ -1041,7 +1049,7 @@
 <td><code>string</code></td>
 <td></td>
 <td></td>
-<td>True</td>
+<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
 </tr>
 </tbody>
 </table>
@@ -1059,22 +1067,6 @@
 </tr>
 </thead>
 <tbody>
-<tr>
-<td><code>help</code></td>
-<td>Display help text. Give a parameter name to this option to see the detailed help of that parameter.</td>
-<td><code>['boolean', 'string']</code></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td><code>helpFull</code></td>
-<td>See the full help message of all parameters.</td>
-<td><code>boolean</code></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
 <tr>
 <td><code>version</code></td>
 <td>Display version and exit.</td>
@@ -1097,7 +1089,7 @@
 <td><code>string</code></td>
 <td></td>
 <td></td>
-<td>True</td>
+<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
 </tr>
 <tr>
 <td><code>plaintext_email</code></td>
@@ -1105,7 +1097,7 @@
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
-<td>True</td>
+<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
 </tr>
 <tr>
 <td><code>max_multiqc_email_size</code></td>
@@ -1113,7 +1105,15 @@
 <td><code>string</code></td>
 <td>25.MB</td>
 <td></td>
-<td>True</td>
+<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
+</tr>
+<tr>
+<td><code>monochrome_logs</code></td>
+<td>Do not use coloured log outputs.</td>
+<td><code>boolean</code></td>
+<td></td>
+<td></td>
+<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
 </tr>
 <tr>
 <td><code>hook_url</code></td>
@@ -1159,9 +1159,9 @@
 <td><code>validate_params</code></td>
 <td>Boolean whether to validate parameters against the schema at runtime</td>
 <td><code>boolean</code></td>
-<td>True</td>
+<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
 <td></td>
-<td>True</td>
+<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
 </tr>
 <tr>
 <td><code>pipelines_testdata_base_path</code></td>
@@ -1169,7 +1169,7 @@
 <td><code>string</code></td>
 <td>https://raw.githubusercontent.com/nf-core/test-datasets/</td>
 <td></td>
-<td>True</td>
+<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
 </tr>
 </tbody>
 </table>
@@ -1207,7 +1207,7 @@
 <td><code>vep_merged</code></td>
 <td>Specify if the VEP cache is a merged cache.</td>
 <td><code>boolean</code></td>
-<td>True</td>
+<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
 <td></td>
 <td></td>
 </tr>
@@ -1516,7 +1516,7 @@
     <script id="__config" type="application/json">{"base": "..", "features": ["content.code.annotate", "content.code.copy", "navigation.instant", "navigation.top", "navigation.tracking", "navigation.sections", "navigation.footer", "search.share", "toc.follow"], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.525ec568.min.js"></script>
+      <script src="../assets/javascripts/bundle.83f73b43.min.js"></script>
       
     
   </body>
