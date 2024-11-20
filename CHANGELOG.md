@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 1. Validation of all samples now use an intersect of the golden truth BED files with the BED file used to call the variants. This should fix the WES validation which was broken until this point.
 2. A couple of small fixes to the vardict flow.
 3. Only use the standard chromosomes for UPDio analysis.
+4. Dots in sample and family names are now converted to an underscore automatically.
 
 ## v1.8.2 - Outstanding Oostkamp - [September 30 2024]
 
