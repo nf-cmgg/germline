@@ -17,9 +17,16 @@ jobs:
         with:
           python-version: 3.x
       - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
-      - name: Obtain version from nextflow config
+
+      - name: Read pipeline version from .nf-core.yml
+        uses: nichmor/minimal-read-yaml@v0.0.2
+        id: read_yml
+        with:
+          config: ${{ github.workspace }}/.nf-core.yml
+        
+      - name: Parse version
         run: |
-          version=$(grep "version" nextflow.config | tail -1 | sed -e s'/[^=]*= //' | cut -d "'" -f 2)
+          version=${{ steps.read_yml.outputs['template']['version']}}
           [[ $version == *"dev"* ]] && pipeline_version="dev" || pipeline_version=$version
           echo "pipeline_version=$pipeline_version" >> $GITHUB_ENV
       - name: Setup git user
