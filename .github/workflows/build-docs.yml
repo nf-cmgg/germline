@@ -32,20 +32,24 @@ jobs:
           version=${{ steps.read_yml.outputs['template']['version']}}
           [[ $version == *"dev"* ]] && pipeline_version="dev" || pipeline_version=$version
           echo "pipeline_version=$pipeline_version" >> $GITHUB_OUTPUT
+
       - name: Setup git user
         run: |
           git config --global user.name "${{github.actor}}"
           git config --global user.email "${{github.actor}}@users.noreply.github.com"
       - uses: actions/cache@v3
         with:
-          key: mkdocs-material-${{ steps.date.cache_id }}
+          key: mkdocs-material-${{ steps.date.outputs.cache_id }}
           path: .cache
           restore-keys: |
             mkdocs-material-
+
       - name: Install dependencies
         run: pip install mkdocs-material pymdown-extensions pillow cairosvg mike
+
       - name: Build docs
         run: |
-          [[ ${{ steps.version.pipeline_version }} == "dev" ]] && mike deploy --push ${{ env.pipeline_version }} || mike deploy --push --update-aliases ${{ env.pipeline_version }} latest
+          [[ ${{ steps.version.outputs.pipeline_version }} == "dev" ]] && mike deploy --push ${{ steps.version.outputs.pipeline_version }} || mike deploy --push --update-aliases ${{ env.pipeline_version }} latest
+
       - name: Set default docs
         run: mike set-default --push latest
