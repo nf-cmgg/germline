@@ -37,6 +37,11 @@ workflow WATCHPATH_HANDLING {
     def samplesheet_list = samplesheetToList(input_samplesheet, samplesheet_schema)
         // Do some calculations and manipulations here
         .collect { row ->
+            // Replace dots with underscores in sample and family names to prevent breaking the multiqc report
+            row[0].id = row[0].id.replace(".", "_")
+            row[0].sample = row[0].sample.replace(".", "_")
+            row[0].family = row[0].family.replace(".", "_")
+
             // Watchpath logic
             def is_watch = false
             row = row.collect { input ->
