@@ -27,7 +27,7 @@ jobs:
         id: read_yml
         with:
           config: ${{ github.workspace }}/.nf-core.yml
-        
+
       - name: Parse version
         id: version
         run: |
