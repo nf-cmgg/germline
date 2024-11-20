@@ -18,15 +18,6 @@
                 "custom_test0_annotated.vep.vcf.gz_summary.html"
             ],
             [
-                
-            ],
-            [
-                
-            ],
-            [
-                
-            ],
-            [
                 "versions.yml",
                 "versions.yml",
                 "versions.yml",
@@ -38,7 +29,7 @@
             "nf-test": "0.9.1",
             "nextflow": "24.10.0"
         },
-        "timestamp": "2024-11-20T12:31:33.458639199"
+        "timestamp": "2024-11-20T14:31:50.569767686"
     },
     "sarscov2 - ensemblvep - no scatter": {
         "content": [
@@ -56,15 +47,6 @@
                 "custom_test.vep.vcf.gz_summary.html"
             ],
             [
-                
-            ],
-            [
-                
-            ],
-            [
-                
-            ],
-            [
                 "versions.yml",
                 "versions.yml"
             ]
@@ -73,7 +55,7 @@
             "nf-test": "0.9.1",
             "nextflow": "24.10.0"
         },
-        "timestamp": "2024-11-20T12:31:50.585375084"
+        "timestamp": "2024-11-20T14:32:06.437006334"
     },
     "sarscov2 - ensemblvep": {
         "content": [
@@ -95,15 +77,6 @@
                 "custom_test1_annotated.vep.vcf.gz_summary.html"
             ],
             [
-                
-            ],
-            [
-                
-            ],
-            [
-                
-            ],
-            [
                 "versions.yml",
                 "versions.yml",
                 "versions.yml",
@@ -115,6 +88,6 @@
             "nf-test": "0.9.1",
             "nextflow": "24.10.0"
         },
-        "timestamp": "2024-11-20T12:31:05.79875103"
+        "timestamp": "2024-11-20T14:31:32.997494596"
     }
 }

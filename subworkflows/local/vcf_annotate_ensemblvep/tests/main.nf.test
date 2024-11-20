@@ -1,16 +1,14 @@
 nextflow_workflow {
 
-    name "Test Subworkflow VCF_ANNOTATE_ENSEMBLVEP_SNPEFF"
+    name "Test Subworkflow VCF_ANNOTATE_ENSEMBLVEP"
     script "../main.nf"
-    workflow "VCF_ANNOTATE_ENSEMBLVEP_SNPEFF"
+    workflow "VCF_ANNOTATE_ENSEMBLVEP"
 
     tag "subworkflows"
     tag "subworkflows_nfcore"
-    tag "subworkflows/vcf_annotate_ensemblvep_snpeff"
+    tag "subworkflows/vcf_annotate_ensemblvep"
     tag "ensemblvep/download"
     tag "ensemblvep/vep"
-    tag "snpeff/download"
-    tag "snpeff/snpeff"
     tag "tabix/tabix"
     tag "tabix/bgzip"
     tag "bcftools/pluginscatter"
@@ -55,10 +53,7 @@ nextflow_workflow {
                 input[4] = "110"
                 input[5] = ENSEMBLVEP_DOWNLOAD.out.cache.map { meta, cache -> cache }
                 input[6] = []
-                input[7] = []
-                input[8] = []
-                input[9] = ["ensemblvep"]
-                input[10] = 5
+                input[7] = 5
                 """
             }
         }
@@ -69,9 +64,6 @@ nextflow_workflow {
                 { assert snapshot(
                     workflow.out.vcf_tbi.collect { [it[0], "${file(it[1]).name},variantsMD5:${path(it[1]).vcf.variantsMD5}", file(it[2]).name] },
                     workflow.out.vep_reports.collect { it instanceof String ? file(it).name : it },
-                    workflow.out.snpeff_reports.collect { it.collect { it instanceof String ? file(it).name : it } },
-                    workflow.out.snpeff_html.collect { it.collect { it instanceof String ? file(it).name : it } },
-                    workflow.out.snpeff_genes.collect { it.collect { it instanceof String ? file(it).name : it } },
                     workflow.out.versions.collect { it instanceof String ? file(it).name : it }
                 ).match()}
             )
@@ -114,10 +106,7 @@ nextflow_workflow {
                 input[4] = "110"
                 input[5] = ENSEMBLVEP_DOWNLOAD.out.cache.map { meta, cache -> cache }
                 input[6] = []
-                input[7] = []
-                input[8] = []
-                input[9] = ["ensemblvep"]
-                input[10] = 100
+                input[7] = 100
                 """
             }
         }
@@ -128,9 +117,6 @@ nextflow_workflow {
                 { assert snapshot(
                     workflow.out.vcf_tbi.collect { [it[0], "${file(it[1]).name},variantsMD5:${path(it[1]).vcf.variantsMD5}", file(it[2]).name] },
                     workflow.out.vep_reports.collect { it instanceof String ? file(it).name : it },
-                    workflow.out.snpeff_reports.collect { it.collect { it instanceof String ? file(it).name : it } },
-                    workflow.out.snpeff_html.collect { it.collect { it instanceof String ? file(it).name : it } },
-                    workflow.out.snpeff_genes.collect { it.collect { it instanceof String ? file(it).name : it } },
                     workflow.out.versions.collect { it instanceof String ? file(it).name : it }
                 ).match()}
             )
@@ -174,9 +160,6 @@ nextflow_workflow {
                 input[5] = ENSEMBLVEP_DOWNLOAD.out.cache.map { meta, cache -> cache }
                 input[6] = []
                 input[7] = []
-                input[8] = []
-                input[9] = ["ensemblvep"]
-                input[10] = []
                 """
             }
         }
@@ -187,9 +170,6 @@ nextflow_workflow {
                 { assert snapshot(
                     workflow.out.vcf_tbi.collect { [it[0], "${file(it[1]).name},variantsMD5:${path(it[1]).vcf.variantsMD5}", file(it[2]).name] },
                     workflow.out.vep_reports.collect { it instanceof String ? file(it).name : it },
-                    workflow.out.snpeff_reports.collect { it.collect { it instanceof String ? file(it).name : it } },
-                    workflow.out.snpeff_html.collect { it.collect { it instanceof String ? file(it).name : it } },
-                    workflow.out.snpeff_genes.collect { it.collect { it instanceof String ? file(it).name : it } },
                     workflow.out.versions.collect { it instanceof String ? file(it).name : it }
                 ).match()}
             )

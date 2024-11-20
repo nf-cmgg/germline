@@ -8,7 +8,7 @@ include { TABIX_BGZIP as BGZIP_ANNOTATED_VCFS } from '../../../modules/nf-core/t
 include { TABIX_TABIX as TABIX_ENSEMBLVEP     } from '../../../modules/nf-core/tabix/tabix/main'
 include { BCFTOOLS_CONCAT                     } from '../../../modules/nf-core/bcftools/concat/main'
 
-include { VCF_ANNOTATE_ENSEMBLVEP_SNPEFF as VCF_ANNOTATE_ENSEMBLVEP } from '../../../subworkflows/nf-core/vcf_annotate_ensemblvep_snpeff/main'
+include { VCF_ANNOTATE_ENSEMBLVEP             } from '../../../subworkflows/local/vcf_annotate_ensemblvep/main'
 
 workflow VCF_ANNOTATION {
     take:
@@ -62,8 +62,6 @@ workflow VCF_ANNOTATION {
         vep_cache_version,
         ch_vep_cache,
         ch_vep_extra_files,
-        [], [],
-        ["ensemblvep"],
         vep_chunk_size
     )
 
