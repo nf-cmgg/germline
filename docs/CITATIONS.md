@@ -40,6 +40,10 @@
 
   > Quinlan AR and Hall IM, 2010. BEDTools: a flexible suite of utilities for comparing genomic features. Bioinformatics. 26, 6, pp. 841–842.
 
+- [elPrep](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0244471)
+
+  > Herzeel C, Costanza P, Decap D, Fostier J, Wuyts R, Verachtert W (2021) Multithreaded variant calling in elPrep 5. PLoS ONE 16(2): e0244471
+
 - [EnsemblVEP](https://pubmed.ncbi.nlm.nih.gov/27268795/)
 
   > McLaren W, Gil L, Hunt SE, et al.: The Ensembl Variant Effect Predictor. Genome Biol. 2016 Jun 6;17(1):122. doi: 10.1186/s13059-016-0974-4. PubMed PMID: 27268795; PubMed Central PMCID: PMC4893825.

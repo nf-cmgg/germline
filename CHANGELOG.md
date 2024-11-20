@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 1. Added the `--min_callable_coverage` parameter to state what the lowest coverage should for a region to be classified as callable.
 2. Added the [`elprep` caller](https://github.com/ExaScience/elprep) as an alternative to the haplotypecaller.
+3. Added full unit tests for all parts that were missing tests.
 
 ### Changes
 
@@ -23,7 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 1. Validation of all samples now use an intersect of the golden truth BED files with the BED file used to call the variants. This should fix the WES validation which was broken until this point.
 2. A couple of small fixes to the vardict flow.
 3. Only use the standard chromosomes for UPDio analysis.
-4. Dots in sample and family names are now converted to an underscore automatically.
+4. Reduced the resources given to some GATK4 modules
+5. VCF2DB now uses a seqera container to fix some issues when running it in nomad
+6. Dots in sample and family names are now converted to an underscore automatically.
 
 ## v1.8.2 - Outstanding Oostkamp - [September 30 2024]
 
