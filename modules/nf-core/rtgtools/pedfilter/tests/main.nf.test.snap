@@ -8,7 +8,7 @@
                             "id": "test",
                             "single_end": false
                         },
-                        "test.ped:md5,342135c8bf22e573367b75ef5e1c5e6b"
+                        "test.ped:md5,16e5773a0aaaa27870b0601e572f24b5"
                     ]
                 ],
                 "1": [
@@ -20,7 +20,7 @@
                             "id": "test",
                             "single_end": false
                         },
-                        "test.ped:md5,342135c8bf22e573367b75ef5e1c5e6b"
+                        "test.ped:md5,16e5773a0aaaa27870b0601e572f24b5"
                     ]
                 ],
                 "versions": [
@@ -29,10 +29,10 @@
             }
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.04.4"
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
         },
-        "timestamp": "2024-08-23T16:11:01.797205"
+        "timestamp": "2024-11-20T13:14:39.858764858"
     },
     "test-rtgtools-pedfilter-vcf-output": {
         "content": [
@@ -62,7 +62,7 @@
                             "id": "test",
                             "single_end": false
                         },
-                        "test.ped:md5,a8b8f6538e1738d6e06fddfe15d36f09"
+                        "test.ped:md5,88d121b6ce2b3d8b0a6b0098b85db865"
                     ]
                 ],
                 "1": [
@@ -74,7 +74,7 @@
                             "id": "test",
                             "single_end": false
                         },
-                        "test.ped:md5,a8b8f6538e1738d6e06fddfe15d36f09"
+                        "test.ped:md5,88d121b6ce2b3d8b0a6b0098b85db865"
                     ]
                 ],
                 "versions": [
@@ -83,9 +83,9 @@
             }
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.04.4"
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
         },
-        "timestamp": "2024-08-23T16:10:53.473351"
+        "timestamp": "2024-11-20T13:14:31.005949979"
     }
 }

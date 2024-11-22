@@ -136,7 +136,7 @@
                     ]
                 ],
                 "1": [
-                    "versions.yml:md5,e32852e9cba2a298b7518ce610011b14"
+                    "versions.yml:md5,44c3b4926fae35dfcf138d9bf26acfd1"
                 ],
                 "cache": [
                     [
@@ -272,15 +272,15 @@
                     ]
                 ],
                 "versions": [
-                    "versions.yml:md5,e32852e9cba2a298b7518ce610011b14"
+                    "versions.yml:md5,44c3b4926fae35dfcf138d9bf26acfd1"
                 ]
             }
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.04.4"
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
         },
-        "timestamp": "2024-09-02T13:19:08.690863"
+        "timestamp": "2024-11-20T14:09:48.300197368"
     },
     "celegans - download - stub": {
         "content": [
@@ -296,7 +296,7 @@
                     ]
                 ],
                 "1": [
-                    "versions.yml:md5,e32852e9cba2a298b7518ce610011b14"
+                    "versions.yml:md5,44c3b4926fae35dfcf138d9bf26acfd1"
                 ],
                 "cache": [
                     [
@@ -309,14 +309,14 @@
                     ]
                 ],
                 "versions": [
-                    "versions.yml:md5,e32852e9cba2a298b7518ce610011b14"
+                    "versions.yml:md5,44c3b4926fae35dfcf138d9bf26acfd1"
                 ]
             }
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "24.04.4"
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
         },
-        "timestamp": "2024-09-02T13:19:23.308683"
+        "timestamp": "2024-11-20T14:10:02.855040367"
     }
 }

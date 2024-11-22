@@ -19,7 +19,55 @@ Changes in 'ensemblvep/vep/main.nf':
 'modules/nf-core/ensemblvep/vep/tests/tags.yml' is unchanged
 'modules/nf-core/ensemblvep/vep/tests/tab.gz.config' is unchanged
 'modules/nf-core/ensemblvep/vep/tests/vcf.config' is unchanged
-'modules/nf-core/ensemblvep/vep/tests/main.nf.test' is unchanged
-'modules/nf-core/ensemblvep/vep/tests/main.nf.test.snap' is unchanged
+Changes in 'ensemblvep/vep/tests/main.nf.test':
+--- modules/nf-core/ensemblvep/vep/tests/main.nf.test
++++ modules/nf-core/ensemblvep/vep/tests/main.nf.test
+@@ -107,7 +107,7 @@
+             assertAll(
+                 { assert process.success },
+                 { assert snapshot(process.out.versions).match() },
+-                { assert path(process.out.tab.get(0).get(1)).linesGzip.contains("## ENSEMBL VARIANT EFFECT PREDICTOR v112.0") }
++                { assert path(process.out.tab.get(0).get(1)).linesGzip.contains("## ENSEMBL VARIANT EFFECT PREDICTOR v105.0") }
+             )
+         }
+     }
+
+Changes in 'ensemblvep/vep/tests/main.nf.test.snap':
+--- modules/nf-core/ensemblvep/vep/tests/main.nf.test.snap
++++ modules/nf-core/ensemblvep/vep/tests/main.nf.test.snap
+@@ -2,25 +2,25 @@
+     "test_ensemblvep_vep_fasta_tab_gz": {
+         "content": [
+             [
+-                "versions.yml:md5,d06f1eb60f534489026d682eb3aa5559"
++                "versions.yml:md5,c6d58a35e7be5e6ab46a3f9757f6e259"
+             ]
+         ],
+         "meta": {
+-            "nf-test": "0.8.4",
+-            "nextflow": "24.04.4"
++            "nf-test": "0.9.1",
++            "nextflow": "24.10.0"
+         },
+-        "timestamp": "2024-09-02T10:15:18.228927"
++        "timestamp": "2024-11-20T14:10:59.846254319"
+     },
+     "test_ensemblvep_vep_fasta_vcf": {
+         "content": [
+             [
+-                "versions.yml:md5,d06f1eb60f534489026d682eb3aa5559"
++                "versions.yml:md5,c6d58a35e7be5e6ab46a3f9757f6e259"
+             ]
+         ],
+         "meta": {
+-            "nf-test": "0.8.4",
+-            "nextflow": "24.04.4"
++            "nf-test": "0.9.1",
++            "nextflow": "24.10.0"
+         },
+-        "timestamp": "2024-09-02T10:14:50.193861"
++        "timestamp": "2024-11-20T14:10:44.092773407"
+     }
+ }
 'modules/nf-core/ensemblvep/vep/tests/nextflow.config' is unchanged
 ************************************************************
