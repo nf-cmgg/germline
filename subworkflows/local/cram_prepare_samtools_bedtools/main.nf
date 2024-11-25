@@ -129,13 +129,9 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
         ch_versions = ch_versions.mix(MERGE_ROI_PARAMS.out.versions)
 
         ch_missing_rois = ch_roi_branch.missing
-            .map { meta, bed ->
-                [ groupKey(meta, meta.duplicate_count), bed ]
-            }
-            .groupTuple()
             .combine(MERGE_ROI_PARAMS.out.bed.map { _meta, bed -> bed })
             .map { meta, _missing, default_roi ->
-                [ meta.target, default_roi ]
+                [ meta, default_roi ]
             }
     } else {
         ch_missing_rois = ch_roi_branch.missing
