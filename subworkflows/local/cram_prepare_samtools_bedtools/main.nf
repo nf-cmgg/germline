@@ -55,7 +55,9 @@ workflow CRAM_PREPARE_SAMTOOLS_BEDTOOLS {
     // Index the CRAM files which have no index
     //
 
-    def ch_merged_crams = SAMTOOLS_MERGE.out.cram
+    def ch_merged_crams =
+        SAMTOOLS_MERGE.out.cram
+        .join(SAMTOOLS_MERGE.out.crai, remainder: true, failOnDuplicate: true)
         .mix(ch_cram_branch.single)
         .branch { meta, cram, crai=[] ->
             not_indexed: crai == []
