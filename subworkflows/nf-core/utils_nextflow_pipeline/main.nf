@@ -77,7 +77,7 @@ def dumpParametersToJSON(outdir) {
     def jsonStr   = groovy.json.JsonOutput.toJson(params)
     temp_pf.text  = groovy.json.JsonOutput.prettyPrint(jsonStr)
 
-    nextflow.extension.FilesEx.copyTo(temp_pf.toPath(), "${outdir}/v${workflow.manifest.version.replace('.', '_')}_${new Date().format("yyyy_MM_dd")}/params_${timestamp}.json")
+    nextflow.extension.FilesEx.copyTo(temp_pf.toPath(), "${outdir}/${params.unique_out}/params_${timestamp}.json")
     temp_pf.delete()
 }
 
