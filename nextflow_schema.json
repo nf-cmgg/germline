@@ -330,6 +330,11 @@
                     "description": "The lowest callable coverage to determine callable regions.",
                     "default": 5,
                     "minimum": 0
+                },
+                "unique_out": {
+                    "type": "string",
+                    "description": "Don't change this value",
+                    "hidden": true
                 }
             }
         },

@@ -236,54 +236,54 @@ output {
     'gvcfs' {
         path { meta, gvcf, _tbi -> { file ->
             if(file == gvcf.name) {
-                return "${meta.family}/${meta.id}_${getWorkflowVersion().replace(".", "_")}_${new Date().format("yyyy_MM_dd")}/${meta.id}.${meta.caller}.g.vcf.gz"
+                return "${meta.family}/${meta.id}_${params.unique_out}/${meta.id}.${meta.caller}.g.vcf.gz"
             }
-            return "${meta.family}/${meta.id}_${getWorkflowVersion().replace(".", "_")}_${new Date().format("yyyy_MM_dd")}/${meta.id}.${meta.caller}.g.vcf.gz.tbi"
+            return "${meta.family}/${meta.id}_${params.unique_out}/${meta.id}.${meta.caller}.g.vcf.gz.tbi"
         } }
     }
     'single_beds' {
-        path { meta, _bed -> { _file -> "${meta.family}/${meta.id}_${getWorkflowVersion().replace(".", "_")}_${new Date().format("yyyy_MM_dd")}/${meta.id}.bed" } }
+        path { meta, _bed -> { _file -> "${meta.family}/${meta.id}_${params.unique_out}/${meta.id}.bed" } }
     }
     'validation' {
-        path { meta, _report -> { file -> "${meta.family}/${meta.id}_${getWorkflowVersion().replace(".", "_")}_${new Date().format("yyyy_MM_dd")}/validation/${meta.caller}/${file}" } }
+        path { meta, _report -> { file -> "${meta.family}/${meta.id}_${params.unique_out}/validation/${meta.caller}/${file}" } }
     }
     'gvcf_reports' {
-        path { meta, _report -> { _file -> "${meta.family}/${meta.id}_${getWorkflowVersion().replace(".", "_")}_${new Date().format("yyyy_MM_dd")}/${meta.id}.${meta.caller}.bcftools_stats.txt" }}
+        path { meta, _report -> { _file -> "${meta.family}/${meta.id}_${params.unique_out}/${meta.id}.${meta.caller}.bcftools_stats.txt" }}
     }
     'genomicsdb' {
         enabled (params.output_genomicsdb || params.only_merge)
         path { meta, _genomicsdb ->
-            { _file -> "${meta.family}/output_${getWorkflowVersion().replace(".", "_")}_${new Date().format("yyyy_MM_dd")}/${meta.id}_${meta.caller}_genomicsdb"}
+            { _file -> "${meta.family}/output_${params.unique_out}/${meta.id}_${meta.caller}_genomicsdb"}
         }
     }
     'vcfs' {
         path { meta, vcf, _tbi -> { file ->
             if(file == vcf.name) {
-                return "${meta.family}/output_${getWorkflowVersion().replace(".", "_")}_${new Date().format("yyyy_MM_dd")}/${meta.id}.${meta.caller}.vcf.gz"
+                return "${meta.family}/output_${params.unique_out}/${meta.id}.${meta.caller}.vcf.gz"
             }
-            return "${meta.family}/output_${getWorkflowVersion().replace(".", "_")}_${new Date().format("yyyy_MM_dd")}/${meta.id}.${meta.caller}.vcf.gz.tbi"
+            return "${meta.family}/output_${params.unique_out}/${meta.id}.${meta.caller}.vcf.gz.tbi"
         } }
     }
     'gemini' {
-        path { meta, _db -> { _file -> "${meta.family}/output_${getWorkflowVersion().replace(".", "_")}_${new Date().format("yyyy_MM_dd")}/${meta.id}.${meta.caller}.db"}}
+        path { meta, _db -> { _file -> "${meta.family}/output_${params.unique_out}/${meta.id}.${meta.caller}.db"}}
     }
     'peds' {
-        path { meta, _ped -> { _file -> "${meta.family}/output_${getWorkflowVersion().replace(".", "_")}_${new Date().format("yyyy_MM_dd")}/${meta.id}.${meta.caller}.ped"}}
+        path { meta, _ped -> { _file -> "${meta.family}/output_${params.unique_out}/${meta.id}.${meta.caller}.ped"}}
     }
     'joint_beds' {
-        path { meta, _bed -> { _file -> "${meta.family}/output_${getWorkflowVersion().replace(".", "_")}_${new Date().format("yyyy_MM_dd")}/${meta.id}.${meta.caller}.bed"}}
+        path { meta, _bed -> { _file -> "${meta.family}/output_${params.unique_out}/${meta.id}.${meta.caller}.bed"}}
     }
     'final_reports' {
-        path { meta, _report -> { file -> "${meta.family}/qc_${getWorkflowVersion().replace(".", "_")}_${new Date().format("yyyy_MM_dd")}/${file}"}}
+        path { meta, _report -> { file -> "${meta.family}/qc_${params.unique_out}/${file}"}}
     }
     'automap' {
-        path { meta, _automap -> { _file -> "${meta.family}/output_${getWorkflowVersion().replace(".", "_")}_${new Date().format("yyyy_MM_dd")}/automap/${meta.caller}"}}
+        path { meta, _automap -> { _file -> "${meta.family}/output_${params.unique_out}/automap/${meta.caller}"}}
     }
     'updio' {
-        path { meta, _updio -> { _file -> "${meta.family}/output_${getWorkflowVersion().replace(".", "_")}_${new Date().format("yyyy_MM_dd")}/updio/${meta.caller}"}}
+        path { meta, _updio -> { _file -> "${meta.family}/output_${params.unique_out}/updio/${meta.caller}"}}
     }
     'multiqc' {
-        path { _report -> { _file -> "${getWorkflowVersion().replace(".", "_")}_${new Date().format("yyyy_MM_dd")}/multiqc_report.html"}}
+        path { _report -> { _file -> "${params.unique_out}/multiqc_report.html"}}
     }
 }
 
