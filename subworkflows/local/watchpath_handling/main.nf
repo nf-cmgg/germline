@@ -40,7 +40,7 @@ workflow WATCHPATH_HANDLING {
             // Replace dots with underscores in sample and family names to prevent breaking the multiqc report
             row[0].id = row[0].id.replace(".", "_")
             row[0].sample = row[0].sample.replace(".", "_")
-            row[0].family = row[0].family.replace(".", "_")
+            row[0].family = row[0].family ? row[0].family.replace(".", "_") : row[0].family
 
             // Watchpath logic
             def is_watch = false
