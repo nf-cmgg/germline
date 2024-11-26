@@ -608,6 +608,8 @@ workflow GERMLINE {
         ch_versions = ch_versions.mix(VCF_EXTRACT_RELATE_SOMALIER.out.versions)
         ch_final_peds = VCF_EXTRACT_RELATE_SOMALIER.out.peds
         ch_final_reports = ch_final_reports.mix(VCF_EXTRACT_RELATE_SOMALIER.out.html)
+        ch_reports = ch_reports.mix(VCF_EXTRACT_RELATE_SOMALIER.out.pairs_tsv.map { _meta, report -> report })
+        ch_reports = ch_reports.mix(VCF_EXTRACT_RELATE_SOMALIER.out.samples_tsv.map { _meta, report -> report })
 
         //
         // Add PED headers to the VCFs

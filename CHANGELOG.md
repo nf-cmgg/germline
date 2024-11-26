@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 3. Completely reworked the output directory structure to a more sensible structure. The pipeline can now be run on the same output directory every time and will incrementally add files to the correct family folder. See the [output documentation](https://nf-cmgg.github.io/germline/latest/output/) for more info.
 4. Migrated to the new workflow output definitions.
 5. Bumped the minimal Nextflow version to 24.10.0.
+6. Added the somalier reports to the multiQC report.
 
 ### Fixes
 
