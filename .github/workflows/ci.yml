@@ -62,6 +62,7 @@ jobs:
       - name: "Run ${{ matrix.filter }} tests (changed) | ${{ matrix.shard }}/${{ env.NFT_MAX_SHARDS }}"
         if: ${{ env.SOURCE_BRANCH != 'main' }}
         run: |
+          echo ${{ env.SOURCE_BRANCH }}
           $CONDA/bin/nf-test test \
             --ci \
             --changed-since HEAD^ \
