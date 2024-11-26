@@ -3,7 +3,7 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v2.0.0dev
+## v1.9.0 - Neighborly Nieuwkerke
 
 ### New features
 
@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixes
 
-1. Validation of all samples now use an intersect of the golden truth BED files with the BED file used to call the variants. This should fix the WES validation which was broken until this point.
+1. Validation of all samples now uses an intersect of the golden truth BED files with the BED file used to call the variants. This should fix the WES validation which was broken until this point.
 2. A couple of small fixes to the vardict flow.
 3. Only use the standard chromosomes for UPDio analysis.
 4. Reduced the resources given to some GATK4 modules
