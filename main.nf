@@ -230,6 +230,7 @@ workflow {
     GERMLINE.out.automap >> 'automap'
     GERMLINE.out.updio >> 'updio'
     GERMLINE.out.multiqc_report >> 'multiqc'
+    GERMLINE.out.multiqc_data >> 'multiqc_data'
 }
 
 output {
@@ -284,6 +285,9 @@ output {
     }
     'multiqc' {
         path { _report -> { _file -> "${params.unique_out}/multiqc_report.html"}}
+    }
+    'multiqc_data' {
+        path { _folder -> { _file -> "${params.unique_out}/multiqc_data"}}
     }
 }
 

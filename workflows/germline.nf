@@ -902,6 +902,7 @@ workflow GERMLINE {
     updio           = ch_final_updio                // channel: [ val(meta), path(updio) ]
     validation      = ch_final_validation           // channel: [ val(meta), path(file) ]
     multiqc_report  = MULTIQC.out.report.toList()   // channel: /path/to/multiqc_report.html
+    multiqc_data    = MULTIQC.out.data              // channel: /path/to/multiqc_data
     versions        = ch_versions                   // channel: [ path(versions.yml) ]
 }
 
