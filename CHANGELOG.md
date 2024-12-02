@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 4. Migrated to the new workflow output definitions.
 5. Bumped the minimal Nextflow version to 24.10.0.
 6. Added the somalier reports to the multiQC report.
+7. Removed the `--output_suffix` parameter
 
 ### Fixes
 
