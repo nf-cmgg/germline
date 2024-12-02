@@ -275,10 +275,6 @@
                     "type": "boolean",
                     "description": "Normalize the variant in the final VCFs."
                 },
-                "output_suffix": {
-                    "type": "string",
-                    "description": "A custom suffix to add to the basename of the output files."
-                },
                 "only_pass": {
                     "type": "boolean",
                     "description": "Filter out all variants that don't have the PASS filter for vardict. This only works when `--filter` is also given."
