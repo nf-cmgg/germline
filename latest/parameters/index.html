@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.46">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.47">
     
     
       
@@ -568,7 +568,7 @@
 <td>Path to comma-separated file containing information about the samples in the experiment. <details><summary>Help</summary><small>You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with samples, and a header row. See <a href="../usage/">usage docs</a>.</small></details></td>
 <td><code>string</code></td>
 <td></td>
-<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
+<td>True</td>
 <td></td>
 </tr>
 <tr>
@@ -576,7 +576,7 @@
 <td>The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.</td>
 <td><code>string</code></td>
 <td></td>
-<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
+<td>True</td>
 <td></td>
 </tr>
 <tr>
@@ -632,7 +632,7 @@
 <td>Path to FASTA genome file. <details><summary>Help</summary><small>This parameter is <em>mandatory</em> if <code>--genome</code> is not specified. The path to the reference genome fasta.</small></details></td>
 <td><code>string</code></td>
 <td></td>
-<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
+<td>True</td>
 <td></td>
 </tr>
 <tr>
@@ -689,7 +689,7 @@
 <td><code>object</code></td>
 <td></td>
 <td></td>
-<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
+<td>True</td>
 </tr>
 <tr>
 <td><code>genomes_base</code></td>
@@ -705,7 +705,7 @@
 <td><code>string</code></td>
 <td>/conf/</td>
 <td></td>
-<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
+<td>True</td>
 </tr>
 <tr>
 <td><code>genomes_ignore</code></td>
@@ -713,7 +713,7 @@
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
-<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
+<td>True</td>
 </tr>
 <tr>
 <td><code>igenomes_base</code></td>
@@ -721,7 +721,7 @@
 <td><code>string</code></td>
 <td></td>
 <td></td>
-<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
+<td>True</td>
 </tr>
 <tr>
 <td><code>igenomes_ignore</code></td>
@@ -729,7 +729,7 @@
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
-<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
+<td>True</td>
 </tr>
 </tbody>
 </table>
@@ -900,14 +900,6 @@
 <td></td>
 </tr>
 <tr>
-<td><code>output_suffix</code></td>
-<td>A custom suffix to add to the basename of the output files.</td>
-<td><code>string</code></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
 <td><code>only_pass</code></td>
 <td>Filter out all variants that don't have the PASS filter for vardict. This only works when <code>--filter</code> is also given.</td>
 <td><code>boolean</code></td>
@@ -987,6 +979,14 @@
 <td></td>
 <td></td>
 </tr>
+<tr>
+<td><code>unique_out</code></td>
+<td>Don't change this value</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td>True</td>
+</tr>
 </tbody>
 </table>
 <h2 id="institutional-config-options">Institutional config options</h2>
@@ -1009,7 +1009,7 @@
 <td><code>string</code></td>
 <td>master</td>
 <td></td>
-<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
+<td>True</td>
 </tr>
 <tr>
 <td><code>custom_config_base</code></td>
@@ -1017,7 +1017,7 @@
 <td><code>string</code></td>
 <td>https://raw.githubusercontent.com/nf-core/configs/master</td>
 <td></td>
-<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
+<td>True</td>
 </tr>
 <tr>
 <td><code>config_profile_name</code></td>
@@ -1025,7 +1025,7 @@
 <td><code>string</code></td>
 <td></td>
 <td></td>
-<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
+<td>True</td>
 </tr>
 <tr>
 <td><code>config_profile_description</code></td>
@@ -1033,7 +1033,7 @@
 <td><code>string</code></td>
 <td></td>
 <td></td>
-<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
+<td>True</td>
 </tr>
 <tr>
 <td><code>config_profile_contact</code></td>
@@ -1041,7 +1041,7 @@
 <td><code>string</code></td>
 <td></td>
 <td></td>
-<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
+<td>True</td>
 </tr>
 <tr>
 <td><code>config_profile_url</code></td>
@@ -1049,7 +1049,7 @@
 <td><code>string</code></td>
 <td></td>
 <td></td>
-<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
+<td>True</td>
 </tr>
 </tbody>
 </table>
@@ -1089,7 +1089,7 @@
 <td><code>string</code></td>
 <td></td>
 <td></td>
-<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
+<td>True</td>
 </tr>
 <tr>
 <td><code>plaintext_email</code></td>
@@ -1097,7 +1097,7 @@
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
-<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
+<td>True</td>
 </tr>
 <tr>
 <td><code>max_multiqc_email_size</code></td>
@@ -1105,7 +1105,7 @@
 <td><code>string</code></td>
 <td>25.MB</td>
 <td></td>
-<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
+<td>True</td>
 </tr>
 <tr>
 <td><code>monochrome_logs</code></td>
@@ -1113,7 +1113,7 @@
 <td><code>boolean</code></td>
 <td></td>
 <td></td>
-<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
+<td>True</td>
 </tr>
 <tr>
 <td><code>hook_url</code></td>
@@ -1159,9 +1159,9 @@
 <td><code>validate_params</code></td>
 <td>Boolean whether to validate parameters against the schema at runtime</td>
 <td><code>boolean</code></td>
-<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
+<td>True</td>
 <td></td>
-<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
+<td>True</td>
 </tr>
 <tr>
 <td><code>pipelines_testdata_base_path</code></td>
@@ -1169,7 +1169,7 @@
 <td><code>string</code></td>
 <td>https://raw.githubusercontent.com/nf-core/test-datasets/</td>
 <td></td>
-<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
+<td>True</td>
 </tr>
 </tbody>
 </table>
@@ -1207,7 +1207,7 @@
 <td><code>vep_merged</code></td>
 <td>Specify if the VEP cache is a merged cache.</td>
 <td><code>boolean</code></td>
-<td><img alt="✔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
+<td>True</td>
 <td></td>
 <td></td>
 </tr>
