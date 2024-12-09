@@ -1,0 +1,23 @@
+Changes in module 'nf-core/tabix/tabix'
+'modules/nf-core/tabix/tabix/environment.yml' is unchanged
+'modules/nf-core/tabix/tabix/meta.yml' is unchanged
+Changes in 'tabix/tabix/main.nf':
+--- modules/nf-core/tabix/tabix/main.nf
++++ modules/nf-core/tabix/tabix/main.nf
+@@ -23,6 +23,7 @@
+     """
+     tabix \\
+         --threads $task.cpus \\
++        --force \\
+         $args \\
+         $tab
+ 
+
+'modules/nf-core/tabix/tabix/tests/main.nf.test.snap' is unchanged
+'modules/nf-core/tabix/tabix/tests/tabix_bed.config' is unchanged
+'modules/nf-core/tabix/tabix/tests/tags.yml' is unchanged
+'modules/nf-core/tabix/tabix/tests/tabix_gff.config' is unchanged
+'modules/nf-core/tabix/tabix/tests/tabix_vcf_tbi.config' is unchanged
+'modules/nf-core/tabix/tabix/tests/main.nf.test' is unchanged
+'modules/nf-core/tabix/tabix/tests/tabix_vcf_csi.config' is unchanged
+************************************************************
