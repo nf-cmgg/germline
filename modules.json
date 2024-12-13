@@ -219,7 +219,7 @@
                     },
                     "vcf2db": {
                         "branch": "master",
-                        "git_sha": "2a1ee188cf232cabbc63891462a06c6b5a5f114b",
+                        "git_sha": "439f05652b54826ff23f5baa505082d5d8587dd7",
                         "installed_by": ["modules"],
                         "patch": "modules/nf-core/vcf2db/vcf2db.diff"
                     },
