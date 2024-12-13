@@ -1,4 +1,6 @@
 Changes in module 'nf-core/vcf2db'
+'modules/nf-core/vcf2db/environment.yml' is unchanged
+'modules/nf-core/vcf2db/meta.yml' is unchanged
 Changes in 'vcf2db/main.nf':
 --- modules/nf-core/vcf2db/main.nf
 +++ modules/nf-core/vcf2db/main.nf
@@ -11,88 +13,7 @@ Changes in 'vcf2db/main.nf':
      // WARN: Version information not provided by tool on CLI. Please update version string below when bumping container versions.
      conda "${moduleDir}/environment.yml"
 
-'modules/nf-core/vcf2db/environment.yml' is unchanged
-'modules/nf-core/vcf2db/meta.yml' is unchanged
+'modules/nf-core/vcf2db/tests/main.nf.test.snap' is unchanged
 'modules/nf-core/vcf2db/tests/tags.yml' is unchanged
-Changes in 'vcf2db/tests/main.nf.test':
---- modules/nf-core/vcf2db/tests/main.nf.test
-+++ modules/nf-core/vcf2db/tests/main.nf.test
-@@ -14,7 +14,7 @@
-             process {
-                 """
-                 input[0] = [
--                    [ id:'test', single_end:false ], // meta map
-+                    [ id:'test', single_end:false, caller:"haplotypecaller" ], // meta map
-                     file(params.modules_testdata_base_path + 'genomics/homo_sapiens/genome/vcf/ped/justhusky_minimal.vcf.gz', checkIfExists: true),
-                     file(params.modules_testdata_base_path + 'genomics/homo_sapiens/genome/vcf/ped/justhusky.ped', checkIfExists: true)
-                 ]
-@@ -43,7 +43,7 @@
-             process {
-                 """
-                 input[0] = [
--                    [ id:'test', single_end:false ], // meta map
-+                    [ id:'test', single_end:false, caller:"haplotypecaller" ], // meta map
-                     file(params.modules_testdata_base_path + 'genomics/homo_sapiens/genome/vcf/ped/justhusky_minimal.vcf.gz', checkIfExists: true),
-                     file(params.modules_testdata_base_path + 'genomics/homo_sapiens/genome/vcf/ped/justhusky.ped', checkIfExists: true)
-                 ]
-
-Changes in 'vcf2db/tests/main.nf.test.snap':
---- modules/nf-core/vcf2db/tests/main.nf.test.snap
-+++ modules/nf-core/vcf2db/tests/main.nf.test.snap
-@@ -6,9 +6,10 @@
-                     [
-                         {
-                             "id": "test",
--                            "single_end": false
-+                            "single_end": false,
-+                            "caller": "haplotypecaller"
-                         },
--                        "test.db:md5,d41d8cd98f00b204e9800998ecf8427e"
-+                        "test.haplotypecaller.db:md5,d41d8cd98f00b204e9800998ecf8427e"
-                     ]
-                 ],
-                 "1": [
-@@ -18,9 +19,10 @@
-                     [
-                         {
-                             "id": "test",
--                            "single_end": false
-+                            "single_end": false,
-+                            "caller": "haplotypecaller"
-                         },
--                        "test.db:md5,d41d8cd98f00b204e9800998ecf8427e"
-+                        "test.haplotypecaller.db:md5,d41d8cd98f00b204e9800998ecf8427e"
-                     ]
-                 ],
-                 "versions": [
-@@ -29,22 +31,22 @@
-             }
-         ],
-         "meta": {
--            "nf-test": "0.8.4",
--            "nextflow": "24.04.3"
-+            "nf-test": "0.9.1",
-+            "nextflow": "24.10.0"
-         },
--        "timestamp": "2024-01-10T16:13:32.293507403"
-+        "timestamp": "2024-11-19T14:40:53.107217359"
-     },
-     "homo_sapiens - vcf, ped": {
-         "content": [
--            "test.db",
-+            "test.haplotypecaller.db",
-             [
-                 "versions.yml:md5,3d9eedf7998cb77b614736659eb22b1d"
-             ]
-         ],
-         "meta": {
--            "nf-test": "0.8.4",
--            "nextflow": "24.04.3"
-+            "nf-test": "0.9.1",
-+            "nextflow": "24.10.0"
-         },
--        "timestamp": "2024-08-06T10:27:06.932652"
-+        "timestamp": "2024-11-19T14:40:45.633504872"
-     }
- }
+'modules/nf-core/vcf2db/tests/main.nf.test' is unchanged
 ************************************************************
