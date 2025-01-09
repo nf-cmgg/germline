@@ -1,0 +1,19 @@
+Changes in module 'nf-core/vcf2db'
+'modules/nf-core/vcf2db/environment.yml' is unchanged
+'modules/nf-core/vcf2db/meta.yml' is unchanged
+Changes in 'vcf2db/main.nf':
+--- modules/nf-core/vcf2db/main.nf
++++ modules/nf-core/vcf2db/main.nf
+@@ -1,6 +1,6 @@
+ process VCF2DB {
+     tag "$meta.id"
+-    label 'process_medium'
++    label 'process_single'
+ 
+     // WARN: Version information not provided by tool on CLI. Please update version string below when bumping container versions.
+     conda "${moduleDir}/environment.yml"
+
+'modules/nf-core/vcf2db/tests/main.nf.test.snap' is unchanged
+'modules/nf-core/vcf2db/tests/tags.yml' is unchanged
+'modules/nf-core/vcf2db/tests/main.nf.test' is unchanged
+************************************************************

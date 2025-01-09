@@ -8,13 +8,12 @@ include { TABIX_BGZIP as BGZIP_ANNOTATED_VCFS } from '../../../modules/nf-core/t
 include { TABIX_TABIX as TABIX_ENSEMBLVEP     } from '../../../modules/nf-core/tabix/tabix/main'
 include { BCFTOOLS_CONCAT                     } from '../../../modules/nf-core/bcftools/concat/main'
 
-include { VCF_ANNOTATE_ENSEMBLVEP_SNPEFF as VCF_ANNOTATE_ENSEMBLVEP } from '../../../subworkflows/nf-core/vcf_annotate_ensemblvep_snpeff/main'
+include { VCF_ANNOTATE_ENSEMBLVEP             } from '../../../subworkflows/local/vcf_annotate_ensemblvep/main'
 
 workflow VCF_ANNOTATION {
     take:
         ch_vcfs                 // channel: [mandatory] [ val(meta), path(vcf) ] => The post-processed VCFs
         ch_fasta                // channel: [mandatory] [ val(meta2), path(fasta) ] => fasta reference
-        ch_fai                  // channel: [mandatory] [ val(meta3), path(fai) ] => fasta index
         ch_vep_cache            // channel: [optional]  [ path(vep_cache) ] => The VEP cache to use
         ch_vep_extra_files      // channel: [optional]  [ path(file_1, file_2, file_3, ...) ] => All files necessary for using the desired plugins
         ch_vcfanno_config       // channel: [mandatory if params.vcfanno == true] [ path(toml_config_file) ] => The TOML config file for VCFanno
@@ -28,30 +27,28 @@ workflow VCF_ANNOTATION {
 
     main:
 
-    ch_annotated_vcfs   = Channel.empty()
-    ch_reports          = Channel.empty()
-    ch_versions         = Channel.empty()
+    def ch_annotated_vcfs   = Channel.empty()
+    def ch_reports          = Channel.empty()
+    def ch_versions         = Channel.empty()
 
-    ch_vcfs
+    def ch_tabix_input = ch_vcfs
         .branch { meta, vcf, tbi=[] ->
             tbi: tbi
             no_tbi: !tbi
                 return [ meta, vcf ]
         }
-        .set { ch_tabix_input }
 
     TABIX_ENSEMBLVEP(
         ch_tabix_input.no_tbi
     )
     ch_versions = ch_versions.mix(TABIX_ENSEMBLVEP.out.versions.first())
 
-    ch_tabix_input.no_tbi
+    def ch_vep_input = ch_tabix_input.no_tbi
         .join(TABIX_ENSEMBLVEP.out.tbi, failOnDuplicate:true, failOnMismatch:true)
         .mix(ch_tabix_input.tbi)
         .map { meta, vcf, tbi ->
             [ meta, vcf, tbi, [] ]
         }
-        .set { ch_vep_input }
 
     //
     // Do the VEP annotation
@@ -65,8 +62,6 @@ workflow VCF_ANNOTATION {
         vep_cache_version,
         ch_vep_cache,
         ch_vep_extra_files,
-        [], [],
-        ["ensemblvep"],
         vep_chunk_size
     )
 
@@ -79,12 +74,11 @@ workflow VCF_ANNOTATION {
 
     if (vcfanno) {
 
-        VCF_ANNOTATE_ENSEMBLVEP.out.vcf_tbi
+        def ch_vcfanno_input = VCF_ANNOTATE_ENSEMBLVEP.out.vcf_tbi
             .map { meta, vcf, tbi ->
                 [ meta, vcf, tbi, [] ]
             }
             .dump(tag:'vcfanno_input', pretty:true)
-            .set { ch_vcfanno_input }
 
         VCFANNO(
             ch_vcfanno_input,
@@ -99,12 +93,11 @@ workflow VCF_ANNOTATION {
         )
         ch_versions = ch_versions.mix(BGZIP_ANNOTATED_VCFS.out.versions.first())
 
-        BGZIP_ANNOTATED_VCFS.out.output.set { ch_annotated_vcfs }
+        ch_annotated_vcfs = BGZIP_ANNOTATED_VCFS.out.output
     }
     else {
-        VCF_ANNOTATE_ENSEMBLVEP.out.vcf_tbi
-            .map { meta, vcf, tbi -> [ meta, vcf ]}
-            .set { ch_annotated_vcfs }
+        ch_annotated_vcfs = VCF_ANNOTATE_ENSEMBLVEP.out.vcf_tbi
+            .map { meta, vcf, _tbi -> [ meta, vcf ]}
     }
 
     emit:

@@ -1,0 +1,79 @@
+nextflow_workflow {
+
+    name "Test Workflow VCF_VALIDATE_SMALL_VARIANTS"
+    script "../main.nf"
+    workflow "VCF_VALIDATE_SMALL_VARIANTS"
+
+    tag "subworkflows"
+    tag "subworkflow_local"
+    tag "vcf_validate_small_variants"
+
+    test("vcf_validate_small_variants - default") {
+
+        setup {
+            run("UNTAR") {
+                script "modules/nf-core/untar/main.nf"
+                process {
+                    """
+                    input[0] = Channel.value([
+                        [id:"sdf"],
+                        file(params.sdf, checkIfExists:true)
+                    ])
+                    """
+                }
+            }
+        }
+
+        when {
+            params {
+                validate = true
+            }
+            workflow {
+                """
+                input[0] = Channel.of([
+                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385"],
+                    file(params.famvcf, checkIfExists:true),
+                    file(params.famtbi, checkIfExists:true),
+                    file(params.vcf1, checkIfExists:true),
+                    file(params.tbi1, checkIfExists:true)
+                ])
+                input[1] = Channel.of([
+                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143,NA24149,NA24385"],
+                    file(params.bed, checkIfExists:true),
+                    []
+                ])
+                input[2] = UNTAR.out.untar
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.out.vcfeval_true_positive_vcf,
+                    workflow.out.vcfeval_true_positive_vcf_tbi,
+                    workflow.out.vcfeval_false_negative_vcf,
+                    workflow.out.vcfeval_false_negative_vcf_tbi,
+                    workflow.out.vcfeval_false_positive_vcf,
+                    workflow.out.vcfeval_false_positive_vcf_tbi,
+                    workflow.out.vcfeval_true_positive_baseline_vcf,
+                    workflow.out.vcfeval_true_positive_baseline_vcf_tbi,
+                    workflow.out.vcfeval_summary,
+                    workflow.out.vcfeval_phasing,
+                    workflow.out.vcfeval_snp_roc,
+                    workflow.out.vcfeval_non_snp_roc,
+                    workflow.out.vcfeval_weighted_roc,
+                    workflow.out.rtgtools_snp_png_rocplot.collect { it.collect { it instanceof Map ? it : file(it).name } },
+                    workflow.out.rtgtools_non_snp_png_rocplot.collect { it.collect { it instanceof Map ? it : file(it).name } },
+                    workflow.out.rtgtools_weighted_png_rocplot.collect { it.collect { it instanceof Map ? it : file(it).name } },
+                    workflow.out.rtgtools_snp_svg_rocplot.collect { it.collect { it instanceof Map ? it : file(it).name } },
+                    workflow.out.rtgtools_non_snp_svg_rocplot.collect { it.collect { it instanceof Map ? it : file(it).name } },
+                    workflow.out.rtgtools_weighted_svg_rocplot.collect { it.collect { it instanceof Map ? it : file(it).name } },
+                ).match("default") }
+            )
+        }
+
+    }
+
+}

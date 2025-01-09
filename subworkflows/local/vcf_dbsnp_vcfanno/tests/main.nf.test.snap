@@ -1,0 +1,23 @@
+{
+    "vcf_dbsnp_vcfanno - default": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "family": "NA24143",
+                        "family_samples": "NA24143",
+                        "caller": "haplotypecaller"
+                    },
+                    "variantsMD5:b4f76bc67ba0e159489393d4788349b3",
+                    ".tbi"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
+        },
+        "timestamp": "2024-11-14T16:28:22.613197067"
+    }
+}

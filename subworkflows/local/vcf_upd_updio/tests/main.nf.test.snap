@@ -1,0 +1,42 @@
+{
+    "default - family": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "Ashkenazim",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143,NA24149,NA24385",
+                        "caller": "haplotypecaller",
+                        "child": "NA24385",
+                        "father": "NA24149",
+                        "mother": "NA24143"
+                    },
+                    [
+                        "NA24385.events_list:md5,c61379c7a4bb61cbe9612b5cda773cf4",
+                        "NA24385.log:md5,ea4c71f55c4a53ecdc74f00659ea161d",
+                        "NA24385.table:md5,ca8165fc7869a113ca034396de7cf579",
+                        "NA24385.upd:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
+        },
+        "timestamp": "2024-10-08T16:42:16.968323682"
+    },
+    "default - sample": {
+        "content": [
+            [
+                
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.8.4",
+            "nextflow": "24.02.0"
+        },
+        "timestamp": "2024-03-27T13:37:01.70605131"
+    }
+}

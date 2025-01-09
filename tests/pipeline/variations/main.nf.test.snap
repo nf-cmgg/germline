@@ -1,272 +1,189 @@
 {
-    "filter": {
+    "pipeline_variations - only_merge": {
         "content": [
             [
-
-            ],
-            [
-                "NA24143/NA24143.bed",
-                "NA24143/NA24143.haplotypecaller.g.vcf.gz",
-                "NA24143/NA24143.haplotypecaller.g.vcf.gz.csi",
-                "NA24143/NA24143.haplotypecaller.g.vcf.gz.tbi",
-                "NA24143/reports/NA24143.global.dist.txt",
-                "NA24143/reports/NA24143.haplotypecaller.bcftools_stats.txt",
-                "NA24143/reports/NA24143.summary.txt",
-                "NA24149/NA24149.bed",
-                "NA24149/NA24149.haplotypecaller.g.vcf.gz",
-                "NA24149/NA24149.haplotypecaller.g.vcf.gz.csi",
-                "NA24149/NA24149.haplotypecaller.g.vcf.gz.tbi",
-                "NA24149/reports/NA24149.global.dist.txt",
-                "NA24149/reports/NA24149.haplotypecaller.bcftools_stats.txt",
-                "NA24149/reports/NA24149.summary.txt",
-                "NA24385/NA24385.bed",
-                "NA24385/NA24385.haplotypecaller.g.vcf.gz",
-                "NA24385/NA24385.haplotypecaller.g.vcf.gz.csi",
-                "NA24385/NA24385.haplotypecaller.g.vcf.gz.tbi",
-                "NA24385/reports/NA24385.global.dist.txt",
-                "NA24385/reports/NA24385.haplotypecaller.bcftools_stats.txt",
-                "NA24385/reports/NA24385.summary.txt",
-                "multiqc/multiqc_plots",
-                "multiqc/multiqc_report.html",
-                "samplesheet.csv",
-                "test/Ashkenazim/Ashkenazim.bed",
-                "test/Ashkenazim/Ashkenazim.haplotypecaller.ped",
-                "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz",
-                "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz.csi",
-                "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz.tbi",
-                "test/Ashkenazim/reports/Ashkenazim.haplotypecaller.bcftools_stats.txt",
-                "test/Ashkenazim/reports/Ashkenazim.haplotypecaller.somalier.html"
+                "Ashkenazim/NA24143_<version>_<date>/NA24143.bed",
+                "Ashkenazim/NA24143_<version>_<date>/NA24143.haplotypecaller.bcftools_stats.txt",
+                "Ashkenazim/NA24143_<version>_<date>/NA24143.haplotypecaller.g.vcf.gz",
+                "Ashkenazim/NA24143_<version>_<date>/NA24143.haplotypecaller.g.vcf.gz.tbi",
+                "Ashkenazim/NA24149_<version>_<date>/NA24149.bed",
+                "Ashkenazim/NA24149_<version>_<date>/NA24149.haplotypecaller.bcftools_stats.txt",
+                "Ashkenazim/NA24149_<version>_<date>/NA24149.haplotypecaller.g.vcf.gz",
+                "Ashkenazim/NA24149_<version>_<date>/NA24149.haplotypecaller.g.vcf.gz.tbi",
+                "Ashkenazim/NA24385_<version>_<date>/NA24385.bed",
+                "Ashkenazim/NA24385_<version>_<date>/NA24385.haplotypecaller.bcftools_stats.txt",
+                "Ashkenazim/NA24385_<version>_<date>/NA24385.haplotypecaller.g.vcf.gz",
+                "Ashkenazim/NA24385_<version>_<date>/NA24385.haplotypecaller.g.vcf.gz.tbi",
+                "Ashkenazim/output_<version>_<date>/Ashkenazim_haplotypecaller_genomicsdb",
+                "<version>_<date>/multiqc_report.html",
+                "<version>_<date>/samplesheet.csv"
             ]
         ],
         "meta": {
-            "nf-test": "0.9.0",
-            "nextflow": "24.04.4"
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
         },
-        "timestamp": "2024-09-05T11:45:02.491962487"
+        "timestamp": "2024-11-13T14:28:35.043452694"
     },
-    "only_call": {
+    "pipeline_variations - filter": {
         "content": [
             [
-
-            ],
-            [
-                "NA24143/NA24143.bed",
-                "NA24143/NA24143.haplotypecaller.g.vcf.gz",
-                "NA24143/NA24143.haplotypecaller.g.vcf.gz.csi",
-                "NA24143/NA24143.haplotypecaller.g.vcf.gz.tbi",
-                "NA24143/reports/NA24143.global.dist.txt",
-                "NA24143/reports/NA24143.haplotypecaller.bcftools_stats.txt",
-                "NA24143/reports/NA24143.summary.txt",
-                "NA24149/NA24149.bed",
-                "NA24149/NA24149.haplotypecaller.g.vcf.gz",
-                "NA24149/NA24149.haplotypecaller.g.vcf.gz.csi",
-                "NA24149/NA24149.haplotypecaller.g.vcf.gz.tbi",
-                "NA24149/reports/NA24149.global.dist.txt",
-                "NA24149/reports/NA24149.haplotypecaller.bcftools_stats.txt",
-                "NA24149/reports/NA24149.summary.txt",
-                "NA24385/NA24385.bed",
-                "NA24385/NA24385.haplotypecaller.g.vcf.gz",
-                "NA24385/NA24385.haplotypecaller.g.vcf.gz.csi",
-                "NA24385/NA24385.haplotypecaller.g.vcf.gz.tbi",
-                "NA24385/reports/NA24385.global.dist.txt",
-                "NA24385/reports/NA24385.haplotypecaller.bcftools_stats.txt",
-                "NA24385/reports/NA24385.summary.txt",
-                "multiqc/multiqc_plots",
-                "multiqc/multiqc_report.html",
-                "samplesheet.csv"
+                "Ashkenazim/NA24143_<version>_<date>/NA24143.bed",
+                "Ashkenazim/NA24143_<version>_<date>/NA24143.haplotypecaller.bcftools_stats.txt",
+                "Ashkenazim/NA24143_<version>_<date>/NA24143.haplotypecaller.g.vcf.gz",
+                "Ashkenazim/NA24143_<version>_<date>/NA24143.haplotypecaller.g.vcf.gz.tbi",
+                "Ashkenazim/NA24149_<version>_<date>/NA24149.bed",
+                "Ashkenazim/NA24149_<version>_<date>/NA24149.haplotypecaller.bcftools_stats.txt",
+                "Ashkenazim/NA24149_<version>_<date>/NA24149.haplotypecaller.g.vcf.gz",
+                "Ashkenazim/NA24149_<version>_<date>/NA24149.haplotypecaller.g.vcf.gz.tbi",
+                "Ashkenazim/NA24385_<version>_<date>/NA24385.bed",
+                "Ashkenazim/NA24385_<version>_<date>/NA24385.haplotypecaller.bcftools_stats.txt",
+                "Ashkenazim/NA24385_<version>_<date>/NA24385.haplotypecaller.g.vcf.gz",
+                "Ashkenazim/NA24385_<version>_<date>/NA24385.haplotypecaller.g.vcf.gz.tbi",
+                "Ashkenazim/output_<version>_<date>/Ashkenazim.haplotypecaller.bed",
+                "Ashkenazim/output_<version>_<date>/Ashkenazim.haplotypecaller.ped",
+                "Ashkenazim/output_<version>_<date>/Ashkenazim.haplotypecaller.vcf.gz",
+                "Ashkenazim/output_<version>_<date>/Ashkenazim.haplotypecaller.vcf.gz.tbi",
+                "Ashkenazim/qc_<version>_<date>/Ashkenazim.haplotypecaller.bcftools_stats.txt",
+                "Ashkenazim/qc_<version>_<date>/Ashkenazim.haplotypecaller.html",
+                "<version>_<date>/multiqc_report.html",
+                "<version>_<date>/samplesheet.csv"
             ]
         ],
         "meta": {
-            "nf-test": "0.9.0",
-            "nextflow": "24.04.4"
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
         },
-        "timestamp": "2024-09-05T11:45:47.266012698"
+        "timestamp": "2024-11-13T14:24:24.556080575"
     },
-    "annotate + vcfanno": {
+    "pipeline_variations - annotate + vcfanno": {
         "content": [
             [
-
-            ],
-            [
-                "NA24143/NA24143.bed",
-                "NA24143/NA24143.haplotypecaller.g.vcf.gz",
-                "NA24143/NA24143.haplotypecaller.g.vcf.gz.csi",
-                "NA24143/NA24143.haplotypecaller.g.vcf.gz.tbi",
-                "NA24143/reports/NA24143.global.dist.txt",
-                "NA24143/reports/NA24143.haplotypecaller.bcftools_stats.txt",
-                "NA24143/reports/NA24143.summary.txt",
-                "NA24149/NA24149.bed",
-                "NA24149/NA24149.haplotypecaller.g.vcf.gz",
-                "NA24149/NA24149.haplotypecaller.g.vcf.gz.csi",
-                "NA24149/NA24149.haplotypecaller.g.vcf.gz.tbi",
-                "NA24149/reports/NA24149.global.dist.txt",
-                "NA24149/reports/NA24149.haplotypecaller.bcftools_stats.txt",
-                "NA24149/reports/NA24149.summary.txt",
-                "NA24385/NA24385.bed",
-                "NA24385/NA24385.haplotypecaller.g.vcf.gz",
-                "NA24385/NA24385.haplotypecaller.g.vcf.gz.csi",
-                "NA24385/NA24385.haplotypecaller.g.vcf.gz.tbi",
-                "NA24385/reports/NA24385.global.dist.txt",
-                "NA24385/reports/NA24385.haplotypecaller.bcftools_stats.txt",
-                "NA24385/reports/NA24385.summary.txt",
-                "multiqc/multiqc_plots",
-                "multiqc/multiqc_report.html",
-                "samplesheet.csv",
-                "test/Ashkenazim/Ashkenazim.bed",
-                "test/Ashkenazim/Ashkenazim.haplotypecaller.ped",
-                "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz",
-                "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz.csi",
-                "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz.gzi",
-                "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz.tbi",
-                "test/Ashkenazim/reports/Ashkenazim.haplotypecaller.bcftools_stats.txt",
-                "test/Ashkenazim/reports/Ashkenazim.haplotypecaller.somalier.html"
+                "Ashkenazim/NA24143_<version>_<date>/NA24143.bed",
+                "Ashkenazim/NA24143_<version>_<date>/NA24143.haplotypecaller.bcftools_stats.txt",
+                "Ashkenazim/NA24143_<version>_<date>/NA24143.haplotypecaller.g.vcf.gz",
+                "Ashkenazim/NA24143_<version>_<date>/NA24143.haplotypecaller.g.vcf.gz.tbi",
+                "Ashkenazim/NA24149_<version>_<date>/NA24149.bed",
+                "Ashkenazim/NA24149_<version>_<date>/NA24149.haplotypecaller.bcftools_stats.txt",
+                "Ashkenazim/NA24149_<version>_<date>/NA24149.haplotypecaller.g.vcf.gz",
+                "Ashkenazim/NA24149_<version>_<date>/NA24149.haplotypecaller.g.vcf.gz.tbi",
+                "Ashkenazim/NA24385_<version>_<date>/NA24385.bed",
+                "Ashkenazim/NA24385_<version>_<date>/NA24385.haplotypecaller.bcftools_stats.txt",
+                "Ashkenazim/NA24385_<version>_<date>/NA24385.haplotypecaller.g.vcf.gz",
+                "Ashkenazim/NA24385_<version>_<date>/NA24385.haplotypecaller.g.vcf.gz.tbi",
+                "Ashkenazim/output_<version>_<date>/Ashkenazim.haplotypecaller.bed",
+                "Ashkenazim/output_<version>_<date>/Ashkenazim.haplotypecaller.ped",
+                "Ashkenazim/output_<version>_<date>/Ashkenazim.haplotypecaller.vcf.gz",
+                "Ashkenazim/output_<version>_<date>/Ashkenazim.haplotypecaller.vcf.gz.tbi",
+                "Ashkenazim/qc_<version>_<date>/Ashkenazim.haplotypecaller.bcftools_stats.txt",
+                "Ashkenazim/qc_<version>_<date>/Ashkenazim.haplotypecaller.html",
+                "<version>_<date>/multiqc_report.html",
+                "<version>_<date>/samplesheet.csv"
             ]
         ],
         "meta": {
-            "nf-test": "0.9.0",
-            "nextflow": "24.04.4"
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
         },
-        "timestamp": "2024-09-05T11:43:47.539727235"
+        "timestamp": "2024-11-13T14:21:15.80188879"
     },
-    "automap": {
+    "pipeline_variations - annotate": {
         "content": [
             [
-
-            ],
-            [
-                "NA24143/NA24143.bed",
-                "NA24143/NA24143.haplotypecaller.g.vcf.gz",
-                "NA24143/NA24143.haplotypecaller.g.vcf.gz.csi",
-                "NA24143/NA24143.haplotypecaller.g.vcf.gz.tbi",
-                "NA24143/reports/NA24143.global.dist.txt",
-                "NA24143/reports/NA24143.haplotypecaller.bcftools_stats.txt",
-                "NA24143/reports/NA24143.summary.txt",
-                "NA24149/NA24149.bed",
-                "NA24149/NA24149.haplotypecaller.g.vcf.gz",
-                "NA24149/NA24149.haplotypecaller.g.vcf.gz.csi",
-                "NA24149/NA24149.haplotypecaller.g.vcf.gz.tbi",
-                "NA24149/reports/NA24149.global.dist.txt",
-                "NA24149/reports/NA24149.haplotypecaller.bcftools_stats.txt",
-                "NA24149/reports/NA24149.summary.txt",
-                "NA24385/NA24385.bed",
-                "NA24385/NA24385.haplotypecaller.g.vcf.gz",
-                "NA24385/NA24385.haplotypecaller.g.vcf.gz.csi",
-                "NA24385/NA24385.haplotypecaller.g.vcf.gz.tbi",
-                "NA24385/reports/NA24385.global.dist.txt",
-                "NA24385/reports/NA24385.haplotypecaller.bcftools_stats.txt",
-                "NA24385/reports/NA24385.summary.txt",
-                "multiqc/multiqc_plots",
-                "multiqc/multiqc_report.html",
-                "samplesheet.csv",
-                "test/Ashkenazim/Ashkenazim.bed",
-                "test/Ashkenazim/Ashkenazim.haplotypecaller.ped",
-                "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz",
-                "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz.csi",
-                "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz.tbi",
-                "test/Ashkenazim/automap_haplotypecaller/sample1/sample1.HomRegions.cmgg_bio.tsv",
-                "test/Ashkenazim/automap_haplotypecaller/sample1/sample1.HomRegions.pdf",
-                "test/Ashkenazim/automap_haplotypecaller/sample1/sample1.HomRegions.strict.cmgg_bio.tsv",
-                "test/Ashkenazim/automap_haplotypecaller/sample1/sample1.HomRegions.tsv",
-                "test/Ashkenazim/automap_haplotypecaller/sample2/sample2.HomRegions.cmgg_bio.tsv",
-                "test/Ashkenazim/automap_haplotypecaller/sample2/sample2.HomRegions.pdf",
-                "test/Ashkenazim/automap_haplotypecaller/sample2/sample2.HomRegions.strict.cmgg_bio.tsv",
-                "test/Ashkenazim/automap_haplotypecaller/sample2/sample2.HomRegions.tsv",
-                "test/Ashkenazim/automap_haplotypecaller/sample3/sample3.HomRegions.cmgg_bio.tsv",
-                "test/Ashkenazim/automap_haplotypecaller/sample3/sample3.HomRegions.pdf",
-                "test/Ashkenazim/automap_haplotypecaller/sample3/sample3.HomRegions.strict.cmgg_bio.tsv",
-                "test/Ashkenazim/automap_haplotypecaller/sample3/sample3.HomRegions.tsv",
-                "test/Ashkenazim/reports/Ashkenazim.haplotypecaller.bcftools_stats.txt",
-                "test/Ashkenazim/reports/Ashkenazim.haplotypecaller.somalier.html"
+                "Ashkenazim/NA24143_<version>_<date>/NA24143.bed",
+                "Ashkenazim/NA24143_<version>_<date>/NA24143.haplotypecaller.bcftools_stats.txt",
+                "Ashkenazim/NA24143_<version>_<date>/NA24143.haplotypecaller.g.vcf.gz",
+                "Ashkenazim/NA24143_<version>_<date>/NA24143.haplotypecaller.g.vcf.gz.tbi",
+                "Ashkenazim/NA24149_<version>_<date>/NA24149.bed",
+                "Ashkenazim/NA24149_<version>_<date>/NA24149.haplotypecaller.bcftools_stats.txt",
+                "Ashkenazim/NA24149_<version>_<date>/NA24149.haplotypecaller.g.vcf.gz",
+                "Ashkenazim/NA24149_<version>_<date>/NA24149.haplotypecaller.g.vcf.gz.tbi",
+                "Ashkenazim/NA24385_<version>_<date>/NA24385.bed",
+                "Ashkenazim/NA24385_<version>_<date>/NA24385.haplotypecaller.bcftools_stats.txt",
+                "Ashkenazim/NA24385_<version>_<date>/NA24385.haplotypecaller.g.vcf.gz",
+                "Ashkenazim/NA24385_<version>_<date>/NA24385.haplotypecaller.g.vcf.gz.tbi",
+                "Ashkenazim/output_<version>_<date>/Ashkenazim.haplotypecaller.bed",
+                "Ashkenazim/output_<version>_<date>/Ashkenazim.haplotypecaller.ped",
+                "Ashkenazim/output_<version>_<date>/Ashkenazim.haplotypecaller.vcf.gz",
+                "Ashkenazim/output_<version>_<date>/Ashkenazim.haplotypecaller.vcf.gz.tbi",
+                "Ashkenazim/qc_<version>_<date>/Ashkenazim.haplotypecaller.bcftools_stats.txt",
+                "Ashkenazim/qc_<version>_<date>/Ashkenazim.haplotypecaller.html",
+                "<version>_<date>/multiqc_report.html",
+                "<version>_<date>/samplesheet.csv"
             ]
         ],
         "meta": {
-            "nf-test": "0.9.0",
-            "nextflow": "24.04.4"
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
         },
-        "timestamp": "2024-09-05T11:47:48.972236882"
+        "timestamp": "2024-11-13T14:17:45.975261786"
     },
-    "only_merge": {
+    "pipeline_variations - only_call": {
         "content": [
             [
-
-            ],
-            [
-                "NA24143/NA24143.bed",
-                "NA24143/NA24143.haplotypecaller.g.vcf.gz",
-                "NA24143/NA24143.haplotypecaller.g.vcf.gz.csi",
-                "NA24143/NA24143.haplotypecaller.g.vcf.gz.tbi",
-                "NA24143/reports/NA24143.global.dist.txt",
-                "NA24143/reports/NA24143.haplotypecaller.bcftools_stats.txt",
-                "NA24143/reports/NA24143.summary.txt",
-                "NA24149/NA24149.bed",
-                "NA24149/NA24149.haplotypecaller.g.vcf.gz",
-                "NA24149/NA24149.haplotypecaller.g.vcf.gz.csi",
-                "NA24149/NA24149.haplotypecaller.g.vcf.gz.tbi",
-                "NA24149/reports/NA24149.global.dist.txt",
-                "NA24149/reports/NA24149.haplotypecaller.bcftools_stats.txt",
-                "NA24149/reports/NA24149.summary.txt",
-                "NA24385/NA24385.bed",
-                "NA24385/NA24385.haplotypecaller.g.vcf.gz",
-                "NA24385/NA24385.haplotypecaller.g.vcf.gz.csi",
-                "NA24385/NA24385.haplotypecaller.g.vcf.gz.tbi",
-                "NA24385/reports/NA24385.global.dist.txt",
-                "NA24385/reports/NA24385.haplotypecaller.bcftools_stats.txt",
-                "NA24385/reports/NA24385.summary.txt",
-                "multiqc/multiqc_plots",
-                "multiqc/multiqc_report.html",
-                "samplesheet.csv",
-                "test/Ashkenazim/genomicsdb_Ashkenazim"
+                "Ashkenazim/NA24143_<version>_<date>/NA24143.bed",
+                "Ashkenazim/NA24143_<version>_<date>/NA24143.haplotypecaller.bcftools_stats.txt",
+                "Ashkenazim/NA24143_<version>_<date>/NA24143.haplotypecaller.g.vcf.gz",
+                "Ashkenazim/NA24143_<version>_<date>/NA24143.haplotypecaller.g.vcf.gz.tbi",
+                "Ashkenazim/NA24149_<version>_<date>/NA24149.bed",
+                "Ashkenazim/NA24149_<version>_<date>/NA24149.haplotypecaller.bcftools_stats.txt",
+                "Ashkenazim/NA24149_<version>_<date>/NA24149.haplotypecaller.g.vcf.gz",
+                "Ashkenazim/NA24149_<version>_<date>/NA24149.haplotypecaller.g.vcf.gz.tbi",
+                "Ashkenazim/NA24385_<version>_<date>/NA24385.bed",
+                "Ashkenazim/NA24385_<version>_<date>/NA24385.haplotypecaller.bcftools_stats.txt",
+                "Ashkenazim/NA24385_<version>_<date>/NA24385.haplotypecaller.g.vcf.gz",
+                "Ashkenazim/NA24385_<version>_<date>/NA24385.haplotypecaller.g.vcf.gz.tbi",
+                "<version>_<date>/multiqc_report.html",
+                "<version>_<date>/samplesheet.csv"
             ]
         ],
         "meta": {
-            "nf-test": "0.9.0",
-            "nextflow": "24.04.4"
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
         },
-        "timestamp": "2024-09-05T11:46:37.403799074"
+        "timestamp": "2024-11-13T14:26:32.219983438"
     },
-    "annotate": {
+    "pipeline_variations - automap": {
         "content": [
             [
-
-            ],
-            [
-                "NA24143/NA24143.bed",
-                "NA24143/NA24143.haplotypecaller.g.vcf.gz",
-                "NA24143/NA24143.haplotypecaller.g.vcf.gz.csi",
-                "NA24143/NA24143.haplotypecaller.g.vcf.gz.tbi",
-                "NA24143/reports/NA24143.global.dist.txt",
-                "NA24143/reports/NA24143.haplotypecaller.bcftools_stats.txt",
-                "NA24143/reports/NA24143.summary.txt",
-                "NA24149/NA24149.bed",
-                "NA24149/NA24149.haplotypecaller.g.vcf.gz",
-                "NA24149/NA24149.haplotypecaller.g.vcf.gz.csi",
-                "NA24149/NA24149.haplotypecaller.g.vcf.gz.tbi",
-                "NA24149/reports/NA24149.global.dist.txt",
-                "NA24149/reports/NA24149.haplotypecaller.bcftools_stats.txt",
-                "NA24149/reports/NA24149.summary.txt",
-                "NA24385/NA24385.bed",
-                "NA24385/NA24385.haplotypecaller.g.vcf.gz",
-                "NA24385/NA24385.haplotypecaller.g.vcf.gz.csi",
-                "NA24385/NA24385.haplotypecaller.g.vcf.gz.tbi",
-                "NA24385/reports/NA24385.global.dist.txt",
-                "NA24385/reports/NA24385.haplotypecaller.bcftools_stats.txt",
-                "NA24385/reports/NA24385.summary.txt",
-                "multiqc/multiqc_plots",
-                "multiqc/multiqc_report.html",
-                "samplesheet.csv",
-                "test/Ashkenazim/Ashkenazim.bed",
-                "test/Ashkenazim/Ashkenazim.haplotypecaller.ped",
-                "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz",
-                "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz.csi",
-                "test/Ashkenazim/Ashkenazim.haplotypecaller.vcf.gz.tbi",
-                "test/Ashkenazim/reports/Ashkenazim.haplotypecaller.bcftools_stats.txt",
-                "test/Ashkenazim/reports/Ashkenazim.haplotypecaller.somalier.html"
+                "Ashkenazim/NA24143_<version>_<date>/NA24143.bed",
+                "Ashkenazim/NA24143_<version>_<date>/NA24143.haplotypecaller.bcftools_stats.txt",
+                "Ashkenazim/NA24143_<version>_<date>/NA24143.haplotypecaller.g.vcf.gz",
+                "Ashkenazim/NA24143_<version>_<date>/NA24143.haplotypecaller.g.vcf.gz.tbi",
+                "Ashkenazim/NA24149_<version>_<date>/NA24149.bed",
+                "Ashkenazim/NA24149_<version>_<date>/NA24149.haplotypecaller.bcftools_stats.txt",
+                "Ashkenazim/NA24149_<version>_<date>/NA24149.haplotypecaller.g.vcf.gz",
+                "Ashkenazim/NA24149_<version>_<date>/NA24149.haplotypecaller.g.vcf.gz.tbi",
+                "Ashkenazim/NA24385_<version>_<date>/NA24385.bed",
+                "Ashkenazim/NA24385_<version>_<date>/NA24385.haplotypecaller.bcftools_stats.txt",
+                "Ashkenazim/NA24385_<version>_<date>/NA24385.haplotypecaller.g.vcf.gz",
+                "Ashkenazim/NA24385_<version>_<date>/NA24385.haplotypecaller.g.vcf.gz.tbi",
+                "Ashkenazim/output_<version>_<date>/Ashkenazim.haplotypecaller.bed",
+                "Ashkenazim/output_<version>_<date>/Ashkenazim.haplotypecaller.ped",
+                "Ashkenazim/output_<version>_<date>/Ashkenazim.haplotypecaller.vcf.gz",
+                "Ashkenazim/output_<version>_<date>/Ashkenazim.haplotypecaller.vcf.gz.tbi",
+                "Ashkenazim/output_<version>_<date>/automap/haplotypecaller/sample1/sample1.HomRegions.cmgg_bio.tsv",
+                "Ashkenazim/output_<version>_<date>/automap/haplotypecaller/sample1/sample1.HomRegions.pdf",
+                "Ashkenazim/output_<version>_<date>/automap/haplotypecaller/sample1/sample1.HomRegions.strict.cmgg_bio.tsv",
+                "Ashkenazim/output_<version>_<date>/automap/haplotypecaller/sample1/sample1.HomRegions.tsv",
+                "Ashkenazim/output_<version>_<date>/automap/haplotypecaller/sample2/sample2.HomRegions.cmgg_bio.tsv",
+                "Ashkenazim/output_<version>_<date>/automap/haplotypecaller/sample2/sample2.HomRegions.pdf",
+                "Ashkenazim/output_<version>_<date>/automap/haplotypecaller/sample2/sample2.HomRegions.strict.cmgg_bio.tsv",
+                "Ashkenazim/output_<version>_<date>/automap/haplotypecaller/sample2/sample2.HomRegions.tsv",
+                "Ashkenazim/output_<version>_<date>/automap/haplotypecaller/sample3/sample3.HomRegions.cmgg_bio.tsv",
+                "Ashkenazim/output_<version>_<date>/automap/haplotypecaller/sample3/sample3.HomRegions.pdf",
+                "Ashkenazim/output_<version>_<date>/automap/haplotypecaller/sample3/sample3.HomRegions.strict.cmgg_bio.tsv",
+                "Ashkenazim/output_<version>_<date>/automap/haplotypecaller/sample3/sample3.HomRegions.tsv",
+                "Ashkenazim/qc_<version>_<date>/Ashkenazim.haplotypecaller.bcftools_stats.txt",
+                "Ashkenazim/qc_<version>_<date>/Ashkenazim.haplotypecaller.html",
+                "<version>_<date>/multiqc_report.html",
+                "<version>_<date>/samplesheet.csv"
             ]
         ],
         "meta": {
-            "nf-test": "0.9.0",
-            "nextflow": "24.04.4"
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
         },
-        "timestamp": "2024-09-05T11:42:39.793880467"
+        "timestamp": "2024-11-13T14:31:35.104677632"
     }
 }

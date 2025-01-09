@@ -4,9 +4,9 @@
 
 include { GATK4_CALIBRATEDRAGSTRMODEL               } from '../../../modules/nf-core/gatk4/calibratedragstrmodel/main'
 include { GATK4_HAPLOTYPECALLER                     } from '../../../modules/nf-core/gatk4/haplotypecaller/main'
-include { BCFTOOLS_STATS as BCFTOOLS_STATS_SINGLE   } from '../../../modules/nf-core/bcftools/stats/main'
+include { BCFTOOLS_STATS                            } from '../../../modules/nf-core/bcftools/stats/main'
 
-include { VCF_CONCAT_BCFTOOLS           } from '../vcf_concat_bcftools/main'
+include { VCF_CONCAT_BCFTOOLS                       } from '../vcf_concat_bcftools/main'
 
 workflow CRAM_CALL_GATK4 {
     take:
@@ -21,13 +21,13 @@ workflow CRAM_CALL_GATK4 {
 
     main:
 
-    ch_versions  = Channel.empty()
+    def ch_versions  = Channel.empty()
 
     //
     // Generate DRAGSTR models (if --dragstr is specified)
     //
 
-    ch_cram_models = Channel.empty()
+    def ch_cram_models = Channel.empty()
     if (dragstr) {
 
         ch_input
@@ -43,26 +43,24 @@ workflow CRAM_CALL_GATK4 {
             .set { ch_dragstr_input }
 
         GATK4_CALIBRATEDRAGSTRMODEL(
-            ch_dragstr_input.map { meta, cram, crai, beds -> [ meta, cram, crai ] },
-            ch_fasta.map { meta, fasta -> fasta },
-            ch_fai.map { meta, fai -> fai },
-            ch_dict.map { meta, dict -> dict },
-            ch_strtablefile.map { meta, str -> str }
+            ch_dragstr_input.map { meta, cram, crai, _beds -> [ meta, cram, crai ] },
+            ch_fasta.map { _meta, fasta -> fasta },
+            ch_fai.map { _meta, fai -> fai },
+            ch_dict.map { _meta, dict -> dict },
+            ch_strtablefile.map { _meta, str -> str }
         )
         ch_versions = ch_versions.mix(GATK4_CALIBRATEDRAGSTRMODEL.out.versions.first())
 
-        ch_original
+        ch_cram_models = ch_original
             .combine(GATK4_CALIBRATEDRAGSTRMODEL.out.dragstr_model, by: 0)
             .map { meta, cram, crai, bed, dragstr_model ->
                 def new_meta = meta + [id:bed.baseName]
                 [ new_meta, cram, crai, bed, dragstr_model ]
             }
-            .set { ch_cram_models }
     }
     else {
-        ch_input
+        ch_cram_models = ch_input
             .map { meta, cram, crai, bed -> [ meta, cram, crai, bed, [] ] }
-            .set { ch_cram_models }
     }
 
     GATK4_HAPLOTYPECALLER(
@@ -89,7 +87,7 @@ workflow CRAM_CALL_GATK4 {
     )
     ch_versions = ch_versions.mix(VCF_CONCAT_BCFTOOLS.out.versions)
 
-    BCFTOOLS_STATS_SINGLE(
+    BCFTOOLS_STATS(
         VCF_CONCAT_BCFTOOLS.out.vcfs,
         [[],[]],
         [[],[]],
@@ -97,13 +95,12 @@ workflow CRAM_CALL_GATK4 {
         [[],[]],
         [[],[]]
     )
-    ch_versions = ch_versions.mix(BCFTOOLS_STATS_SINGLE.out.versions.first())
+    ch_versions = ch_versions.mix(BCFTOOLS_STATS.out.versions.first())
 
-    reports = BCFTOOLS_STATS_SINGLE.out.stats.collect{ meta, report -> report}
 
     emit:
     gvcfs = VCF_CONCAT_BCFTOOLS.out.vcfs    // channel: [ val(meta), path(vcf), path(tbi) ]
-    reports                                 // channel: [ path(stats) ]
+    reports = BCFTOOLS_STATS.out.stats      // channel: [ val(meta), path(stats) ]
     versions = ch_versions                  // channel: [ versions.yml ]
 
 }

@@ -11,7 +11,7 @@ workflow VCF_EXTRACT_RELATE_SOMALIER {
 
     main:
 
-    ch_versions = Channel.empty()
+    def ch_versions = Channel.empty()
 
     SOMALIER_EXTRACT(
         ch_vcfs,
@@ -22,12 +22,11 @@ workflow VCF_EXTRACT_RELATE_SOMALIER {
 
     ch_versions = ch_versions.mix(SOMALIER_EXTRACT.out.versions.first())
 
-    SOMALIER_EXTRACT.out.extract
+    def ch_somalierrelate_input = SOMALIER_EXTRACT.out.extract
         .join(ch_peds, failOnDuplicate:true, failOnMismatch:true)
         .map { meta, extract, ped ->
             [ meta, extract, ped ]
         }
-        .set { ch_somalierrelate_input }
 
     SOMALIER_RELATE(
         ch_somalierrelate_input,

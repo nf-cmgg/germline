@@ -1,0 +1,72 @@
+{
+    "homo_sapiens - bed": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": false
+                        },
+                        "test.bed:md5,fa245abf8add7a80650566a1de67ec04"
+                    ]
+                ],
+                "1": [
+                    "versions.yml:md5,273f887b675fb5feb6073a5313a191a9"
+                ],
+                "bed": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": false
+                        },
+                        "test.bed:md5,fa245abf8add7a80650566a1de67ec04"
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,273f887b675fb5feb6073a5313a191a9"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
+        },
+        "timestamp": "2024-11-14T09:49:08.980488978"
+    },
+    "homo_sapiens - bed - stub": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": false
+                        },
+                        "test.bed:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "1": [
+                    "versions.yml:md5,273f887b675fb5feb6073a5313a191a9"
+                ],
+                "bed": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": false
+                        },
+                        "test.bed:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,273f887b675fb5feb6073a5313a191a9"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
+        },
+        "timestamp": "2024-11-14T09:49:17.089675797"
+    }
+}

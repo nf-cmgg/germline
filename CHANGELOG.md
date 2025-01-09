@@ -3,9 +3,37 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.9.0 - Neighborly Nieuwkerke - [January 9 2025]
+
+### New features
+
+1. Added the `--min_callable_coverage` parameter to state what the lowest coverage should for a region to be classified as callable.
+2. Added the [`elprep` caller](https://github.com/ExaScience/elprep) as an alternative to the haplotypecaller.
+3. Added full unit tests for all parts that were missing tests.
+
+### Changes
+
+1. Added the `--squash-ploidy` argument to the RTG vcfeval process.
+2. Update to nf-core v3.0.1
+3. Completely reworked the output directory structure to a more sensible structure. The pipeline can now be run on the same output directory every time and will incrementally add files to the correct family folder. See the [output documentation](https://nf-cmgg.github.io/germline/latest/output/) for more info.
+4. Migrated to the new workflow output definitions.
+5. Bumped the minimal Nextflow version to 24.10.0.
+6. Added the somalier reports to the multiQC report.
+7. Removed the `--output_suffix` parameter
+8. Added some missing required parameters to the `WES` and `seqplorer` profiles
+
+### Fixes
+
+1. Validation of all samples now uses an intersect of the golden truth BED files with the BED file used to call the variants. This should fix the WES validation which was broken until this point.
+2. A couple of small fixes to the vardict flow.
+3. Only use the standard chromosomes for UPDio analysis.
+4. Reduced the resources given to some GATK4 modules
+5. VCF2DB now uses a seqera container to fix some issues when running it in nomad
+6. Dots in sample and family names are now converted to an underscore automatically.
+
 ## v1.8.2 - Outstanding Oostkamp - [September 30 2024]
 
-## Fixes
+### Fixes
 
 1. Fixed some issues where indices were not created
 2. Updated the docs

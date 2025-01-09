@@ -1,0 +1,70 @@
+{
+    "cram_call_gatk4 - default": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143",
+                        "caller": "haplotypecaller"
+                    },
+                    "variantsMD5:57a0b3ce429f38292730f965277d28d5",
+                    "g.vcf.gz.tbi"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143",
+                        "caller": "haplotypecaller"
+                    },
+                    "NA24143.haplotypecaller.bcftools_stats.txt:md5,09b4e7674e0f5b98b1e548df3002250e"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
+        },
+        "timestamp": "2024-11-06T16:31:34.986729048"
+    },
+    "cram_call_gatk4 - dragstr": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143",
+                        "caller": "haplotypecaller"
+                    },
+                    "variantsMD5:69601e4deb53c65d30fff9d260e31bb9",
+                    "g.vcf.gz.tbi"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143",
+                        "caller": "haplotypecaller"
+                    },
+                    "NA24143.haplotypecaller.bcftools_stats.txt:md5,c4dad5b8e05871dda66df42b1f6c89ff"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
+        },
+        "timestamp": "2024-11-06T16:32:34.211560941"
+    }
+}

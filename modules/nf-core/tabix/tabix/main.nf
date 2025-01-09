@@ -23,6 +23,7 @@ process TABIX_TABIX {
     """
     tabix \\
         --threads $task.cpus \\
+        --force \\
         $args \\
         $tab
 

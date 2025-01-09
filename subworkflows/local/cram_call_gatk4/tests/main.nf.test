@@ -1,0 +1,129 @@
+nextflow_workflow {
+
+    name "Test Workflow CRAM_CALL_GATK4"
+    script "../main.nf"
+    workflow "CRAM_CALL_GATK4"
+
+    tag "subworkflows"
+    tag "subworkflows_local"
+    tag "cram_call_gatk4"
+    tag "vcf_concat_bcftools"
+
+    test("cram_call_gatk4 - default") {
+
+
+        when {
+            params {
+                callers = "haplotypecaller"
+            }
+            workflow {
+                """
+                input[0] = Channel.of([
+                    [id:"NA24143.00001", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
+                    file(params.cram1, checkIfExists:true),
+                    file(params.crai1, checkIfExists:true),
+                    file(params.split1, checkIfExists:true)
+                ],[
+                    [id:"NA24143.00002", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
+                    file(params.cram1, checkIfExists:true),
+                    file(params.crai1, checkIfExists:true),
+                    file(params.split2, checkIfExists:true)
+                ],[
+                    [id:"NA24143.00003", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
+                    file(params.cram1, checkIfExists:true),
+                    file(params.crai1, checkIfExists:true),
+                    file(params.split3, checkIfExists:true)
+                ])
+                input[1] = Channel.value([
+                    [id:"fasta"],
+                    file(params.fasta, checkIfExists:true)
+                ])
+                input[2] = Channel.value([
+                    [id:"fai"],
+                    file(params.fai, checkIfExists:true)
+                ])
+                input[3] = Channel.value([
+                    [id:"dict"],
+                    file(params.dict, checkIfExists:true)
+                ])
+                input[4] = [[],[]]
+                input[5] = [[],[]]
+                input[6] = [[],[]]
+                input[7] = false
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.out.gvcfs.collect { [it[0], "variantsMD5:${path(it[1]).vcf.variantsMD5}", it[2][-12..-1]] },
+                    workflow.out.reports
+                ).match() }
+            )
+        }
+
+    }
+
+    test("cram_call_gatk4 - dragstr") {
+
+
+        when {
+            params {
+                callers = "haplotypecaller"
+            }
+            workflow {
+                """
+                input[0] = Channel.of([
+                    [id:"NA24143.00001", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
+                    file(params.cram1, checkIfExists:true),
+                    file(params.crai1, checkIfExists:true),
+                    file(params.split1, checkIfExists:true)
+                ],[
+                    [id:"NA24143.00002", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
+                    file(params.cram1, checkIfExists:true),
+                    file(params.crai1, checkIfExists:true),
+                    file(params.split2, checkIfExists:true)
+                ],[
+                    [id:"NA24143.00003", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
+                    file(params.cram1, checkIfExists:true),
+                    file(params.crai1, checkIfExists:true),
+                    file(params.split3, checkIfExists:true)
+                ])
+                input[1] = Channel.value([
+                    [id:"fasta"],
+                    file(params.fasta, checkIfExists:true)
+                ])
+                input[2] = Channel.value([
+                    [id:"fai"],
+                    file(params.fai, checkIfExists:true)
+                ])
+                input[3] = Channel.value([
+                    [id:"dict"],
+                    file(params.dict, checkIfExists:true)
+                ])
+                input[4] = Channel.value([
+                    [id:"str"],
+                    file(params.strtablefile, checkIfExists:true)
+                ])
+                input[5] = [[],[]]
+                input[6] = [[],[]]
+                input[7] = true
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.out.gvcfs.collect { [it[0], "variantsMD5:${path(it[1]).vcf.variantsMD5}", it[2][-12..-1]] },
+                    workflow.out.reports
+                ).match() }
+            )
+        }
+
+    }
+
+}

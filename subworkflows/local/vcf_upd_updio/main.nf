@@ -2,7 +2,8 @@
 // Run UPDio analysis
 //
 
-include { UPDIO    } from '../../../modules/local/updio/main'
+include { UPDIO             } from '../../../modules/local/updio/main'
+include { BCFTOOLS_FILTER   } from '../../../modules/nf-core/bcftools/filter'
 
 workflow VCF_UPD_UPDIO {
     take:
@@ -12,36 +13,41 @@ workflow VCF_UPD_UPDIO {
 
     main:
 
-    ch_versions = Channel.empty()
+    def ch_versions = Channel.empty()
 
     // Filter out all families that have less than 3 samples
-    ch_vcfs
-        .filter { meta, vcf, tbi ->
+    def ch_trio_vcfs = ch_vcfs
+        .filter { meta, _vcf, _tbi ->
             meta.family_samples.tokenize(",").size() >= 3
         }
-        .set { ch_trio_vcfs }
 
-    ch_peds
-        .filter { meta, ped ->
-            meta.family_samples.tokenize(",").size() >= 3
-        }
-        .set { ch_trio_peds }
-
-    CustomChannelOperators.joinOnKeys(
-        [failOnDuplicate:true, failOnMismatch:true],
-        ch_trio_vcfs,
-        ch_trio_peds,
-        ["id", "family", "family_samples", "caller"]
+    BCFTOOLS_FILTER(
+        ch_trio_vcfs
     )
+    ch_versions = ch_versions.mix(BCFTOOLS_FILTER.out.versions.first())
+
+    def ch_filter_output = BCFTOOLS_FILTER.out.vcf
+        .join(BCFTOOLS_FILTER.out.tbi, failOnDuplicate:true, failOnMismatch:true)
+
+    def ch_trio_peds = ch_peds
+        .filter { meta, _ped ->
+            meta.family_samples.tokenize(",").size() >= 3
+        }
+
+    def ch_trio_vcfs_family = CustomChannelOperators.joinOnKeys(
+            [failOnDuplicate:true, failOnMismatch:true],
+            ch_filter_output,
+            ch_trio_peds,
+            ["id", "family", "family_samples", "caller"]
+        )
         .map { meta, vcf, tbi, ped ->
             def meta_list = get_family_data_from_ped(meta, ped)
             [ meta_list, vcf, tbi ]
         }
-        .filter { meta, vcf, tbi ->
+        .filter { meta, _vcf, _tbi ->
             meta
         }
         .transpose(by:0)
-        .set { ch_trio_vcfs_family }
 
     UPDIO(
         ch_trio_vcfs_family,
@@ -58,9 +64,6 @@ def get_family_data_from_ped(meta, ped) {
     def output = []
     ped.readLines().each { line ->
         if(line.startsWith("#")) { return }
-        def child = null
-        def mother = null
-        def father = null
         def split_line = line.split("\t")
         if(split_line[1] != "0" && split_line[2] != "0" && split_line[3] != "0") {
             output.add(meta + [child:split_line[1], father:split_line[2], mother:split_line[3]])

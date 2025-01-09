@@ -1,0 +1,24 @@
+{
+    "bam_call_vardictjava - default": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143",
+                        "caller": "vardict"
+                    },
+                    "variantsMD5:98497d2c15c6e3781f5ddeb81bf6288f",
+                    "vcf.gz.tbi"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
+        },
+        "timestamp": "2024-11-06T16:29:46.9755281"
+    }
+}

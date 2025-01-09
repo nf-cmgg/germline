@@ -1,0 +1,18 @@
+Changes in module 'nf-core/gatk4/genotypegvcfs'
+'modules/nf-core/gatk4/genotypegvcfs/environment.yml' is unchanged
+'modules/nf-core/gatk4/genotypegvcfs/meta.yml' is unchanged
+Changes in 'gatk4/genotypegvcfs/main.nf':
+--- modules/nf-core/gatk4/genotypegvcfs/main.nf
++++ modules/nf-core/gatk4/genotypegvcfs/main.nf
+@@ -1,6 +1,6 @@
+ process GATK4_GENOTYPEGVCFS {
+     tag "$meta.id"
+-    label 'process_high'
++    label 'process_single'
+ 
+     conda "${moduleDir}/environment.yml"
+     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+
+'modules/nf-core/gatk4/genotypegvcfs/tests/main.nf.test.snap' is unchanged
+'modules/nf-core/gatk4/genotypegvcfs/tests/main.nf.test' is unchanged
+************************************************************

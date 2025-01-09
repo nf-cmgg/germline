@@ -1,0 +1,93 @@
+{
+    "sarscov2 - ensemblvep - large chunks": {
+        "content": [
+            [
+                [
+                    {
+                        "groupSize": 1,
+                        "groupTarget": {
+                            "id": "custom_test",
+                            "single_end": false
+                        }
+                    },
+                    "custom_test.vcf.gz,variantsMD5:44ed24c4dc4223670a78ffea3c7459e",
+                    "custom_test.vcf.gz.tbi"
+                ]
+            ],
+            [
+                "custom_test0_annotated.vep.vcf.gz_summary.html"
+            ],
+            [
+                "versions.yml",
+                "versions.yml",
+                "versions.yml",
+                "versions.yml",
+                "versions.yml"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
+        },
+        "timestamp": "2024-11-20T14:31:50.569767686"
+    },
+    "sarscov2 - ensemblvep - no scatter": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "custom_test",
+                        "single_end": false
+                    },
+                    "custom_test.vep.vcf.gz,variantsMD5:44ed24c4dc4223670a78ffea3c7459e",
+                    "custom_test.vep.vcf.gz.tbi"
+                ]
+            ],
+            [
+                "custom_test.vep.vcf.gz_summary.html"
+            ],
+            [
+                "versions.yml",
+                "versions.yml"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
+        },
+        "timestamp": "2024-11-20T14:32:06.437006334"
+    },
+    "sarscov2 - ensemblvep": {
+        "content": [
+            [
+                [
+                    {
+                        "groupSize": 2,
+                        "groupTarget": {
+                            "id": "custom_test",
+                            "single_end": false
+                        }
+                    },
+                    "custom_test.vcf.gz,variantsMD5:44ed24c4dc4223670a78ffea3c7459e",
+                    "custom_test.vcf.gz.tbi"
+                ]
+            ],
+            [
+                "custom_test0_annotated.vep.vcf.gz_summary.html",
+                "custom_test1_annotated.vep.vcf.gz_summary.html"
+            ],
+            [
+                "versions.yml",
+                "versions.yml",
+                "versions.yml",
+                "versions.yml",
+                "versions.yml"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
+        },
+        "timestamp": "2024-11-20T14:31:32.997494596"
+    }
+}

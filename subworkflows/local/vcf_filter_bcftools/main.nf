@@ -13,31 +13,29 @@ workflow VCF_FILTER_BCFTOOLS {
 
     main:
 
-    ch_versions = Channel.empty()
+    def ch_versions = Channel.empty()
 
     FILTER_1(
-        ch_vcfs.map { meta, vcf, tbi=[] -> [ meta, vcf ]}
+        ch_vcfs.map { meta, vcf, tbi=[] -> [ meta, vcf, tbi ]}
     )
     ch_versions = ch_versions.mix(FILTER_1.out.versions.first())
 
     FILTER_2(
-        FILTER_1.out.vcf
+        FILTER_1.out.vcf.map { meta, vcf -> [ meta, vcf, [] ]}
     )
     ch_versions = ch_versions.mix(FILTER_2.out.versions.first())
 
-    ch_filter_vcfs = Channel.empty()
+    def ch_filter_vcfs = Channel.empty()
     if(val_tabix) {
         TABIX_TABIX(
             FILTER_2.out.vcf
         )
         ch_versions = ch_versions.mix(TABIX_TABIX.out.versions.first())
 
-        FILTER_2.out.vcf
+        ch_filter_vcfs = FILTER_2.out.vcf
             .join(TABIX_TABIX.out.tbi, failOnDuplicate: true, failOnMismatch: true)
-            .set { ch_filter_vcfs }
     } else {
-        FILTER_2.out.vcf
-            .set { ch_filter_vcfs }
+        ch_filter_vcfs = FILTER_2.out.vcf
     }
 
 

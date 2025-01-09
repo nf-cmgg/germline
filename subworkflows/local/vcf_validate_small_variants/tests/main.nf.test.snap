@@ -1,0 +1,226 @@
+{
+    "default": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143,NA24149,NA24385"
+                    },
+                    "NA24143.tp.vcf.gz:md5,0449f4185b63d0b988b7f9de6a6b2fb3"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143,NA24149,NA24385"
+                    },
+                    "NA24143.tp.vcf.gz.tbi:md5,637a1a87502b3764ad22017b16ccb3ac"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143,NA24149,NA24385"
+                    },
+                    "NA24143.fn.vcf.gz:md5,688c27c6785313c1a0ac9fdcf430e0eb"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143,NA24149,NA24385"
+                    },
+                    "NA24143.fn.vcf.gz.tbi:md5,092a7a3162e7cff25d273525751eb284"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143,NA24149,NA24385"
+                    },
+                    "NA24143.fp.vcf.gz:md5,d11b30ab764bd9c3f8294b51043a3e1a"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143,NA24149,NA24385"
+                    },
+                    "NA24143.fp.vcf.gz.tbi:md5,092a7a3162e7cff25d273525751eb284"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143,NA24149,NA24385"
+                    },
+                    "NA24143.tp-baseline.vcf.gz:md5,748b2b41e2f5916fd0e5fbc2aea60d3d"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143,NA24149,NA24385"
+                    },
+                    "NA24143.tp-baseline.vcf.gz.tbi:md5,8c1a12430a7714b000c11e471175d6e1"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143,NA24149,NA24385"
+                    },
+                    "NA24143.summary.txt:md5,11416903ca828b22bd64cf297f2db999"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143,NA24149,NA24385"
+                    },
+                    "NA24143.phasing.txt:md5,dfcf0fc6ad7e98c737a7a0afaf2c2733"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143,NA24149,NA24385"
+                    },
+                    "NA24143.snp_roc.tsv.gz:md5,306d33ea1cf1d797d0f52234d2ff901e"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143,NA24149,NA24385"
+                    },
+                    "NA24143.non_snp_roc.tsv.gz:md5,31e6719897dd4f7d3d0a9cb4943693cf"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143,NA24149,NA24385"
+                    },
+                    "NA24143.weighted_roc.tsv.gz:md5,e1e87f61f55f976162be76fe993423e1"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143,NA24149,NA24385",
+                        "roc_type": "snp"
+                    },
+                    "NA24143.snp.png"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143,NA24149,NA24385",
+                        "roc_type": "non_snp"
+                    },
+                    "NA24143.non_snp.png"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143,NA24149,NA24385",
+                        "roc_type": "weighted"
+                    },
+                    "NA24143.weighted.png"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143,NA24149,NA24385",
+                        "roc_type": "snp"
+                    },
+                    "NA24143.snp.svg"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143,NA24149,NA24385",
+                        "roc_type": "non_snp"
+                    },
+                    "NA24143.non_snp.svg"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "NA24143",
+                        "sample": "NA24143",
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143,NA24149,NA24385",
+                        "roc_type": "weighted"
+                    },
+                    "NA24143.weighted.svg"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
+        },
+        "timestamp": "2024-10-08T15:56:00.946806992"
+    }
+}

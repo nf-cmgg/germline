@@ -1,79 +1,120 @@
 # nf-cmgg/germline: Output
 
-# nf-cmgg/germline: Output
-
 ## Introduction
 
 This page describes the output produced by the pipeline.
 
-The directories listed below will be created in the results directory after the pipeline has finished. All paths are relative to the top-level output directory (specified by `--outdir <DIR>`). This is an example output when the pipeline has been run for a WGS sample called `SAMPLE_1` and a WES sample called `SAMPLE_2` which form a family called `FAMILY_1`. The output consists of 4 directories: `yyyy-MM-dd_project_name`, `individuals`, `multiqc_reports` and `pipeline_info`. This run has only been run with `haplotypecaller` (`--callers haplotypecaller`)
+The output directory has been structured in such a way that you can pass the same output directory to it for each pipeline run. The pipeline will add the files to that directory in a traceable way without overwriting already existing files. This makes it easy to store data, coming from multiple sequencing runs, in the same root directory.
+
+To explain the structure of the output directory, a simple example run consisting of two families is used. The first family (`family1`) is a family consisting of a trio (son, father and mother) and the second family (`family2`) consists of a single sample.
 
 ```bash
-results/
-├── YYYY_MM_DD_project_name #(1)!
-│   └── FAMILY_1 #(2)!
-│       ├── FAMILY_1.bed #(3)!
-│       ├── FAMILY_1.haplotypecaller.ped #(4)!
-│       ├── FAMILY_1.haplotypecaller.vcf.gz #(5)!
-│       ├── FAMILY_1.haplotypecaller.vcf.gz.tbi #(6)!
-│       └── reports
-│           ├── FAMILY_1.haplotypecaller.bcftools_stats.txt #(7)!
-│           └── FAMILY_1.haplotypecaller.somalier.html #(8)!
-├── multiqc
-│   ├── multiqc_data/
-│   └── multiqc_report.html #(9)!
-├── SAMPLE_1 #(10)!
-│   ├── SAMPLE_1.bed #(11)!
-│   ├── SAMPLE_1.haplotypecaller.g.vcf.gz #(12)!
-│   ├── SAMPLE_1.haplotypecaller.g.vcf.gz.tbi
-│   └── reports
-│       ├── SAMPLE_1.haplotypecaller.bcftools_stats.txt
-│       ├── SAMPLE_1.mosdepth.global.dist.txt #(13)!
-│       └── SAMPLE_1.mosdepth.summary.txt #(14)!
-├── SAMPLE_2
-│   ├── SAMPLE_2.bed
-│   ├── SAMPLE_2.haplotypecaller.g.vcf.gz
-│   ├── SAMPLE_2.haplotypecaller.g.vcf.gz.tbi
-│   └── reports
-│       ├── SAMPLE_2.haplotypecaller.bcftools_stats.txt
-│       ├── SAMPLE_2.mosdepth.global.dist.txt
-│       └── SAMPLE_2.mosdepth.summary.txt
-├── pipeline_info/ #(15)!
-└── samplesheet.csv #(16)!
+<outdir> #(1)!
+├── family1 #(2)!
+│   ├── output_<pipeline_version>_<date> #(3)!
+│   │   ├── automap #(4)!
+│   │   │   └── <caller> #(5)!
+│   │   │       ├── sample1 #(6)!
+│   │   │       │   ├── sample1.HomRegions.<panel>.tsv
+│   │   │       │   ├── sample1.HomRegions.pdf
+│   │   │       │   ├── sample1.HomRegions.strict.<panel>.tsv
+│   │   │       │   └── sample1.HomRegions.tsv
+│   │   │       ├── sample2
+│   │   │       └── sample3
+│   │   ├── family1.<caller>.bed #(7)!
+│   │   ├── family1.<caller>.db #(8)!
+│   │   ├── family1.<caller>.ped #(9)!
+│   │   ├── family1.<caller>.vcf.gz #(10)!
+│   │   └── family1.<caller>.vcf.gz.tbi #(11)!
+│   ├── qc_<pipeline_version>_<date> #(12)!
+│   │   ├── family1.<caller>.bcftools_stats.txt #(13)!
+│   │   └── family1.<caller>.html #(14)!
+│   ├── sample1_<pipeline_version>_<date> #(15)!
+│   │   ├── sample1.bed #(16)!
+│   │   ├── sample1.<caller>.bcftools_stats.txt #(17)!
+│   │   ├── sample1.<caller>.g.vcf.gz #(18)!
+│   │   ├── sample1.<caller>.g.vcf.gz.tbi #(19)!
+│   │   └── validation #(20)!
+│   │       └── <caller> #(21)!
+│   │           ├── ... #(22)!
+│   │           └── sample1.summary.txt #(23)!
+│   ├── sample2_<pipeline_version>_<date>
+│   └── sample3_<pipeline_version>_<date>
+├── family2
+│   ├── output_<pipeline_version>_<date>
+│   ├── qc_<pipeline_version>_<date>
+│   └── sample4_<pipeline_version>_<date>
+└── <pipeline_version>_<date> #(24)!
+    ├── execution_report_<date>_<hour>-<minutes>-<seconds>.html #(25)!
+    ├── execution_timeline_<date>_<hour>-<minutes>-<seconds>.html #(26)!
+    ├── execution_trace_<date>_<hour>-<minutes>-<seconds>.html #(27)!
+    ├── multiqc_report.html #(28)!
+    ├── params_2024-11-18_15-41-14.json #(29)!
+    ├── pipeline_dag_<date>_<hour>-<minutes>-<seconds>.html #(30)!
+    ├── pipeline_software_mqc_versions.yml #(31)!
+    └── samplesheet.<extension> #(32)!
 ```
 
-1. This is the name of the main pipeline output. It contains the current date and the mnemonic name of the pipeline run by default. The date can be excluded with the `--skip_date_project` parameter and the name can be customized with the `--project <STRING>` parameter.
+1. The output directory specified with `--outdir`
 
-2. This directory contains all files for family `FAMILY_1`.
+2. The first family name specified in the samplesheet in the `family` field
 
-3. This is the BED file used to parallelize the joint-genotyping. It contains all regions that have reads mapped to them for WGS and all regions in the regions of interest that have reads mapped to them for WES.
+3. This folder contains all major outputs of the current family
 
-4. The PED file detailing the relation between the different members of the family. This file will be inferred when no PED file has been given to this family.
+4. This folder will only be made when the `--automap` parameter has been used. It contains all output files from the automap process
 
-5. The resulting VCF for this family. All desired post-processing has been applied on this file.
+5. A specific folder containing postprocessing output generated for the caller used. This folder will be created for each caller provided to the `--callers` parameter
 
-6. The index of the resulting VCF.
+6. This folder contains the files for the specified sample
 
-7. The statistics created with `bcftools stats` for the resulting VCF.
+7. The BED file used to create the VCF file in this folder using the caller specified in the filename
 
-8. The results of `somalier relate`.
+8. The Gemini DB file generated from the output VCF and the PED file. This file will only be created when `--gemini` has been used
 
-9. The report created with MultiQC. This contains all statistics generated with `bcftools stats`, Ensembl VEP and other tools.
+9. The PED file for the current family. This file will contain the correct samples from the input PED file, when given. The pipeline will try and infer a PED file automatically when none has been given. Mind that the inferring of the PED file can have some issues and isn't perfect. Giving a PED file is the recommended way of providing relational data to the pipeline
 
-10. The folder for `SAMPLE_1` containing temporary files that could be useful for re-analysing later.
+10. The final VCF file created using the caller specified in the filename. All required postprocessing methods have been applied on this file
 
-11. This is the BED file used to parallelize the variant calling. It contains all regions that have reads mapped to them for WGS and all regions in the regions of interest that have reads mapped to them for WES.
+11. The index of the final VCF file
 
-12. The GVCF file created with `haplotypecaller`. This can used in later runs of the pipeline to skip variant calling for this sample. A major use case for this is to add a new member to a family without having to call all variants of already called members.
+12. This folder contains all quality metrics for the family
 
-13. The global distribution of the coverage calculated by `mosdepth`.
+13. The statistics calculated by `bcftools stats`
 
-14. The summary created by `mosdepth`.
+14. The relational report created by `somalier relate`
 
-15. The directory containing information of the pipeline run.
+15. The folder containing sample specific files
 
-16. The samplesheet used for the pipeline run.
+16. The BED file used to create the GVCF files for the sample
 
-## Pipeline overview
+17. The statistics of the GVCF file, calculate by `bcftools stats`
 
-[Nextflow](https://www.nextflow.io/docs/latest/tracing.html) provides excellent functionality for generating various reports relevant to the running and execution of the pipeline. This will allow you to troubleshoot errors with the running of the pipeline, and also provide you with other information such as launch commands, run times and resource usage.
+18. The GVCF file generated by the specified caller
+
+19. The index of the GVCF file
+
+20. This folder contains the validation metrics of this specific sample in the final VCF
+
+21. This folder contains the validation metrics for the final VCF generated using the specified caller
+
+22. Additional files were removed from this example, but they are several VCF files and images for deeper analysis of the validation
+
+23. This file contains a summary of the validation metrics
+
+24. This folder contains pipeline metrics and other pipeline run specific files
+
+25. This file is an HTML file that summarizes a lot of metrics of the pipeline run (cpu usage, memory usage, walltime...)
+
+26. This file is an HTML file that visualizes the timeline of the pipeline run
+
+27. This file is an HTML file that visualizes the trace of the pipeline run
+
+28. The multiqc report containing all main statistics of the output data and tool versions
+
+29. A JSON file containing the used parameters to run this pipeline run
+
+30. This file is an HTML file that visualizes the DAG of the pipeline run
+
+31. This file contains a list of all tools used in the pipeline and their versions
+
+32. The samplesheet used to run this pipeline run

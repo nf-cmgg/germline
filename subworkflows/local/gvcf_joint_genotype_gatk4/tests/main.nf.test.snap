@@ -1,0 +1,87 @@
+{
+    "gvcf_joint_genotype_gatk4 - single_sample + family": {
+        "content": [
+            [
+                [
+                    {
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143,NA24149",
+                        "caller": "haplotypecaller",
+                        "id": "Ashkenazim"
+                    },
+                    "variantsMD5:4dea305eb71decb122709e75af9c833f",
+                    "vcf.gz.tbi"
+                ],
+                [
+                    {
+                        "family": "NA24385",
+                        "family_samples": "NA24385",
+                        "caller": "haplotypecaller",
+                        "id": "NA24385"
+                    },
+                    "variantsMD5:4ffd515511f59e3561e3fb1b046d7675",
+                    "vcf.gz.tbi"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
+        },
+        "timestamp": "2024-11-06T16:40:54.696361238"
+    },
+    "gvcf_joint_genotype_gatk4 - single_sample": {
+        "content": [
+            [
+                [
+                    {
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143",
+                        "caller": "haplotypecaller",
+                        "id": "Ashkenazim"
+                    },
+                    "variantsMD5:4c6db9171912bcbbaefeec2a24968a",
+                    "vcf.gz.tbi"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
+        },
+        "timestamp": "2024-11-06T16:38:28.514998644"
+    },
+    "gvcf_joint_genotype_gatk4 - only_merge": {
+        "content": [
+            [
+                
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
+        },
+        "timestamp": "2024-11-05T11:43:25.386070284"
+    },
+    "gvcf_joint_genotype_gatk4 - family": {
+        "content": [
+            [
+                [
+                    {
+                        "family": "Ashkenazim",
+                        "family_samples": "NA24143,NA24149",
+                        "caller": "haplotypecaller",
+                        "id": "Ashkenazim"
+                    },
+                    "variantsMD5:4dea305eb71decb122709e75af9c833f",
+                    "vcf.gz.tbi"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
+        },
+        "timestamp": "2024-11-06T16:39:15.421025343"
+    }
+}

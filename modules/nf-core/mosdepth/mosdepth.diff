@@ -1,0 +1,64 @@
+Changes in module 'nf-core/mosdepth'
+'modules/nf-core/mosdepth/main.nf' is unchanged
+'modules/nf-core/mosdepth/environment.yml' is unchanged
+'modules/nf-core/mosdepth/meta.yml' is unchanged
+'modules/nf-core/mosdepth/tests/tags.yml' is unchanged
+'modules/nf-core/mosdepth/tests/quantized.config' is unchanged
+'modules/nf-core/mosdepth/tests/threshold.config' is unchanged
+'modules/nf-core/mosdepth/tests/window.config' is unchanged
+'modules/nf-core/mosdepth/tests/main.nf.test' is unchanged
+Changes in 'mosdepth/tests/main.nf.test.snap':
+--- modules/nf-core/mosdepth/tests/main.nf.test.snap
++++ modules/nf-core/mosdepth/tests/main.nf.test.snap
+@@ -471,7 +471,7 @@
+                             "id": "test",
+                             "single_end": true
+                         },
+-                        "test.quantized.bed.gz:md5,f037c215449d361112efc10108fcc17c"
++                        "test.quantized.bed.gz:md5,b083304a7964b43313a2789c762738df"
+                     ]
+                 ],
+                 "9": [
+@@ -480,7 +480,7 @@
+                             "id": "test",
+                             "single_end": true
+                         },
+-                        "test.quantized.bed.gz.csi:md5,4f69e6ace50206a2768be66ded3a56f0"
++                        "test.quantized.bed.gz.csi:md5,3c5e7a03ab29089f33ac4aa5c44bcb8b"
+                     ]
+                 ],
+                 "global_txt": [
+@@ -519,7 +519,7 @@
+                             "id": "test",
+                             "single_end": true
+                         },
+-                        "test.quantized.bed.gz:md5,f037c215449d361112efc10108fcc17c"
++                        "test.quantized.bed.gz:md5,b083304a7964b43313a2789c762738df"
+                     ]
+                 ],
+                 "quantized_csi": [
+@@ -528,7 +528,7 @@
+                             "id": "test",
+                             "single_end": true
+                         },
+-                        "test.quantized.bed.gz.csi:md5,4f69e6ace50206a2768be66ded3a56f0"
++                        "test.quantized.bed.gz.csi:md5,3c5e7a03ab29089f33ac4aa5c44bcb8b"
+                     ]
+                 ],
+                 "regions_bed": [
+@@ -561,10 +561,10 @@
+             }
+         ],
+         "meta": {
+-            "nf-test": "0.8.4",
+-            "nextflow": "23.10.1"
++            "nf-test": "0.9.1",
++            "nextflow": "24.10.0"
+         },
+-        "timestamp": "2024-04-29T13:33:01.164885111"
++        "timestamp": "2024-11-20T17:10:36.940635059"
+     },
+     "homo_sapiens - bam, bai, bed": {
+         "content": [
+
+************************************************************

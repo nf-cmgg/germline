@@ -9,11 +9,15 @@
         "properties": {
             "sample": {
                 "type": "string",
-                "meta": ["id", "sample"]
+                "pattern": "^[a-zA-Z0-9_\\.]+$",
+                "meta": ["id", "sample"],
+                "errorMessage": "Sample name should be a string that may contain underscores (_) and dots (.)"
             },
             "family": {
                 "type": "string",
-                "meta": ["family"]
+                "pattern": "^[a-zA-Z0-9_\\.]+$",
+                "meta": ["family"],
+                "errorMessage": "Family name should be a string that may contain underscores (_) and dots (.)"
             },
             "cram": {
                 "oneOf": [

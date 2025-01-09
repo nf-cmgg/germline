@@ -1,0 +1,109 @@
+{
+    "homo_sapiens - vcf, tbi, repeats, [], hg38": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "test",
+                        "family_samples": "NA24143,NA24149,NA24385",
+                        "caller": "haplotypecaller"
+                    },
+                    [
+                        [
+                            "NA24143.individual.vcf,variantsMD5:d87c6d5aea196c746312a8a383eede4b"
+                        ],
+                        [
+                            "NA24149.individual.vcf,variantsMD5:24eacd6958a767b7768b4282caea52cc"
+                        ],
+                        [
+                            "NA24385.individual.vcf,variantsMD5:f7f27a20139824e3e49cf17a2867489b"
+                        ]
+                    ]
+                ]
+            ],
+            [
+                "versions.yml:md5,8d88bdf05fc6f578d81fee3716f8b562"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
+        },
+        "timestamp": "2024-11-13T17:03:29.44273724"
+    },
+    "homo_sapiens - vcf, tbi, repeats, [], hg38 - stub": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test",
+                            "family_samples": "NA24143,NA24149,NA24385",
+                            "caller": "haplotypecaller"
+                        },
+                        [
+                            [
+                                "sample1.HomRegions.cmgg_bio.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                                "sample1.HomRegions.pdf:md5,d41d8cd98f00b204e9800998ecf8427e",
+                                "sample1.HomRegions.strict.cmgg_bio.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                                "sample1.HomRegions.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                            ],
+                            [
+                                "sample2.HomRegions.cmgg_bio.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                                "sample2.HomRegions.pdf:md5,d41d8cd98f00b204e9800998ecf8427e",
+                                "sample2.HomRegions.strict.cmgg_bio.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                                "sample2.HomRegions.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                            ],
+                            [
+                                "sample3.HomRegions.cmgg_bio.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                                "sample3.HomRegions.pdf:md5,d41d8cd98f00b204e9800998ecf8427e",
+                                "sample3.HomRegions.strict.cmgg_bio.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                                "sample3.HomRegions.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                            ]
+                        ]
+                    ]
+                ],
+                "1": [
+                    "versions.yml:md5,8d88bdf05fc6f578d81fee3716f8b562"
+                ],
+                "automap": [
+                    [
+                        {
+                            "id": "test",
+                            "family_samples": "NA24143,NA24149,NA24385",
+                            "caller": "haplotypecaller"
+                        },
+                        [
+                            [
+                                "sample1.HomRegions.cmgg_bio.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                                "sample1.HomRegions.pdf:md5,d41d8cd98f00b204e9800998ecf8427e",
+                                "sample1.HomRegions.strict.cmgg_bio.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                                "sample1.HomRegions.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                            ],
+                            [
+                                "sample2.HomRegions.cmgg_bio.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                                "sample2.HomRegions.pdf:md5,d41d8cd98f00b204e9800998ecf8427e",
+                                "sample2.HomRegions.strict.cmgg_bio.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                                "sample2.HomRegions.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                            ],
+                            [
+                                "sample3.HomRegions.cmgg_bio.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                                "sample3.HomRegions.pdf:md5,d41d8cd98f00b204e9800998ecf8427e",
+                                "sample3.HomRegions.strict.cmgg_bio.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                                "sample3.HomRegions.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                            ]
+                        ]
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,8d88bdf05fc6f578d81fee3716f8b562"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
+        },
+        "timestamp": "2024-11-13T17:00:28.503010269"
+    }
+}

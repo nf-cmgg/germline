@@ -1,0 +1,92 @@
+{
+    "homo_sapiens - vcf, tbi, [] - stub": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test",
+                            "child": "NA24385"
+                        },
+                        [
+                            "NA24385.events_list:md5,d41d8cd98f00b204e9800998ecf8427e",
+                            "NA24385.log:md5,d41d8cd98f00b204e9800998ecf8427e",
+                            "NA24385.table:md5,d41d8cd98f00b204e9800998ecf8427e",
+                            "NA24385.upd:md5,d41d8cd98f00b204e9800998ecf8427e"
+                        ]
+                    ]
+                ],
+                "1": [
+                    "versions.yml:md5,8a807f51c31f64de1c707210fabe7029"
+                ],
+                "updio": [
+                    [
+                        {
+                            "id": "test",
+                            "child": "NA24385"
+                        },
+                        [
+                            "NA24385.events_list:md5,d41d8cd98f00b204e9800998ecf8427e",
+                            "NA24385.log:md5,d41d8cd98f00b204e9800998ecf8427e",
+                            "NA24385.table:md5,d41d8cd98f00b204e9800998ecf8427e",
+                            "NA24385.upd:md5,d41d8cd98f00b204e9800998ecf8427e"
+                        ]
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,8a807f51c31f64de1c707210fabe7029"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
+        },
+        "timestamp": "2024-11-14T09:57:26.032830013"
+    },
+    "homo_sapiens - vcf, tbi, []": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test",
+                            "child": "NA24385"
+                        },
+                        [
+                            "NA24385.events_list:md5,4a26c133ef193d31eddfd18dae94f0a0",
+                            "NA24385.log:md5,a40a24f379127a9cde7e40a1ce1032ec",
+                            "NA24385.table:md5,ca8165fc7869a113ca034396de7cf579",
+                            "NA24385.upd:md5,d41d8cd98f00b204e9800998ecf8427e"
+                        ]
+                    ]
+                ],
+                "1": [
+                    "versions.yml:md5,8a807f51c31f64de1c707210fabe7029"
+                ],
+                "updio": [
+                    [
+                        {
+                            "id": "test",
+                            "child": "NA24385"
+                        },
+                        [
+                            "NA24385.events_list:md5,4a26c133ef193d31eddfd18dae94f0a0",
+                            "NA24385.log:md5,a40a24f379127a9cde7e40a1ce1032ec",
+                            "NA24385.table:md5,ca8165fc7869a113ca034396de7cf579",
+                            "NA24385.upd:md5,d41d8cd98f00b204e9800998ecf8427e"
+                        ]
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,8a807f51c31f64de1c707210fabe7029"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.1",
+            "nextflow": "24.10.0"
+        },
+        "timestamp": "2024-11-14T09:57:17.522197249"
+    }
+}
