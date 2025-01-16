@@ -3,6 +3,12 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.9.1 - Nice Nieuwkerke - [January 16 2025]
+
+### Changes
+
+1. Updated the ROI file in the WES profile from v5 to v6
+
 ## v1.9.0 - Neighborly Nieuwkerke - [January 9 2025]
 
 ### New features
