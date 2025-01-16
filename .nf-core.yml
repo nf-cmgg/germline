@@ -1,33 +1,33 @@
-bump_version: null
+bump_version:
 lint:
   actions_ci: false
   files_exist:
-    - CODE_OF_CONDUCT.md
-    - assets/nf-core-germline_logo_light.png
-    - docs/images/nf-core-germline_logo_light.png
-    - docs/images/nf-core-germline_logo_dark.png
-    - .github/ISSUE_TEMPLATE/config.yml
-    - .github/workflows/awstest.yml
-    - .github/workflows/awsfulltest.yml
-    - .github/workflows/template_version_comment.yml
-    - docs/README.md
+  - CODE_OF_CONDUCT.md
+  - assets/nf-core-germline_logo_light.png
+  - docs/images/nf-core-germline_logo_light.png
+  - docs/images/nf-core-germline_logo_dark.png
+  - .github/ISSUE_TEMPLATE/config.yml
+  - .github/workflows/awstest.yml
+  - .github/workflows/awsfulltest.yml
+  - .github/workflows/template_version_comment.yml
+  - docs/README.md
   files_unchanged:
-    - .github/CONTRIBUTING.md
-    - .github/PULL_REQUEST_TEMPLATE.md
-    - .github/workflows/branch.yml
-    - .github/workflows/linting_comment.yml
-    - .github/workflows/linting.yml
-    - CODE_OF_CONDUCT.md
-    - .github/ISSUE_TEMPLATE/bug_report.yml
-    - .prettierignore
+  - .github/CONTRIBUTING.md
+  - .github/PULL_REQUEST_TEMPLATE.md
+  - .github/workflows/branch.yml
+  - .github/workflows/linting_comment.yml
+  - .github/workflows/linting.yml
+  - CODE_OF_CONDUCT.md
+  - .github/ISSUE_TEMPLATE/bug_report.yml
+  - .prettierignore
   multiqc_config:
-    - report_comment
+  - report_comment
   nextflow_config:
-    - custom_config
-    - manifest.name
-    - manifest.homePage
-    - validation.help.afterText
-    - validation.summary.afterText
+  - custom_config
+  - manifest.name
+  - manifest.homePage
+  - validation.help.afterText
+  - validation.summary.afterText
   subworkflow_changes: false
 nf_core_version: 3.0.2
 repository_type: pipeline
@@ -41,6 +41,6 @@ template:
   org: nf-cmgg
   outdir: .
   skip_features:
-    - fastqc
-    - is_nfcore
-  version: 1.9.0
+  - fastqc
+  - is_nfcore
+  version: 1.9.1
