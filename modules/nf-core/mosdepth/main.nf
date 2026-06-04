@@ -4,8 +4,8 @@ process MOSDEPTH {
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container ?
-        'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/a3/a3dc5ea2ce788c24079d24d1721ed28086874152c43b5e7dde3f638dcf64336a/data' :
-        'community.wave.seqera.io/library/htslib_mosdepth_gzip:4108dd38be84e40a'}"
+        'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/e9/e971875705674facbf22b7d3c45e88bb59ddf86aea978b3291f5784668dfacf5/data' :
+        'community.wave.seqera.io/library/htslib_mosdepth_gzip:19663c3e597fd570'}"
 
     input:
     tuple val(meta),  path(bam), path(bai), path(bed)
