@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v1.13.3
 
+- downgrade `mosdepth` to 0.3.12 to fix [fasta contig incompatibility error](https://github.com/nf-cmgg/smallvariants/issues/335)
 - Bump bcftools modules to fix [topic channel errors when using the `nomad` executor](https://github.com/nf-cmgg/smallvariants/issues/337).
 
 ## v1.13.2

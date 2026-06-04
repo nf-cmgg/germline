@@ -125,7 +125,8 @@
                     "mosdepth": {
                         "branch": "master",
                         "git_sha": "999b9db1d6b8bdc591e1168e183f4cc87d6606f9",
-                        "installed_by": ["modules"]
+                        "installed_by": ["modules"],
+                        "patch": "modules/nf-core/mosdepth/mosdepth.diff"
                     },
                     "msisensorpro/pro": {
                         "branch": "master",
