@@ -29,7 +29,7 @@ workflow VCF_UPD_UPDIO {
     )
 
     def ch_filter_output = BCFTOOLS_VIEW.out.vcf
-        .join(BCFTOOLS_VIEW.out.tbi, failOnDuplicate:true, failOnMismatch:true)
+        .join(BCFTOOLS_VIEW.out.index, failOnDuplicate:true, failOnMismatch:true)
 
     def ch_trio_peds = ch_peds
         .filter { meta, _ped ->
