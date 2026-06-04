@@ -49,7 +49,7 @@
                         "duplicate_count": 1
                     },
                     "NA24143.per-base.bed.gz:md5,2f773324021d6d1b18c87af240d1a18f",
-                    "NA24143.per-base.bed.gz.csi:md5,20daa030368be1712ff3228ba8ae977c"
+                    "NA24143.per-base.bed.gz.csi:md5,70fcdc65b30c5d7fd4001ac3275de5f8"
                 ]
             ],
             [
@@ -90,7 +90,7 @@
                 "NA24143.mosdepth.summary.txt:md5,81c8294c15457f2234b2fadb52aea405"
             ]
         ],
-        "timestamp": "2026-05-20T13:13:10.495178625",
+        "timestamp": "2026-06-04T09:59:24.539038",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.1"
@@ -136,7 +136,7 @@
                         "duplicate_count": 1
                     },
                     "NA24143.per-base.bed.gz:md5,2f773324021d6d1b18c87af240d1a18f",
-                    "NA24143.per-base.bed.gz.csi:md5,20daa030368be1712ff3228ba8ae977c"
+                    "NA24143.per-base.bed.gz.csi:md5,70fcdc65b30c5d7fd4001ac3275de5f8"
                 ]
             ],
             [
@@ -177,7 +177,7 @@
                 "NA24143.mosdepth.summary.txt:md5,81c8294c15457f2234b2fadb52aea405"
             ]
         ],
-        "timestamp": "2026-05-20T13:13:24.667240426",
+        "timestamp": "2026-06-04T09:59:37.10493",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.1"
@@ -223,7 +223,7 @@
                         "duplicate_count": 1
                     },
                     "NA24143.per-base.bed.gz:md5,2f773324021d6d1b18c87af240d1a18f",
-                    "NA24143.per-base.bed.gz.csi:md5,20daa030368be1712ff3228ba8ae977c"
+                    "NA24143.per-base.bed.gz.csi:md5,70fcdc65b30c5d7fd4001ac3275de5f8"
                 ]
             ],
             [
@@ -253,7 +253,7 @@
                 "NA24143.mosdepth.summary.txt:md5,19d2d22dca7ce7cf665711a59d1c437b"
             ]
         ],
-        "timestamp": "2026-05-20T13:12:51.855219844",
+        "timestamp": "2026-06-04T09:59:10.216558",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.1"
@@ -309,7 +309,7 @@
                         "duplicate_count": 2
                     },
                     "NA24143.per-base.bed.gz:md5,85e799ea056ba8d127115e012adcbe7a",
-                    "NA24143.per-base.bed.gz.csi:md5,faac43121ae9b54f8cbe79c1c5f9bab1"
+                    "NA24143.per-base.bed.gz.csi:md5,fb8f4810f0e8044c2096927ec79aa945"
                 ]
             ],
             [
@@ -350,7 +350,7 @@
                 "NA24143.mosdepth.summary.txt:md5,c02f8681bb0191868b3b31bb46e815b5"
             ]
         ],
-        "timestamp": "2026-05-20T13:13:46.448580733",
+        "timestamp": "2026-06-04T09:59:54.588927",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.1"
