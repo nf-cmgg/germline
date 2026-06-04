@@ -5,6 +5,10 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.13.3
+
+- Bump bcftools modules to fix [topic channel errors when using the `nomad` executor](https://github.com/nf-cmgg/smallvariants/issues/337).
+
 ## v1.13.2
 
 A small patch release to re-add the default for `--genome`
