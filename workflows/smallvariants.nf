@@ -647,7 +647,7 @@ workflow SMALLVARIANTS {
                 ch_fasta_ready,
             )
             ch_normalized_variants = BCFTOOLS_NORM.out.vcf
-                .join(BCFTOOLS_NORM.out.tbi, failOnDuplicate:true, failOnMismatch:true)
+                .join(BCFTOOLS_NORM.out.index, failOnDuplicate:true, failOnMismatch:true)
         } else {
             ch_normalized_variants = ch_filtered_variants
         }
