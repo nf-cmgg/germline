@@ -413,7 +413,7 @@ workflow SMALLVARIANTS {
         []
     )
 
-    def ch_vcfs_ready = BCFTOOLS_GETSAMPLES.out.samples
+    def ch_vcfs_ready = BCFTOOLS_GETSAMPLES.out.output
         .join(ch_indexed_vcfs, failOnDuplicate:true, failOnMismatch:true)
         .map { meta, samples, vcf, tbi ->
             def new_meta = meta + [family_samples: samples.text.readLines().join(",")]
