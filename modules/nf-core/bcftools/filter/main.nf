@@ -44,7 +44,6 @@ process BCFTOOLS_FILTER {
 
     """
     bcftools filter \\
-        --output ${prefix}.${extension} \\
         --threads ${task.cpus} \\
         ${args} \\
         ${vcf} \\
