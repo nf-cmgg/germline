@@ -27,7 +27,7 @@ Changes in 'bcftools/filter/main.nf':
                      ? "vcf"
                      : "vcf"
  
-@@ -36,31 +39,40 @@
+@@ -36,31 +39,39 @@
          error("Input and output names are the same, set prefix in module configuration to disambiguate!")
      }
  
@@ -36,7 +36,7 @@ Changes in 'bcftools/filter/main.nf':
 +
      """
      bcftools filter \\
-         --output ${prefix}.${extension} \\
+-        --output ${prefix}.${extension} \\
          --threads ${task.cpus} \\
          ${args} \\
 -        ${vcf}
