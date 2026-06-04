@@ -5,6 +5,10 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.13.3
+
+- downgrade `mosdepth` to 0.3.12 to fix [fasta contig incompatibility error](https://github.com/nf-cmgg/smallvariants/issues/335)
+
 ## v1.13.2
 
 A small patch release to re-add the default for `--genome`
