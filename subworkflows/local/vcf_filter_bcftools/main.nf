@@ -2,7 +2,7 @@
 // Filter the VCFs
 //
 
-include { BCFTOOLS_FILTER } from '../../../modules/local/bcftools/filter/main'
+include { BCFTOOLS_FILTER } from '../../../modules/nf-core/bcftools/filter/main'
 
 workflow VCF_FILTER_BCFTOOLS {
     take:

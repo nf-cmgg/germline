@@ -44,7 +44,7 @@ include { UNTAR                                                      } from '../
 include { ENSEMBLVEP_DOWNLOAD                                        } from '../modules/nf-core/ensemblvep/download/main'
 include { BCFTOOLS_STATS                                             } from '../modules/nf-core/bcftools/stats/main'
 include { BCFTOOLS_NORM                                              } from '../modules/nf-core/bcftools/norm/main'
-include { BCFTOOLS_GETSAMPLES                                        } from '../modules/local/bcftools/getsamples/main'
+include { BCFTOOLS_QUERY as BCFTOOLS_GETSAMPLES                      } from '../modules/nf-core/bcftools/query/main'
 include { TABIX_TABIX as TABIX_DBSNP                                 } from '../modules/nf-core/tabix/tabix/main'
 include { TABIX_TABIX as TABIX_GVCF                                  } from '../modules/nf-core/tabix/tabix/main'
 include { TABIX_TABIX as TABIX_VCF                                   } from '../modules/nf-core/tabix/tabix/main'
@@ -407,7 +407,10 @@ workflow SMALLVARIANTS {
         .mix(ch_vcf_branch.tbi)
 
     BCFTOOLS_GETSAMPLES(
-        ch_indexed_vcfs
+        ch_indexed_vcfs,
+        [],
+        [],
+        []
     )
 
     def ch_vcfs_ready = BCFTOOLS_GETSAMPLES.out.samples
