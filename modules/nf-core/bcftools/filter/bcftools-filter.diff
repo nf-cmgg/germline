@@ -1,0 +1,87 @@
+Changes in component 'nf-core/bcftools/filter'
+'modules/nf-core/bcftools/filter/environment.yml' is unchanged
+'modules/nf-core/bcftools/filter/meta.yml' is unchanged
+Changes in 'bcftools/filter/main.nf':
+--- modules/nf-core/bcftools/filter/main.nf
++++ modules/nf-core/bcftools/filter/main.nf
+@@ -20,15 +20,18 @@
+ 
+     script:
+     def args = task.ext.args ?: ''
++    def args2 = task.ext.args2 ?: ''
++    def args3 = task.ext.args3 ?: ''
++    def last_args = args3 ?: args2 ?: args
+     def prefix = task.ext.prefix ?: "${meta.id}"
+ 
+-    extension = args.contains("--output-type b") || args.contains("-Ob")
++    extension = last_args.contains("--output-type b") || last_args.contains("-Ob")
+         ? "bcf.gz"
+-        : args.contains("--output-type u") || args.contains("-Ou")
++        : last_args.contains("--output-type u") || last_args.contains("-Ou")
+             ? "bcf"
+-            : args.contains("--output-type z") || args.contains("-Oz")
++            : last_args.contains("--output-type z") || last_args.contains("-Oz")
+                 ? "vcf.gz"
+-                : args.contains("--output-type v") || args.contains("-Ov")
++                : last_args.contains("--output-type v") || last_args.contains("-Ov")
+                     ? "vcf"
+                     : "vcf"
+ 
+@@ -36,31 +39,39 @@
+         error("Input and output names are the same, set prefix in module configuration to disambiguate!")
+     }
+ 
++    def filter_2 = args2 ? "| bcftools filter --threads ${task.cpus} ${args2}" : ""
++    def filter_3 = args3 ? "| bcftools filter --threads ${task.cpus} ${args3}" : ""
++
+     """
+     bcftools filter \\
+-        --output ${prefix}.${extension} \\
+         --threads ${task.cpus} \\
+         ${args} \\
+-        ${vcf}
++        ${vcf} \\
++        ${filter_2} \\
++        ${filter_3} \\
++        --output ${prefix}.${extension}
+     """
+ 
+     stub:
+     def args = task.ext.args ?: ''
++    def args2 = task.ext.args2 ?: ''
++    def args3 = task.ext.args3 ?: ''
++    def last_args = args3 ?: args2 ?: args
+     def prefix = task.ext.prefix ?: "${meta.id}"
+-    extension = args.contains("--output-type b") || args.contains("-Ob")
++    extension = last_args.contains("--output-type b") || last_args.contains("-Ob")
+         ? "bcf.gz"
+-        : args.contains("--output-type u") || args.contains("-Ou")
++        : last_args.contains("--output-type u") || last_args.contains("-Ou")
+             ? "bcf"
+-            : args.contains("--output-type z") || args.contains("-Oz")
++            : last_args.contains("--output-type z") || last_args.contains("-Oz")
+                 ? "vcf.gz"
+-                : args.contains("--output-type v") || args.contains("-Ov")
++                : last_args.contains("--output-type v") || last_args.contains("-Ov")
+                     ? "vcf"
+                     : "vcf"
+-    def index = args.contains("--write-index=tbi") || args.contains("-W=tbi")
++    def index = last_args.contains("--write-index=tbi") || last_args.contains("-W=tbi")
+         ? "tbi"
+-        : args.contains("--write-index=csi") || args.contains("-W=csi")
++        : last_args.contains("--write-index=csi") || last_args.contains("-W=csi")
+             ? "csi"
+-            : args.contains("--write-index") || args.contains("-W")
++            : last_args.contains("--write-index") || last_args.contains("-W")
+                 ? "csi"
+                 : ""
+     def create_cmd = extension.endsWith(".gz") ? "echo '' | gzip >" : "touch"
+
+'modules/nf-core/bcftools/filter/tests/main.nf.test.snap' is unchanged
+'modules/nf-core/bcftools/filter/tests/vcf_gz_index.config' is unchanged
+'modules/nf-core/bcftools/filter/tests/region_filter.config' is unchanged
+'modules/nf-core/bcftools/filter/tests/vcf_gz_index_tbi.config' is unchanged
+'modules/nf-core/bcftools/filter/tests/nextflow.config' is unchanged
+'modules/nf-core/bcftools/filter/tests/main.nf.test' is unchanged
+'modules/nf-core/bcftools/filter/tests/vcf_gz_index_csi.config' is unchanged
+************************************************************

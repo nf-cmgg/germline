@@ -127,7 +127,7 @@ workflow VCF_ANNOTATE_ENSEMBLVEP {
         )
 
         ch_ready_vcfs = BCFTOOLS_SORT.out.vcf
-            .join(BCFTOOLS_SORT.out.tbi, failOnDuplicate:true, failOnMismatch:true)
+            .join(BCFTOOLS_SORT.out.index, failOnDuplicate:true, failOnMismatch:true)
     } else {
         ch_ready_vcfs = ch_vep_output
     }

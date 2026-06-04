@@ -25,7 +25,7 @@ workflow VCF_CONCAT_BCFTOOLS {
         ch_concat_input
     )
     def ch_vcf_tbi = BCFTOOLS_CONCAT.out.vcf
-        .join(BCFTOOLS_CONCAT.out.tbi, failOnDuplicate:true, failOnMismatch:true)
+        .join(BCFTOOLS_CONCAT.out.index, failOnDuplicate:true, failOnMismatch:true)
 
     emit:
     vcfs = ch_vcf_tbi       // channel: [ val(meta), path(vcf), path(tbi) ]

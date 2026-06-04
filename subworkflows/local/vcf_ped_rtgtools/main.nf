@@ -35,7 +35,7 @@ workflow VCF_PED_RTGTOOLS {
     )
 
     def ch_ped_vcfs = BCFTOOLS_ANNOTATE.out.vcf
-        .join(BCFTOOLS_ANNOTATE.out.tbi, failOnDuplicate:true, failOnMismatch:true)
+        .join(BCFTOOLS_ANNOTATE.out.index, failOnDuplicate:true, failOnMismatch:true)
 
     emit:
     ped_vcfs = ch_ped_vcfs  // [ val(meta), path(vcf), path(tbi) ]

@@ -2,7 +2,7 @@
 // Filter the VCFs
 //
 
-include { BCFTOOLS_FILTER } from '../../../modules/local/bcftools/filter/main'
+include { BCFTOOLS_FILTER } from '../../../modules/nf-core/bcftools/filter/main'
 
 workflow VCF_FILTER_BCFTOOLS {
     take:
@@ -15,7 +15,7 @@ workflow VCF_FILTER_BCFTOOLS {
     )
 
     def ch_filter_vcfs = BCFTOOLS_FILTER.out.vcf
-        .join(BCFTOOLS_FILTER.out.tbi, failOnDuplicate:true, failOnMismatch:true)
+        .join(BCFTOOLS_FILTER.out.index, failOnDuplicate:true, failOnMismatch:true)
 
     emit:
     vcfs = ch_filter_vcfs  // channel: [ val(meta), path(vcf), path(tbi) ]
