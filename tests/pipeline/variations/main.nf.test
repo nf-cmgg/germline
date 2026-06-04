@@ -26,7 +26,7 @@ nextflow_pipeline {
                         .collect { Utils.getRecursiveFileNames(it, "${outputDir}") }
                         .flatten()
                         .findAll {
-                            !(it.contains("/execution_") || it.contains("/params_") || it.contains("/pipeline_"))
+                            !(it.contains("/execution_") || it.contains("/params_") || it.contains("/pipeline_") || it.contains("DONE"))
                         }
                         .collect {
                             it.replace(Utils.getDynamicOutputName(), "<version>_<date>")
@@ -56,7 +56,7 @@ nextflow_pipeline {
                         .collect { Utils.getRecursiveFileNames(it, "${outputDir}") }
                         .flatten()
                         .findAll {
-                            !(it.contains("/execution_") || it.contains("/params_") || it.contains("/pipeline_"))
+                            !(it.contains("/execution_") || it.contains("/params_") || it.contains("/pipeline_") || it.contains("DONE"))
                         }
                         .collect {
                             it.replace(Utils.getDynamicOutputName(), "<version>_<date>")
@@ -85,7 +85,7 @@ nextflow_pipeline {
                         .collect { Utils.getRecursiveFileNames(it, "${outputDir}") }
                         .flatten()
                         .findAll {
-                            !(it.contains("/execution_") || it.contains("/params_") || it.contains("/pipeline_"))
+                            !(it.contains("/execution_") || it.contains("/params_") || it.contains("/pipeline_") || it.contains("DONE"))
                         }
                         .collect {
                             it.replace(Utils.getDynamicOutputName(), "<version>_<date>")
@@ -114,7 +114,7 @@ nextflow_pipeline {
                         .collect { Utils.getRecursiveFileNames(it, "${outputDir}") }
                         .flatten()
                         .findAll {
-                            !(it.contains("/execution_") || it.contains("/params_") || it.contains("/pipeline_"))
+                            !(it.contains("/execution_") || it.contains("/params_") || it.contains("/pipeline_") || it.contains("DONE"))
                         }
                         .collect {
                             it.replace(Utils.getDynamicOutputName(), "<version>_<date>")
@@ -144,7 +144,7 @@ nextflow_pipeline {
                         .collect { Utils.getRecursiveFileNames(it, "${outputDir}") }
                         .flatten()
                         .findAll {
-                            !(it.contains("/execution_") || it.contains("/params_") || it.contains("/pipeline_"))
+                            !(it.contains("/execution_") || it.contains("/params_") || it.contains("/pipeline_") || it.contains("DONE"))
                         }
                         .collect {
                             it.replace(Utils.getDynamicOutputName(), "<version>_<date>")
