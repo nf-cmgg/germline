@@ -165,7 +165,7 @@ workflow SMALLVARIANTS {
 
     def ch_vcfanno_config     = vcfanno_config      ? channel.value(vcfanno_config) : []
     def ch_vcfanno_lua        = vcfanno_lua         ? channel.value(vcfanno_lua) : []
-    def ch_vcfanno_resources  = vcfanno_resources   ? channel.value(vcfanno_resources.split(";").collect{ res -> files(res, checkIfExists:true) }) : []
+    def ch_vcfanno_resources  = vcfanno_resources   ? channel.value(vcfanno_resources.split(";").collect{ res -> files(res, checkIfExists:true) }.flatten()) : []
 
     def ch_updio_common_cnvs  = updio_common_cnvs   ? channel.value([[id:'updio_cnv'], updio_common_cnvs]) : [[],[]]
 

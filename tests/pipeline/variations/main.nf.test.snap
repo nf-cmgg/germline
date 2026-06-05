@@ -180,10 +180,10 @@
                 "<version>_<date>/samplesheet.csv"
             ]
         ],
-        "timestamp": "2026-05-12T09:28:19.817992301",
+        "timestamp": "2026-06-05T11:21:31.579709",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.10.4"
+            "nextflow": "26.04.2"
         }
     },
     "pipeline_variations - annotate": {
