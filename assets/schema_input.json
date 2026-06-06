@@ -22,13 +22,13 @@
             },
             "cram": {
                 "type": "string",
-                "pattern": "^\\S+\\.cram$",
+                "pattern": "^\\S+\\.(b|cr)am$",
                 "format": "file-path",
                 "exists": true
             },
             "crai": {
                 "type": "string",
-                "pattern": "^\\S+\\.cram\\.crai$",
+                "pattern": "^\\S+\\.(b|cr)am\\.(bai|csi|crai)$",
                 "format": "file-path",
                 "exists": true
             },

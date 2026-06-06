@@ -44,7 +44,7 @@ include { UNTAR                                                      } from '../
 include { ENSEMBLVEP_DOWNLOAD                                        } from '../modules/nf-core/ensemblvep/download/main'
 include { BCFTOOLS_STATS                                             } from '../modules/nf-core/bcftools/stats/main'
 include { BCFTOOLS_NORM                                              } from '../modules/nf-core/bcftools/norm/main'
-include { BCFTOOLS_GETSAMPLES                                        } from '../modules/local/bcftools/getsamples/main'
+include { BCFTOOLS_QUERY as BCFTOOLS_GETSAMPLES                      } from '../modules/nf-core/bcftools/query/main'
 include { TABIX_TABIX as TABIX_DBSNP                                 } from '../modules/nf-core/tabix/tabix/main'
 include { TABIX_TABIX as TABIX_GVCF                                  } from '../modules/nf-core/tabix/tabix/main'
 include { TABIX_TABIX as TABIX_VCF                                   } from '../modules/nf-core/tabix/tabix/main'
@@ -165,7 +165,7 @@ workflow SMALLVARIANTS {
 
     def ch_vcfanno_config     = vcfanno_config      ? channel.value(vcfanno_config) : []
     def ch_vcfanno_lua        = vcfanno_lua         ? channel.value(vcfanno_lua) : []
-    def ch_vcfanno_resources  = vcfanno_resources   ? channel.value(vcfanno_resources.split(";").collect{ res -> file(res, checkIfExists:true) }) : []
+    def ch_vcfanno_resources  = vcfanno_resources   ? channel.value(vcfanno_resources.split(";").collect{ res -> files(res, checkIfExists:true) }.flatten()) : []
 
     def ch_updio_common_cnvs  = updio_common_cnvs   ? channel.value([[id:'updio_cnv'], updio_common_cnvs]) : [[],[]]
 
@@ -407,10 +407,13 @@ workflow SMALLVARIANTS {
         .mix(ch_vcf_branch.tbi)
 
     BCFTOOLS_GETSAMPLES(
-        ch_indexed_vcfs
+        ch_indexed_vcfs,
+        [],
+        [],
+        []
     )
 
-    def ch_vcfs_ready = BCFTOOLS_GETSAMPLES.out.samples
+    def ch_vcfs_ready = BCFTOOLS_GETSAMPLES.out.output
         .join(ch_indexed_vcfs, failOnDuplicate:true, failOnMismatch:true)
         .map { meta, samples, vcf, tbi ->
             def new_meta = meta + [family_samples: samples.text.readLines().join(",")]
@@ -647,7 +650,7 @@ workflow SMALLVARIANTS {
                 ch_fasta_ready,
             )
             ch_normalized_variants = BCFTOOLS_NORM.out.vcf
-                .join(BCFTOOLS_NORM.out.tbi, failOnDuplicate:true, failOnMismatch:true)
+                .join(BCFTOOLS_NORM.out.index, failOnDuplicate:true, failOnMismatch:true)
         } else {
             ch_normalized_variants = ch_filtered_variants
         }
