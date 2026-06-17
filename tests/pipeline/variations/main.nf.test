@@ -14,6 +14,10 @@ nextflow_pipeline {
             params {
                 outdir = "${outputDir}"
                 annotate = true
+                vep_mastermind = true
+                // Dummy file to test config logic
+                mastermind = "https://github.com/nf-cmgg/test-datasets/raw/refs/heads/smallvariants/data/genomics/homo_sapiens/illumina/vcfs/Ashkenazim.vcf.gz"
+                mastermind_tbi = "https://github.com/nf-cmgg/test-datasets/raw/refs/heads/smallvariants/data/genomics/homo_sapiens/illumina/vcfs/Ashkenazim.vcf.gz.tbi"
             }
         }
 
