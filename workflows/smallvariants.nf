@@ -21,6 +21,7 @@ include { CRAM_CALL_GATK4                   } from '../subworkflows/local/cram_c
 include { GVCF_JOINT_GENOTYPE_GATK4         } from '../subworkflows/local/gvcf_joint_genotype_gatk4/main'
 include { BAM_CALL_ELPREP                   } from '../subworkflows/local/bam_call_elprep/main'
 include { BAM_CALL_VARDICTJAVA              } from '../subworkflows/local/bam_call_vardictjava/main'
+include { CRAM_REPEAT_EXPANSIONHUNTER       } from '../subworkflows/local/cram_repeat_expansionhunter/main'
 include { VCF_EXTRACT_RELATE_SOMALIER       } from '../subworkflows/local/vcf_extract_relate_somalier/main'
 include { VCF_PED_RTGTOOLS                  } from '../subworkflows/local/vcf_ped_rtgtools/main'
 include { VCF_ANNOTATION                    } from '../subworkflows/local/vcf_annotation/main'
@@ -106,6 +107,7 @@ workflow SMALLVARIANTS {
     elsites                     // path: path to the elsites file for elprep
     msi_baseline                // path: path to the msi_baseline file
     updio_regions               // path: path to the BED file with regions to be used by UPDio
+    expansionhunter_catalogue     // path: path to the ExpansionHunter variant catalog
 
     // Boolean inputs
     dragstr                     // boolean: create a dragstr model and use it for haplotypecaller
@@ -142,6 +144,7 @@ workflow SMALLVARIANTS {
 
     def List<String> gvcf_callers = ["haplotypecaller", "elprep"]
     def List<String> bam_callers = ["elprep", "vardict"]
+    def List<String> snv_callers = ["haplotypecaller", "vardict", "elprep"]
 
     //
     // Importing and convert the input files passed through the parameters to channels
@@ -177,6 +180,8 @@ workflow SMALLVARIANTS {
     def ch_msi_baseline       = msi_baseline        ? channel.value([[id:"msi_baseline"], msi_baseline]) : [[],[]]
 
     def ch_updio_regions      = updio_regions       ? channel.value(updio_regions) : []
+
+    def ch_expansionhunter_catalogue = expansionhunter_catalogue ? channel.value([[id:"expansionhunter_catalogue"], expansionhunter_catalogue]) : channel.empty()
 
     //
     // Check for the presence of EnsemblVEP plugins that use extra files
@@ -475,6 +480,21 @@ workflow SMALLVARIANTS {
     def ch_mosdepth_reports = CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.mosdepth_reports
 
     //
+    // Call repeat expansions
+    //
+
+    def ch_expansionhunter_vcfs = channel.empty()
+    if ("expansionhunter" in callers) {
+        CRAM_REPEAT_EXPANSIONHUNTER(
+            CRAM_PREPARE_SAMTOOLS_BEDTOOLS.out.ready_crams,
+            ch_fasta_ready,
+            ch_fai_ready,
+            ch_expansionhunter_catalogue
+        )
+        ch_expansionhunter_vcfs = CRAM_REPEAT_EXPANSIONHUNTER.out
+    }
+
+    //
     // Split the BED files
     //
 
@@ -727,7 +747,8 @@ workflow SMALLVARIANTS {
         // Validate the found variants
         //
 
-        if (validate){
+        if (validate && callers.intersect(snv_callers)){
+            def callers_to_validate = callers.intersect(snv_callers)
             def ch_truths_input = ch_input.truth_variants
                 .map { meta, vcf, tbi, bed ->
                     def new_meta = meta - meta.subMap("duplicate_count")
@@ -761,7 +782,7 @@ workflow SMALLVARIANTS {
                 }
                 .mix(ch_truths_input.tbi)
                 .mix(ch_truths_input.no_vcf)
-                .combine(callers)
+                .combine(callers_to_validate)
                 .map { meta, vcf, tbi, bed, caller ->
                     def new_meta = meta + [caller: caller]
                     [ new_meta, vcf, tbi, bed ]
@@ -794,7 +815,7 @@ workflow SMALLVARIANTS {
                 }
 
             ch_single_beds
-                .combine(callers)
+                .combine(callers_to_validate)
                 .map { meta, bed, caller ->
                     def new_meta = [
                         id:meta.id,
@@ -949,6 +970,7 @@ workflow SMALLVARIANTS {
     msi                 = ch_msisensor_output           // channel: [ val(meta), path(file) ]
     genomicsdb          = ch_final_genomicsdb           // channel: [ val(meta), path(genomicsdb) ]
     vcfs                = ch_final_vcfs                 // channel: [ val(meta), path(vcf), path(tbi) ]
+    repeat_vcfs         = ch_expansionhunter_vcfs       // channel: [ val(meta), path(vcf), path(tbi) ]
     gemini              = ch_final_dbs                  // channel: [ val(meta), path(db) ]
     peds                = ch_final_peds                 // channel: [ val(meta), path(ped) ]
     single_beds         = ch_single_beds                // channel: [ val(meta), path(bed) ]

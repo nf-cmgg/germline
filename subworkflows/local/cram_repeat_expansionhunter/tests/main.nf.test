@@ -32,7 +32,7 @@ nextflow_workflow {
                 ])
                 input[3] = channel.value([
                     [id:"reference"],
-                    file(params.expansionhunter_catalog, checkIfExists:true)
+                    file(params.expansionhunter_catalogue, checkIfExists:true)
                 ])
                 """
             }
