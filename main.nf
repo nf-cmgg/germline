@@ -563,8 +563,8 @@ output {
         tbi >> "${meta.family}/output_${params.unique_out}/${meta.id}.${meta.caller}.vcf.gz.tbi"
     } }
     repeat_vcfs { path { meta, vcf, tbi ->
-        vcf >> "${meta.family}/output_${params.unique_out}/${meta.id}.${meta.caller}.repeats.vcf.gz"
-        tbi >> "${meta.family}/output_${params.unique_out}/${meta.id}.${meta.caller}.repeats.vcf.gz.tbi"
+        vcf >> "${meta.family}/output_${params.unique_out}/${meta.id}.${meta.caller}.vcf.gz"
+        tbi >> "${meta.family}/output_${params.unique_out}/${meta.id}.${meta.caller}.vcf.gz.tbi"
     } }
     gemini { path { meta, db ->
         db >> "${meta.family}/output_${params.unique_out}/${meta.id}.${meta.caller}.db"

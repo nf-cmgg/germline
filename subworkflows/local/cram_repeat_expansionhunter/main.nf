@@ -44,7 +44,8 @@ workflow CRAM_REPEAT_EXPANSIONHUNTER {
     def ch_annotate_input = EXPANSIONHUNTER.out.vcf
         .combine(ch_ref_header)
         .map { meta, vcf, header ->
-            [ meta, vcf, [], [], [], [], header, [] ]
+            def new_meta = meta + [caller: 'expansionhunter']
+            [ new_meta, vcf, [], [], [], [], header, [] ]
         }
 
     BCFTOOLS_ANNOTATE(

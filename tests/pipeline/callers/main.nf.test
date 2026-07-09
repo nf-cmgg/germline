@@ -95,4 +95,62 @@ nextflow_pipeline {
 
     }
 
+    test("pipeline_callers - expansionhunter") {
+
+        when {
+            params {
+                outdir = "${outputDir}"
+                callers = "expansionhunter"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    path("${outputDir}")
+                        .list()
+                        .collect { Utils.getRecursiveFileNames(it, "${outputDir}") }
+                        .flatten()
+                        .findAll {
+                            !(it.contains("/execution_") || it.contains("/params_") || it.contains("/pipeline_") || it.contains("DONE"))
+                        }
+                        .collect {
+                            it.replace(Utils.getDynamicOutputName(), "<version>_<date>")
+                        }
+                ).match() }
+            )
+        }
+
+    }
+
+    test("pipeline_callers - expansionhunter + haplotypecaller") {
+
+        when {
+            params {
+                outdir = "${outputDir}"
+                callers = "expansionhunter,haplotypecaller"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    path("${outputDir}")
+                        .list()
+                        .collect { Utils.getRecursiveFileNames(it, "${outputDir}") }
+                        .flatten()
+                        .findAll {
+                            !(it.contains("/execution_") || it.contains("/params_") || it.contains("/pipeline_") || it.contains("DONE"))
+                        }
+                        .collect {
+                            it.replace(Utils.getDynamicOutputName(), "<version>_<date>")
+                        }
+                ).match() }
+            )
+        }
+
+    }
+
 }
