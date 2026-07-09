@@ -1,0 +1,39 @@
+{
+    "cram_repeat_expansionhunter - default": {
+        "content": [
+            [
+                {
+                    "num": [
+                        [
+                            {
+                                "id": "NA24143",
+                                "sample": "NA24143",
+                                "family": "Ashkenazim",
+                                "family_samples": "NA24143",
+                                "sex": "male"
+                            },
+                            "fa0162b0019fc333183e9d220bd996cd",
+                            "NA24143.expansionhunter.vcf.gz.tbi"
+                        ],
+                        [
+                            {
+                                "id": "NA24149",
+                                "sample": "NA24149",
+                                "family": "Ashkenazim",
+                                "family_samples": "NA24149",
+                                "sex": null
+                            },
+                            "a1e23813bb591761b1817521c138019e",
+                            "NA24149.expansionhunter.vcf.gz.tbi"
+                        ]
+                    ]
+                }
+            ]
+        ],
+        "timestamp": "2026-07-09T16:49:58.491130755",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.3"
+        }
+    }
+}

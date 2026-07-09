@@ -1,0 +1,50 @@
+nextflow_workflow {
+
+    name "Test Workflow CRAM_REPEAT_EXPANSIONHUNTER"
+    script "../main.nf"
+    workflow "CRAM_REPEAT_EXPANSIONHUNTER"
+
+    tag "subworkflows"
+    tag "subworkflows_local"
+    tag "cram_repeat_expansionhunter"
+
+    test("cram_repeat_expansionhunter - default") {
+
+        when {
+            workflow {
+                """
+                input[0] = channel.of([
+                    [id:"NA24143", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", sex: 'male'],
+                    file(params.cram1, checkIfExists:true),
+                    file(params.crai1, checkIfExists:true)
+                ],[
+                    [id:"NA24149", sample:"NA24149", family:"Ashkenazim", family_samples:"NA24149", sex: null],
+                    file(params.cram2, checkIfExists:true),
+                    file(params.crai2, checkIfExists:true)
+                ])
+                input[1] = channel.value([
+                    [id:"reference"],
+                    file(params.fasta, checkIfExists:true)
+                ])
+                input[2] = channel.value([
+                    [id:"reference"],
+                    file(params.fai, checkIfExists:true)
+                ])
+                input[3] = channel.value([
+                    [id:"reference"],
+                    file(params.expansionhunter_catalog, checkIfExists:true)
+                ])
+                """
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert snapshot(
+                workflow.out.collect { num, vals -> [num:vals.collect { meta, vcf, tbi -> [meta, path(vcf).vcf.variantsMD5, file(tbi).name]}]}
+            ).match()
+        }
+
+    }
+
+}
