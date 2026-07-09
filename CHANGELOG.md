@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## dev
 
+### New features
+
+- Added `expansionhunter` as a new caller. This caller is unique as no postprocessing is done on the outputs of the caller.
+- Added `sex` as a samplesheet field. This is an optional field to improve the repeat expansion calls from Expansionhunter.
+
+### Fixes
+
 - Fixes a small issue with the VEP config (`.split()` error) by replacing it with the `name` attribute.
 
 ## v1.13.3
