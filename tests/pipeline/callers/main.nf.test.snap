@@ -96,19 +96,19 @@
                 "Ashkenazim/NA24385_<version>_<date>/mosdepth/NA24385.global.dist.txt",
                 "Ashkenazim/NA24385_<version>_<date>/mosdepth/NA24385.region.dist.txt",
                 "Ashkenazim/NA24385_<version>_<date>/mosdepth/NA24385.summary.txt",
-                "Ashkenazim/output_<version>_<date>/NA24143.expansionhunter.repeats.vcf.gz",
-                "Ashkenazim/output_<version>_<date>/NA24143.expansionhunter.repeats.vcf.gz.tbi",
-                "Ashkenazim/output_<version>_<date>/NA24149.expansionhunter.repeats.vcf.gz",
-                "Ashkenazim/output_<version>_<date>/NA24149.expansionhunter.repeats.vcf.gz.tbi",
-                "Ashkenazim/output_<version>_<date>/NA24385.expansionhunter.repeats.vcf.gz",
-                "Ashkenazim/output_<version>_<date>/NA24385.expansionhunter.repeats.vcf.gz.tbi",
+                "Ashkenazim/output_<version>_<date>/NA24143.expansionhunter.vcf.gz",
+                "Ashkenazim/output_<version>_<date>/NA24143.expansionhunter.vcf.gz.tbi",
+                "Ashkenazim/output_<version>_<date>/NA24149.expansionhunter.vcf.gz",
+                "Ashkenazim/output_<version>_<date>/NA24149.expansionhunter.vcf.gz.tbi",
+                "Ashkenazim/output_<version>_<date>/NA24385.expansionhunter.vcf.gz",
+                "Ashkenazim/output_<version>_<date>/NA24385.expansionhunter.vcf.gz.tbi",
                 "pipeline_info/nf_cmgg_smallvariants_software_mqc_versions.yml",
                 "<version>_<date>/multiqc_data/.stub",
                 "<version>_<date>/multiqc_report.html",
                 "<version>_<date>/samplesheet.csv"
             ]
         ],
-        "timestamp": "2026-07-09T17:50:35.974098855",
+        "timestamp": "2026-07-10T15:55:45.020268258",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.3"
@@ -156,12 +156,12 @@
                 "Ashkenazim/output_<version>_<date>/Ashkenazim.haplotypecaller.ped",
                 "Ashkenazim/output_<version>_<date>/Ashkenazim.haplotypecaller.vcf.gz",
                 "Ashkenazim/output_<version>_<date>/Ashkenazim.haplotypecaller.vcf.gz.tbi",
-                "Ashkenazim/output_<version>_<date>/NA24143.expansionhunter.repeats.vcf.gz",
-                "Ashkenazim/output_<version>_<date>/NA24143.expansionhunter.repeats.vcf.gz.tbi",
-                "Ashkenazim/output_<version>_<date>/NA24149.expansionhunter.repeats.vcf.gz",
-                "Ashkenazim/output_<version>_<date>/NA24149.expansionhunter.repeats.vcf.gz.tbi",
-                "Ashkenazim/output_<version>_<date>/NA24385.expansionhunter.repeats.vcf.gz",
-                "Ashkenazim/output_<version>_<date>/NA24385.expansionhunter.repeats.vcf.gz.tbi",
+                "Ashkenazim/output_<version>_<date>/NA24143.expansionhunter.vcf.gz",
+                "Ashkenazim/output_<version>_<date>/NA24143.expansionhunter.vcf.gz.tbi",
+                "Ashkenazim/output_<version>_<date>/NA24149.expansionhunter.vcf.gz",
+                "Ashkenazim/output_<version>_<date>/NA24149.expansionhunter.vcf.gz.tbi",
+                "Ashkenazim/output_<version>_<date>/NA24385.expansionhunter.vcf.gz",
+                "Ashkenazim/output_<version>_<date>/NA24385.expansionhunter.vcf.gz.tbi",
                 "Ashkenazim/output_<version>_<date>/automap/haplotypecaller/sample1.HomRegions.cmgg_bio.tsv",
                 "Ashkenazim/output_<version>_<date>/automap/haplotypecaller/sample1.HomRegions.pdf",
                 "Ashkenazim/output_<version>_<date>/automap/haplotypecaller/sample1.HomRegions.strict.cmgg_bio.tsv",
@@ -182,7 +182,7 @@
                 "<version>_<date>/samplesheet.csv"
             ]
         ],
-        "timestamp": "2026-07-09T17:51:48.157433557",
+        "timestamp": "2026-07-10T15:56:58.538828587",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.3"
