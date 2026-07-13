@@ -41,4 +41,4 @@ template:
   skip_features:
     - fastqc
     - is_nfcore
-  version: 1.13.4dev
+  version: 1.13.4
