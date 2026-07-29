@@ -94,6 +94,12 @@
                 "type": "boolean",
                 "default": false,
                 "meta": "msi"
+            },
+            "sex": {
+                "type": "string",
+                "default": null,
+                "meta": "sex",
+                "enum": ["male", "female"]
             }
         },
         "anyOf": [

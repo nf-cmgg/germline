@@ -87,6 +87,11 @@
                         "git_sha": "6d46786420b4d7bc88eba026eb389c0c5535d120",
                         "installed_by": ["modules"]
                     },
+                    "expansionhunter": {
+                        "branch": "master",
+                        "git_sha": "0adfbfad03ff9af0d9fb437f0f2e1140e1c59316",
+                        "installed_by": ["modules"]
+                    },
                     "gatk4/calibratedragstrmodel": {
                         "branch": "master",
                         "git_sha": "6d46786420b4d7bc88eba026eb389c0c5535d120",

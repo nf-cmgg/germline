@@ -116,6 +116,15 @@
                     "description": "Path to the elsites file. This is used when `elprep` is part of the callers.",
                     "fa_icon": "far fa-file-code"
                 },
+                "expansionhunter_catalogue": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "mimetype": "application/json",
+                    "pattern": "^\\S+\\.json$",
+                    "description": "Path to the ExpansionHunter variant catalogue JSON file. This is needed when `expansionhunter` is part of the callers.",
+                    "fa_icon": "far fa-file-code"
+                },
                 "genomes": {
                     "type": "object",
                     "hidden": true,
@@ -241,7 +250,7 @@
                 },
                 "callers": {
                     "type": "string",
-                    "description": "A comma delimited string of the available callers. Current options are: `haplotypecaller` and `vardict`.",
+                    "description": "A comma delimited string of the available callers. Current options are: `haplotypecaller`, `vardict`, `elprep` and `expansionhunter`.",
                     "default": "haplotypecaller"
                 },
                 "vardict_min_af": {

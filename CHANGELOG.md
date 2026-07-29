@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v1.13.4
 
+### New features
+
+- Added `expansionhunter` as a new caller. This caller is unique as no postprocessing is done on the outputs of the caller.
+- Added `sex` as a samplesheet field. This is an optional field to improve the repeat expansion calls from Expansionhunter.
+
+### Fixes
+
 - Fixes a small issue with the VEP config (`.split()` error) by replacing it with the `name` attribute.
 - Bumped multiqc CMGG version to 0.0.7
 

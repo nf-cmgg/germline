@@ -67,6 +67,9 @@ params {
     // Path to the elsites file. This is used when `elprep` is part of the callers.
     elsites: Path?
 
+    // Path to the ExpansionHunter variant catalogue JSON file. This is needed when `expansionhunter` is part of the callers.
+    expansionhunter_catalogue: Path? = getGenomeAttribute('expansionhunter_catalogue', params.genomes, params.genome)
+
     // Object for genomes
     genomes: Map = [:]
 
@@ -351,7 +354,7 @@ workflow {
     // Check for dependencies between parameters
     //
 
-    def List<String> available_callers = ["haplotypecaller", "vardict", "elprep"]
+    def List<String> available_callers = ["haplotypecaller", "vardict", "elprep", "expansionhunter"]
 
     if(params.dbsnp_tbi && !params.dbsnp){
         error("Please specify the dbsnp VCF with --dbsnp VCF")
@@ -377,6 +380,10 @@ workflow {
     def callers = params.callers.tokenize(",")
     callers.each { caller ->
         if(!(caller in available_callers)) { error("\"${caller}\" is not a supported callers please use one or more of these instead: ${available_callers.join(', ')}") }
+    }
+
+    if (callers.contains("expansionhunter") && !params.expansionhunter_catalogue) {
+        error("Please specify the ExpansionHunter variant catalogue JSON file with --expansionhunter_catalogue")
     }
 
     /*
@@ -450,6 +457,7 @@ workflow {
         params.elsites,
         params.msi_baseline,
         params.updio_regions,
+        params.expansionhunter_catalogue,
 
         // Boolean inputs
         params.dragstr,
@@ -502,6 +510,7 @@ workflow {
     gvcf_reports        = SMALLVARIANTS.out.gvcf_reports
     genomicsdb          = SMALLVARIANTS.out.genomicsdb
     vcfs                = SMALLVARIANTS.out.vcfs.filter { _meta, vcf, _tbi -> vcf.startsWith(workflow.workDir) } // Filtering out input VCFs from the output publishing fixes an issue in the current implementation of the workflow output definitions: https://github.com/nextflow-io/nextflow/issues/5480
+    repeat_vcfs         = SMALLVARIANTS.out.repeat_vcfs
     gemini              = SMALLVARIANTS.out.gemini
     peds                = SMALLVARIANTS.out.peds
     joint_beds          = SMALLVARIANTS.out.joint_beds
@@ -550,6 +559,10 @@ output {
         }
     }
     vcfs { path { meta, vcf, tbi ->
+        vcf >> "${meta.family}/output_${params.unique_out}/${meta.id}.${meta.caller}.vcf.gz"
+        tbi >> "${meta.family}/output_${params.unique_out}/${meta.id}.${meta.caller}.vcf.gz.tbi"
+    } }
+    repeat_vcfs { path { meta, vcf, tbi ->
         vcf >> "${meta.family}/output_${params.unique_out}/${meta.id}.${meta.caller}.vcf.gz"
         tbi >> "${meta.family}/output_${params.unique_out}/${meta.id}.${meta.caller}.vcf.gz.tbi"
     } }
