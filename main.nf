@@ -470,6 +470,7 @@ workflow {
         params.vep_eog,
         params.vep_alphamissense,
         params.vep_maxentscan,
+        params.mosdepth_slow,
 
         // Value inputs
         params.genome,
