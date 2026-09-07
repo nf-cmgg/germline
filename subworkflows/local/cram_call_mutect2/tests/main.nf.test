@@ -1,0 +1,68 @@
+nextflow_workflow {
+
+    name "Test Workflow CRAM_CALL_MUTECT2"
+    script "../main.nf"
+    workflow "CRAM_CALL_MUTECT2"
+
+    tag "subworkflows"
+    tag "subworkflows_local"
+    tag "CRAM_CALL_MUTECT2"
+    tag "vcf_concat_bcftools"
+
+    test("CRAM_CALL_MUTECT2 - default") {
+
+
+        when {
+            params {
+                callers = "mutect2"
+            }
+            workflow {
+                """
+                input[0] = channel.of([
+                    [id:"NA24143.00001", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
+                    file(params.cram1, checkIfExists:true),
+                    file(params.crai1, checkIfExists:true),
+                    file(params.split1, checkIfExists:true)
+                ],[
+                    [id:"NA24143.00002", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
+                    file(params.cram1, checkIfExists:true),
+                    file(params.crai1, checkIfExists:true),
+                    file(params.split2, checkIfExists:true)
+                ],[
+                    [id:"NA24143.00003", sample:"NA24143", family:"Ashkenazim", family_samples:"NA24143", split_count:3],
+                    file(params.cram1, checkIfExists:true),
+                    file(params.crai1, checkIfExists:true),
+                    file(params.split3, checkIfExists:true)
+                ])
+                input[1] = channel.value([
+                    [id:"fasta"],
+                    file(params.fasta, checkIfExists:true)
+                ])
+                input[2] = channel.value([
+                    [id:"fai"],
+                    file(params.fai, checkIfExists:true)
+                ])
+                input[3] = channel.value([
+                    [id:"dict"],
+                    file(params.dict, checkIfExists:true)
+                ])
+                input[4] = []
+                input[5] = []
+                input[6] = []
+                input[7] = []
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.out.vcfs.collect { [it[0], "${file(it[1]).name},variantsMD5:${path(it[1]).vcf.variantsMD5}", file(it[2]).name] },
+                    workflow.out.reports
+                ).match() }
+            )
+        }
+
+    }
+}
