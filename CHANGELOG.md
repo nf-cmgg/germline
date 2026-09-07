@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## v1.13.6
 
 - Revert the default configs base to the nf-core configs in preparation of converting nf-cmgg/configs to a private repo
+- Added a comment to the multiqc report stating which mosdepth mode was used
 
 ## v1.13.5
 

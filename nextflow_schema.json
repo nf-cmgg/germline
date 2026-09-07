@@ -149,6 +149,7 @@
             "type": "object",
             "description": "Parameters that define how the pipeline works",
             "default": "",
+            "required": ["scatter_count", "somalier_sites"],
             "properties": {
                 "scatter_count": {
                     "type": "integer",

@@ -126,6 +126,7 @@ workflow SMALLVARIANTS {
     vep_eog                     // boolean: use the EOG VEP plugin
     vep_alphamissense           // boolean: use the AlphaMissense VEP plugin
     vep_maxentscan              // boolean: use the MaxEntScan VEP plugin
+    mosdepth_slow               // boolean: use the Mosdepth slow mode
 
     // Value inputs
     genome                      // string:  the genome used by the pipeline run
@@ -909,7 +910,11 @@ workflow SMALLVARIANTS {
                                                 channel.fromPath(multiqc_config, checkIfExists: true) :
                                                 channel.value([])
     def ch_multiqc_config                     = channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
-                                                .combine(ch_multiqc_custom_config)
+                                                .mix(ch_multiqc_custom_config)
+                                                .mix(mosdepth_slow ?
+                                                    channel.fromPath("$projectDir/assets/multiqc_config_mosdepth_slow.yml", checkIfExists: true) :
+                                                    channel.fromPath("$projectDir/assets/multiqc_config_mosdepth_fast.yml", checkIfExists: true)
+                                                )
                                                 .collect()
                                                 .map { configs -> [configs] }
     def ch_multiqc_logo                       = multiqc_logo ?
