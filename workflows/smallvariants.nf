@@ -126,6 +126,7 @@ workflow SMALLVARIANTS {
     vep_eog                     // boolean: use the EOG VEP plugin
     vep_alphamissense           // boolean: use the AlphaMissense VEP plugin
     vep_maxentscan              // boolean: use the MaxEntScan VEP plugin
+    mosdepth_slow               // boolean: use the Mosdepth slow mode
 
     // Value inputs
     genome                      // string:  the genome used by the pipeline run
