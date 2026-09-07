@@ -178,24 +178,6 @@ params {
     // Don't output the merged CRAM files.
     skip_merged_cram_output: Boolean = false
 
-    // Git commit id for Institutional configs.
-    custom_config_version: String = 'main'
-
-    // Base directory for Institutional configs.
-    custom_config_base: String = 'https://raw.githubusercontent.com/nf-cmgg/configs/main'
-
-    // Institutional config name.
-    config_profile_name: String?
-
-    // Institutional config description.
-    config_profile_description: String?
-
-    // Institutional config contact information.
-    config_profile_contact: String?
-
-    // Institutional config URL link.
-    config_profile_url: String?
-
     // Display version and exit.
     version: Boolean = false
 
