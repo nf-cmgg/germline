@@ -229,5 +229,27 @@
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
         }
+    },
+    "pipeline_callers - mutect2": {
+        "content": [
+            [
+                "Ashkenazim/NA24149_<version>_<date>/NA24149.bed",
+                "Ashkenazim/NA24149_<version>_<date>/NA24149.per-base.bed.gz",
+                "Ashkenazim/NA24149_<version>_<date>/NA24149.per-base.bed.gz.csi",
+                "Ashkenazim/NA24149_<version>_<date>/mosdepth/NA24149.global.dist.txt",
+                "Ashkenazim/NA24149_<version>_<date>/mosdepth/NA24149.region.dist.txt",
+                "Ashkenazim/NA24149_<version>_<date>/mosdepth/NA24149.summary.txt",
+                "Ashkenazim/NA24149_<version>_<date>/msi/NA24149_all_msi",
+                "Ashkenazim/NA24149_<version>_<date>/msi/NA24149_dis_msi",
+                "Ashkenazim/NA24149_<version>_<date>/msi/NA24149_summary_msi",
+                "Ashkenazim/NA24149_<version>_<date>/msi/NA24149_unstable_msi",
+                "<version>_<date>/samplesheet.csv"
+            ]
+        ],
+        "timestamp": "2026-09-07T16:14:51.995560164",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.3"
+        }
     }
 }

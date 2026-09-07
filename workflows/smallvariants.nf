@@ -21,6 +21,7 @@ include { CRAM_CALL_HAPLOTYPECALLER         } from '../subworkflows/local/cram_c
 include { GVCF_JOINT_GENOTYPE_GATK4         } from '../subworkflows/local/gvcf_joint_genotype_gatk4/main'
 include { BAM_CALL_ELPREP                   } from '../subworkflows/local/bam_call_elprep/main'
 include { BAM_CALL_VARDICTJAVA              } from '../subworkflows/local/bam_call_vardictjava/main'
+include { CRAM_CALL_MUTECT2                 } from '../subworkflows/local/cram_call_mutect2/main'
 include { VCF_EXTRACT_RELATE_SOMALIER       } from '../subworkflows/local/vcf_extract_relate_somalier/main'
 include { VCF_PED_RTGTOOLS                  } from '../subworkflows/local/vcf_ped_rtgtools/main'
 include { VCF_ANNOTATION                    } from '../subworkflows/local/vcf_annotation/main'
@@ -589,6 +590,27 @@ workflow SMALLVARIANTS {
             ch_dbsnp_tbi_ready
         )
         ch_calls = ch_calls.mix(BAM_CALL_VARDICTJAVA.out.vcfs)
+    }
+
+    if("mutect2" in callers) {
+        //
+        // Call variants with GATK4 Mutect2
+        //
+
+        CRAM_CALL_MUTECT2(
+            ch_caller_inputs.cram.filter { meta, _cram, _crai, _bed ->
+                // Filter out the entries that already have a GVCF
+                meta.type == "cram"
+            },
+            ch_fasta_ready,
+            ch_fai_ready,
+            ch_dict_ready,
+            ch_dbsnp_ready,
+            ch_dbsnp_tbi_ready,
+            [], // TODO add panel of normals support
+            []
+        )
+        ch_calls = ch_calls.mix(CRAM_CALL_MUTECT2.out.vcfs)
     }
 
     // Stop pipeline execution when only calls should happen

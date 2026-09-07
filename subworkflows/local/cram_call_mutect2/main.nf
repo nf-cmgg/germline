@@ -22,7 +22,7 @@ workflow CRAM_CALL_MUTECT2 {
 
     GATK4_MUTECT2(
         ch_input.map { meta, cram, crai, bed ->
-            def new_meta = meta + [caller:'mutect2']
+            def new_meta = meta + [caller:'mutect2', family_samples: meta.sample]
             tuple(new_meta, cram, crai, bed)
         },
         ch_fasta,
@@ -30,14 +30,16 @@ workflow CRAM_CALL_MUTECT2 {
         ch_dict,
         [],
         [],
-        ch_dbsnp,
-        ch_dbsnp_tbi,
+        ch_dbsnp == [[],[]] ? [] : ch_dbsnp.map { _meta, dbsnp -> dbsnp },
+        ch_dbsnp_tbi == [[],[]] ? [] : ch_dbsnp_tbi.map { _meta, dbsnp_tbi -> dbsnp_tbi },
         ch_panel_of_normals,
         ch_panel_of_normals_tbi
     )
 
     def ch_calls = GATK4_MUTECT2.out.vcf
         .join(GATK4_MUTECT2.out.tbi, failOnDuplicate: true, failOnMismatch: true)
+
+    // TODO run filtermutectcalls
 
     VCF_CONCAT_BCFTOOLS(
         ch_calls

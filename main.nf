@@ -333,7 +333,7 @@ workflow {
     // Check for dependencies between parameters
     //
 
-    def List<String> available_callers = ["haplotypecaller", "vardict", "elprep"]
+    def List<String> available_callers = ["haplotypecaller", "vardict", "elprep", "mutect2"]
 
     if(params.dbsnp_tbi && !params.dbsnp){
         error("Please specify the dbsnp VCF with --dbsnp VCF")
@@ -358,7 +358,7 @@ workflow {
 
     def callers = params.callers.tokenize(",")
     callers.each { caller ->
-        if(!(caller in available_callers)) { error("\"${caller}\" is not a supported callers please use one or more of these instead: ${available_callers.join(', ')}") }
+        if(!(caller in available_callers)) { error("\"${caller}\" is not a supported caller please use one or more of these instead: ${available_callers.join(', ')}") }
     }
 
     /*

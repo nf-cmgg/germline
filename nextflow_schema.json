@@ -242,8 +242,9 @@
                 },
                 "callers": {
                     "type": "string",
-                    "description": "A comma delimited string of the available callers. Current options are: `haplotypecaller` and `vardict`.",
-                    "default": "haplotypecaller"
+                    "description": "A comma delimited string of the available callers. Current options are: `haplotypecaller`, `vardict`, `elprep` and `mutect2`.",
+                    "default": "haplotypecaller",
+                    "pattern": "^((haplotypecaller|vardict|elprep|mutect2)?,?)*(?<!,)$"
                 },
                 "vardict_min_af": {
                     "type": "number",
