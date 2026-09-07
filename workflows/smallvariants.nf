@@ -910,11 +910,7 @@ workflow SMALLVARIANTS {
                                                 channel.fromPath(multiqc_config, checkIfExists: true) :
                                                 channel.value([])
     def ch_multiqc_config                     = channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
-                                                .mix(ch_multiqc_custom_config)
-                                                .mix(mosdepth_slow ?
-                                                    channel.fromPath("$projectDir/assets/multiqc_config_mosdepth_slow.yml", checkIfExists: true) :
-                                                    channel.fromPath("$projectDir/assets/multiqc_config_mosdepth_fast.yml", checkIfExists: true)
-                                                )
+                                                .combine(ch_multiqc_custom_config)
                                                 .collect()
                                                 .map { configs -> [configs] }
     def ch_multiqc_logo                       = multiqc_logo ?
