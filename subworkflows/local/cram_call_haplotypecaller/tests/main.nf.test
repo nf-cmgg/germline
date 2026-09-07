@@ -1,15 +1,15 @@
 nextflow_workflow {
 
-    name "Test Workflow CRAM_CALL_GATK4"
+    name "Test Workflow CRAM_CALL_HAPLOTYPECALLER"
     script "../main.nf"
-    workflow "CRAM_CALL_GATK4"
+    workflow "CRAM_CALL_HAPLOTYPECALLER"
 
     tag "subworkflows"
     tag "subworkflows_local"
-    tag "cram_call_gatk4"
+    tag "CRAM_CALL_HAPLOTYPECALLER"
     tag "vcf_concat_bcftools"
 
-    test("cram_call_gatk4 - default") {
+    test("CRAM_CALL_HAPLOTYPECALLER - default") {
 
 
         when {
@@ -66,7 +66,7 @@ nextflow_workflow {
 
     }
 
-    test("cram_call_gatk4 - dragstr") {
+    test("CRAM_CALL_HAPLOTYPECALLER - dragstr") {
 
 
         when {

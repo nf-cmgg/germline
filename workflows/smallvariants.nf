@@ -17,7 +17,7 @@ include { methodsDescriptionText            } from '../subworkflows/local/utils_
 
 include { CRAM_PREPARE_SAMTOOLS_BEDTOOLS    } from '../subworkflows/local/cram_prepare_samtools_bedtools/main'
 include { INPUT_SPLIT_BEDTOOLS              } from '../subworkflows/local/input_split_bedtools/main'
-include { CRAM_CALL_GATK4                   } from '../subworkflows/local/cram_call_gatk4/main'
+include { CRAM_CALL_HAPLOTYPECALLER         } from '../subworkflows/local/cram_call_haplotypecaller/main'
 include { GVCF_JOINT_GENOTYPE_GATK4         } from '../subworkflows/local/gvcf_joint_genotype_gatk4/main'
 include { BAM_CALL_ELPREP                   } from '../subworkflows/local/bam_call_elprep/main'
 include { BAM_CALL_VARDICTJAVA              } from '../subworkflows/local/bam_call_vardictjava/main'
@@ -538,7 +538,7 @@ workflow SMALLVARIANTS {
         // Call variants with GATK4 HaplotypeCaller
         //
 
-        CRAM_CALL_GATK4(
+        CRAM_CALL_HAPLOTYPECALLER(
             ch_caller_inputs.cram.filter { meta, _cram, _crai, _bed ->
                 // Filter out the entries that already have a GVCF
                 meta.type == "cram"
@@ -551,9 +551,9 @@ workflow SMALLVARIANTS {
             ch_dbsnp_tbi_ready,
             dragstr
         )
-        ch_gvcfs_ready = ch_gvcfs_ready.mix(CRAM_CALL_GATK4.out.gvcfs)
-        ch_reports  = ch_reports.mix(CRAM_CALL_GATK4.out.reports.map { _meta, report -> report })
-        ch_gvcf_reports = ch_gvcf_reports.mix(CRAM_CALL_GATK4.out.reports)
+        ch_gvcfs_ready = ch_gvcfs_ready.mix(CRAM_CALL_HAPLOTYPECALLER.out.gvcfs)
+        ch_reports  = ch_reports.mix(CRAM_CALL_HAPLOTYPECALLER.out.reports.map { _meta, report -> report })
+        ch_gvcf_reports = ch_gvcf_reports.mix(CRAM_CALL_HAPLOTYPECALLER.out.reports)
     }
 
     if("elprep" in callers) {

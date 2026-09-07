@@ -1,5 +1,5 @@
 //
-// Call the variants using GATK4 tooling
+// Call the variants using HaplotypeCaller
 //
 
 include { GATK4_CALIBRATEDRAGSTRMODEL               } from '../../../modules/nf-core/gatk4/calibratedragstrmodel/main'
@@ -8,7 +8,7 @@ include { BCFTOOLS_STATS                            } from '../../../modules/nf-
 
 include { VCF_CONCAT_BCFTOOLS                       } from '../vcf_concat_bcftools/main'
 
-workflow CRAM_CALL_GATK4 {
+workflow CRAM_CALL_HAPLOTYPECALLER {
     take:
         ch_input            // channel: [mandatory] [ val(meta), path(cram), path(crai), path(bed) ] => sample CRAM files and their indexes with the split bed files
         ch_fasta            // channel: [mandatory] [ val(meta), path(fasta) ] => fasta reference
