@@ -107,6 +107,8 @@ workflow SMALLVARIANTS {
     elsites                     // path: path to the elsites file for elprep
     msi_baseline                // path: path to the msi_baseline file
     updio_regions               // path: path to the BED file with regions to be used by UPDio
+    panel_of_normals            // path: path to the panel of normals VCF file
+    panel_of_normals_tbi        // path: path to the index of the panel of normals VCF file
 
     // Boolean inputs
     dragstr                     // boolean: create a dragstr model and use it for haplotypecaller
@@ -149,36 +151,39 @@ workflow SMALLVARIANTS {
     // Importing and convert the input files passed through the parameters to channels
     //
 
-    def ch_fasta_ready        = channel.value([[id:"reference"], fasta])
-    def ch_fai                = fai                 ? channel.value([[id:"reference"], fai]) : null
-    def ch_dict               = dict                ? channel.value([[id:"reference"], dict]) : null
-    def ch_elfasta            = elfasta             ? channel.value([[id:"reference"], elfasta]) : null
-    def ch_strtablefile       = strtablefile        ? channel.value([[id:"reference"], strtablefile]) : null
-    def ch_sdf                = sdf                 ? channel.value([[id:'reference'], sdf]) : null
+    def ch_fasta_ready          = channel.value([[id:"reference"], fasta])
+    def ch_fai                  = fai                  ? channel.value([[id:"reference"], fai]) : null
+    def ch_dict                 = dict                 ? channel.value([[id:"reference"], dict]) : null
+    def ch_elfasta              = elfasta              ? channel.value([[id:"reference"], elfasta]) : null
+    def ch_strtablefile         = strtablefile         ? channel.value([[id:"reference"], strtablefile]) : null
+    def ch_sdf                  = sdf                  ? channel.value([[id:'reference'], sdf]) : null
 
-    def ch_default_roi        = roi                 ? channel.value(roi) : []
+    def ch_default_roi          = roi                  ? channel.value(roi) : []
 
-    def ch_dbsnp_ready        = dbsnp               ? channel.value([[id:"dbsnp"], dbsnp]) : [[],[]]
-    def ch_dbsnp_tbi          = dbsnp_tbi           ? channel.value([[id:"dbsnp"], dbsnp_tbi]) : [[],[]]
+    def ch_dbsnp_ready          = dbsnp                ? channel.value([[id:"dbsnp"], dbsnp]) : [[],[]]
+    def ch_dbsnp_tbi            = dbsnp_tbi            ? channel.value([[id:"dbsnp"], dbsnp_tbi]) : [[],[]]
 
-    def ch_somalier_sites     = somalier_sites      ? channel.value([[id:"somalier_sites"], somalier_sites]) : [[],[]]
+    def ch_somalier_sites       = somalier_sites       ? channel.value([[id:"somalier_sites"], somalier_sites]) : [[],[]]
 
-    def ch_vep_cache          = vep_cache           ? channel.value([[id:'cache'], file(vep_cache)]) : []
+    def ch_vep_cache            = vep_cache            ? channel.value([[id:'cache'], file(vep_cache)]) : []
 
-    def ch_vcfanno_config     = vcfanno_config      ? channel.value(vcfanno_config) : []
-    def ch_vcfanno_lua        = vcfanno_lua         ? channel.value(vcfanno_lua) : []
-    def ch_vcfanno_resources  = vcfanno_resources   ? channel.value(vcfanno_resources.split(";").collect{ res -> files(res, checkIfExists:true) }.flatten()) : []
+    def ch_vcfanno_config       = vcfanno_config       ? channel.value(vcfanno_config) : []
+    def ch_vcfanno_lua          = vcfanno_lua          ? channel.value(vcfanno_lua) : []
+    def ch_vcfanno_resources    = vcfanno_resources    ? channel.value(vcfanno_resources.split(";").collect{ res -> files(res, checkIfExists:true) }.flatten()) : []
 
-    def ch_updio_common_cnvs  = updio_common_cnvs   ? channel.value([[id:'updio_cnv'], updio_common_cnvs]) : [[],[]]
+    def ch_updio_common_cnvs    = updio_common_cnvs    ? channel.value([[id:'updio_cnv'], updio_common_cnvs]) : [[],[]]
 
-    def ch_automap_repeats    = automap_repeats     ? channel.value([[id:"repeats"], automap_repeats]) : []
-    def ch_automap_panel      = automap_panel       ? channel.value([[id:"automap_panel"], automap_panel]) : [[],[]]
+    def ch_automap_repeats      = automap_repeats      ? channel.value([[id:"repeats"], automap_repeats]) : []
+    def ch_automap_panel        = automap_panel        ? channel.value([[id:"automap_panel"], automap_panel]) : [[],[]]
 
-    def ch_elsites            = elsites             ? channel.fromPath(elsites).map{ elsites_file -> [[id:'elsites'], elsites_file] }.collect() : [[],[]]
+    def ch_elsites              = elsites              ? channel.fromPath(elsites).map{ elsites_file -> [[id:'elsites'], elsites_file] }.collect() : [[],[]]
 
-    def ch_msi_baseline       = msi_baseline        ? channel.value([[id:"msi_baseline"], msi_baseline]) : [[],[]]
+    def ch_msi_baseline         = msi_baseline         ? channel.value([[id:"msi_baseline"], msi_baseline]) : [[],[]]
 
-    def ch_updio_regions      = updio_regions       ? channel.value(updio_regions) : []
+    def ch_updio_regions        = updio_regions        ? channel.value(updio_regions) : []
+
+    def ch_panel_of_normals     = panel_of_normals     ? channel.value(panel_of_normals) : []
+    def ch_panel_of_normals_tbi = panel_of_normals_tbi ? channel.value(panel_of_normals_tbi) : []
 
     //
     // Check for the presence of EnsemblVEP plugins that use extra files
@@ -598,17 +603,14 @@ workflow SMALLVARIANTS {
         //
 
         CRAM_CALL_MUTECT2(
-            ch_caller_inputs.cram.filter { meta, _cram, _crai, _bed ->
-                // Filter out the entries that already have a GVCF
-                meta.type == "cram"
-            },
+            ch_caller_inputs.cram,
             ch_fasta_ready,
             ch_fai_ready,
             ch_dict_ready,
             ch_dbsnp_ready,
             ch_dbsnp_tbi_ready,
-            [], // TODO add panel of normals support
-            []
+            ch_panel_of_normals,
+            ch_panel_of_normals_tbi
         )
         ch_calls = ch_calls.mix(CRAM_CALL_MUTECT2.out.vcfs)
     }

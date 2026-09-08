@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Check that the VCF contains enough variants before running automap (it needs to have at least 10000 variants)
 
+### Parameters
+
+| Old | New                      |
+| --- | ------------------------ |
+|     | `--panel_of_normals`     |
+|     | `--panel_of_normals_tbi` |
+
 ## v1.13.6
 
 - Revert the default configs base to the nf-core configs in preparation of converting nf-cmgg/configs to a private repo
