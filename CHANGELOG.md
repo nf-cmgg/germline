@@ -5,6 +5,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v1.14.0dev
 
+### New features
+
+- Added a new caller: `GATK4_MUTECT2` followed by `GATK4_FILTERMUTECTCALLS`. Pass `mutect2` to the `--callers` parameter to use it.
+
+### Changes
+
 - Check that the VCF contains enough variants before running automap (it needs to have at least 10000 variants)
 
 ## v1.13.6
