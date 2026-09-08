@@ -3,6 +3,10 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.14.0dev
+
+- Check that the VCF contains enough variants before running automap (it needs to have at least 10000 variants)
+
 ## v1.13.6
 
 - Revert the default configs base to the nf-core configs in preparation of converting nf-cmgg/configs to a private repo
