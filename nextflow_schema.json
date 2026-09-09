@@ -140,6 +140,20 @@
                     "exists": true,
                     "pattern": "^\\S+\\.list$",
                     "description": "Path to the MSI baseline VCF file."
+                },
+                "panel_of_normals": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "pattern": "^\\S+\\.vcf\\.gz$",
+                    "description": "Path to the panel of normals VCF file. Only used when `mutect2` is one of the specified callers."
+                },
+                "panel_of_normals_tbi": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "pattern": "^\\S+\\.vcf\\.gz\\.tbi$",
+                    "description": "Path to the index of the panel of normals VCF file. Only used when `mutect2` is one of the specified callers."
                 }
             },
             "required": ["fasta"]
@@ -242,8 +256,9 @@
                 },
                 "callers": {
                     "type": "string",
-                    "description": "A comma delimited string of the available callers. Current options are: `haplotypecaller` and `vardict`.",
-                    "default": "haplotypecaller"
+                    "description": "A comma delimited string of the available callers. Current options are: `haplotypecaller`, `vardict`, `elprep` and `mutect2`.",
+                    "default": "haplotypecaller",
+                    "pattern": "^((haplotypecaller|vardict|elprep|mutect2)?,?)*(?<!,)$"
                 },
                 "vardict_min_af": {
                     "type": "number",

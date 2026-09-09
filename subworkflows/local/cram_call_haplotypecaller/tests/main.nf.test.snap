@@ -1,5 +1,5 @@
 {
-    "cram_call_gatk4 - default": {
+    "CRAM_CALL_HAPLOTYPECALLER - default": {
         "content": [
             [
                 [
@@ -41,7 +41,7 @@
             "nextflow": "26.04.1"
         }
     },
-    "cram_call_gatk4 - dragstr": {
+    "CRAM_CALL_HAPLOTYPECALLER - dragstr": {
         "content": [
             [
                 [

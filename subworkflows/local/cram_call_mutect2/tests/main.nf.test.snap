@@ -1,0 +1,44 @@
+{
+    "CRAM_CALL_MUTECT2 - default": {
+        "content": [
+            [
+                [
+                    {
+                        "groupSize": 3,
+                        "groupTarget": {
+                            "id": "NA24143",
+                            "sample": "NA24143",
+                            "family": "Ashkenazim",
+                            "family_samples": "NA24143",
+                            "split_count": 3,
+                            "caller": "mutect2"
+                        }
+                    },
+                    "NA24143.concat.vcf.gz,variantsMD5:53d915ee4a2d5e44402c7d223699f792",
+                    "NA24143.concat.vcf.gz.tbi"
+                ]
+            ],
+            [
+                [
+                    {
+                        "groupSize": 3,
+                        "groupTarget": {
+                            "id": "NA24143",
+                            "sample": "NA24143",
+                            "family": "Ashkenazim",
+                            "family_samples": "NA24143",
+                            "split_count": 3,
+                            "caller": "mutect2"
+                        }
+                    },
+                    "NA24143.bcftools_stats.txt:md5,062d7725d095dbdbf7fefbe6ea8079dc"
+                ]
+            ]
+        ],
+        "timestamp": "2026-09-07T15:18:23.905783673",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.3"
+        }
+    }
+}

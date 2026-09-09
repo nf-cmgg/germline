@@ -318,6 +318,12 @@ params {
 
     // A semicolon-seperated list of resource files for VCFanno, please also supply their indices using this parameter.
     vcfanno_resources: String? = getGenomeAttribute('vcfanno_resources', params.genomes, params.genome)
+
+    // Path to the panel of normals VCF file.
+    panel_of_normals: Path? = getGenomeAttribute('panel_of_normals', params.genomes, params.genome)
+
+    // Path to the index of the panel of normals VCF file.
+    panel_of_normals_tbi: Path? = getGenomeAttribute('panel_of_normals_tbi', params.genomes, params.genome)
 }
 
 workflow {
@@ -333,10 +339,14 @@ workflow {
     // Check for dependencies between parameters
     //
 
-    def List<String> available_callers = ["haplotypecaller", "vardict", "elprep"]
+    def List<String> available_callers = ["haplotypecaller", "vardict", "elprep", "mutect2"]
 
     if(params.dbsnp_tbi && !params.dbsnp){
         error("Please specify the dbsnp VCF with --dbsnp VCF")
+    }
+
+    if(params.panel_of_normals_tbi && !params.panel_of_normals){
+        error("Please specify the panel of normals VCF with --panel_of_normals VCF")
     }
 
     if (params.annotate) {
@@ -358,7 +368,7 @@ workflow {
 
     def callers = params.callers.tokenize(",")
     callers.each { caller ->
-        if(!(caller in available_callers)) { error("\"${caller}\" is not a supported callers please use one or more of these instead: ${available_callers.join(', ')}") }
+        if(!(caller in available_callers)) { error("\"${caller}\" is not a supported caller please use one or more of these instead: ${available_callers.join(', ')}") }
     }
 
     /*
@@ -432,6 +442,8 @@ workflow {
         params.elsites,
         params.msi_baseline,
         params.updio_regions,
+        params.panel_of_normals,
+        params.panel_of_normals_tbi,
 
         // Boolean inputs
         params.dragstr,

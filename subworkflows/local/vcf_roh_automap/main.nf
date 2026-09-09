@@ -30,8 +30,29 @@ workflow VCF_ROH_AUTOMAP {
         ch_valid_repeats = ch_repeats
     }
 
+    def ch_automap_input = ch_vcfs.filter { meta, vcf, _tbi ->
+        // Check the amount of variants for all VCFs that are under 1 MB (automap requires at least 10000 variants to run)
+        if(vcf?.size() < 1000000) {
+            def var_count = 0
+            vcf.withInputStream { stream ->
+                new java.util.zip.GZIPInputStream(stream).withReader('UTF-8') { reader ->
+                    reader.eachLine { line ->
+                        if(!line.startsWith("#")) {
+                            var_count += 1
+                        }
+                    }
+                }
+            }
+            if(var_count < 10000) {
+                log.warn("VCF file '${vcf}' for sample '${meta.id}' only has ${var_count} variants. Automap requires at least 10000 variants to run. Skipping this VCF.")
+                return false
+            }
+        }
+        return true
+    }
+
     AUTOMAP_AUTOMAP(
-        ch_vcfs,
+        ch_automap_input,
         ch_valid_repeats,
         ch_panel,
         hg_genome
