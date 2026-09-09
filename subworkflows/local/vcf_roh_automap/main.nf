@@ -32,7 +32,6 @@ workflow VCF_ROH_AUTOMAP {
 
     def ch_automap_input = ch_vcfs.filter { meta, vcf, tbi ->
         // Check the amount of variants for all VCFs that are under 1 MB (automap requires at least 10000 variants to run)
-        println vcf.size()
         if(vcf?.size() < 1000000) {
             def var_count = 0
             vcf.withInputStream { stream ->
