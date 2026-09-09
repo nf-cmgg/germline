@@ -870,11 +870,6 @@ workflow SMALLVARIANTS {
         if(gemini){
             def ch_vcf2db_input = ch_final_vcfs.map { meta, vcf, _tbi -> [ meta, vcf ]}
                 .join(ch_final_peds, failOnMismatch:true, failOnDuplicate:true)
-                .filter { meta, _vcf, _ped -> meta.caller != 'mutect2' } // Exclude Mutect2 from vcf2db due to occurence of triploid variants
-
-            if (callers.contains('mutect2')) {
-                log.warn("Mutect2 caller is present but will be excluded from vcf2db due to occurrence of triploid variants.")
-            }
 
             VCF2DB(
                 ch_vcf2db_input
