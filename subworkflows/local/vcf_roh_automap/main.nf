@@ -30,7 +30,7 @@ workflow VCF_ROH_AUTOMAP {
         ch_valid_repeats = ch_repeats
     }
 
-    def ch_automap_input = ch_vcfs.filter { meta, vcf, tbi ->
+    def ch_automap_input = ch_vcfs.filter { meta, vcf, _tbi ->
         // Check the amount of variants for all VCFs that are under 1 MB (automap requires at least 10000 variants to run)
         if(vcf?.size() < 1000000) {
             def var_count = 0
